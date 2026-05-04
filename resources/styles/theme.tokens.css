@@ -3,7 +3,7 @@
  * Content paths + typography plugin live in `tailwind.config.js` (`@config` from app.css).
  *
  * PHP reads `--color-*` hex lines for ACF colour pickers — keep hex `#RRGGBB` or `#RGB`.
- * Padding / grid helpers use `--spacing-*` names defined here (Tailwind spacing utilities).
+ * Spacing for layouts uses Tailwind’s default scale utilities (`pt-16`, `gap-x-6`, …).
  * @see \App\Config\ThemeTokens::colorHexPalette()
  * Theme docs: docs/README.md
  */
@@ -11,22 +11,6 @@
 @theme {
   /* Typography */
   --font-sans: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
-
-  /* Layout spacing — referenced by App\Helpers\Padding and App\Helpers\Grid */
-  --spacing-zero: 0;
-  --spacing-section-mobile: 4rem;
-  --spacing-section-inner-sm: 2rem;
-  --spacing-section-inner-md: 4rem;
-  --spacing-section-inner-lg: 8rem;
-  --spacing-heading-xs: 0.5rem;
-  --spacing-heading-sm: 1rem;
-  --spacing-heading-md: 1.5rem;
-  --spacing-heading-xl: 2rem;
-  --spacing-layout-grid-gap: 1.5rem;
-  --spacing-layout-internal-gap: 1.5rem;
-  --spacing-layout-container-mobile: 1.25rem;
-  --spacing-layout-container-sm: 1.5rem;
-  --spacing-layout-container-lg: 4rem;
 
   /* Brand (sky scale aligned with prior Culvers defaults) */
   --color-brand-500: #0ea5e9;

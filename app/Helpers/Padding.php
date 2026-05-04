@@ -3,8 +3,7 @@
 namespace App\Helpers;
 
 /**
- * Converts ACF padding choices to Tailwind classes backed by `@theme` `--spacing-*` tokens
- * in resources/styles/theme.tokens.css.
+ * Converts ACF padding choices to Tailwind spacing utilities (`pt-*`, `pb-*`, …).
  */
 class Padding
 {
@@ -26,28 +25,30 @@ class Padding
     }
 
     /**
+     * Get Tailwind padding classes for header, subheader, or body text elements.
+     *
      * @param string $paddingTop    none|small|medium|large|large-xl
      * @param string $paddingBottom none|small|medium|large|large-xl
      */
     public static function getHeaderSubheaderPaddingClasses(string $paddingTop, string $paddingBottom): string
     {
         $topMap = [
-            'none' => 'pt-zero',
-            'small' => 'pt-heading-xs',
-            'medium' => 'pt-heading-sm',
-            'large' => 'pt-heading-md',
-            'large-xl' => 'pt-heading-xl',
+            'none' => 'pt-0',
+            'small' => 'pt-2',
+            'medium' => 'pt-4',
+            'large' => 'pt-6',
+            'large-xl' => 'pt-8',
         ];
         $bottomMap = [
-            'none' => 'pb-zero',
-            'small' => 'pb-heading-xs',
-            'medium' => 'pb-heading-sm',
-            'large' => 'pb-heading-md',
-            'large-xl' => 'pb-heading-xl',
+            'none' => 'pb-0',
+            'small' => 'pb-2',
+            'medium' => 'pb-4',
+            'large' => 'pb-6',
+            'large-xl' => 'pb-8',
         ];
 
-        $top = $topMap[$paddingTop] ?? 'pt-zero';
-        $bottom = $bottomMap[$paddingBottom] ?? 'pb-zero';
+        $top = $topMap[$paddingTop] ?? 'pt-0';
+        $bottom = $bottomMap[$paddingBottom] ?? 'pb-0';
 
         return trim("{$top} {$bottom}");
     }
@@ -74,6 +75,8 @@ class Padding
     }
 
     /**
+     * Bottom padding classes only (no pt-*).
+     *
      * @param array<string, mixed>|null $component
      */
     public static function getBottomPaddingClassesOnly(?array $component = null): string
@@ -89,14 +92,14 @@ class Padding
     private static function getTopPaddingClass(string $size): string
     {
         $map = [
-            'none' => 'pt-section-mobile lg:pt-zero',
-            'flush' => 'pt-zero lg:pt-zero',
-            'sm' => 'pt-section-mobile lg:pt-section-inner-sm',
-            'md' => 'pt-section-mobile lg:pt-section-inner-md',
-            'lg' => 'pt-section-mobile lg:pt-section-inner-lg',
+            'none' => 'pt-16 lg:pt-0',
+            'flush' => 'pt-0 lg:pt-0',
+            'sm' => 'pt-16 lg:pt-8',
+            'md' => 'pt-16 lg:pt-16',
+            'lg' => 'pt-16 lg:pt-32',
         ];
 
-        return $map[$size] ?? 'pt-section-mobile lg:pt-section-inner-md';
+        return $map[$size] ?? 'pt-16 lg:pt-16';
     }
 
     /**
@@ -105,13 +108,13 @@ class Padding
     private static function getBottomPaddingClass(string $size): string
     {
         $map = [
-            'none' => 'pb-section-mobile lg:pb-zero',
-            'flush' => 'pb-zero lg:pb-zero',
-            'sm' => 'pb-section-mobile lg:pb-section-inner-sm',
-            'md' => 'pb-section-mobile lg:pb-section-inner-md',
-            'lg' => 'pb-section-mobile lg:pb-section-inner-lg',
+            'none' => 'pb-16 lg:pb-0',
+            'flush' => 'pb-0 lg:pb-0',
+            'sm' => 'pb-16 lg:pb-8',
+            'md' => 'pb-16 lg:pb-16',
+            'lg' => 'pb-16 lg:pb-32',
         ];
 
-        return $map[$size] ?? 'pb-section-mobile lg:pb-section-inner-md';
+        return $map[$size] ?? 'pb-16 lg:pb-16';
     }
 }

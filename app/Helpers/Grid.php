@@ -3,8 +3,7 @@
 namespace App\Helpers;
 
 /**
- * Twelve-column layout helpers; class strings use `@theme` `--spacing-layout-*` tokens
- * from resources/styles/theme.tokens.css.
+ * Twelve-column layout helpers using Tailwind grid + default spacing scale utilities.
  */
 class Grid
 {
@@ -47,16 +46,14 @@ class Grid
     private static function getGridClassMappings(): array
     {
         if (self::$gridClassMappings === null) {
-            $px =
-                'col-span-12 px-layout-container-mobile sm:px-layout-container-sm lg:px-layout-container-lg';
             self::$gridClassMappings = [
-                6 => "{$px} lg:col-span-6 lg:col-start-4",
-                7 => "{$px} lg:col-span-7 lg:col-start-3",
-                8 => "{$px} lg:col-span-8 lg:col-start-3",
-                9 => "{$px} lg:col-span-9 lg:col-start-2",
-                10 => "{$px} lg:col-span-10 lg:col-start-2",
-                11 => "{$px} lg:col-span-11 lg:col-start-1",
-                12 => $px,
+                6 => 'col-span-12 px-5 sm:px-6 lg:col-span-6 lg:col-start-4 lg:px-16',
+                7 => 'col-span-12 px-5 sm:px-6 lg:col-span-7 lg:col-start-3 lg:px-16',
+                8 => 'col-span-12 px-5 sm:px-6 lg:col-span-8 lg:col-start-3 lg:px-16',
+                9 => 'col-span-12 px-5 sm:px-6 lg:col-span-9 lg:col-start-2 lg:px-16',
+                10 => 'col-span-12 px-5 sm:px-6 lg:col-span-10 lg:col-start-2 lg:px-16',
+                11 => 'col-span-12 px-5 sm:px-6 lg:col-span-11 lg:col-start-1 lg:px-16',
+                12 => 'col-span-12 px-5 sm:px-6 lg:px-16',
                 'full' => 'col-span-12 w-full min-w-0',
             ];
         }
@@ -96,7 +93,7 @@ class Grid
 
     public static function getMainGridContainerClasses(): string
     {
-        return 'grid grid-cols-12 gap-x-layout-grid-gap';
+        return 'grid grid-cols-12 gap-x-6';
     }
 
     /**
@@ -140,7 +137,7 @@ class Grid
 
         $columnClass = $columnMappings[$columns] ?? 'grid-cols-1';
 
-        return "grid gap-layout-internal-gap {$columnClass}";
+        return "grid gap-6 {$columnClass}";
     }
 
     /**

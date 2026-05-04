@@ -70,7 +70,7 @@ $templateResolver = TemplateResolver::getInstance();
           @include($templateName, ['component' => array_merge($component, ['_background_handled' => false])])
         @endif
       @else
-        <div class="col-span-12 lg:px-layout-container-lg">
+        <div class="col-span-12 lg:px-16">
           <div class="my-4 rounded border border-amber-400 bg-amber-50 px-4 py-3 text-amber-900 dark:bg-amber-950 dark:text-amber-100">
             <strong>{{ __('Missing component template', 'culvers') }}</strong>
             {{ sprintf(/* translators: %s layout key */ __('Layout "%s" has no matching Blade file.', 'culvers'), esc_html($layout)) }}
