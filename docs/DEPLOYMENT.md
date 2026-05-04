@@ -16,17 +16,21 @@ npm ci
 npm run build
 ```
 
-Commit **or** deploy artifacts:
+## What to ship
 
-- `vendor/` from Composer (production install uses `--no-dev` unless you need Pint/PHPStan on the server)
-- Built assets from `npm run build`: WordPress prefers `dist/css/app.css` and `dist/js/app.js`. The same command mirrors CSS to root `app.css` and `css/app.css`, and JS to `js/app.js`.
-- Commit root `app.css` when you ship compiled CSS without `dist/` on the server (see `.gitignore`).
-- Do **not** deploy `node_modules/`.
+- **`vendor/`** from Composer when the theme relies on autoloaded PHP (production often uses `--no-dev`; keep dev tools only where you run Pint/PHPStan).
+- **Compiled front-end assets** from `npm run build`:
+  - **Primary:** `dist/css/app.css`, `dist/js/app.js` (created locally; **`dist/`** is gitignored).
+  - **Mirrors:** same build copies CSS to **`app.css`** and **`css/app.css`**, and JS to **`js/app.js`**. WordPress loads **`dist/`** first when present, otherwise those paths (`app/setup.php`).
+  - Commit **`app.css`** at the theme root so installs without running Node still get styles.
+- Do **not** deploy **`node_modules/`**.
+
+More detail on the toolchain lives in [docs/README.md](README.md).
 
 ## Configuration
 
-- Define `CULVERS_USE_VITE` only in local/staging when running `npm run dev` for HMR (see `app/setup.php`).
-- Sync ACF field groups via `acf-json/` when moving between environments.
+- Define **`CULVERS_USE_VITE`** only where you run **`npm run dev`** with Vite HMR (`app/setup.php`).
+- Sync ACF field groups via **`acf-json/`** between environments.
 
 ## Verification before merge
 
@@ -35,4 +39,4 @@ npm run verify
 composer analyse
 ```
 
-CI runs these on push/PR when GitHub Actions is enabled.
+GitHub Actions runs **`npm run verify`** and **`composer analyse`** on push/PR when enabled.

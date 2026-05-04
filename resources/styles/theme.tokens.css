@@ -5,6 +5,7 @@
  * PHP reads `--color-*` hex lines for ACF colour pickers — keep hex `#RRGGBB` or `#RGB`.
  * Padding / grid helpers use `--spacing-*` names defined here (Tailwind spacing utilities).
  * @see \App\Config\ThemeTokens::colorHexPalette()
+ * Theme docs: docs/README.md
  */
 
 @theme {
