@@ -1,0 +1,21 @@
+@import 'tailwindcss';
+@plugin "@tailwindcss/typography";
+
+@import '@splidejs/splide/css';
+
+@source "../views/**/*.blade.php";
+@source "../../app/**/*.php";
+@source "../scripts/**/*.{js,mjs}";
+
+@theme {
+  --font-sans: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+  --color-brand-600: #0284c7;
+  --color-brand-700: #0369a1;
+  --shadow-card: 0 24px 64px rgb(0 0 0 / 0.35);
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+  }
+}

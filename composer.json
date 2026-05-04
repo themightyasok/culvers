@@ -1,0 +1,32 @@
+{
+  "name": "culvers/theme",
+  "version": "1.0.0",
+  "type": "wordpress-theme",
+  "license": "MIT",
+  "description": "Culvers WordPress theme — Blade templates, Tailwind v4, Vite, ACF Builder",
+  "require": {
+    "php": ">=8.1",
+    "stoutlogic/acf-builder": "^1.12"
+  },
+  "require-dev": {
+    "laravel/pint": "^1.13",
+    "squizlabs/php_codesniffer": "^4.0"
+  },
+  "scripts": {
+    "lint": "phpcs app --standard=.phpcs.xml",
+    "lint:fix": "phpcbf app --standard=.phpcs.xml",
+    "format": "pint app"
+  },
+  "autoload": {
+    "psr-4": {
+      "App\\": "app/"
+    }
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "preferred-install": "dist",
+    "sort-packages": true
+  },
+  "minimum-stability": "stable",
+  "prefer-stable": true
+}

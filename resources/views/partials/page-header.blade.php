@@ -1,0 +1,14 @@
+@php
+  if (! isset($title) || trim((string) $title) === '') {
+      $title = \App\culvers_document_title();
+  }
+  $pageTitle = trim((string) $title);
+@endphp
+
+@if(! is_front_page() && $pageTitle !== '')
+  <div class="page-header mx-auto w-full max-w-[1800px] px-4 pb-6 pt-10 md:px-8 md:pb-8 md:pt-12">
+    <h1 class="m-0 text-4xl font-semibold tracking-tight text-white md:text-5xl">
+      {!! esc_html($pageTitle) !!}
+    </h1>
+  </div>
+@endif
