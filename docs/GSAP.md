@@ -1,6 +1,6 @@
 # GSAP and ScrollSmoother
 
-See [docs/README.md](README.md) for general theme docs.
+See [README.md](README.md) in this folder for general theme docs.
 
 This theme bundles **GSAP** from npm (MIT-licensed core). Some features use **ScrollSmoother** and other plugins loaded from the same package structure.
 

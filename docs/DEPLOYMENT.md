@@ -36,7 +36,6 @@ More detail on the toolchain lives in [docs/README.md](README.md).
 
 ```bash
 npm run verify
-composer analyse
 ```
 
-GitHub Actions runs **`npm run verify`** and **`composer analyse`** on push/PR when enabled.
+That command includes PHPStan (`composer analyse`). GitHub Actions runs **`npm audit`**, **`composer audit`**, then **`npm run verify`** on push/PR when enabled.
