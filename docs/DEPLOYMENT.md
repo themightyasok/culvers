@@ -19,8 +19,9 @@ npm run build
 Commit **or** deploy artifacts:
 
 - `vendor/` from Composer (production install uses `--no-dev` unless you need Pint/PHPStan on the server)
-- `css/app.css`, `js/app.js`, and root `app.css` from `npm run build`
-- Do **not** deploy `node_modules/`
+- Built assets from `npm run build`: WordPress prefers `dist/css/app.css` and `dist/js/app.js`. The same command mirrors CSS to root `app.css` and `css/app.css`, and JS to `js/app.js`.
+- Commit root `app.css` when you ship compiled CSS without `dist/` on the server (see `.gitignore`).
+- Do **not** deploy `node_modules/`.
 
 ## Configuration
 

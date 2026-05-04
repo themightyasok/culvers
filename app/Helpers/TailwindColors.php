@@ -7,13 +7,19 @@ namespace App\Helpers;
 use App\Config\ThemeTokens;
 
 /**
- * CMS-facing Tailwind utility class maps. Hex palettes come from {@see ThemeTokens}
- * (parsed from `resources/styles/theme.tokens.css` — the `@theme` source of truth).
+ * CMS-facing Tailwind utility class maps driven by {@see ThemeTokens} (`theme.tokens.css` `@theme`).
  * Content scanning and plugins live in `tailwind.config.js`.
  */
 class TailwindColors
 {
     public const DEFAULT_BODY_TEXT_TONE = 'text-zinc-100';
+
+    /**
+     * Body / prose tone presets — subset of slugs that must exist in `@theme`.
+     *
+     * @var array<int, string>
+     */
+    private const BODY_TEXT_SLUGS = ['zinc-100', 'white', 'zinc-300', 'text-muted', 'brand-500'];
 
     /**
      * @return array<int, string>
@@ -29,46 +35,20 @@ class TailwindColors
     }
 
     /**
+     * Text / background utility choices derived from `--color-*` in theme.tokens.css.
+     *
      * @return array<string, string>
      */
     public static function getColorChoices(string $type = 'text'): array
     {
-        $text = [
-            'text-zinc-50' => __('Near white', 'culvers'),
-            'text-zinc-100' => __('Light gray', 'culvers'),
-            'text-zinc-300' => __('Soft gray', 'culvers'),
-            'text-zinc-400' => __('Muted gray', 'culvers'),
-            'text-zinc-600' => __('Mid gray', 'culvers'),
-            'text-zinc-900' => __('Near black', 'culvers'),
-            'text-white' => __('White', 'culvers'),
-            'text-black' => __('Black', 'culvers'),
-            'text-brand-600' => __('Brand', 'culvers'),
-            'text-brand-500' => __('Brand bright', 'culvers'),
-            'text-text' => __('Semantic — primary text', 'culvers'),
-            'text-text-muted' => __('Semantic — muted text', 'culvers'),
-        ];
-
-        $background = [
-            'bg-zinc-50' => __('Zinc 50', 'culvers'),
-            'bg-zinc-900' => __('Zinc 900', 'culvers'),
-            'bg-zinc-950' => __('Zinc 950', 'culvers'),
-            'bg-canvas' => __('Semantic — canvas', 'culvers'),
-            'bg-surface' => __('Semantic — surface', 'culvers'),
-            'bg-surface-muted' => __('Semantic — muted surface', 'culvers'),
-            'bg-white' => __('White', 'culvers'),
-            'bg-black' => __('Black', 'culvers'),
-            'bg-brand-600' => __('Brand', 'culvers'),
-            'bg-brand-700' => __('Brand deep', 'culvers'),
-        ];
-
         $prefix = $type === 'text' ? 'text-' : 'bg-';
-        $source = $type === 'background' ? $background : $text;
+        $slugHex = ThemeTokens::colorSlugHexMap();
+        $choices = [];
+        foreach ($slugHex as $slug => $_hex) {
+            $choices[$prefix . $slug] = self::colorChoiceLabel($slug);
+        }
 
-        return array_filter(
-            $source,
-            static fn (string $class) => str_starts_with($class, $prefix),
-            ARRAY_FILTER_USE_KEY
-        );
+        return $choices;
     }
 
     /**
@@ -76,19 +56,58 @@ class TailwindColors
      */
     public static function bodyTextToneChoices(): array
     {
-        return [
-            self::DEFAULT_BODY_TEXT_TONE => __('Default (light gray)', 'culvers'),
-            'text-white' => __('White', 'culvers'),
-            'text-zinc-300' => __('Soft gray', 'culvers'),
-            'text-text-muted' => __('Semantic muted', 'culvers'),
-            'text-brand-500' => __('Brand bright', 'culvers'),
-        ];
+        $slugHex = ThemeTokens::colorSlugHexMap();
+        $choices = [];
+        foreach (self::BODY_TEXT_SLUGS as $slug) {
+            if (isset($slugHex[$slug])) {
+                $choices['text-' . $slug] = self::bodyToneLabel($slug);
+            }
+        }
+
+        return $choices;
     }
 
     public static function sanitizeBodyTextTone(?string $value): string
     {
-        $allowed = array_keys(self::bodyTextToneChoices());
+        $choices = self::bodyTextToneChoices();
+        $keys = array_keys($choices);
+        if ($keys !== [] && in_array($value, $keys, true)) {
+            return $value;
+        }
+        if (isset($choices[self::DEFAULT_BODY_TEXT_TONE])) {
+            return self::DEFAULT_BODY_TEXT_TONE;
+        }
 
-        return in_array($value, $allowed, true) ? $value : self::DEFAULT_BODY_TEXT_TONE;
+        return $keys[0] ?? self::DEFAULT_BODY_TEXT_TONE;
+    }
+
+    private static function colorChoiceLabel(string $slug): string
+    {
+        return match ($slug) {
+            'canvas' => __('Semantic — canvas', 'culvers'),
+            'surface' => __('Semantic — surface', 'culvers'),
+            'surface-muted' => __('Semantic — muted surface', 'culvers'),
+            'border-subtle' => __('Semantic — border subtle', 'culvers'),
+            'text' => __('Semantic — primary text', 'culvers'),
+            'text-muted' => __('Semantic — muted text', 'culvers'),
+            'brand-500' => __('Brand bright', 'culvers'),
+            'brand-600' => __('Brand', 'culvers'),
+            'brand-700' => __('Brand deep', 'culvers'),
+            'white' => __('White', 'culvers'),
+            'black' => __('Black', 'culvers'),
+            default => ucwords(str_replace('-', ' ', $slug)),
+        };
+    }
+
+    private static function bodyToneLabel(string $slug): string
+    {
+        return match ($slug) {
+            'zinc-100' => __('Default (light gray)', 'culvers'),
+            'white' => __('White', 'culvers'),
+            'zinc-300' => __('Soft gray', 'culvers'),
+            'text-muted' => __('Semantic muted', 'culvers'),
+            'brand-500' => __('Brand bright', 'culvers'),
+            default => ucwords(str_replace('-', ' ', $slug)),
+        };
     }
 }

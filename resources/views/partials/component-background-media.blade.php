@@ -6,6 +6,7 @@ $videoEmbedUrl = is_string($backgroundData['video_embed_url'] ?? null) ? (string
 $videoPoster = $backgroundData['video_poster'] ?? null;
 $overlayStyles = (string) ($backgroundData['overlay_styles'] ?? '');
 $centeredCardStyles = (string) ($backgroundData['centered_card_styles'] ?? '');
+$centeredCardClasses = trim((string) ($backgroundData['centered_card_classes'] ?? ''));
 $parallaxEnabled = (bool) ($backgroundData['parallax'] ?? true);
 $backgroundType = (string) ($backgroundData['type'] ?? '');
 $backgroundParallaxAxis = isset($backgroundParallaxAxis) && $backgroundParallaxAxis === 'x' ? 'x' : 'y';
@@ -14,8 +15,8 @@ $backgroundParallaxAxis = isset($backgroundParallaxAxis) && $backgroundParallaxA
 @if(!empty($image) && is_array($image) && isset($image['url']))
     @if($backgroundType === 'image_centered')
         <div class="pointer-events-none absolute inset-0 z-0" aria-hidden="true">
-            <div class="shadow-card mx-auto h-[80%] w-full max-w-[500px] overflow-hidden rounded-2xl"
-                 style="{{ $centeredCardStyles }}">
+            <div class="shadow-card mx-auto h-[80%] w-full max-w-[500px] overflow-hidden rounded-2xl {{ $centeredCardClasses }}"
+                 @if($centeredCardStyles !== '') style="{{ $centeredCardStyles }}" @endif>
                 <img class="h-full w-full object-cover"
                      @if($parallaxEnabled) data-background-parallax-image="1" data-background-parallax-axis="{{ $backgroundParallaxAxis }}" @endif
                      src="{{ esc_url($image['url']) }}"

@@ -3,10 +3,8 @@
 namespace App\Helpers;
 
 /**
- * Padding helpers
- *
- * Converts ACF padding choices (none, sm, md, lg) to Tailwind classes.
- * Used for component top/bottom padding and header/subheader element spacing.
+ * Converts ACF padding choices to Tailwind classes backed by `@theme` `--spacing-*` tokens
+ * in resources/styles/theme.tokens.css.
  */
 class Padding
 {
@@ -28,41 +26,34 @@ class Padding
     }
 
     /**
-     * Get Tailwind padding classes for header, subheader, or body text elements.
-     * Same padding scale applied consistently to all three.
-     *
      * @param string $paddingTop    none|small|medium|large|large-xl
      * @param string $paddingBottom none|small|medium|large|large-xl
-     * @return string Space-separated Tailwind classes
      */
     public static function getHeaderSubheaderPaddingClasses(string $paddingTop, string $paddingBottom): string
     {
         $topMap = [
-            'none' => 'pt-0',
-            'small' => 'pt-2',
-            'medium' => 'pt-4',
-            'large' => 'pt-6',
-            'large-xl' => 'pt-8',
+            'none' => 'pt-zero',
+            'small' => 'pt-heading-xs',
+            'medium' => 'pt-heading-sm',
+            'large' => 'pt-heading-md',
+            'large-xl' => 'pt-heading-xl',
         ];
         $bottomMap = [
-            'none' => 'pb-0',
-            'small' => 'pb-2',
-            'medium' => 'pb-4',
-            'large' => 'pb-6',
-            'large-xl' => 'pb-8',
+            'none' => 'pb-zero',
+            'small' => 'pb-heading-xs',
+            'medium' => 'pb-heading-sm',
+            'large' => 'pb-heading-md',
+            'large-xl' => 'pb-heading-xl',
         ];
 
-        $top = $topMap[$paddingTop] ?? 'pt-0';
-        $bottom = $bottomMap[$paddingBottom] ?? 'pb-0';
+        $top = $topMap[$paddingTop] ?? 'pt-zero';
+        $bottom = $bottomMap[$paddingBottom] ?? 'pb-zero';
 
         return trim("{$top} {$bottom}");
     }
 
     /**
-     * Get padding classes
-     *
      * @param array<string, mixed>|null $component Component array
-     * @return string Padding classes
      */
     public static function getClasses(?array $component = null): string
     {
@@ -83,10 +74,6 @@ class Padding
     }
 
     /**
-     * Bottom padding classes only (no pt-*). Used when top spacing is handled elsewhere
-     * (e.g. pricing: pricing-calculator.css wrapper offset) so ACF "flush" top
-     * cannot emit pt-0 / lg:pt-0 and wipe that spacing.
-     *
      * @param array<string, mixed>|null $component
      */
     public static function getBottomPaddingClassesOnly(?array $component = null): string
@@ -97,42 +84,34 @@ class Padding
     }
 
     /**
-     * Get top padding class from size key.
-     *
-     * @param string $size none|sm|md|lg
-     * @return string Tailwind pt-* class string
+     * @param string $size none|flush|sm|md|lg
      */
     private static function getTopPaddingClass(string $size): string
     {
         $map = [
-            // Mobile baseline: always 64px top spacing. Desktop follows ACF setting.
-            'none' => 'pt-16 lg:pt-0',
-            'flush' => 'pt-0 lg:pt-0',
-            'sm' => 'pt-16 lg:pt-8',
-            'md' => 'pt-16 lg:pt-16',
-            'lg' => 'pt-16 lg:pt-32',
+            'none' => 'pt-section-mobile lg:pt-zero',
+            'flush' => 'pt-zero lg:pt-zero',
+            'sm' => 'pt-section-mobile lg:pt-section-inner-sm',
+            'md' => 'pt-section-mobile lg:pt-section-inner-md',
+            'lg' => 'pt-section-mobile lg:pt-section-inner-lg',
         ];
 
-        return $map[$size] ?? 'pt-16 lg:pt-16';
+        return $map[$size] ?? 'pt-section-mobile lg:pt-section-inner-md';
     }
 
     /**
-     * Get bottom padding class from size key.
-     *
-     * @param string $size none|sm|md|lg
-     * @return string Tailwind pb-* class string
+     * @param string $size none|flush|sm|md|lg
      */
     private static function getBottomPaddingClass(string $size): string
     {
         $map = [
-            // Mobile baseline: always 64px bottom spacing. Desktop follows ACF setting.
-            'none' => 'pb-16 lg:pb-0',
-            'flush' => 'pb-0 lg:pb-0',
-            'sm' => 'pb-16 lg:pb-8',
-            'md' => 'pb-16 lg:pb-16',
-            'lg' => 'pb-16 lg:pb-32',
+            'none' => 'pb-section-mobile lg:pb-zero',
+            'flush' => 'pb-zero lg:pb-zero',
+            'sm' => 'pb-section-mobile lg:pb-section-inner-sm',
+            'md' => 'pb-section-mobile lg:pb-section-inner-md',
+            'lg' => 'pb-section-mobile lg:pb-section-inner-lg',
         ];
 
-        return $map[$size] ?? 'pb-16 lg:pb-16';
+        return $map[$size] ?? 'pb-section-mobile lg:pb-section-inner-md';
     }
 }

@@ -7,8 +7,8 @@ export default defineConfig({
   base: '/wp-content/themes/culvers/',
   plugins: [tailwindcss()],
   build: {
-    outDir: resolve(__dirname, '.'),
-    emptyOutDir: false,
+    outDir: resolve(__dirname, 'dist'),
+    emptyOutDir: true,
     manifest: false,
     cssCodeSplit: false,
     minify: process.env.NODE_ENV === 'production' ? 'esbuild' : false,

@@ -5,12 +5,42 @@ declare(strict_types=1);
 namespace App\Config;
 
 /**
- * Reads Tailwind v4 `@theme` colour tokens from CSS so PHP (ACF palettes, sanitizers) stays aligned
- * with the canonical token file. Scan paths and plugins belong in `tailwind.config.js` (`@config`).
+ * Reads Tailwind v4 `@theme` tokens from CSS so PHP (ACF palettes, sanitizers, Background)
+ * stays aligned with the canonical token file. Scan paths and plugins belong in `tailwind.config.js`.
  */
 final class ThemeTokens
 {
     private const RELATIVE_PATH = '/resources/styles/theme.tokens.css';
+
+    /**
+     * Prefer these slugs when multiple `--color-*` entries share the same hex (e.g. canvas vs zinc-950).
+     *
+     * @var array<int, string>
+     */
+    private const COLOR_SLUG_PRIORITY = [
+        'canvas',
+        'surface',
+        'surface-muted',
+        'border-subtle',
+        'text',
+        'text-muted',
+        'brand-500',
+        'brand-600',
+        'brand-700',
+        'white',
+        'black',
+        'zinc-50',
+        'zinc-100',
+        'zinc-200',
+        'zinc-300',
+        'zinc-400',
+        'zinc-500',
+        'zinc-600',
+        'zinc-700',
+        'zinc-800',
+        'zinc-900',
+        'zinc-950',
+    ];
 
     /**
      * Fallback when theme CSS is unreadable (e.g. mis-deployed files).
@@ -31,9 +61,62 @@ final class ThemeTokens
         '#f4f4f5',
     ];
 
+    /** @var array{slugHex: array<string, string>, hexPalette: array<int, string>}|null */
+    private static ?array $colorCache = null;
+
     public static function absolutePath(): string
     {
         return get_template_directory() . self::RELATIVE_PATH;
+    }
+
+    /**
+     * Normalize `#rgb` / `#rrggbb` (any case) to lowercase `#rrggbb`, or '' if invalid.
+     */
+    public static function normalizeColorHex(string $hex): string
+    {
+        return self::normalizeHex($hex);
+    }
+
+    /**
+     * Each `--color-{slug}` from theme.tokens.css → normalized hex. Order follows file order;
+     * first declaration wins if the same slug appears twice.
+     *
+     * @return array<string, string>
+     */
+    public static function colorSlugHexMap(): array
+    {
+        return self::parsedColors()['slugHex'];
+    }
+
+    /**
+     * Map a normalized `#rrggbb` to a theme colour slug for utilities like `bg-{slug}`.
+     */
+    public static function slugForNormalizedHex(string $normalizedHex): ?string
+    {
+        $normalizedHex = self::normalizeHex($normalizedHex);
+        if ($normalizedHex === '') {
+            return null;
+        }
+
+        $slugHex = self::colorSlugHexMap();
+        $matches = [];
+        foreach ($slugHex as $slug => $hex) {
+            if ($hex === $normalizedHex) {
+                $matches[] = $slug;
+            }
+        }
+
+        if ($matches === []) {
+            return null;
+        }
+
+        foreach (self::COLOR_SLUG_PRIORITY as $preferred) {
+            if (in_array($preferred, $matches, true)) {
+                return $preferred;
+            }
+        }
+
+        return $matches[0];
     }
 
     /**
@@ -43,45 +126,70 @@ final class ThemeTokens
      */
     public static function colorHexPalette(): array
     {
-        static $cached = null;
-
-        if ($cached !== null) {
-            return $cached;
-        }
-
-        $path = self::absolutePath();
-        if (! is_readable($path)) {
-            return $cached = self::sortedUnique(self::FALLBACK_HEX);
-        }
-
-        $css = file_get_contents($path);
-        if (! is_string($css) || $css === '') {
-            return $cached = self::sortedUnique(self::FALLBACK_HEX);
-        }
-
-        preg_match_all(
-            '/--color-[a-zA-Z0-9-]+\s*:\s*(#[0-9A-Fa-f]{3}|#[0-9A-Fa-f]{6})\s*;/',
-            $css,
-            $matches
-        );
-        $hexes = [];
-        foreach ($matches[1] as $raw) {
-            $norm = self::normalizeHex((string) $raw);
-            if ($norm !== '') {
-                $hexes[] = $norm;
-            }
-        }
-
-        if ($hexes === []) {
-            return $cached = self::sortedUnique(self::FALLBACK_HEX);
-        }
-
-        return $cached = self::sortedUnique($hexes);
+        return self::parsedColors()['hexPalette'];
     }
 
     public static function paletteStringForAcf(): string
     {
         return implode(',', self::colorHexPalette());
+    }
+
+    /**
+     * @return array{slugHex: array<string, string>, hexPalette: array<int, string>}
+     */
+    private static function parsedColors(): array
+    {
+        if (self::$colorCache !== null) {
+            return self::$colorCache;
+        }
+
+        $path = self::absolutePath();
+        if (! is_readable($path)) {
+            return self::$colorCache = [
+                'slugHex' => [],
+                'hexPalette' => self::sortedUnique(self::FALLBACK_HEX),
+            ];
+        }
+
+        $css = file_get_contents($path);
+        if (! is_string($css) || $css === '') {
+            return self::$colorCache = [
+                'slugHex' => [],
+                'hexPalette' => self::sortedUnique(self::FALLBACK_HEX),
+            ];
+        }
+
+        preg_match_all(
+            '/--color-([a-zA-Z0-9-]+)\s*:\s*(#[0-9A-Fa-f]{3}|#[0-9A-Fa-f]{6})\s*;/',
+            $css,
+            $set,
+            PREG_SET_ORDER
+        );
+
+        $slugHex = [];
+        foreach ($set as $row) {
+            $slug = $row[1];
+            $norm = self::normalizeHex((string) $row[2]);
+            if ($norm === '') {
+                continue;
+            }
+            if (! isset($slugHex[$slug])) {
+                $slugHex[$slug] = $norm;
+            }
+        }
+
+        $hexes = array_values($slugHex);
+        if ($hexes === []) {
+            return self::$colorCache = [
+                'slugHex' => [],
+                'hexPalette' => self::sortedUnique(self::FALLBACK_HEX),
+            ];
+        }
+
+        return self::$colorCache = [
+            'slugHex' => $slugHex,
+            'hexPalette' => self::sortedUnique($hexes),
+        ];
     }
 
     /**

@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vite build && cp css/app.css app.css",
+    "build": "vite build && mkdir -p css js && cp dist/css/app.css css/app.css && cp dist/css/app.css app.css && cp dist/js/app.js js/app.js",
     "watch": "vite build --watch",
     "lint": "npm run lint:js",
     "lint:js": "eslint \"resources/scripts/**/*.js\"",

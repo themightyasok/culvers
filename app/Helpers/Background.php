@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use App\Config\ThemeTokens;
 use App\Constants\ComponentTypes;
 
 /**
@@ -31,6 +32,7 @@ class Background
             'video_poster' => null,
             'overlay_styles' => '',
             'centered_card_styles' => '',
+            'centered_card_classes' => '',
             'parallax' => true,
         ];
     }
@@ -65,9 +67,12 @@ class Background
      *   image: array|null,
      *   video: array|null,
      *   video_embed_url: string|null,
-     *   video_poster: array|null,
-     *   overlay_styles: string
-     * } Background data array
+ *   video_poster: array|null,
+ *   overlay_styles: string,
+ *   centered_card_styles: string,
+ *   centered_card_classes: string,
+ *   parallax: bool
+ * } Background data array
      */
     public static function process(array $component): array
     {
@@ -86,6 +91,7 @@ class Background
             'video_poster' => null,
             'overlay_styles' => '',
             'centered_card_styles' => '',
+            'centered_card_classes' => '',
             'parallax' => true,
         ];
 
@@ -93,11 +99,14 @@ class Background
             case 'color':
                 $color = $component['background_color'] ?? '';
                 if ($color) {
-                    // Validate and sanitize color
-                    $sanitizedColor = \App\Helpers\Sanitizer::color($color);
+                    $sanitizedColor = \App\Helpers\Sanitizer::color((string) $color);
                     if ($sanitizedColor) {
-                        // Use inline style for custom colors (more reliable than Tailwind arbitrary values)
-                        $result['styles'] = 'background-color: ' . esc_attr($sanitizedColor) . ';';
+                        $themeClass = self::themeSolidBackgroundClass($sanitizedColor);
+                        if ($themeClass !== null) {
+                            $result['classes'] = $themeClass;
+                        } else {
+                            $result['styles'] = 'background-color: ' . esc_attr($sanitizedColor) . ';';
+                        }
                     }
                 }
                 break;
@@ -135,7 +144,13 @@ class Background
                     $cardColor = (string) ($component['background_image_color'] ?? '');
                     $sanitizedCardColor = \App\Helpers\Sanitizer::color($cardColor);
                     if ($sanitizedCardColor !== '') {
-                        $result['centered_card_styles'] = 'background-color: ' . esc_attr($sanitizedCardColor) . ';';
+                        $themeCardClass = self::themeSolidBackgroundClass($sanitizedCardColor);
+                        if ($themeCardClass !== null) {
+                            $result['centered_card_classes'] = $themeCardClass;
+                        } else {
+                            $result['centered_card_styles'] =
+                                'background-color: ' . esc_attr($sanitizedCardColor) . ';';
+                        }
                     }
                 }
                 $rawParallax = $component['background_parallax'] ?? true;
@@ -307,5 +322,24 @@ class Background
         }
 
         return $color;
+    }
+
+    /**
+     * When a sanitised colour matches `@theme` `--color-*`, use `bg-{slug}` instead of inline CSS.
+     */
+    private static function themeSolidBackgroundClass(string $sanitizedColor): ?string
+    {
+        if (! str_starts_with($sanitizedColor, '#')) {
+            return null;
+        }
+
+        $norm = ThemeTokens::normalizeColorHex($sanitizedColor);
+        if ($norm === '') {
+            return null;
+        }
+
+        $slug = ThemeTokens::slugForNormalizedHex($norm);
+
+        return $slug !== null ? 'bg-' . $slug : null;
     }
 }

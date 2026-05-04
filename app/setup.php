@@ -53,7 +53,10 @@ add_action('wp_enqueue_scripts', static function (): void {
     } else {
         $css_path = null;
         $css_uri = null;
-        if (file_exists($theme_path . '/css/app.css')) {
+        if (file_exists($theme_path . '/dist/css/app.css')) {
+            $css_path = $theme_path . '/dist/css/app.css';
+            $css_uri = $theme_uri . '/dist/css/app.css';
+        } elseif (file_exists($theme_path . '/css/app.css')) {
             $css_path = $theme_path . '/css/app.css';
             $css_uri = $theme_uri . '/css/app.css';
         } elseif (file_exists($theme_path . '/app.css')) {
@@ -65,7 +68,17 @@ add_action('wp_enqueue_scripts', static function (): void {
             wp_enqueue_style('culvers-styles', $css_uri, [], $ver ?: $version);
         }
 
-        if (file_exists($theme_path . '/js/app.js')) {
+        if (file_exists($theme_path . '/dist/js/app.js')) {
+            $js_path = $theme_path . '/dist/js/app.js';
+            $ver_js = $is_local_runtime ? (string) time() : (string) filemtime($js_path);
+            wp_enqueue_script(
+                'culvers-scripts',
+                $theme_uri . '/dist/js/app.js',
+                [],
+                $ver_js ?: $version,
+                true
+            );
+        } elseif (file_exists($theme_path . '/js/app.js')) {
             $js_path = $theme_path . '/js/app.js';
             $ver_js = $is_local_runtime ? (string) time() : (string) filemtime($js_path);
             wp_enqueue_script('culvers-scripts', $theme_uri . '/js/app.js', [], $ver_js ?: $version, true);
@@ -117,7 +130,9 @@ add_action('after_setup_theme', static function (): void {
 
     add_theme_support('editor-styles');
     $td = get_template_directory();
-    if (file_exists($td . '/css/app.css')) {
+    if (file_exists($td . '/dist/css/app.css')) {
+        add_editor_style('dist/css/app.css');
+    } elseif (file_exists($td . '/css/app.css')) {
         add_editor_style('css/app.css');
     } elseif (file_exists($td . '/app.css')) {
         add_editor_style('app.css');
