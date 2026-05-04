@@ -22,6 +22,20 @@
 - **`tailwind.config.js`** — `content` globs (Blade, PHP under `app/`, scripts under `resources/scripts`) and the **`@tailwindcss/typography`** plugin. Colour scales live in CSS `@theme`, not in this file.
 - **PHP helpers** (`TailwindColors`, `Padding`, `Grid`, `Background`) map ACF fields to utility classes; see each class for specifics.
 
+## Local (WP Engine) — terminal without touching wp-config
+
+Local runs MySQL bound to `127.0.0.1` **and** a site socket; PHP inside Local uses `PHPRC` so WordPress can connect with `DB_HOST` left as `localhost`. Host-side `wp` / Homebrew PHP usually fail because they do not see that environment.
+
+Use the helper (matches your WordPress root to a site in `~/Library/Application Support/Local/sites.json`, then sets `MYSQL_HOME`, `PHPRC`, and PATH like Local’s **Open site shell**):
+
+```bash
+cd wp-content/themes/culvers   # or stay anywhere and pass absolute path to script
+./scripts/with-local-env.sh wp theme list --status=active
+./scripts/with-local-env.sh mysql local -e "SHOW TABLES;"
+```
+
+Start the site in Local once so `~/Library/Application Support/Local/run/<site-id>/conf/mysql/my.cnf` exists. Requires Local.app at `/Applications/Local.app`.
+
 ## Quality checks
 
 - **`npm run verify`** — ESLint, Prettier check, production build, **`composer lint`** (PHPCS), **`composer analyse`** (PHPStan).
