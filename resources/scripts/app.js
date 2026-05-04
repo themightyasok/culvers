@@ -1,9 +1,15 @@
 import '../styles/app.css';
 
+import Alpine from 'alpinejs';
+
+import registerSiteHeaderAlpine from './alpine/site-header.js';
 import gsapManager from './utils/gsap-manager.js';
 import fullScreenScrollManager from './utils/full-screen-scroll-manager.js';
 import backgroundParallaxManager from './utils/background-parallax-manager.js';
 import initSplideCarousels from './utils/splide-init.js';
+
+registerSiteHeaderAlpine(Alpine);
+Alpine.start();
 
 gsapManager.init();
 fullScreenScrollManager.init();

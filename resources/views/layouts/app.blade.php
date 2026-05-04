@@ -14,12 +14,12 @@
 
     @include('sections.header')
 
-    <div class="h-16 lg:h-20" aria-hidden="true"></div>
+    <div class="min-h-[180px] md:min-h-[220px]" aria-hidden="true"></div>
 
     <div id="smooth-wrapper">
       <div id="smooth-content">
         <div id="app" class="min-h-screen">
-          <a class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-brand-600 focus:px-4 focus:py-2 focus:text-white"
+          <a class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-brand-500 focus:px-4 focus:py-2 focus:text-deep-moss"
              href="#main">
             {{ __('Skip to content', 'culvers') }}
           </a>

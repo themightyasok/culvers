@@ -1,0 +1,139 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Assets;
+
+use App\Nav\PrimaryNav;
+use App\Support\ViteDevProbe;
+
+/**
+ * Registers theme CSS/JS for the public front-end and the block editor.
+ *
+ * Vite HMR when {@see CULVERS_USE_VITE} is set and the dev server responds; otherwise
+ * built assets under `dist/` with fallbacks to `css/` / `js/` / root `app.css`.
+ */
+final class FrontendAssets
+{
+    private const SCRIPT_HANDLE = 'culvers-scripts';
+
+    private const STYLE_HANDLE = 'culvers-styles';
+
+    private static bool $deferMainScript = false;
+
+    public static function register(): void
+    {
+        add_action('wp_enqueue_scripts', [self::class, 'enqueueFront'], 100);
+        add_filter('script_loader_tag', [self::class, 'filterDeferMainScript'], 10, 2);
+        add_action('enqueue_block_editor_assets', [self::class, 'enqueueEditor'], 100);
+    }
+
+    public static function enqueueFront(): void
+    {
+        $theme_uri = get_template_directory_uri();
+        $theme_path = get_template_directory();
+        $version = (string) wp_get_theme()->get('Version');
+
+        /** @var array<string, mixed> $theme_script_extra */
+        $theme_script_extra = [
+            'restSearchUrl' => rest_url('wp/v2/search'),
+            'megaDefaults' => PrimaryNav::megaPreviewDefaults('primary_navigation'),
+        ];
+
+        $use_vite_hmr = defined('CULVERS_USE_VITE') && constant('CULVERS_USE_VITE');
+        $environment_type = function_exists('wp_get_environment_type') ? wp_get_environment_type() : 'production';
+        $home_host = (string) wp_parse_url(home_url('/'), PHP_URL_HOST);
+        $is_local_host = in_array($home_host, ['localhost', '127.0.0.1', '::1'], true)
+            || (bool) preg_match('/(\.local|\.test)$/', $home_host);
+        $is_local_runtime = (defined('WP_DEBUG') && WP_DEBUG)
+            || in_array($environment_type, ['local', 'development'], true)
+            || $is_local_host;
+
+        $vite_dev_url = 'http://localhost:5173';
+        $vite_running = false;
+
+        if ($use_vite_hmr && $is_local_runtime) {
+            $vite_probe_url = $vite_dev_url . '/wp-content/themes/culvers/resources/styles/app.css';
+            $vite_running = ViteDevProbe::localUrlOk($vite_probe_url);
+        }
+
+        self::$deferMainScript = ! ($use_vite_hmr && $vite_running);
+
+        if ($use_vite_hmr && $vite_running) {
+            wp_enqueue_style(
+                self::STYLE_HANDLE,
+                $vite_dev_url . '/wp-content/themes/culvers/resources/styles/app.css',
+                [],
+                (string) time()
+            );
+            wp_enqueue_script(
+                self::SCRIPT_HANDLE,
+                $vite_dev_url . '/wp-content/themes/culvers/resources/scripts/app.js',
+                [],
+                (string) time(),
+                true
+            );
+            wp_localize_script(self::SCRIPT_HANDLE, 'culversTheme', $theme_script_extra);
+
+            return;
+        }
+
+        $css_path = null;
+        $css_uri = null;
+        if (file_exists($theme_path . '/dist/css/app.css')) {
+            $css_path = $theme_path . '/dist/css/app.css';
+            $css_uri = $theme_uri . '/dist/css/app.css';
+        } elseif (file_exists($theme_path . '/css/app.css')) {
+            $css_path = $theme_path . '/css/app.css';
+            $css_uri = $theme_uri . '/css/app.css';
+        } elseif (file_exists($theme_path . '/app.css')) {
+            $css_path = $theme_path . '/app.css';
+            $css_uri = $theme_uri . '/app.css';
+        }
+        if ($css_path !== null && $css_uri !== null) {
+            $ver = $is_local_runtime ? (string) time() : (string) filemtime($css_path);
+            wp_enqueue_style(self::STYLE_HANDLE, $css_uri, [], $ver ?: $version);
+        }
+
+        if (file_exists($theme_path . '/dist/js/app.js')) {
+            $js_path = $theme_path . '/dist/js/app.js';
+            $ver_js = $is_local_runtime ? (string) time() : (string) filemtime($js_path);
+            wp_enqueue_script(
+                self::SCRIPT_HANDLE,
+                $theme_uri . '/dist/js/app.js',
+                [],
+                $ver_js ?: $version,
+                true
+            );
+            wp_localize_script(self::SCRIPT_HANDLE, 'culversTheme', $theme_script_extra);
+        } elseif (file_exists($theme_path . '/js/app.js')) {
+            $js_path = $theme_path . '/js/app.js';
+            $ver_js = $is_local_runtime ? (string) time() : (string) filemtime($js_path);
+            wp_enqueue_script(self::SCRIPT_HANDLE, $theme_uri . '/js/app.js', [], $ver_js ?: $version, true);
+            wp_localize_script(self::SCRIPT_HANDLE, 'culversTheme', $theme_script_extra);
+        }
+    }
+
+    /**
+     * Defer the main bundle in production so it does not block parsing (skipped for Vite HMR).
+     */
+    public static function filterDeferMainScript(string $tag, string $handle): string
+    {
+        if (! self::$deferMainScript || $handle !== self::SCRIPT_HANDLE) {
+            return $tag;
+        }
+
+        return str_replace(' src', ' defer src', $tag);
+    }
+
+    public static function enqueueEditor(): void
+    {
+        $theme_uri = get_template_directory_uri();
+        $theme_path = get_template_directory();
+        $version = (string) wp_get_theme()->get('Version');
+
+        if (file_exists($theme_path . '/resources/styles/editor.css')) {
+            wp_enqueue_style('culvers-editor', $theme_uri . '/resources/styles/editor.css', [], $version);
+        }
+    }
+}

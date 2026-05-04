@@ -3,7 +3,8 @@
 ## Runtime requirements
 
 - PHP **8.1+**, WordPress **6.4+**
-- Plugins: **WP BladeOne**, **ACF Pro** (flexible content)
+- Plugins: **Advanced Custom Fields Pro**, **WP BladeOne** (match versions/source from your reference install — copied from Lickd Lander into `wp-content/plugins/` here).
+- Rendering falls back to theme-bundled **`eftec/bladeone`** when WP BladeOne is disabled.
 - Node **≥20.19** (see `package.json` `engines` and `.nvmrc`) for building assets
 
 ## Build once per release

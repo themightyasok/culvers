@@ -12,18 +12,20 @@ if (! file_exists($composer = __DIR__ . '/vendor/autoload.php')) {
 
 require $composer;
 
+require_once __DIR__ . '/app/blade-instance.php';
+
 if (! function_exists('blade')) {
     /**
      * @param array<string, mixed> $data
      */
     function blade(string $template, array $data = []): string
     {
-        if (! function_exists('wp_bladeone')) {
-            return '';
-        }
-
         try {
-            return wp_bladeone()->run($template, $data);
+            if (function_exists('wp_bladeone')) {
+                return (string) wp_bladeone()->run($template, $data);
+            }
+
+            return culvers_blade()->run($template, $data);
         } catch (\Throwable $e) {
             error_log('[culvers][blade] ' . $e->getMessage());
 
@@ -38,12 +40,13 @@ if (! function_exists('blade_view')) {
      */
     function blade_view(string $template, array $data = []): void
     {
-        if (! function_exists('wp_bladeone')) {
-            return;
-        }
-
         try {
-            echo wp_bladeone()->run($template, $data);
+            if (function_exists('wp_bladeone')) {
+                echo wp_bladeone()->run($template, $data);
+                return;
+            }
+
+            echo culvers_blade()->run($template, $data);
         } catch (\Throwable $e) {
             error_log('[culvers][blade_view] ' . $e->getMessage());
             if (defined('WP_DEBUG') && WP_DEBUG) {
@@ -72,9 +75,12 @@ foreach (['setup', 'filters'] as $file) {
 }
 
 add_action('wp', static function (): void {
-    if (! function_exists('wp_bladeone')) {
+    $title = \App\culvers_document_title();
+    if (function_exists('wp_bladeone')) {
+        wp_bladeone()->share('title', $title);
+
         return;
     }
 
-    wp_bladeone()->share('title', \App\culvers_document_title());
+    culvers_blade()->share('title', $title);
 });

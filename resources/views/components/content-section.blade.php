@@ -9,7 +9,7 @@ $grid = $c['_grid_classes'] ?? '';
 
 <section class="{{ esc_attr(trim($grid . ' ' . $padding)) }} relative" data-component-root>
   @if(! empty($c['heading']))
-    <h2 class="mb-4 text-3xl font-semibold tracking-tight text-text md:text-4xl">
+    <h2 class="mb-4 font-heading font-semibold tracking-tight text-text text-2xl md:text-3xl">
       {{ esc_html($c['heading']) }}
     </h2>
   @endif

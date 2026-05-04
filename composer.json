@@ -6,6 +6,7 @@
   "description": "Culvers WordPress theme — Blade templates, Tailwind v4, Vite, ACF Builder",
   "require": {
     "php": ">=8.1",
+    "eftec/bladeone": "^4.9",
     "stoutlogic/acf-builder": "^1.12"
   },
   "require-dev": {

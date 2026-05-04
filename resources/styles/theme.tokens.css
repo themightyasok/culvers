@@ -3,19 +3,80 @@
  * Content paths + typography plugin live in `tailwind.config.js` (`@config` from app.css).
  *
  * PHP reads `--color-*` hex lines for ACF colour pickers — keep hex `#RRGGBB` or `#RGB`.
- * Spacing for layouts uses Tailwind’s default scale utilities (`pt-16`, `gap-x-6`, …).
+ * Typography ramp is remapped to Culver Square — see docs/TYPOGRAPHY-SCALE.md.
+ *
  * @see \App\Config\ThemeTokens::colorHexPalette()
- * Theme docs: docs/README.md
  */
 
 @theme {
-  /* Typography */
-  --font-sans: ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji';
+  /* Headings ≈ Canela • body ≈ Halyard — swap for licensed names when you have the files */
+  --font-heading: 'Cormorant Garamond Variable', Georgia, 'Times New Roman', serif;
+  --font-sans: 'DM Sans Variable', ui-sans-serif, system-ui, sans-serif;
 
-  /* Brand (sky scale aligned with prior Culvers defaults) */
-  --color-brand-500: #0ea5e9;
-  --color-brand-600: #0284c7;
-  --color-brand-700: #0369a1;
+  /* Culver Square — colours from Figma variables (Developer Release file) */
+  --color-glowleaf: #d4ff50;
+  --color-deep-moss: #2e301e;
+  --color-faded-olive: #4f5438;
+  --color-dustleaf: #8b8c67;
+  --color-light-brown: #beb6aa;
+  --color-light-cream: #fdfcf3;
+  --color-off-white: #ededeb;
+  --color-lighter-cream: #fffefa;
+  /* Brand scale maps to Glowleaf / Deep Moss (utilities like bg-brand-500) */
+  --color-brand-500: #d4ff50;
+  --color-brand-600: #d4ff50;
+  --color-brand-700: #2e301e;
+
+  /*
+   * Type scale — even px steps only; merges per docs/TYPOGRAPHY-SCALE.md (Figma audit).
+   * Tailwind: text-micro, text-xs … text-9xl (no parallel semantic names).
+   */
+  --text-micro: 0.625rem;
+  --text-micro--line-height: 24px;
+
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 24px;
+
+  --text-sm: 1rem;
+  --text-sm--line-height: 24px;
+
+  --text-base: 1.125rem;
+  --text-base--line-height: 26px;
+
+  --text-lg: 1.25rem;
+  --text-lg--line-height: 1.3;
+
+  --text-xl: 1.5rem;
+  --text-xl--line-height: 30px;
+
+  --text-2xl: 2rem;
+  --text-2xl--line-height: 1.1;
+
+  --text-3xl: 2.5rem;
+  --text-3xl--line-height: 1.1;
+
+  --text-4xl: 3rem;
+  --text-4xl--line-height: 1.1;
+
+  --text-5xl: 4rem;
+  --text-5xl--line-height: 1.2;
+
+  --text-6xl: 5.25rem;
+  --text-6xl--line-height: 1;
+
+  --text-7xl: 6rem;
+  --text-7xl--line-height: 1;
+
+  --text-8xl: 7rem;
+  --text-8xl--line-height: 1;
+
+  --text-9xl: 8rem;
+  --text-9xl--line-height: 1;
+
+  /* Letter-spacing tied to named roles (still single ramp for font-size). */
+  --tracking-label: 0.0625rem;
+  --tracking-kicker: 0.25rem;
+  --tracking-cta: 0.04026875rem;
 
   /* Zinc scale — explicit so CMS palette + PHP parser stay in sync */
   --color-zinc-50: #fafafa;

@@ -13,9 +13,17 @@
         { "slug": "border-subtle", "color": "#3f3f46", "name": "Border subtle" },
         { "slug": "text", "color": "#fafafa", "name": "Text" },
         { "slug": "text-muted", "color": "#a1a1aa", "name": "Text muted" },
-        { "slug": "brand-500", "color": "#0ea5e9", "name": "Brand 500" },
-        { "slug": "brand-600", "color": "#0284c7", "name": "Brand 600" },
-        { "slug": "brand-700", "color": "#0369a1", "name": "Brand 700" },
+        { "slug": "glowleaf", "color": "#d4ff50", "name": "Glowleaf" },
+        { "slug": "deep-moss", "color": "#2e301e", "name": "Deep moss" },
+        { "slug": "faded-olive", "color": "#4f5438", "name": "Faded olive" },
+        { "slug": "dustleaf", "color": "#8b8c67", "name": "Dustleaf" },
+        { "slug": "light-brown", "color": "#beb6aa", "name": "Light brown" },
+        { "slug": "light-cream", "color": "#fdfcf3", "name": "Light cream" },
+        { "slug": "off-white", "color": "#ededeb", "name": "Off white" },
+        { "slug": "lighter-cream", "color": "#fffefa", "name": "Lighter cream" },
+        { "slug": "brand-500", "color": "#d4ff50", "name": "Brand 500" },
+        { "slug": "brand-600", "color": "#d4ff50", "name": "Brand 600" },
+        { "slug": "brand-700", "color": "#2e301e", "name": "Brand 700" },
         { "slug": "white", "color": "#ffffff", "name": "White" },
         { "slug": "black", "color": "#000000", "name": "Black" }
       ]
@@ -23,9 +31,14 @@
     "typography": {
       "fontFamilies": [
         {
-          "fontFamily": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+          "fontFamily": "\"DM Sans Variable\", ui-sans-serif, system-ui, sans-serif",
           "slug": "sans",
-          "name": "Sans"
+          "name": "Body"
+        },
+        {
+          "fontFamily": "\"Cormorant Garamond Variable\", Georgia, serif",
+          "slug": "heading",
+          "name": "Heading"
         }
       ]
     }
@@ -37,6 +50,13 @@
     },
     "typography": {
       "fontFamily": "var(--wp--preset--font-family--sans)"
+    },
+    "elements": {
+      "heading": {
+        "typography": {
+          "fontFamily": "var(--wp--preset--font-family--heading)"
+        }
+      }
     }
   }
 }

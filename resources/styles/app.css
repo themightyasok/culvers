@@ -1,6 +1,124 @@
 @import 'tailwindcss';
 @config '../../tailwind.config.js';
 
+@import '@fontsource-variable/dm-sans/index.css';
+@import '@fontsource-variable/cormorant-garamond/index.css';
+
 @import './theme.tokens.css';
 
 @import '@splidejs/splide/css';
+
+@layer base {
+  /*
+   * Global anchors: no underline (hover included). Only footer “View on map” + email use
+   * `.footer-link--persistent-underline` — see components layer.
+   */
+  :where(a:not(.footer-link--persistent-underline)) {
+    text-decoration-line: none;
+    text-decoration-thickness: from-font;
+  }
+
+  :where(a:not(.footer-link--persistent-underline)):focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  [x-cloak] {
+    display: none !important;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading text-balance;
+  }
+}
+
+@layer components {
+  .prose :where(h1, h2, h3, h4, h5, h6) {
+    @apply font-heading;
+  }
+
+  /* Typography plugin defaults underline links; keep site-wide “no underline” rule. */
+  .prose :where(a:not(.footer-link--persistent-underline)) {
+    text-decoration-line: none;
+    text-underline-offset: unset;
+  }
+
+  .prose :where(a:not(.footer-link--persistent-underline)):hover {
+    text-decoration-line: none;
+  }
+
+  /*
+   * Buttons — Figma “Button” / “Button Hover” (59:4936, 59:4934): same fills;
+   * hover widens horizontal padding only (25.773px → 34px). Radius matches full pill (`rounded-full`).
+   */
+  .btn {
+    @apply inline-flex shrink-0 cursor-pointer items-center justify-center rounded-full border border-transparent font-sans text-xs font-semibold leading-[30px] whitespace-nowrap uppercase tracking-cta antialiased transition-[padding,background-color,color,border-color] duration-150 ease-out;
+  }
+
+  .btn:focus-visible {
+    @apply outline outline-2 outline-offset-2 outline-deep-moss;
+  }
+
+  .btn:disabled,
+  .btn[aria-disabled='true'] {
+    @apply cursor-not-allowed opacity-50;
+  }
+
+  .btn-primary {
+    @apply bg-brand-500 px-[25.773px] py-[7.732px] text-deep-moss hover:px-[34px];
+  }
+
+  /*
+   * Outline — same geometry as primary; use on busy imagery (design file shows filled pill only).
+   */
+  .btn-outline {
+    @apply border-glowleaf bg-transparent px-[25.773px] py-[7.732px] text-glowleaf hover:bg-brand-500 hover:px-[34px] hover:text-deep-moss;
+  }
+
+  /* Alpine toggles classes on `<body>`; keep here (Tailwind breakpoints, one source of truth). */
+  body.mobile-nav-open,
+  body.mega-open {
+    @apply overflow-hidden lg:overflow-auto;
+  }
+
+  /* Footer — subtle diamond/grid over olive (pattern only; colours from Blade `.site-footer__columns`). */
+  .site-footer__columns::before {
+    content: '';
+    @apply pointer-events-none absolute inset-0 z-0 opacity-[0.055];
+    background-image:
+      linear-gradient(
+        135deg,
+        rgb(255 255 255 / 0.22) 12%,
+        transparent 12.5%,
+        transparent 50%,
+        rgb(255 255 255 / 0.12) 50.5%,
+        rgb(255 255 255 / 0.12) 62%,
+        transparent 62.5%,
+        transparent
+      ),
+      linear-gradient(
+        45deg,
+        transparent 38%,
+        rgb(255 255 255 / 0.08) 38.5%,
+        rgb(255 255 255 / 0.08) 50%,
+        transparent 50.5%
+      );
+    background-size: 28px 28px;
+  }
+
+  /* Always-on underline — footer map link + email only (see global anchor rules above). */
+  .footer-link--persistent-underline {
+    @apply underline decoration-glowleaf underline-offset-4;
+  }
+
+  .footer-link--persistent-underline:hover,
+  .footer-link--persistent-underline:focus-visible {
+    @apply decoration-lighter-cream;
+  }
+}

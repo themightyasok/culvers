@@ -18,6 +18,14 @@ final class ThemeTokens
      * @var array<int, string>
      */
     private const COLOR_SLUG_PRIORITY = [
+        'glowleaf',
+        'deep-moss',
+        'faded-olive',
+        'dustleaf',
+        'light-brown',
+        'light-cream',
+        'off-white',
+        'lighter-cream',
         'canvas',
         'surface',
         'surface-muted',
@@ -48,9 +56,14 @@ final class ThemeTokens
      * @var array<int, string>
      */
     private const FALLBACK_HEX = [
-        '#0284c7',
-        '#0369a1',
-        '#0ea5e9',
+        '#d4ff50',
+        '#2e301e',
+        '#4f5438',
+        '#8b8c67',
+        '#beb6aa',
+        '#fdfcf3',
+        '#ededeb',
+        '#fffefa',
         '#09090b',
         '#18181b',
         '#27272a',

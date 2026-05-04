@@ -1,16 +1,331 @@
-<footer class="border-t border-border-subtle bg-canvas py-12 text-sm text-text-muted">
-  <div class="mx-auto flex max-w-[1800px] flex-col gap-6 px-4 lg:flex-row lg:items-center lg:justify-between lg:px-8">
-    <p>&copy; {{ wp_date('Y') }} {{ get_bloginfo('name') }}</p>
-    @if(has_nav_menu('footer_navigation'))
-      <nav aria-label="{{ esc_attr__('Footer', 'culvers') }}">
-        {!! wp_nav_menu([
-          'theme_location' => 'footer_navigation',
-          'container' => false,
-          'menu_class' => 'flex flex-wrap gap-4',
-          'fallback_cb' => false,
-          'echo' => false,
-        ]) !!}
-      </nav>
-    @endif
+@php
+  use App\Customizer\FooterCustomizer;
+
+  $newsletterImgId = (int) get_theme_mod(FooterCustomizer::MOD_NEWSLETTER_IMAGE_ID, 0);
+  $newsletterAction = FooterCustomizer::newsletterFormAction();
+  // Appearance → Customize (social URLs).
+  $instagramUrl = get_theme_mod('culvers_instagram_url', '');
+  $facebookUrl = get_theme_mod('culvers_facebook_url', '');
+
+  // FooterCustomizer string helpers + map link URL.
+  $mapUrl = FooterCustomizer::gettingHereMapUrl();
+  $contactEmail = FooterCustomizer::contactEmail();
+
+  $hasFooterMenuWhatsHere = has_nav_menu('footer_column_one');
+  $hasFooterMenuUsefulLinks = has_nav_menu('footer_column_two');
+
+  $newsletterFallbackRel = 'resources/images/footer-newsletter-placeholder.jpg';
+  $newsletterFallbackAbs = get_template_directory() . '/' . $newsletterFallbackRel;
+  $newsletterFallbackUri = is_readable($newsletterFallbackAbs)
+      ? get_theme_file_uri($newsletterFallbackRel)
+      : '';
+@endphp
+
+{{--
+  Site footer — Culver Square
+
+  Naming:
+    site-footer          Outer landmark (`site-footer__*` for major bands).
+    footer-nav           WP menu output in columns (`footer-nav__list`, modifiers).
+    footer-link--*       Shared link treatments (e.g. persistent underline).
+
+  Layout:
+    `site-footer__columns` uses gutter padding, then `max-w-[1440px]` inner — pair with
+    `mega-nav__bar-gutter` / `mega-nav__bar-row` in the header.
+
+  Sections (top → bottom): newsletter band → four columns → wordmark → legal row → accent strip.
+--}}
+<footer class="site-footer">
+  <div
+    class="site-footer__columns relative bg-faded-olive px-4 pb-4 pt-8 text-light-cream md:px-[46px] md:pb-5 md:pt-10 lg:pb-5 lg:pt-12">
+    <div class="relative z-[1] mx-auto w-full max-w-[1440px]">
+      {{-- Pull up into content area (light bg) and overlap olive below — matches Figma straddle. --}}
+      <section
+        class="footer-newsletter-band relative z-[2] -mt-16 -mb-14 md:-mt-28 md:-mb-16 lg:-mt-36 lg:-mb-20"
+        aria-labelledby="footer-newsletter-heading">
+        <div
+          class="footer-newsletter relative min-h-[300px] overflow-hidden rounded-lg md:min-h-[380px] md:rounded-[10px] lg:min-h-[420px]">
+          <div class="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]" aria-hidden="true">
+            @if($newsletterImgId > 0)
+              {!! wp_get_attachment_image(
+                  $newsletterImgId,
+                  'large',
+                  false,
+                  [
+                      'class' => 'absolute inset-0 size-full object-cover object-center',
+                      'sizes' => '(max-width: 768px) 100vw, 1440px',
+                  ]
+              ) !!}
+            @elseif($newsletterFallbackUri !== '')
+              <img
+                src="{{ esc_url($newsletterFallbackUri) }}"
+                alt=""
+                class="absolute inset-0 size-full object-cover object-center"
+                loading="lazy"
+                decoding="async" />
+            @else
+              <div class="absolute inset-0 bg-deep-moss"></div>
+            @endif
+          </div>
+
+          {{-- Mobile: headline above field. Desktop: right column — headline then field. --}}
+          <div class="relative z-10 grid grid-cols-1 gap-8 px-6 py-11 md:grid-cols-2 md:items-center md:gap-10 md:px-12 md:py-14 lg:gap-14 lg:px-14 lg:py-16">
+            <div class="hidden min-h-[80px] md:block" aria-hidden="true"></div>
+            <div class="flex max-w-full flex-col gap-6 md:max-w-[26rem] md:justify-self-end lg:max-w-[28rem]">
+              <div class="flex flex-col gap-4">
+                <h2
+                  id="footer-newsletter-heading"
+                  class="font-heading text-2xl leading-[1.15] text-lighter-cream md:text-right md:text-3xl lg:text-[34px] lg:leading-[1.12]">
+                  {{ esc_html(FooterCustomizer::newsletterHeading()) }}
+                </h2>
+                @php $newsBody = FooterCustomizer::newsletterBody(); @endphp
+                @if($newsBody !== '')
+                  <p class="font-sans text-base leading-relaxed text-light-cream/88 md:text-right md:text-[17px]">
+                    {{ esc_html($newsBody) }}
+                  </p>
+                @endif
+              </div>
+
+              <form
+                class="footer-newsletter-form w-full md:max-w-none"
+                method="post"
+                action="{{ esc_url($newsletterAction ?? '#') }}"
+                @if($newsletterAction === null) onsubmit="return false;" @endif>
+                <label class="sr-only" for="footer-newsletter-email">{{ esc_html(FooterCustomizer::newsletterPlaceholder()) }}</label>
+                <div
+                  class="flex items-center gap-2 rounded-full border border-white/35 bg-deep-moss/80 px-5 py-2.5 md:px-6 md:py-3">
+                  <input
+                    id="footer-newsletter-email"
+                    name="EMAIL"
+                    type="email"
+                    autocomplete="email"
+                    placeholder="{{ esc_attr(FooterCustomizer::newsletterPlaceholder()) }}"
+                    @if($newsletterAction === null) disabled @endif
+                    class="min-h-[44px] flex-1 border-0 bg-transparent font-sans text-xs font-semibold uppercase tracking-[0.14em] text-lighter-cream placeholder:text-light-cream/50 placeholder:uppercase focus:ring-0 focus:outline-none md:text-sm" />
+                  <button
+                    type="submit"
+                    class="inline-flex size-10 shrink-0 items-center justify-center rounded-full text-white transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
+                    aria-label="{{ esc_attr__('Subscribe', 'culvers') }}"
+                    @if($newsletterAction === null) disabled aria-disabled="true" @endif>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path
+                        d="M5 12h14m-6-6 6 6-6 6"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    </svg>
+                  </button>
+                </div>
+                @if($newsletterAction === null && current_user_can('customize'))
+                  <p class="mt-3 font-sans text-xs text-light-cream/55 md:text-right">
+                    {{ __('Connect your ESP URL under Appearance → Customize → Culver Square footer.', 'culvers') }}
+                  </p>
+                @endif
+              </form>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {{-- Column menus (What’s Here / Useful Links + address blocks). --}}
+      <div class="relative z-[1] grid grid-cols-1 gap-12 pt-16 sm:grid-cols-2 sm:pt-[4.5rem] lg:grid-cols-4 lg:gap-10 lg:pt-24 xl:gap-14">
+        <div class="flex flex-col">
+          <h2 class="font-heading text-2xl text-lighter-cream">
+            {{ esc_html(FooterCustomizer::gettingHereTitle()) }}
+          </h2>
+          @php $addr = FooterCustomizer::gettingHereAddress(); @endphp
+          @if($addr !== '')
+            <div class="mt-6 font-sans text-sm leading-relaxed text-light-cream/85">
+              {!! nl2br(esc_html($addr)) !!}
+            </div>
+          @endif
+          @if($mapUrl !== '')
+            <a
+              class="footer-link--persistent-underline mt-6 inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-[0.14em] text-glowleaf transition-colors hover:text-lighter-cream"
+              href="{{ esc_url($mapUrl) }}"
+              @if(str_starts_with($mapUrl, 'http')) target="_blank" rel="noopener noreferrer" @endif>
+              {{ esc_html(FooterCustomizer::gettingHereMapLabel()) }}
+              <span aria-hidden="true">›</span>
+            </a>
+          @endif
+        </div>
+
+        <div class="flex flex-col">
+          <h2 class="font-heading text-2xl text-lighter-cream">
+            {{ esc_html(FooterCustomizer::contactTitle()) }}
+          </h2>
+          @php $phone = FooterCustomizer::contactPhone(); @endphp
+          @if($phone !== '')
+            <a
+              class="mt-6 block font-sans text-sm text-light-cream/85 transition-colors hover:text-glowleaf"
+              href="{{ esc_url('tel:' . preg_replace('/\s+/', '', $phone)) }}">
+              {{ esc_html($phone) }}
+            </a>
+          @endif
+          @if($contactEmail !== '')
+            <a
+              class="footer-link--persistent-underline mt-2 block w-fit font-sans text-sm text-glowleaf transition-colors hover:text-lighter-cream"
+              href="{{ esc_url('mailto:' . $contactEmail) }}">
+              {{ esc_html($contactEmail) }}
+            </a>
+          @endif
+          @if(($instagramUrl !== '' && $instagramUrl !== '#') || ($facebookUrl !== '' && $facebookUrl !== '#'))
+            <div class="mt-8 flex flex-wrap gap-x-8 gap-y-3">
+              @if($instagramUrl !== '' && $instagramUrl !== '#')
+                <a
+                  class="inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-label text-light-cream/90 transition-colors hover:text-glowleaf"
+                  href="{{ esc_url($instagramUrl) }}"
+                  rel="noopener noreferrer">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.3" />
+                    <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.3" />
+                    <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" />
+                  </svg>
+                  {{ __('Instagram', 'culvers') }}
+                </a>
+              @endif
+              @if($facebookUrl !== '' && $facebookUrl !== '#')
+                <a
+                  class="inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-label text-light-cream/90 transition-colors hover:text-glowleaf"
+                  href="{{ esc_url($facebookUrl) }}"
+                  rel="noopener noreferrer">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path
+                      d="M14 8h3V5h-3c-2.2 0-4 1.8-4 4v2H7v3h3v8h3v-8h3.2l.8-3H13v-2c0-.6.4-1 1-1Z" />
+                  </svg>
+                  {{ __('Facebook', 'culvers') }}
+                </a>
+              @endif
+            </div>
+          @endif
+        </div>
+
+        <div class="flex flex-col">
+          <h2 class="font-heading text-2xl text-lighter-cream">
+            {{ esc_html(FooterCustomizer::columnOneTitle()) }}
+          </h2>
+          @if($hasFooterMenuWhatsHere)
+            <nav class="footer-nav footer-nav--col mt-6" aria-label="{{ esc_attr(FooterCustomizer::columnOneTitle()) }}">
+              {!! wp_nav_menu([
+                  'theme_location' => 'footer_column_one',
+                  'container' => false,
+                  'menu_class' => 'footer-nav__list flex flex-col gap-3',
+                  'fallback_cb' => false,
+                  'depth' => 1,
+                  'echo' => false,
+              ]) !!}
+            </nav>
+          @elseif(current_user_can('edit_theme_options'))
+            <p class="mt-6 font-sans text-sm text-light-cream/55">
+              {{ __('Assign a menu to Appearance → Menus → “Footer column 3 — What’s Here”.', 'culvers') }}
+            </p>
+          @endif
+        </div>
+
+        <div class="flex flex-col">
+          <h2 class="font-heading text-2xl text-lighter-cream">
+            {{ esc_html(FooterCustomizer::columnTwoTitle()) }}
+          </h2>
+          @if($hasFooterMenuUsefulLinks)
+            <nav class="footer-nav footer-nav--col mt-6" aria-label="{{ esc_attr(FooterCustomizer::columnTwoTitle()) }}">
+              {!! wp_nav_menu([
+                  'theme_location' => 'footer_column_two',
+                  'container' => false,
+                  'menu_class' => 'footer-nav__list flex flex-col gap-3',
+                  'fallback_cb' => false,
+                  'depth' => 1,
+                  'echo' => false,
+              ]) !!}
+            </nav>
+          @elseif(current_user_can('edit_theme_options'))
+            <p class="mt-6 font-sans text-sm text-light-cream/55">
+              {{ __('Assign a menu to Appearance → Menus → “Footer column 4 — Useful Links”.', 'culvers') }}
+            </p>
+          @endif
+        </div>
+      </div>
+
+      {{-- Wordmark (matches header logo hook naming via site-footer__). --}}
+      <div
+        class="relative z-[1] mt-14 w-full md:mt-16 lg:mt-20 [&_img]:mx-auto [&_img]:block [&_img]:h-auto [&_img]:w-full [&_img]:max-h-[min(30vw,220px)] [&_img]:max-w-none [&_img]:object-contain [&_svg]:block [&_svg]:h-auto [&_svg]:w-full [&_svg]:max-h-[min(30vw,220px)] [&_svg]:max-w-none">
+        <a
+          class="site-footer__logo flex w-full justify-center text-glowleaf"
+          href="{{ esc_url(home_url('/')) }}"
+          rel="home"
+          aria-label="{{ esc_attr(get_bloginfo('name')) }}">
+          @if(has_custom_logo())
+            <span class="block w-full [&_img]:mx-auto [&_img]:block [&_img]:w-full [&_img]:max-w-none [&_img]:object-contain">
+              {!! get_custom_logo() !!}
+            </span>
+          @else
+            @include('partials.culver-square-logo', [
+                'class' => 'block w-full max-w-none text-glowleaf [&_svg]:block [&_svg]:h-auto [&_svg]:w-full [&_svg]:max-w-none',
+            ])
+          @endif
+        </a>
+      </div>
+
+      {{-- Rule above legal row — glowleaf like Figma dividers. --}}
+      <div class="footer-under-logo relative z-[1] mt-10 w-full border-t border-glowleaf md:mt-12">
+        <div
+          class="flex w-full flex-nowrap items-center justify-between gap-3 overflow-x-auto py-6 [-ms-overflow-style:none] [scrollbar-width:none] md:gap-6 md:py-7 [&::-webkit-scrollbar]:hidden">
+          <p class="shrink-0 whitespace-nowrap font-sans text-[10px] uppercase leading-none tracking-[0.08em] text-lighter-cream sm:text-[11px] md:text-micro">
+            &copy;
+            {{ esc_html(strtoupper((string) get_bloginfo('name'))) }}
+            {{ wp_date('Y') }}
+          </p>
+
+        @if(has_nav_menu('footer_brand_subnav'))
+          <nav class="min-w-0 shrink" aria-label="{{ esc_attr__('Legal', 'culvers') }}">
+            {!! wp_nav_menu([
+                'theme_location' => 'footer_brand_subnav',
+                'container' => false,
+                'menu_class' =>
+                    'footer-nav__list footer-nav__list--legal flex flex-nowrap items-center justify-center divide-x divide-glowleaf whitespace-nowrap font-sans text-[10px] uppercase leading-none tracking-[0.08em] text-lighter-cream sm:text-[11px] md:text-micro [&>li]:flex [&>li]:shrink-0 [&>li]:items-center [&>li>a]:inline-flex [&>li>a]:px-3 [&>li>a]:py-1 md:[&>li>a]:px-5',
+                'fallback_cb' => false,
+                'depth' => 1,
+                'echo' => false,
+            ]) !!}
+          </nav>
+        @else
+          <nav class="min-w-0 shrink" aria-label="{{ esc_attr__('Legal', 'culvers') }}">
+            <ul
+              class="footer-nav__list footer-nav__list--legal flex flex-nowrap items-center justify-center divide-x divide-glowleaf whitespace-nowrap font-sans text-[10px] uppercase leading-none tracking-[0.08em] text-lighter-cream sm:text-[11px] md:text-micro [&>li]:flex [&>li]:shrink-0 [&>li]:items-center [&>li>a]:inline-flex [&>li>a]:px-3 [&>li>a]:py-1 md:[&>li>a]:px-5">
+              <li class="list-none">
+                <a
+                  class="transition-colors hover:text-glowleaf focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"
+                  href="#">{{ __('Cookie Policy', 'culvers') }}</a>
+              </li>
+              <li class="list-none">
+                <a
+                  class="transition-colors hover:text-glowleaf focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"
+                  href="#">{{ __('Accessibility', 'culvers') }}</a>
+              </li>
+              <li class="list-none">
+                <a
+                  class="transition-colors hover:text-glowleaf focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"
+                  href="#">{{ __('Privacy Policy', 'culvers') }}</a>
+              </li>
+              <li class="list-none">
+                <a
+                  class="transition-colors hover:text-glowleaf focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"
+                  href="#">{{ __('Terms & Conditions', 'culvers') }}</a>
+              </li>
+            </ul>
+          </nav>
+        @endif
+
+        @php $credit = FooterCustomizer::siteCredit(); @endphp
+        @if($credit !== '')
+          <p class="shrink-0 whitespace-nowrap text-right font-sans text-[10px] uppercase leading-none tracking-[0.08em] text-lighter-cream sm:text-[11px] md:text-micro">
+            {{ esc_html(strtoupper($credit)) }}
+          </p>
+        @endif
+        </div>
+      </div>
+    </div>
   </div>
+  {{-- ~10–12px accent flush to viewport bottom (olive band pb reduced above). --}}
+  <div class="site-footer__accent h-[10px] w-full shrink-0 bg-glowleaf md:h-3" aria-hidden="true"></div>
 </footer>
