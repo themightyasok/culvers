@@ -1,5 +1,5 @@
 <!doctype html>
-<html {!! get_language_attributes() !!}>
+<html {!! get_language_attributes() !!} class="scroll-smooth motion-reduce:scroll-auto">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -9,7 +9,7 @@
     @endphp
   </head>
 
-  <body @php body_class('bg-canvas text-text antialiased'); @endphp>
+  <body @php body_class('bg-canvas text-text font-sans antialiased'); @endphp>
     @php wp_body_open(); @endphp
 
     @include('sections.header')

@@ -8,7 +8,8 @@ use App\Config\ThemeTokens;
 
 /**
  * CMS-facing Tailwind utility class maps. Hex palettes come from {@see ThemeTokens}
- * (parsed from resources/styles/theme.tokens.css — Tailwind v4 @theme source of truth).
+ * (parsed from `resources/styles/theme.tokens.css` — the `@theme` source of truth).
+ * Content scanning and plugins live in `tailwind.config.js`.
  */
 class TailwindColors
 {

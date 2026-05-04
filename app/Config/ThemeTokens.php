@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Config;
 
 /**
- * Reads Tailwind v4 `@theme` tokens from CSS so PHP (ACF palettes, sanitizers) stays aligned
- * with the CSS-first source of truth — no tailwind.config.js palette duplication.
+ * Reads Tailwind v4 `@theme` colour tokens from CSS so PHP (ACF palettes, sanitizers) stays aligned
+ * with the canonical token file. Scan paths and plugins belong in `tailwind.config.js` (`@config`).
  */
 final class ThemeTokens
 {

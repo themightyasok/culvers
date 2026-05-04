@@ -1,6 +1,8 @@
 /*
- * Tailwind v4 canonical tokens (@theme).
- * PHP reads `--color-*` hex lines for ACF colour pickers — keep hex format `#RRGGBB` or `#RGB`.
+ * Tailwind v4 design tokens (`@theme` — the supported place for theme variables).
+ * Content paths + typography plugin live in `tailwind.config.js` (`@config` from app.css).
+ *
+ * PHP reads `--color-*` hex lines for ACF colour pickers — keep hex `#RRGGBB` or `#RGB`.
  * @see \App\Config\ThemeTokens::colorHexPalette()
  */
 

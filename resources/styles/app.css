@@ -1,31 +1,6 @@
 @import 'tailwindcss';
+@config '../../tailwind.config.js';
+
 @import './theme.tokens.css';
-@plugin "@tailwindcss/typography";
 
 @import '@splidejs/splide/css';
-
-@source "../views/**/*.blade.php";
-@source "../../app/**/*.php";
-@source "../scripts/**/*.{js,mjs}";
-
-@layer base {
-  :root {
-    --motion-safe: 1;
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    :root {
-      --motion-safe: 0;
-    }
-
-    html {
-      scroll-behavior: auto;
-    }
-  }
-
-  body {
-    font-family: var(--font-sans);
-    background-color: var(--color-canvas);
-    color: var(--color-text);
-  }
-}
