@@ -36,6 +36,8 @@ cd wp-content/themes/culvers   # or stay anywhere and pass absolute path to scri
 
 Start the site in Local once so `~/Library/Application Support/Local/run/<site-id>/conf/mysql/my.cnf` exists. Requires Local.app at `/Applications/Local.app`.
 
+**HTTPS / pink SSL banner:** If Local’s **Trust** fails only for Culvers, macOS often still needs the router cert trusted in the **System** keychain (Keychain-only imports can remain “not trusted” for TLS). Run **`./scripts/trust-culvers-local-ssl.sh`** once — it uses **`sudo security add-trusted-cert`** and asks for your Mac password. Then quit and reopen the browser.
+
 ## Quality checks
 
 - **`npm run verify`** — ESLint, Prettier check, production build, **`composer lint`** (PHPCS), **`composer analyse`** (PHPStan).
