@@ -1,0 +1,44 @@
+name: Verify
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer:v2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: npm
+
+      - name: Composer install
+        run: composer install --no-interaction --prefer-dist
+
+      - name: npm ci
+        run: npm ci
+
+      - name: npm audit
+        run: npm audit --audit-level=high
+        continue-on-error: false
+
+      - name: Composer audit
+        run: composer audit
+
+      - name: Lint, format, build, PHP
+        run: npm run verify
+
+      - name: PHPStan
+        run: composer analyse

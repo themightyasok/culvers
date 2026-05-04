@@ -79,7 +79,7 @@ class Video
 
         if (stripos($candidate, '<iframe') !== false) {
             if (preg_match('/src=(["\'])(.*?)\1/i', $candidate, $matches) === 1) {
-                $candidate = trim((string) ($matches[2] ?? ''));
+                $candidate = trim((string) $matches[2]);
             }
         }
 
@@ -131,7 +131,7 @@ class Video
 
         if (stripos($candidate, '<iframe') !== false) {
             if (preg_match('/src=(["\'])(.*?)\1/i', $candidate, $matches) === 1) {
-                $candidate = trim((string) ($matches[2] ?? ''));
+                $candidate = trim((string) $matches[2]);
             }
         }
 

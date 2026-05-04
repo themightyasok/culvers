@@ -3,7 +3,7 @@
 @section('content')
   @include('partials.page-header')
 
-  <p class="mx-auto max-w-3xl px-4 text-lg text-zinc-300">
+  <p class="mx-auto max-w-3xl px-4 text-lg text-text-muted">
     {{ __('That page could not be found.', 'culvers') }}
   </p>
 

@@ -250,7 +250,7 @@ class GSAPManager {
       // Store the trigger for cleanup
       this.videoTriggers.set(videoId, videoTrigger);
       this.managedVideos.add(video);
-    } catch (error) {
+    } catch {
       // Fallback: just add to managed videos without ScrollTrigger
       this.managedVideos.add(video);
     }

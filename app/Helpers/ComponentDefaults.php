@@ -13,6 +13,7 @@ class ComponentDefaults
      */
     public static function get(string $layout): array
     {
+        /** @var array<string, array<string, mixed>> $defaults */
         $defaults = [
             // Add per-layout stubs as you create components, e.g. 'hero' => ['intro_align' => 'left'],
         ];

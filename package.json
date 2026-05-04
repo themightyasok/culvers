@@ -4,38 +4,44 @@
   "private": true,
   "description": "WordPress theme — BladeOne, Tailwind CSS v4, Vite, ACF flexible components",
   "type": "module",
+  "engines": {
+    "node": ">=20.19.0"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build && cp css/app.css app.css",
     "watch": "vite build --watch",
     "lint": "npm run lint:js",
-    "lint:js": "eslint resources/scripts --ext .js",
-    "lint:js:fix": "eslint resources/scripts --ext .js --fix",
+    "lint:js": "eslint \"resources/scripts/**/*.js\"",
+    "lint:js:fix": "eslint \"resources/scripts/**/*.js\" --fix",
     "format": "prettier --write \"resources/**/*.{js,css}\"",
     "format:check": "prettier --check \"resources/**/*.{js,css}\"",
-    "verify": "npm run lint && npm run format:check && npm run build && composer lint",
+    "verify": "npm run lint && npm run format:check && npm run build && composer lint && composer analyse",
     "prepare": "husky || true"
   },
   "dependencies": {
     "@splidejs/splide": "^4.1.4",
-    "gsap": "^3.13.0"
+    "gsap": "^3.15.0"
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.0",
     "@tailwindcss/typography": "^0.5.19",
-    "@tailwindcss/vite": "^4.1.11",
-    "eslint": "^8.57.1",
+    "@tailwindcss/vite": "^4.2.4",
+    "esbuild": "^0.28.0",
+    "eslint": "^10.3.0",
+    "globals": "^16.0.0",
     "husky": "^9.1.7",
-    "lint-staged": "^15.5.2",
+    "lint-staged": "^16.4.0",
     "prettier": "^3.5.3",
-    "tailwindcss": "^4.1.11",
-    "vite": "^6.3.5"
+    "tailwindcss": "^4.2.4",
+    "vite": "^8.0.10"
   },
   "lint-staged": {
     "resources/scripts/**/*.js": [
       "eslint --fix",
       "prettier --write"
     ],
-    "resources/**/*.{css}": [
+    "resources/**/*.css": [
       "prettier --write"
     ],
     "app/**/*.php": [

@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Helpers;
 
+use App\Config\ThemeTokens;
+
 /**
- * Maps CMS-facing colour choices to Tailwind utility classes.
- *
- * Palette keys should stay aligned with tokens in resources/styles/app.css (@theme).
+ * CMS-facing Tailwind utility class maps. Hex palettes come from {@see ThemeTokens}
+ * (parsed from resources/styles/theme.tokens.css — Tailwind v4 @theme source of truth).
  */
 class TailwindColors
 {
@@ -16,22 +19,12 @@ class TailwindColors
      */
     public static function getColorValues(): array
     {
-        return [
-            '#09090b',
-            '#18181b',
-            '#27272a',
-            '#3f3f46',
-            '#71717a',
-            '#fafafa',
-            '#f4f4f5',
-            '#0ea5e9',
-            '#0369a1',
-        ];
+        return ThemeTokens::colorHexPalette();
     }
 
     public static function getPaletteString(): string
     {
-        return implode(',', self::getColorValues());
+        return ThemeTokens::paletteStringForAcf();
     }
 
     /**
@@ -42,20 +35,29 @@ class TailwindColors
         $text = [
             'text-zinc-50' => __('Near white', 'culvers'),
             'text-zinc-100' => __('Light gray', 'culvers'),
-            'text-zinc-600' => __('Muted', 'culvers'),
+            'text-zinc-300' => __('Soft gray', 'culvers'),
+            'text-zinc-400' => __('Muted gray', 'culvers'),
+            'text-zinc-600' => __('Mid gray', 'culvers'),
             'text-zinc-900' => __('Near black', 'culvers'),
             'text-white' => __('White', 'culvers'),
             'text-black' => __('Black', 'culvers'),
             'text-brand-600' => __('Brand', 'culvers'),
+            'text-brand-500' => __('Brand bright', 'culvers'),
+            'text-text' => __('Semantic — primary text', 'culvers'),
+            'text-text-muted' => __('Semantic — muted text', 'culvers'),
         ];
 
         $background = [
-            'bg-zinc-50' => __('Light surface', 'culvers'),
-            'bg-zinc-900' => __('Dark surface', 'culvers'),
-            'bg-zinc-950' => __('Darker surface', 'culvers'),
+            'bg-zinc-50' => __('Zinc 50', 'culvers'),
+            'bg-zinc-900' => __('Zinc 900', 'culvers'),
+            'bg-zinc-950' => __('Zinc 950', 'culvers'),
+            'bg-canvas' => __('Semantic — canvas', 'culvers'),
+            'bg-surface' => __('Semantic — surface', 'culvers'),
+            'bg-surface-muted' => __('Semantic — muted surface', 'culvers'),
             'bg-white' => __('White', 'culvers'),
             'bg-black' => __('Black', 'culvers'),
             'bg-brand-600' => __('Brand', 'culvers'),
+            'bg-brand-700' => __('Brand deep', 'culvers'),
         ];
 
         $prefix = $type === 'text' ? 'text-' : 'bg-';
@@ -77,6 +79,8 @@ class TailwindColors
             self::DEFAULT_BODY_TEXT_TONE => __('Default (light gray)', 'culvers'),
             'text-white' => __('White', 'culvers'),
             'text-zinc-300' => __('Soft gray', 'culvers'),
+            'text-text-muted' => __('Semantic muted', 'culvers'),
+            'text-brand-500' => __('Brand bright', 'culvers'),
         ];
     }
 

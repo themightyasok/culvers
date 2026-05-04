@@ -41,13 +41,13 @@ add_action('wp_enqueue_scripts', static function (): void {
             'culvers-styles',
             $vite_dev_url . '/wp-content/themes/culvers/resources/styles/app.css',
             [],
-            time()
+            (string) time()
         );
         wp_enqueue_script(
             'culvers-scripts',
             $vite_dev_url . '/wp-content/themes/culvers/resources/scripts/app.js',
             [],
-            time(),
+            (string) time(),
             true
         );
     } else {

@@ -1,0 +1,31 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Call to an undefined method StoutLogic\\\\AcfBuilder\\\\FieldsBuilder\\:\\:addLayout\\(\\)\\.$#"
+			count: 1
+			path: app/ComponentRegistry.php
+
+		-
+			message: "#^Dead catch \\- Exception is never thrown in the try block\\.$#"
+			count: 2
+			path: app/ComponentRegistry.php
+
+		-
+			message: "#^Parameter \\#1 \\$flexibleContent of method App\\\\ComponentRegistry\\:\\:addComponentLayout\\(\\) expects StoutLogic\\\\AcfBuilder\\\\FieldsBuilder, StoutLogic\\\\AcfBuilder\\\\FlexibleContentBuilder given\\.$#"
+			count: 1
+			path: app/ComponentRegistry.php
+
+		-
+			message: "#^Parameter \\#1 \\$layout of method App\\\\ComponentRegistry\\:\\:addField\\(\\) expects StoutLogic\\\\AcfBuilder\\\\FieldsBuilder, StoutLogic\\\\AcfBuilder\\\\GroupBuilder given\\.$#"
+			count: 1
+			path: app/ComponentRegistry.php
+
+		-
+			message: "#^Parameter \\#1 \\$layout of method App\\\\ComponentRegistry\\:\\:addField\\(\\) expects StoutLogic\\\\AcfBuilder\\\\FieldsBuilder, StoutLogic\\\\AcfBuilder\\\\RepeaterBuilder given\\.$#"
+			count: 1
+			path: app/ComponentRegistry.php
+
+		-
+			message: "#^Function acf_add_local_field_group not found\\.$#"
+			count: 1
+			path: app/Fields.php

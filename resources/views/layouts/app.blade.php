@@ -9,7 +9,7 @@
     @endphp
   </head>
 
-  <body @php body_class('bg-zinc-950 text-zinc-100 antialiased'); @endphp>
+  <body @php body_class('bg-canvas text-text antialiased'); @endphp>
     @php wp_body_open(); @endphp
 
     @include('sections.header')

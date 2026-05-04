@@ -19,7 +19,6 @@ export function initSplideCarousels(root = document) {
       }
     }
 
-    // eslint-disable-next-line no-new
     const instance = new Splide(el, options);
     instance.mount();
     el.dataset.splideMounted = '1';

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://schemas.wp.org/trunk/theme.json",
+  "version": 3,
+  "settings": {
+    "appearanceTools": true,
+    "color": {
+      "defaultPalette": false,
+      "defaultGradients": false,
+      "palette": [
+        { "slug": "canvas", "color": "#09090b", "name": "Canvas" },
+        { "slug": "surface", "color": "#18181b", "name": "Surface" },
+        { "slug": "surface-muted", "color": "#27272a", "name": "Surface muted" },
+        { "slug": "border-subtle", "color": "#3f3f46", "name": "Border subtle" },
+        { "slug": "text", "color": "#fafafa", "name": "Text" },
+        { "slug": "text-muted", "color": "#a1a1aa", "name": "Text muted" },
+        { "slug": "brand-500", "color": "#0ea5e9", "name": "Brand 500" },
+        { "slug": "brand-600", "color": "#0284c7", "name": "Brand 600" },
+        { "slug": "brand-700", "color": "#0369a1", "name": "Brand 700" },
+        { "slug": "white", "color": "#ffffff", "name": "White" },
+        { "slug": "black", "color": "#000000", "name": "Black" }
+      ]
+    },
+    "typography": {
+      "fontFamilies": [
+        {
+          "fontFamily": "ui-sans-serif, system-ui, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\"",
+          "slug": "sans",
+          "name": "Sans"
+        }
+      ]
+    }
+  },
+  "styles": {
+    "color": {
+      "background": "var(--wp--preset--color--canvas)",
+      "text": "var(--wp--preset--color--text)"
+    },
+    "typography": {
+      "fontFamily": "var(--wp--preset--font-family--sans)"
+    }
+  }
+}
