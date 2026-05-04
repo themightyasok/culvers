@@ -10,19 +10,8 @@
 
 @layer base {
   /*
-   * Global anchors: no underline (hover included). Only footer “View on map” + email use
-   * `.footer-link--persistent-underline` — see components layer.
+   * Anchor underline + focus defaults live in tailwind.config.js (`culversThemePlugin`).
    */
-  :where(a:not(.footer-link--persistent-underline)) {
-    text-decoration-line: none;
-    text-decoration-thickness: from-font;
-  }
-
-  :where(a:not(.footer-link--persistent-underline)):focus-visible {
-    outline: 2px solid currentColor;
-    outline-offset: 3px;
-    border-radius: 2px;
-  }
 
   [x-cloak] {
     display: none !important;
@@ -43,15 +32,7 @@
     @apply font-heading;
   }
 
-  /* Typography plugin defaults underline links; keep site-wide “no underline” rule. */
-  .prose :where(a:not(.footer-link--persistent-underline)) {
-    text-decoration-line: none;
-    text-underline-offset: unset;
-  }
-
-  .prose :where(a:not(.footer-link--persistent-underline)):hover {
-    text-decoration-line: none;
-  }
+  /* Prose link underlines: tuned via theme.extend.typography in tailwind.config.js */
 
   /*
    * Buttons — Figma “Button” / “Button Hover” (59:4936, 59:4934): same fills;
@@ -112,7 +93,7 @@
     background-size: 28px 28px;
   }
 
-  /* Always-on underline — footer map link + email only (see global anchor rules above). */
+  /* Always-on underline — footer map link + email only (see tailwind.config.js base plugin). */
   .footer-link--persistent-underline {
     @apply underline decoration-glowleaf underline-offset-4;
   }

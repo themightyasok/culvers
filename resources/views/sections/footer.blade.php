@@ -26,7 +26,8 @@
 
   Naming:
     site-footer          Outer landmark (`site-footer__*` for major bands).
-    footer-nav           WP menu output in columns (`footer-nav__list`, modifiers).
+    footer-nav__link*    Column/legal/social/phone link styles (`addComponents` in tailwind.config.js).
+    footer-nav           WP menu wrappers (`footer-nav__list`, modifiers).
     footer-link--*       Shared link treatments (e.g. persistent underline).
 
   Layout:
@@ -91,7 +92,7 @@
                 method="post"
                 action="{{ esc_url($newsletterAction ?? '#') }}"
                 @if($newsletterAction === null) onsubmit="return false;" @endif>
-                <label class="sr-only" for="footer-newsletter-email">{{ esc_html(FooterCustomizer::newsletterPlaceholder()) }}</label>
+                <label class="sr-only" for="footer-newsletter-email">{{ __('Email address', 'culvers') }}</label>
                 <div
                   class="flex items-center gap-2 rounded-full border border-white/35 bg-deep-moss/80 px-5 py-2.5 md:px-6 md:py-3">
                   <input
@@ -146,6 +147,9 @@
               href="{{ esc_url($mapUrl) }}"
               @if(str_starts_with($mapUrl, 'http')) target="_blank" rel="noopener noreferrer" @endif>
               {{ esc_html(FooterCustomizer::gettingHereMapLabel()) }}
+              @if(str_starts_with($mapUrl, 'http'))
+                <span class="sr-only">{{ __('(opens in new tab)', 'culvers') }}</span>
+              @endif
               <span aria-hidden="true">›</span>
             </a>
           @endif
@@ -158,7 +162,7 @@
           @php $phone = FooterCustomizer::contactPhone(); @endphp
           @if($phone !== '')
             <a
-              class="mt-6 block font-sans text-sm text-light-cream/85 transition-colors hover:text-glowleaf"
+              class="footer-nav__link-phone mt-6 block"
               href="{{ esc_url('tel:' . preg_replace('/\s+/', '', $phone)) }}">
               {{ esc_html($phone) }}
             </a>
@@ -174,7 +178,7 @@
             <div class="mt-8 flex flex-wrap gap-x-8 gap-y-3">
               @if($instagramUrl !== '' && $instagramUrl !== '#')
                 <a
-                  class="inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-label text-light-cream/90 transition-colors hover:text-glowleaf"
+                  class="footer-nav__link-social"
                   href="{{ esc_url($instagramUrl) }}"
                   rel="noopener noreferrer">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -187,7 +191,7 @@
               @endif
               @if($facebookUrl !== '' && $facebookUrl !== '#')
                 <a
-                  class="inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-label text-light-cream/90 transition-colors hover:text-glowleaf"
+                  class="footer-nav__link-social"
                   href="{{ esc_url($facebookUrl) }}"
                   rel="noopener noreferrer">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -282,7 +286,7 @@
                 'theme_location' => 'footer_brand_subnav',
                 'container' => false,
                 'menu_class' =>
-                    'footer-nav__list footer-nav__list--legal flex flex-nowrap items-center justify-center divide-x divide-glowleaf whitespace-nowrap font-sans text-[10px] uppercase leading-none tracking-[0.08em] text-lighter-cream sm:text-[11px] md:text-micro [&>li]:flex [&>li]:shrink-0 [&>li]:items-center [&>li>a]:inline-flex [&>li>a]:px-3 [&>li>a]:py-1 md:[&>li>a]:px-5',
+                    'footer-nav__list footer-nav__list--legal flex flex-nowrap items-center justify-center gap-x-4 whitespace-nowrap font-sans text-[10px] uppercase leading-none tracking-[0.08em] text-lighter-cream sm:text-[11px] md:gap-x-8 md:text-micro [&>li]:flex [&>li]:shrink-0 [&>li]:items-center [&>li>a]:inline-flex [&>li>a]:px-3 [&>li>a]:py-1 md:[&>li>a]:px-5',
                 'fallback_cb' => false,
                 'depth' => 1,
                 'echo' => false,
@@ -291,26 +295,18 @@
         @else
           <nav class="min-w-0 shrink" aria-label="{{ esc_attr__('Legal', 'culvers') }}">
             <ul
-              class="footer-nav__list footer-nav__list--legal flex flex-nowrap items-center justify-center divide-x divide-glowleaf whitespace-nowrap font-sans text-[10px] uppercase leading-none tracking-[0.08em] text-lighter-cream sm:text-[11px] md:text-micro [&>li]:flex [&>li]:shrink-0 [&>li]:items-center [&>li>a]:inline-flex [&>li>a]:px-3 [&>li>a]:py-1 md:[&>li>a]:px-5">
+              class="footer-nav__list footer-nav__list--legal flex flex-nowrap items-center justify-center gap-x-4 whitespace-nowrap font-sans text-[10px] uppercase leading-none tracking-[0.08em] text-lighter-cream sm:text-[11px] md:gap-x-8 md:text-micro [&>li]:flex [&>li]:shrink-0 [&>li]:items-center [&>li>a]:inline-flex [&>li>a]:px-3 [&>li>a]:py-1 md:[&>li>a]:px-5">
               <li class="list-none">
-                <a
-                  class="transition-colors hover:text-glowleaf focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"
-                  href="#">{{ __('Cookie Policy', 'culvers') }}</a>
+                <a class="footer-nav__link--legal" href="#">{{ __('Cookie Policy', 'culvers') }}</a>
               </li>
               <li class="list-none">
-                <a
-                  class="transition-colors hover:text-glowleaf focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"
-                  href="#">{{ __('Accessibility', 'culvers') }}</a>
+                <a class="footer-nav__link--legal" href="#">{{ __('Accessibility', 'culvers') }}</a>
               </li>
               <li class="list-none">
-                <a
-                  class="transition-colors hover:text-glowleaf focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"
-                  href="#">{{ __('Privacy Policy', 'culvers') }}</a>
+                <a class="footer-nav__link--legal" href="#">{{ __('Privacy Policy', 'culvers') }}</a>
               </li>
               <li class="list-none">
-                <a
-                  class="transition-colors hover:text-glowleaf focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"
-                  href="#">{{ __('Terms & Conditions', 'culvers') }}</a>
+                <a class="footer-nav__link--legal" href="#">{{ __('Terms & Conditions', 'culvers') }}</a>
               </li>
             </ul>
           </nav>

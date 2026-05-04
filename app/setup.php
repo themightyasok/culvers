@@ -92,32 +92,9 @@ add_filter(
         }
 
         if ($loc === 'footer_brand_subnav') {
-            $extra = implode(' ', [
-                'font-sans',
-                'text-micro',
-                'uppercase',
-                'tracking-label',
-                'text-lighter-cream',
-                'transition-colors',
-                'hover:text-glowleaf',
-                'focus-visible:outline',
-                'focus-visible:outline-2',
-                'focus-visible:outline-offset-2',
-                'focus-visible:outline-glowleaf',
-            ]);
+            $extra = 'footer-nav__link--legal';
         } else {
-            $extra = implode(' ', [
-                'font-sans',
-                'text-sm',
-                'leading-snug',
-                'text-light-cream/85',
-                'transition-colors',
-                'hover:text-glowleaf',
-                'focus-visible:outline',
-                'focus-visible:outline-2',
-                'focus-visible:outline-offset-2',
-                'focus-visible:outline-glowleaf',
-            ]);
+            $extra = 'footer-nav__link';
         }
 
         $atts['class'] = isset($atts['class']) ? trim($atts['class'] . ' ' . $extra) : $extra;

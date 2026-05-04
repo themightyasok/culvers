@@ -56,6 +56,46 @@
         "typography": {
           "fontFamily": "var(--wp--preset--font-family--heading)"
         }
+      },
+      "link": {
+        "typography": {
+          "textDecoration": "none"
+        },
+        ":link": {
+          "typography": {
+            "textDecoration": "none"
+          }
+        },
+        ":any-link": {
+          "typography": {
+            "textDecoration": "none"
+          }
+        },
+        ":hover": {
+          "typography": {
+            "textDecoration": "none"
+          }
+        },
+        ":focus": {
+          "typography": {
+            "textDecoration": "none"
+          }
+        },
+        ":focus-visible": {
+          "typography": {
+            "textDecoration": "none"
+          }
+        },
+        ":active": {
+          "typography": {
+            "textDecoration": "none"
+          }
+        },
+        ":visited": {
+          "typography": {
+            "textDecoration": "none"
+          }
+        }
       }
     }
   }

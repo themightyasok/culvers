@@ -21,6 +21,23 @@ final class FrontendAssets
 
     private static bool $deferMainScript = false;
 
+    /**
+     * Stylesheet handles that must print before the theme bundle so Tailwind wins ties.
+     *
+     * `global-styles` carries theme.json CSS (including link typography). Depending on it keeps
+     * dependency order predictable when WP registers it as a linked asset.
+     */
+    private static function frontStyleDependencies(): array
+    {
+        $deps = [];
+
+        if (function_exists('wp_theme_has_theme_json') && wp_theme_has_theme_json() && wp_style_is('global-styles', 'registered')) {
+            $deps[] = 'global-styles';
+        }
+
+        return $deps;
+    }
+
     public static function register(): void
     {
         add_action('wp_enqueue_scripts', [self::class, 'enqueueFront'], 100);
@@ -63,7 +80,7 @@ final class FrontendAssets
             wp_enqueue_style(
                 self::STYLE_HANDLE,
                 $vite_dev_url . '/wp-content/themes/culvers/resources/styles/app.css',
-                [],
+                self::frontStyleDependencies(),
                 (string) time()
             );
             wp_enqueue_script(
@@ -92,7 +109,7 @@ final class FrontendAssets
         }
         if ($css_path !== null && $css_uri !== null) {
             $ver = $is_local_runtime ? (string) time() : (string) filemtime($css_path);
-            wp_enqueue_style(self::STYLE_HANDLE, $css_uri, [], $ver ?: $version);
+            wp_enqueue_style(self::STYLE_HANDLE, $css_uri, self::frontStyleDependencies(), $ver ?: $version);
         }
 
         if (file_exists($theme_path . '/dist/js/app.js')) {

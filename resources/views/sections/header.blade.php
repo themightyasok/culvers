@@ -26,10 +26,8 @@
   class="site-header fixed inset-x-0 top-0 z-50"
   x-data="siteHeader"
   x-on:keydown.escape.window="closeAll()">
-  {{-- Shell: constrained pill → full viewport width after scroll (md+). --}}
-  <div
-    class="site-header__shell w-full overflow-visible transition-[max-width,margin] duration-300 ease-in-out"
-    x-bind:class="headerScrolled ? 'mx-0 max-w-none' : 'mx-auto max-w-[1440px]'">
+  {{-- Shell: full width; content width matches footer (`px-[46px]` + inner `max-w-[1440px]`). --}}
+  <div class="site-header__shell w-full overflow-visible">
     {{-- Entrance animation once the header intersects the viewport. --}}
     <div
       class="site-header__reveal transition-all duration-700 ease-out"
@@ -39,6 +37,11 @@
         x-bind:class="headerScrolled
           ? 'px-4 pb-3 pt-6 md:px-0 md:pb-0 md:pt-0'
           : 'px-4 pb-3 pt-6 md:px-[46px] md:pb-2.5 md:pt-[46px]'">
+
+        {{-- Same grid as `site-footer__columns`: gutter padding on parent, 1440 cap here (not on shell). --}}
+        <div
+          class="mx-auto w-full"
+          x-bind:class="headerScrolled ? 'max-w-none' : 'max-w-[1440px]'">
 
         {{-- Mega navigation mode --}}
         <div
@@ -66,7 +69,7 @@
               x-bind:class="headerScrolled ? 'px-4 md:px-[46px]' : ''">
               <div
                 class="mega-nav__bar-row flex min-h-[80px] w-full items-center gap-3 md:gap-6"
-                x-bind:class="headerScrolled ? 'mx-auto max-w-[1440px]' : 'px-4 md:px-8 lg:pl-[33px] lg:pr-8'">
+                x-bind:class="headerScrolled ? 'mx-auto max-w-[1440px]' : 'px-4 md:px-5 lg:px-6'">
                 <div class="mega-nav__bar-main flex min-w-0 flex-1 items-center md:gap-[42px]">
                   <a
                     class="mega-nav__logo shrink-0 text-glowleaf"
@@ -147,11 +150,12 @@
 
                 <button
                   type="button"
-                  class="mega-nav__burger ml-auto inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/25 text-white md:ml-0 md:hidden"
+                  class="mega-nav__burger ml-auto inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/25 text-white md:ml-0 md:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
                   aria-controls="mega-mobile-drawer"
                   x-bind:aria-expanded="mobileOpen ? 'true' : 'false'"
                   x-on:click="mobileOpen = !mobileOpen">
-                  <span class="sr-only">{{ __('Open menu', 'culvers') }}</span>
+                  <span class="sr-only" x-show="!mobileOpen" x-cloak>{{ __('Open menu', 'culvers') }}</span>
+                  <span class="sr-only" x-show="mobileOpen" x-cloak>{{ __('Close menu', 'culvers') }}</span>
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
                   </svg>
@@ -159,7 +163,7 @@
 
                 <div class="mega-nav__utilities hidden shrink-0 items-center md:flex md:gap-[18px]">
                   <a
-                    class="inline-flex items-center gap-2 text-white transition-opacity hover:opacity-90"
+                    class="inline-flex items-center gap-2 text-white transition-opacity hover:opacity-90 focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
                     href="{{ esc_url($mapUrl) }}">
                     <svg class="shrink-0" width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                       <path
@@ -172,7 +176,7 @@
                     <span class="font-sans text-sm font-normal leading-snug text-white">{{ __('Centre Map', 'culvers') }}</span>
                   </a>
                   <a
-                    class="inline-flex items-center gap-2 text-white transition-opacity hover:opacity-90"
+                    class="inline-flex items-center gap-2 text-white transition-opacity hover:opacity-90 focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
                     href="{{ esc_url($hereUrl) }}">
                     <svg class="shrink-0" width="13" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                       <path
@@ -245,7 +249,7 @@
                             <a
                               class="flex size-[43px] shrink-0 items-center justify-center rounded-full bg-brand-500 text-deep-moss transition-transform hover:scale-[1.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-faded-olive"
                               href="{{ esc_url($branch['url']) }}"
-                              aria-label="{{ esc_attr(__('Explore', 'culvers')) }}">
+                              aria-label="{{ esc_attr(sprintf(/* translators: %s nav section title */ __('Explore %s', 'culvers'), $branch['title'])) }}">
                               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                 <path
                                   d="M5 12h14m-6-6 6 6-6 6"
@@ -262,7 +266,7 @@
                           @foreach($branch['children'] as $child)
                             <li class="list-none">
                               <a
-                                class="mega-nav__sublink inline-block font-sans text-[22px] leading-6 text-faded-olive transition-colors hover:text-deep-moss"
+                                class="mega-nav__sublink inline-block font-sans text-[22px] leading-6 text-faded-olive transition-colors hover:text-deep-moss focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-faded-olive"
                                 href="{{ esc_url($child['url']) }}"
                                 @if($child['preview'] !== '') data-preview-url="{{ esc_url($child['preview']) }}" @endif
                                 x-on:mouseenter="setPreviewFromEvent($event)">
@@ -273,7 +277,7 @@
                         </ul>
                         <div class="mt-10 flex flex-wrap gap-[34px]">
                           <a
-                            class="inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-[1px] text-faded-olive hover:text-deep-moss"
+                            class="inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-[1px] text-faded-olive hover:text-deep-moss focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-faded-olive"
                             href="{{ esc_url($instagramUrl) }}"
                             rel="noopener noreferrer">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -284,7 +288,7 @@
                             {{ __('Instagram', 'culvers') }}
                           </a>
                           <a
-                            class="inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-[1px] text-faded-olive hover:text-deep-moss"
+                            class="inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-[1px] text-faded-olive hover:text-deep-moss focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-faded-olive"
                             href="{{ esc_url($facebookUrl) }}"
                             rel="noopener noreferrer">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -326,7 +330,7 @@
             <div class="site-header__search-gutter w-full" x-bind:class="headerScrolled ? 'px-4 md:px-[46px]' : ''">
               <div
                 class="site-header__search-row flex min-h-[80px] items-center gap-4 py-2 md:gap-8"
-                x-bind:class="headerScrolled ? 'mx-auto max-w-[1440px]' : 'px-4 md:px-8'">
+                x-bind:class="headerScrolled ? 'mx-auto max-w-[1440px]' : 'px-4 md:px-5 lg:px-6'">
                 <a class="shrink-0 text-deep-moss" href="{{ esc_url(home_url('/')) }}" rel="home" aria-label="{{ esc_attr(get_bloginfo('name')) }}">
                   @if(has_custom_logo())
                     <span class="block max-h-[28px] w-[178px] [&_img]:h-full [&_img]:w-auto [&_img]:object-contain [&_img]:object-left">
@@ -365,8 +369,12 @@
             class="site-header__search-results max-h-[min(40vh,320px)] overflow-y-auto rounded-[14px] bg-light-cream px-6 py-5 shadow-md md:px-10"
             x-show="searchResultsVisible"
             x-html="searchHtml"
-            role="listbox"
+            role="region"
+            aria-live="polite"
+            aria-relevant="additions text"
             aria-label="{{ esc_attr__('Search results', 'culvers') }}"></div>
+        </div>
+
         </div>
       </div>
     </div>
@@ -377,9 +385,13 @@
       class="mega-nav__drawer fixed inset-x-0 bottom-0 top-[72px] z-[70] overflow-y-auto bg-deep-moss p-6 text-white md:hidden"
       x-show="mobileOpen"
       x-cloak
-      x-transition.opacity.duration.150ms>
+      x-transition.opacity.duration.150ms
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="mega-mobile-drawer-title">
+      <h2 id="mega-mobile-drawer-title" class="sr-only">{{ __('Site menu', 'culvers') }}</h2>
       <div class="flex justify-end">
-        <button type="button" class="rounded-full border border-white/30 px-4 py-2 text-sm" x-on:click="mobileOpen = false">
+        <button type="button" class="rounded-full border border-white/30 px-4 py-2 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf" x-on:click="mobileOpen = false">
           {{ __('Close', 'culvers') }}
         </button>
       </div>
@@ -392,14 +404,14 @@
                 <ul class="mt-3 space-y-2 pl-1">
                   @foreach($branch['children'] as $child)
                     <li class="list-none">
-                      <a class="block py-1 font-sans text-base text-white/90" href="{{ esc_url($child['url']) }}">
+                      <a class="block py-1 font-sans text-base text-white/90 focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf" href="{{ esc_url($child['url']) }}">
                         {{ $child['title'] }}
                       </a>
                     </li>
                   @endforeach
                 </ul>
               @else
-                <a class="block font-heading text-lg text-glowleaf" href="{{ esc_url($branch['url']) }}">
+                <a class="block font-heading text-lg text-glowleaf focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf" href="{{ esc_url($branch['url']) }}">
                   {{ $branch['title'] }}
                 </a>
               @endif
@@ -408,9 +420,9 @@
         </ul>
       @endif
       <div class="mt-8 flex flex-col gap-3 border-t border-white/15 pt-6">
-        <a class="font-sans text-sm" href="{{ esc_url($mapUrl) }}">{{ __('Centre Map', 'culvers') }}</a>
-        <a class="font-sans text-sm" href="{{ esc_url($hereUrl) }}">{{ __('Getting Here', 'culvers') }}</a>
-        <button type="button" class="text-left font-sans text-sm text-glowleaf" x-on:click="openSearchFromMobile()">
+        <a class="font-sans text-sm focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf" href="{{ esc_url($mapUrl) }}">{{ __('Centre Map', 'culvers') }}</a>
+        <a class="font-sans text-sm focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf" href="{{ esc_url($hereUrl) }}">{{ __('Getting Here', 'culvers') }}</a>
+        <button type="button" class="text-left font-sans text-sm text-glowleaf focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf" x-on:click="openSearchFromMobile()">
           {{ __('Search', 'culvers') }}
         </button>
       </div>

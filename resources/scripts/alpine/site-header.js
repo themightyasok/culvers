@@ -190,7 +190,7 @@ export default function registerSiteHeaderAlpine(Alpine) {
             const title = itemTitle(item);
             const href = typeof item.url === 'string' ? item.url : '#';
 
-            return `<a role="option" class="block py-2 font-sans text-lg text-faded-olive hover:text-deep-moss" href="${escapeHtml(href)}">${highlightMatch(title, query)}</a>`;
+            return `<a class="block py-2 font-sans text-lg text-faded-olive hover:text-deep-moss focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-faded-olive" href="${escapeHtml(href)}">${highlightMatch(title, query)}</a>`;
           })
           .join('');
         this.searchResultsVisible = true;
