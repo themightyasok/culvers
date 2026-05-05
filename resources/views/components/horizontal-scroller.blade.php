@@ -1,5 +1,6 @@
 @php
 use App\Helpers\Background;
+use App\Helpers\Grid;
 use App\Helpers\Image;
 use App\Helpers\Padding;
 use App\Helpers\TextFormatter;
@@ -7,46 +8,48 @@ use App\Helpers\Typography;
 use App\Helpers\Video;
 use App\Helpers\TailwindColors;
 
-$body_text_tone = $component['body_text_tone'] ?? TailwindColors::DEFAULT_BODY_TEXT_TONE;
-$remove_vertical_padding = !empty($component['remove_vertical_padding']);
-$padding = $remove_vertical_padding ? '' : Padding::getClasses($component ?? []);
-$backgroundHandled = !empty($component['_background_handled']);
-$backgroundData = $backgroundHandled ? Background::getEmptyStub() : Background::process($component ?? []);
+$c = is_array($component ?? null) ? $component : [];
+
+$body_text_tone = $c['body_text_tone'] ?? TailwindColors::DEFAULT_BODY_TEXT_TONE;
+$remove_vertical_padding = !empty($c['remove_vertical_padding']);
+$padding = $remove_vertical_padding ? '' : Padding::getClasses($c);
+$backgroundHandled = !empty($c['_background_handled']);
+$backgroundData = $backgroundHandled ? Background::getEmptyStub() : Background::process($c);
 $backgroundClasses = $backgroundData['classes'] ?? '';
 $backgroundStyles = $backgroundData['styles'] ?? '';
 $gridClasses = '';
-if (isset($component['_grid_classes']) && is_string($component['_grid_classes'])) {
-    $gridClasses = $component['_grid_classes'];
+if (isset($c['_grid_classes']) && is_string($c['_grid_classes'])) {
+    $gridClasses = $c['_grid_classes'];
 }
 
-$header_text = $component['header_text'] ?? '';
-$header_text_color = $component['header_text_color'] ?? 'text-white';
-$header_text_size = $component['header_text_size'] ?? 'text-6xl';
-$header_text_weight = $component['header_text_weight'] ?? 'font-medium';
-$header_alignment = $component['header_alignment'] ?? 'top';
-$header_text_alignment = $component['header_text_alignment'] ?? 'left';
-$subheading_text = $component['subheading_text'] ?? '';
-$subheading_text_color = $component['subheading_text_color'] ?? 'text-white';
-$subheading_text_size = $component['subheading_text_size'] ?? 'text-lg';
-$subheading_text_weight = $component['subheading_text_weight'] ?? 'font-medium';
-$button_text = $component['button_text'] ?? '';
-$button_link = is_array($component['button_link'] ?? null) ? $component['button_link'] : [];
-$button_variant = match($component['button_variant'] ?? 'primary') {
-    'outline', 'primary', 'secondary' => $component['button_variant'] ?? 'primary',
+$header_text = $c['header_text'] ?? '';
+$header_text_color = $c['header_text_color'] ?? 'text-white';
+$header_text_size = $c['header_text_size'] ?? 'text-6xl';
+$header_text_weight = $c['header_text_weight'] ?? 'font-medium';
+$header_alignment = $c['header_alignment'] ?? 'top';
+$header_text_alignment = $c['header_text_alignment'] ?? 'left';
+$subheading_text = $c['subheading_text'] ?? '';
+$subheading_text_color = $c['subheading_text_color'] ?? 'text-white';
+$subheading_text_size = $c['subheading_text_size'] ?? 'text-lg';
+$subheading_text_weight = $c['subheading_text_weight'] ?? 'font-medium';
+$button_text = $c['button_text'] ?? '';
+$button_link = is_array($c['button_link'] ?? null) ? $c['button_link'] : [];
+$button_variant = match($c['button_variant'] ?? 'primary') {
+    'outline', 'primary', 'secondary' => $c['button_variant'] ?? 'primary',
     default => 'primary',
 };
-$button_size = match($component['button_size'] ?? 'md') {
-    'lg', 'md', 'sm' => $component['button_size'] ?? 'md',
+$button_size = match($c['button_size'] ?? 'md') {
+    'lg', 'md', 'sm' => $c['button_size'] ?? 'md',
     default => 'md',
 };
-$button_show_arrow = $component['button_show_arrow'] ?? true;
-$body_text = $component['body_text'] ?? '';
-$body_text_color = $component['body_text_color'] ?? 'text-white';
-$scroll_cards = is_array($component['scroll_cards'] ?? null) ? $component['scroll_cards'] : [];
-$scroll_speed = $component['scroll_speed'] ?? 'medium';
-$disable_scroll = !empty($component['disable_scroll']);
+$button_show_arrow = $c['button_show_arrow'] ?? true;
+$body_text = $c['body_text'] ?? '';
+$body_text_color = $c['body_text_color'] ?? 'text-white';
+$scroll_cards = is_array($c['scroll_cards'] ?? null) ? $c['scroll_cards'] : [];
+$scroll_speed = $c['scroll_speed'] ?? 'medium';
+$disable_scroll = !empty($c['disable_scroll']);
 // Horizontal gap between row items (logos/cards). Set on the flex container so it cannot be lost to inheritance.
-$raw_strip_spacing = $component['scroll_strip_item_spacing'] ?? null;
+$raw_strip_spacing = $c['scroll_strip_item_spacing'] ?? null;
 if ($raw_strip_spacing === null || $raw_strip_spacing === '' || $raw_strip_spacing === false) {
     $strip_item_spacing = 32;
 } elseif (is_numeric($raw_strip_spacing)) {
@@ -102,48 +105,48 @@ $subheading_text_weight_class = match($subheading_text_weight) {
     default => 'font-medium',
 };
 $header_padding_class = Padding::getHeaderSubheaderPaddingClasses(
-    $component['header_padding_top'] ?? 'none',
-    $component['header_padding_bottom'] ?? 'none'
+    $c['header_padding_top'] ?? 'none',
+    $c['header_padding_bottom'] ?? 'none'
 );
 $subheader_padding_class = Padding::getHeaderSubheaderPaddingClasses(
-    $component['subheader_padding_top'] ?? 'none',
-    $component['subheader_padding_bottom'] ?? 'none'
+    $c['subheader_padding_top'] ?? 'none',
+    $c['subheader_padding_bottom'] ?? 'none'
 );
 $body_padding_class = Padding::getHeaderSubheaderPaddingClasses(
-    $component['body_padding_top'] ?? 'none',
-    $component['body_padding_bottom'] ?? 'none'
+    $c['body_padding_top'] ?? 'none',
+    $c['body_padding_bottom'] ?? 'none'
 );
 $body_classes = Typography::classes(
     'body',
-    $component['body_text_size'] ?? 'text-lg',
-    $component['body_text_weight'] ?? 'font-medium'
+    $c['body_text_size'] ?? 'text-lg',
+    $c['body_text_weight'] ?? 'font-medium'
 );
 $body_text_color_class = match ($body_text_color) {
     'text-black', 'text-brand-500', 'text-deep-moss', 'text-text-muted', 'text-white', 'text-white/80' => $body_text_color,
     default => 'text-white'
 };
 
-$intro_flush_to_content = !empty($component['intro_flush_to_content']);
+$intro_flush_to_content = !empty($c['intro_flush_to_content']);
 
 $item_kicker_classes = Typography::classes(
     'body',
-    $component['item_kicker_size'] ?? 'text-xs',
-    $component['item_kicker_weight'] ?? 'font-semibold'
+    $c['item_kicker_size'] ?? 'text-xs',
+    $c['item_kicker_weight'] ?? 'font-semibold'
 );
 $item_heading_classes = Typography::classes(
     'heading',
-    $component['item_heading_size'] ?? 'text-xl',
-    $component['item_heading_weight'] ?? 'font-medium'
+    $c['item_heading_size'] ?? 'text-xl',
+    $c['item_heading_weight'] ?? 'font-medium'
 );
 $item_body_classes = Typography::classes(
     'body',
-    $component['item_body_size'] ?? 'text-base',
-    $component['item_body_weight'] ?? 'font-normal'
+    $c['item_body_size'] ?? 'text-base',
+    $c['item_body_weight'] ?? 'font-normal'
 );
 
-$item_kicker_padding_class = Padding::getHeaderSubheaderPaddingClasses($component['item_kicker_padding_top'] ?? 'none', $component['item_kicker_padding_bottom'] ?? 'none');
-$item_heading_padding_class = Padding::getHeaderSubheaderPaddingClasses($component['item_heading_padding_top'] ?? 'none', $component['item_heading_padding_bottom'] ?? 'none');
-$item_body_padding_class = Padding::getHeaderSubheaderPaddingClasses($component['item_body_padding_top'] ?? 'none', $component['item_body_padding_bottom'] ?? 'none');
+$item_kicker_padding_class = Padding::getHeaderSubheaderPaddingClasses($c['item_kicker_padding_top'] ?? 'none', $c['item_kicker_padding_bottom'] ?? 'none');
+$item_heading_padding_class = Padding::getHeaderSubheaderPaddingClasses($c['item_heading_padding_top'] ?? 'none', $c['item_heading_padding_bottom'] ?? 'none');
+$item_body_padding_class = Padding::getHeaderSubheaderPaddingClasses($c['item_body_padding_top'] ?? 'none', $c['item_body_padding_bottom'] ?? 'none');
 
 $hasHeaderText = TextFormatter::hasVisibleContent((string) $header_text);
 $hasSubheadingText = TextFormatter::hasVisibleContent((string) $subheading_text);
@@ -252,7 +255,7 @@ foreach ($scroll_cards as $item) {
 
 $fullBleedScrollerStrip = ! empty($normalized_items);
 if ($fullBleedScrollerStrip && $gridClasses !== '') {
-    $gridClasses = trim(preg_replace('/\s+/', ' ', preg_replace('/\b(?:sm:|md:|lg:|xl:)?px-[^\s]+\s*/', '', $gridClasses)));
+    $gridClasses = Grid::stripHorizontalInsetPadding($gridClasses);
 }
 
 $section_style_parts = [];

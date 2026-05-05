@@ -14,7 +14,7 @@
   $headingTag = 'h' . $level;
 @endphp
 
-<section class="{{ esc_attr(trim($grid . ' ' . $padding)) }} relative text-deep-moss" data-component-root>
+<section class="{{ esc_attr(trim($grid . ' ' . $padding)) }} relative text-deep-moss" data-component-root data-content-section>
   @if(! empty($c['heading']))
     <{{ $headingTag }} class="mb-4 font-heading text-3xl font-semibold tracking-tight md:text-4xl">
       {{ esc_html($c['heading']) }}

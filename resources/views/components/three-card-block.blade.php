@@ -1,4 +1,5 @@
 @php
+  use App\Helpers\LayoutShell;
   use App\Helpers\Padding;
   use App\Helpers\ThreeCardBlock;
 
@@ -32,7 +33,7 @@
   data-component-root
   data-three-card-block
   x-data="threeCardBlock()">
-  <div class="mx-auto w-full max-w-[1440px] px-0">
+  <div class="{{ LayoutShell::INNER_MAX_FLUSH_X }}">
     @if($heading !== '' || $sub !== '' || $body !== '')
       <header class="mx-auto max-w-[52rem] px-1 text-center md:px-4">
         @if($heading !== '')

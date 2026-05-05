@@ -72,7 +72,8 @@
     </div>
   </section>
 @elseif(current_user_can('edit_posts'))
-  <div class="{{ esc_attr(trim($grid . ' ' . $padding)) }} rounded border border-amber-400 bg-amber-50 px-4 py-3 text-amber-950">
-    {{ __('Add a video file to this block.', 'culvers') }}
-  </div>
+  @include('partials.component-editor-placeholder', [
+      'wrapperClasses' => trim($grid . ' ' . $padding),
+      'message' => __('Add a video file to this block.', 'culvers'),
+  ])
 @endif

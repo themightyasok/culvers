@@ -1,0 +1,43 @@
+/**
+ * Individual shop — subtle geometric texture bands (Figma developer-release hero adjacency + details strip).
+ *
+ * @see shop-intro-block, shop-store-details, shop-related-shops, opening-hours (modifier below).
+ */
+
+.shop-page__pattern-bg {
+  --shop-pattern-tint: rgb(46 48 30 / 0.06);
+  background-color: var(--color-light-cream);
+  background-image:
+    linear-gradient(155deg, var(--shop-pattern-tint) 14%, transparent 14.5%),
+    linear-gradient(-155deg, transparent 85%, var(--shop-pattern-tint) 85.5%);
+  background-size: 140% 160%;
+  background-position:
+    40% 20%,
+    62% 80%;
+  background-repeat: no-repeat;
+}
+
+.shop-page__opening-hours--shop {
+  position: relative;
+}
+
+.shop-page__opening-hours--shop::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 1;
+  background-image:
+    linear-gradient(155deg, rgb(46 48 30 / 0.045) 14%, transparent 14.5%),
+    linear-gradient(-155deg, transparent 85%, rgb(46 48 30 / 0.045) 85.5%);
+  background-size: 140% 220%;
+  background-position:
+    42% 10%,
+    58% 95%;
+  background-repeat: no-repeat;
+}
+
+.shop-page__opening-hours--shop > div {
+  position: relative;
+  z-index: 1;
+}

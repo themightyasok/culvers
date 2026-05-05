@@ -1,13 +1,19 @@
 /**
  * Shopping directory archive — Figma frames 51:5152 (4-col, filters hidden) & 51:7183 (3-col + sidebar).
  *
- * Sidebar + tiles: two-column CSS Grid; filter panel snaps open/closed (no layout transition).
+ * Desktop: do NOT keep the filter panel in the same grid row as the tiles — grid row height would become
+ * max(sidebar, tiles), leaving a huge empty band beside short grids (e.g. filtered /shops/) and bloating
+ * scroll height. Filters open → sidebar absolutely positioned; row height follows tiles only.
  */
+
+.directory-archive {
+  --directory-archive-gap: 22px;
+}
 
 .directory-archive__main-row {
   display: grid;
   align-items: start;
-  row-gap: 14px;
+  row-gap: var(--directory-archive-gap);
   column-gap: 0;
 }
 
@@ -17,22 +23,75 @@
   }
 }
 
-@media (min-width: 1024px) {
-  .directory-archive__main-row {
-    grid-template-columns: 0px minmax(0, 1fr);
-  }
-
-  .directory-archive__main-row.directory-archive__main-row--filters-visible {
-    grid-template-columns: 325px minmax(0, 1fr);
-    column-gap: 22px;
-  }
-}
-
 .directory-archive__grid {
   display: grid;
-  gap: 14px;
+  gap: var(--directory-archive-gap);
   align-items: start;
   grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 1024px) {
+  /*
+   * Filters collapsed — sidebar removed from flow (no zero-width grid column stretching row height).
+   */
+  .directory-archive__main-row:not(.directory-archive__main-row--filters-visible) {
+    display: block;
+    grid-template-columns: unset;
+    row-gap: unset;
+    column-gap: unset;
+  }
+
+  .directory-archive__main-row:not(.directory-archive__main-row--filters-visible)
+    .directory-archive__sidebar-shell {
+    display: none;
+  }
+
+  .directory-archive__main-row:not(.directory-archive__main-row--filters-visible)
+    .directory-archive__grid-column {
+    width: 100%;
+  }
+
+  /*
+   * Filters open — sidebar out of flow so `.directory-archive__main-row` height tracks the tile grid only.
+   */
+  .directory-archive__main-row.directory-archive__main-row--filters-visible {
+    display: block;
+    position: relative;
+    padding-left: calc(325px + var(--directory-archive-gap));
+    grid-template-columns: unset;
+    row-gap: unset;
+    column-gap: unset;
+  }
+
+  .directory-archive__main-row.directory-archive__main-row--filters-visible
+    .directory-archive__sidebar-shell {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 2;
+    width: 325px;
+    max-height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+  }
+
+  .directory-archive__main-row.directory-archive__main-row--filters-visible
+    .directory-archive__grid-column {
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* Filters collapsed — four tiles across the main column (frame 51:5152). */
+  .directory-archive__main-row:not(.directory-archive__main-row--filters-visible)
+    .directory-archive__grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  /* Filters open — room for sidebar ⇒ three tiles (frame 51:7183). */
+  .directory-archive__main-row.directory-archive__main-row--filters-visible
+    .directory-archive__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 @media (min-width: 640px) and (max-width: 1023px) {
@@ -41,16 +100,24 @@
   }
 }
 
-@media (min-width: 1024px) {
-  .directory-archive__grid {
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 252px), 1fr));
-  }
+.directory-archive__grid > .directory-shop-card {
+  justify-self: stretch;
+  width: 100%;
+  min-width: 0;
 }
 
-.directory-archive__grid > .directory-shop-card {
-  justify-self: start;
-  width: 100%;
-  max-width: 336px;
+/* Sidebar panel rules — Figma: dark hairlines above category stack + between Category / Retailer type. */
+.directory-archive__aside {
+  --directory-archive-rule: rgb(46 48 30 / 42%);
+  border-top: 1px solid var(--directory-archive-rule);
+}
+
+.directory-archive__filter-section {
+  border-bottom: 1px solid var(--directory-archive-rule);
+}
+
+.directory-archive__filter-section:last-child {
+  border-bottom: none;
 }
 
 .directory-archive__grid--animating .directory-shop-card {

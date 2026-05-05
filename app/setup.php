@@ -57,6 +57,13 @@ add_action('customize_register', static function (\WP_Customize_Manager $wp_cust
 
 add_filter('culvers_default_full_width_components', static function (array $layouts): array {
     $layouts[] = 'hero_slider';
+    $layouts[] = 'shop_image_hero';
+
+    return $layouts;
+});
+
+add_filter('culvers_full_width_components', static function (array $layouts): array {
+    $layouts[] = 'shop_image_hero';
 
     return $layouts;
 });

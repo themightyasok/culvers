@@ -22,7 +22,12 @@
     {{-- Fixed header clearance: `--site-header-offset` is set by `site-header.js` (ResizeObserver). No per-component padding. --}}
     <div id="smooth-wrapper">
       <div id="smooth-content">
-        <div id="app" class="min-h-screen bg-white">
+        {{--
+          Do not use min-h-screen here: when main + footer are shorter than the viewport (e.g. /shops/),
+          min-height would extend #app below the footer and show empty bg-white — misread as a “footer gap”.
+          Homepage flexible rows are tall enough that this rarely appears.
+        --}}
+        <div id="app" class="bg-white">
           <main id="main" tabindex="-1">
             @yield('content')
           </main>

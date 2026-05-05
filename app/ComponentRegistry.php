@@ -296,7 +296,8 @@ class ComponentRegistry
         // Both layouts are confirmed to be registered correctly
 
         $components
-            ->setLocation('post_type', '==', 'page');
+            ->setLocation('post_type', '==', 'page')
+            ->or('post_type', '==', 'culvers_shop');
 
         return $components;
     }
@@ -706,6 +707,9 @@ class ComponentRegistry
             'true_false' => $layout->addTrueFalse($fieldName, $options),
             'link' => $layout->addLink($fieldName, array_merge([
                 'return_format' => 'array'
+            ], $options)),
+            'post_object' => $layout->addPostObject($fieldName, array_merge([
+                'return_format' => 'object',
             ], $options)),
             'file' => $layout->addFile($fieldName, array_merge([
                 'return_format' => 'array'

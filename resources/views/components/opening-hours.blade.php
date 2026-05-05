@@ -1,4 +1,5 @@
 @php
+  use App\Helpers\LayoutShell;
   use App\Helpers\Padding;
   use App\Helpers\TailwindColors;
 
@@ -65,11 +66,12 @@
   $hasIntro = $heading !== '' || $subheading !== '' || trim(strip_tags($body)) !== '';
   $hasRows = $normalizedRows !== [];
   $showPlaceholders = ! $hasRows && ! $hasIntro && $footnote === '' && current_user_can('edit_posts');
+  $showShopPattern = get_post_type() === 'culvers_shop';
 @endphp
 
 @if($hasIntro || $hasRows || $footnote !== '' || $leftUrl !== '' || $rightUrl !== '')
-  <section class="{{ esc_attr(trim($grid . ' ' . $padding)) }} text-deep-moss" id="opening-hours" data-component-root data-opening-hours>
-    <div class="mx-auto max-w-[960px] px-5 sm:px-6 lg:px-8">
+  <section class="{{ esc_attr(trim($grid . ' ' . $padding . ($showShopPattern ? ' shop-page__opening-hours--shop' : ''))) }} text-deep-moss" id="opening-hours" data-component-root data-opening-hours>
+    <div class="{{ LayoutShell::INNER_READABLE_960 }}">
       @if($hasIntro)
         <header class="mx-auto mb-10 max-w-[40rem] text-center md:mb-12">
           @if($heading !== '')
@@ -144,7 +146,8 @@
     </div>
   </section>
 @elseif($showPlaceholders)
-  <div class="{{ esc_attr(trim($grid . ' ' . $padding)) }} rounded border border-amber-400 bg-amber-50 px-4 py-3 text-amber-950">
-    {{ __('Add heading or hours rows to this block.', 'culvers') }}
-  </div>
+  @include('partials.component-editor-placeholder', [
+      'wrapperClasses' => trim($grid . ' ' . $padding),
+      'message' => __('Add heading or hours rows to this block.', 'culvers'),
+  ])
 @endif

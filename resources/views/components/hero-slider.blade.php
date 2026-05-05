@@ -1,12 +1,12 @@
 @php
+  use App\Helpers\Grid;
   use App\Helpers\Padding;
 
   $c = is_array($component ?? null) ? $component : [];
   $padding = Padding::getClasses($c);
   $grid = $c['_grid_classes'] ?? '';
-  /* Full-bleed hero: strip grid gutters — horizontal px-* on the section inset the slide and show bg-deep-moss. */
   if ($grid !== '') {
-      $grid = trim(preg_replace('/\s+/', ' ', preg_replace('/\b(?:sm:|md:|lg:|xl:)?px-[^\s]+\s*/', '', $grid)));
+      $grid = Grid::stripHorizontalInsetPadding($grid);
   }
 
   $slidesRaw = $c['hero_slides'] ?? [];
@@ -150,7 +150,8 @@
     </div>
   </section>
 @elseif(current_user_can('edit_posts'))
-  <div class="{{ esc_attr(trim($grid . ' ' . $padding)) }} rounded border border-amber-400 bg-amber-50 px-4 py-3 text-amber-950">
-    {{ __('Add at least one hero slide with a desktop image.', 'culvers') }}
-  </div>
+  @include('partials.component-editor-placeholder', [
+      'wrapperClasses' => trim($grid . ' ' . $padding),
+      'message' => __('Add at least one hero slide with a desktop image.', 'culvers'),
+  ])
 @endif

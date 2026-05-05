@@ -66,7 +66,7 @@
           {!! wp_kses_post(wpautop($introHtml)) !!}
         </p>
 
-        <div class="mt-[72px] flex flex-col gap-[14px] md:mt-[88px] lg:gap-[22px]">
+        <div class="mt-[72px] flex flex-col gap-[22px] md:mt-[88px]">
           <div class="directory-archive__toolbar flex justify-start">
           <button
             id="{{ esc_attr($filter_toggle_id) }}"
@@ -108,7 +108,7 @@
             <aside class="directory-archive__aside w-[325px] max-w-full rounded-none bg-white px-0 pb-6 pt-0 shadow-none md:px-0 lg:shrink-0">
               <h2 class="sr-only">{{ __('Directory filters', 'culvers') }}</h2>
 
-            <div class="border-b border-deep-moss/[0.12]">
+            <div class="directory-archive__filter-section">
               <button
                 type="button"
                 class="flex w-full items-center justify-between gap-3 py-4 text-left font-sans text-[12px] font-semibold uppercase leading-6 tracking-[1px] text-faded-olive transition hover:text-deep-moss focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"
@@ -157,7 +157,7 @@
               </ul>
             </div>
 
-            <div class="border-b border-deep-moss/[0.12] pt-2">
+            <div class="directory-archive__filter-section pt-2">
               <button
                 type="button"
                 class="flex w-full items-center justify-between gap-2 py-4 text-left font-sans text-[12px] font-semibold uppercase leading-6 tracking-[1px] text-faded-olive transition hover:text-deep-moss focus-visible:rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"

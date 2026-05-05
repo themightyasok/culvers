@@ -6,6 +6,8 @@
   /** @var string $hero_title */
   /** @var string $hero_subtitle */
   /** @var list<array{aside: string, body: string}> $sections */
+  use App\Helpers\LayoutShell;
+
   $hero_title = isset($hero_title) ? (string) $hero_title : '';
   $hero_subtitle = isset($hero_subtitle) ? (string) $hero_subtitle : '';
   $sections = isset($sections) && is_array($sections) ? $sections : [];
@@ -37,7 +39,7 @@
     <div class="policy-page__surface-pattern absolute inset-0"></div>
   </div>
 
-  <div class="relative z-[1] mx-auto w-full max-w-[1440px] px-4 py-12 md:px-[46px] md:py-16 lg:py-20">
+  <div class="relative z-[1] {{ LayoutShell::INNER_MAX_GUTTERED }} py-12 md:py-16 lg:py-20">
     <div class="policy-page__stack flex flex-col gap-12 md:gap-14 lg:gap-16">
       @foreach($sections as $section)
         @php

@@ -1,4 +1,5 @@
 @php
+  use App\Helpers\LayoutShell;
   use App\Helpers\Padding;
   use App\Helpers\TailwindColors;
 
@@ -60,18 +61,10 @@
     data-component-root
     data-info-block>
     {{-- Large faint X motif (matches Figma hero texture feel without competing with cells). --}}
-    <div
-      class="pointer-events-none absolute inset-0 z-0 opacity-[0.04]"
-      aria-hidden="true"
-      style="
-        background-image:
-          linear-gradient(135deg, rgb(46 48 30 / 0.55) 12%, transparent 12.5%, transparent 50%, rgb(46 48 30 / 0.35) 50.5%, rgb(46 48 30 / 0.35) 62%, transparent 62.5%, transparent),
-          linear-gradient(45deg, transparent 38%, rgb(46 48 30 / 0.25) 38.5%, rgb(46 48 30 / 0.25) 50%, transparent 50.5%);
-        background-size: 56px 56px;
-      "></div>
+    <div class="info-block__motif pointer-events-none absolute inset-0 z-0 opacity-[0.04]" aria-hidden="true"></div>
 
     {{-- Match three-card / horizontal-scroller: 1440 shell, ~1272px content row --}}
-    <div class="relative z-[1] mx-auto w-full max-w-[1440px] px-0">
+    <div class="relative z-[1] {{ LayoutShell::INNER_MAX_FLUSH_X }}">
       @if($hasIntro)
         <header class="mx-auto max-w-[52rem] px-5 text-center sm:px-6 lg:px-8">
           @if($heading !== '')
@@ -139,7 +132,8 @@
     </div>
   </section>
 @elseif($showPlaceholder)
-  <div class="{{ esc_attr(trim($grid . ' ' . $padding)) }} rounded border border-amber-400 bg-amber-50 px-4 py-3 text-amber-950">
-    {{ __('Add heading or info cells to this block.', 'culvers') }}
-  </div>
+  @include('partials.component-editor-placeholder', [
+      'wrapperClasses' => trim($grid . ' ' . $padding),
+      'message' => __('Add heading or info cells to this block.', 'culvers'),
+  ])
 @endif

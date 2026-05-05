@@ -97,6 +97,19 @@ class Grid
     }
 
     /**
+     * Strip responsive horizontal gutters (`px-*` / `sm:px-*` …) from {@see self::getClasses()} column classes.
+     * Full-bleed components (heroes, horizontal strip) sit in `col-span-12` but must not inherit outer grid padding.
+     */
+    public static function stripHorizontalInsetPadding(string $gridClasses): string
+    {
+        if ($gridClasses === '') {
+            return '';
+        }
+
+        return trim(preg_replace('/\s+/', ' ', preg_replace('/\b(?:sm:|md:|lg:|xl:)?px-[^\s]+\s*/', '', $gridClasses)));
+    }
+
+    /**
      * @return int|string
      */
     public static function getDefaultComponentWidth(string $layout)

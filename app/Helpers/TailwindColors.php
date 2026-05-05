@@ -30,7 +30,10 @@ class TailwindColors
     public static function defaultBodyTextToneForLayout(string $layout): string
     {
         return match ($layout) {
-            'info_block' => self::DEFAULT_LIGHT_BAND_BODY_TEXT_TONE,
+            'info_block',
+            'shop_intro_block',
+            'shop_store_details',
+            'shop_related_shops' => self::DEFAULT_LIGHT_BAND_BODY_TEXT_TONE,
             default => self::DEFAULT_BODY_TEXT_TONE,
         };
     }

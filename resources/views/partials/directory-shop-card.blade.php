@@ -1,6 +1,6 @@
 @php
   /** @var \WP_Post $post */
-  $post_id = get_the_ID();
+  $post_id = isset($directory_card_post_id) ? (int) $directory_card_post_id : get_the_ID();
   $logo = function_exists('get_field') ? get_field('shop_logo', $post_id) : null;
   $logo_url = is_array($logo) && ! empty($logo['url']) ? (string) $logo['url'] : '';
 
@@ -25,10 +25,10 @@
   data-category-slugs="{{ esc_attr(implode(',', $cat_slugs)) }}"
   data-type-slugs="{{ esc_attr(implode(',', $type_slugs)) }}"
   data-sort-title="{{ esc_attr($sort_title) }}"
-  class="directory-shop-card min-w-0 justify-self-center">
+  class="directory-shop-card min-w-0 w-full">
   <a
     href="{{ esc_url(get_permalink($post_id)) }}"
-    class="group directory-shop-card__link relative block w-full max-w-[336px] translate-y-0 overflow-hidden rounded-[11px] outline-none transition-[transform,box-shadow] duration-300 ease-out hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+    class="group directory-shop-card__link relative block w-full max-w-none overflow-hidden rounded-[11px] outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf">
     <div class="relative h-[294px] w-full bg-dustleaf">
       @if ($has_hover_photo)
         <img

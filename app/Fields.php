@@ -32,6 +32,7 @@ class Fields
      */
     private function registerComponentFields(): void
     {
+        Directory\ShopFlexibleDefaults::register();
         $flexibleContent = $this->componentRegistry->registerFlexibleContent();
         acf_add_local_field_group($flexibleContent->build());
         Directory\ShopFields::register();
