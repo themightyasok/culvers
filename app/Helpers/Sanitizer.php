@@ -185,6 +185,11 @@ class Sanitizer
                     $sanitized[$key] = trim($value);
                     continue;
                 }
+                // ACF range / spacing fields: keep numeric strings intact (do not strip).
+                if (str_ends_with($key, '_spacing') && is_numeric(trim($value))) {
+                    $sanitized[$key] = (int) round((float) trim($value));
+                    continue;
+                }
                 // Determine sanitization based on key
                 if (in_array($key, ['url', 'link', 'href'], true)) {
                     $sanitized[$key] = self::url($value);

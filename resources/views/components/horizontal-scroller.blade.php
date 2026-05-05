@@ -45,13 +45,19 @@ $body_text_color = $component['body_text_color'] ?? 'text-white';
 $scroll_cards = is_array($component['scroll_cards'] ?? null) ? $component['scroll_cards'] : [];
 $scroll_speed = $component['scroll_speed'] ?? 'medium';
 $disable_scroll = !empty($component['disable_scroll']);
-$wider_item_gaps = !empty($component['wider_item_gaps']);
-$media_object_fit = match ($component['media_object_fit'] ?? 'cover') {
-    'contain' => 'contain',
-    default => 'cover',
-};
-$media_object_fit_class = $media_object_fit === 'contain' ? 'horizontal-scroller-component--media-contain' : '';
-
+// Horizontal gap between row items (logos/cards). Set on the flex container so it cannot be lost to inheritance.
+$raw_strip_spacing = $component['scroll_strip_item_spacing'] ?? null;
+if ($raw_strip_spacing === null || $raw_strip_spacing === '' || $raw_strip_spacing === false) {
+    $strip_item_spacing = 32;
+} elseif (is_numeric($raw_strip_spacing)) {
+    $strip_item_spacing = (int) round((float) $raw_strip_spacing);
+} elseif (is_string($raw_strip_spacing) && preg_match('/\d+/', $raw_strip_spacing, $strip_spacing_match)) {
+    $strip_item_spacing = (int) $strip_spacing_match[0];
+} else {
+    $strip_item_spacing = 32;
+}
+$strip_item_spacing = max(12, min(6000, $strip_item_spacing));
+$horizontal_scroller_gap_css = '--hs-item-gap:' . $strip_item_spacing . 'px';
 $header_alignment_class = match($header_alignment) {
     'middle' => 'lg:justify-center',
     'bottom' => 'lg:justify-end',
@@ -118,13 +124,6 @@ $body_text_color_class = match ($body_text_color) {
 };
 
 $intro_flush_to_content = !empty($component['intro_flush_to_content']);
-$flat_logo_strip = !empty($component['scroll_strip_flat_logos']);
-$edge_to_edge_strip = !empty($component['scroll_strip_edge_to_edge']);
-/** Partner logo strips must bleed to the viewport; CMS rows may omit the edge toggle. */
-$fullBleedScrollerStrip = $flat_logo_strip || $edge_to_edge_strip;
-if ($fullBleedScrollerStrip && $gridClasses !== '') {
-    $gridClasses = trim(preg_replace('/\s+/', ' ', preg_replace('/\b(?:sm:|md:|lg:|xl:)?px-[^\s]+\s*/', '', $gridClasses)));
-}
 
 $item_kicker_classes = Typography::classes(
     'body',
@@ -141,33 +140,10 @@ $item_body_classes = Typography::classes(
     $component['item_body_size'] ?? 'text-base',
     $component['item_body_weight'] ?? 'font-normal'
 );
-$item_overlay_channel_classes = Typography::classes(
-    'body',
-    $component['item_overlay_channel_size'] ?? 'text-sm',
-    $component['item_overlay_channel_weight'] ?? 'font-medium'
-);
-$item_overlay_title_classes = Typography::classes(
-    'body',
-    $component['item_overlay_title_size'] ?? 'text-xl',
-    $component['item_overlay_title_weight'] ?? 'font-medium'
-);
-
-$item_overlay_channel_color = $component['item_overlay_channel_color'] ?? 'text-white/80';
-$item_overlay_title_color = $component['item_overlay_title_color'] ?? 'text-white';
-$item_overlay_channel_color_class = match ($item_overlay_channel_color) {
-    'text-white', 'text-white/80', 'text-black', 'text-brand-500', 'text-deep-moss', 'text-text-muted' => $item_overlay_channel_color,
-    default => 'text-white/80',
-};
-$item_overlay_title_color_class = match ($item_overlay_title_color) {
-    'text-white', 'text-black', 'text-brand-500', 'text-deep-moss', 'text-text-muted', 'text-white/80' => $item_overlay_title_color,
-    default => 'text-white',
-};
 
 $item_kicker_padding_class = Padding::getHeaderSubheaderPaddingClasses($component['item_kicker_padding_top'] ?? 'none', $component['item_kicker_padding_bottom'] ?? 'none');
 $item_heading_padding_class = Padding::getHeaderSubheaderPaddingClasses($component['item_heading_padding_top'] ?? 'none', $component['item_heading_padding_bottom'] ?? 'none');
 $item_body_padding_class = Padding::getHeaderSubheaderPaddingClasses($component['item_body_padding_top'] ?? 'none', $component['item_body_padding_bottom'] ?? 'none');
-$item_overlay_channel_padding_class = Padding::getHeaderSubheaderPaddingClasses($component['item_overlay_channel_padding_top'] ?? 'none', $component['item_overlay_channel_padding_bottom'] ?? 'none');
-$item_overlay_title_padding_class = Padding::getHeaderSubheaderPaddingClasses($component['item_overlay_title_padding_top'] ?? 'none', $component['item_overlay_title_padding_bottom'] ?? 'none');
 
 $hasHeaderText = TextFormatter::hasVisibleContent((string) $header_text);
 $hasSubheadingText = TextFormatter::hasVisibleContent((string) $subheading_text);
@@ -208,10 +184,6 @@ foreach ($scroll_cards as $item) {
     $kicker = trim((string)($item['item_kicker'] ?? ''));
     $heading = trim((string)($item['item_heading'] ?? ''));
     $body = trim((string)($item['item_body'] ?? ''));
-    $overlay_channel = trim((string)($item['item_channel_name'] ?? ''));
-    $overlay_title = trim((string)($item['item_video_title'] ?? ''));
-    $show_youtube_icon = isset($item['item_show_youtube_icon']) ? (bool)$item['item_show_youtube_icon'] : false;
-    $overlay_icon = $item['item_overlay_icon'] ?? null;
     $alt_text = trim((string)($item['image_alt_text'] ?? ''));
 
     $has_image = is_array($image) && !empty($image['url']);
@@ -261,21 +233,6 @@ foreach ($scroll_cards as $item) {
         continue;
     }
 
-    // Backfill overlay metadata from existing content so overlays render on legacy cards too.
-    if (! $flat_logo_strip) {
-        if ($overlay_channel === '' && $kicker !== '') {
-            $overlay_channel = $kicker;
-        }
-        if ($overlay_title === '' && $heading !== '') {
-            $overlay_title = $heading;
-        }
-        if ($overlay_title === '' && $alt_text !== '') {
-            $overlay_title = wp_strip_all_tags($alt_text);
-        }
-    } else {
-        $overlay_channel = '';
-        $overlay_title = '';
-    }
     $normalized_items[] = [
         'type' => $type,
         'size' => $item_size,
@@ -290,20 +247,28 @@ foreach ($scroll_cards as $item) {
         'show_video_controls' => $show_video_controls,
         'poster' => $poster,
         'alt_text' => $alt_text,
-        'overlay_channel' => $overlay_channel,
-        'overlay_title' => $overlay_title,
-        'show_youtube_icon' => $show_youtube_icon,
-        'overlay_icon' => $overlay_icon,
     ];
 }
+
+$fullBleedScrollerStrip = ! empty($normalized_items);
+if ($fullBleedScrollerStrip && $gridClasses !== '') {
+    $gridClasses = trim(preg_replace('/\s+/', ' ', preg_replace('/\b(?:sm:|md:|lg:|xl:)?px-[^\s]+\s*/', '', $gridClasses)));
+}
+
+$section_style_parts = [];
+if (is_string($backgroundStyles) && $backgroundStyles !== '') {
+    $section_style_parts[] = $backgroundStyles;
+}
+$section_styles_attr = implode('; ', array_filter($section_style_parts));
+
 $has_any_content = $hasHeaderBlock || $hasButton || !empty($normalized_items);
 $live_region_id = 'horizontal-scroller-description-' . uniqid();
 @endphp
 
 @if($has_any_content)
 <section
-    class="horizontal-scroller-component {{ $gridClasses }} relative {{ $backgroundClasses }} {{ $padding }} {{ $media_object_fit_class }} @if($disable_scroll) horizontal-scroller-component--disable-scroll @endif @if($wider_item_gaps) horizontal-scroller-component--wide-gaps @endif @if($flat_logo_strip) horizontal-scroller-component--flat-logos @endif"
-    @if($backgroundStyles) style="{{ $backgroundStyles }}" @endif
+    class="horizontal-scroller-component {{ $gridClasses }} relative {{ $backgroundClasses }} {{ $padding }} @if($disable_scroll) horizontal-scroller-component--disable-scroll @endif"
+    @if($section_styles_attr !== '') style="{{ esc_attr($section_styles_attr) }}" @endif
     data-component-root
     data-hs-disable-scroll="{{ $disable_scroll ? '1' : '0' }}"
     data-hs-scroll-speed="{{ esc_attr((string) $scroll_speed) }}"
@@ -384,7 +349,7 @@ $live_region_id = 'horizontal-scroller-description-' . uniqid();
         @if(! empty($normalized_items))
             <div class="@if($fullBleedScrollerStrip) horizontal-scroller-strip-breakout @endif">
             <div class="horizontal-scroller-wrapper {{ $disable_scroll ? 'overflow-visible' : 'overflow-hidden' }} {{ $scroll_speed_class }} {{ $header_text_color_class }} @if($remove_vertical_padding) horizontal-scroller-wrapper--no-vertical-padding @endif">
-                <div class="horizontal-scroller-container" aria-label="{{ $disable_scroll ? __('Floating content', 'culvers') : __('Horizontal scrolling floating content', 'culvers') }}">
+                <div class="horizontal-scroller-container" style="{{ esc_attr($horizontal_scroller_gap_css) }}" aria-label="{{ $disable_scroll ? __('Floating content', 'culvers') : __('Horizontal scrolling floating content', 'culvers') }}">
                     @foreach($disable_scroll ? [0] : [0, 1] as $set_index)
                         @php $is_clone_set = $set_index > 0; @endphp
                         @foreach($normalized_items as $item)
@@ -404,9 +369,6 @@ $live_region_id = 'horizontal-scroller-description-' . uniqid();
                                 )
                                     @php
                                         $poster_url = is_array($item['poster']) && !empty($item['poster']['url']) ? esc_url($item['poster']['url']) : '';
-                                        $has_custom_overlay_icon = ! $flat_logo_strip && is_array($item['overlay_icon']) && !empty($item['overlay_icon']['url']);
-                                        $has_overlay_copy = ! $flat_logo_strip && ($item['overlay_channel'] !== '' || $item['overlay_title'] !== '');
-                                        $has_overlay = ! $flat_logo_strip && ($has_overlay_copy || $has_custom_overlay_icon || $item['show_youtube_icon']);
                                     @endphp
                                     <div class="horizontal-scroller-item__media">
                                         @if(is_array($item['video']) && !empty($item['video']['url']))
@@ -446,83 +408,16 @@ $live_region_id = 'horizontal-scroller-description-' . uniqid();
                                                     allowfullscreen
                                                     @if(!$item['show_video_controls']) aria-hidden="true" tabindex="-1" @endif></iframe>
                                         @endif
-                                        @if($has_overlay)
-                                            <div class="horizontal-scroller-item__overlay" aria-hidden="true">
-                                                <div class="horizontal-scroller-item__overlay-copy">
-                                                    <div class="horizontal-scroller-item__overlay-title-row">
-                                                        @if($has_custom_overlay_icon)
-                                                            <span class="horizontal-scroller-item__overlay-icon" aria-hidden="true">
-                                                                <img src="{{ esc_url($item['overlay_icon']['url']) }}"
-                                                                     alt=""
-                                                                     loading="lazy"
-                                                                     decoding="async">
-                                                            </span>
-                                                        @elseif($item['show_youtube_icon'])
-                                                            <span class="horizontal-scroller-item__overlay-icon !text-white" aria-hidden="true">
-                                                                <svg viewBox="0 0 24 24" focusable="false" fill="currentColor">
-                                                                    <path fill="currentColor" d="M23.5 7.3a3 3 0 0 0-2.1-2.1C19.5 4.7 12 4.7 12 4.7s-7.5 0-9.4.5A3 3 0 0 0 .5 7.3 31.1 31.1 0 0 0 0 12a31.1 31.1 0 0 0 .5 4.7 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31.1 31.1 0 0 0 24 12a31.1 31.1 0 0 0-.5-4.7ZM9.6 15.2V8.8l6.2 3.2-6.2 3.2Z"/>
-                                                                </svg>
-                                                            </span>
-                                                        @endif
-                                                        @if($item['overlay_title'] !== '')
-                                                            <span class="horizontal-scroller-item__overlay-title {{ $item_overlay_title_classes }} {{ $item_overlay_title_color_class }} {{ $item_overlay_title_padding_class }}">
-                                                                {!! TextFormatter::plain((string) $item['overlay_title']) !!}
-                                                            </span>
-                                                        @endif
-                                                    </div>
-                                                    @if($item['overlay_channel'] !== '')
-                                                        <span class="horizontal-scroller-item__overlay-channel {{ $item_overlay_channel_classes }} {{ $item_overlay_channel_color_class }} {{ $item_overlay_channel_padding_class }}">
-                                                            {!! TextFormatter::plain((string) $item['overlay_channel']) !!}
-                                                        </span>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        @endif
                                     </div>
                                 @elseif(($item['type'] === 'image' || $item['type'] === 'image_text') && is_array($item['image']) && !empty($item['image']['url']))
                                     @php
                                         $render_image = $item['image'];
-                                        $has_custom_overlay_icon = ! $flat_logo_strip && is_array($item['overlay_icon']) && !empty($item['overlay_icon']['url']);
-                                        $has_overlay_copy = ! $flat_logo_strip && ($item['overlay_channel'] !== '' || $item['overlay_title'] !== '');
-                                        $has_overlay = ! $flat_logo_strip && ($has_overlay_copy || $has_custom_overlay_icon || $item['show_youtube_icon']);
                                         if ($item['alt_text'] !== '') {
                                             $render_image = array_merge($render_image, ['alt' => $item['alt_text']]);
                                         }
                                     @endphp
                                     <div class="horizontal-scroller-item__media">
                                         {!! Image::render($render_image, ['size' => 'large', 'class' => 'horizontal-scroller-item__image']) !!}
-                                        @if($has_overlay)
-                                            <div class="horizontal-scroller-item__overlay" aria-hidden="true">
-                                                <div class="horizontal-scroller-item__overlay-copy">
-                                                    <div class="horizontal-scroller-item__overlay-title-row">
-                                                        @if($has_custom_overlay_icon)
-                                                            <span class="horizontal-scroller-item__overlay-icon" aria-hidden="true">
-                                                                <img src="{{ esc_url($item['overlay_icon']['url']) }}"
-                                                                     alt=""
-                                                                     loading="lazy"
-                                                                     decoding="async">
-                                                            </span>
-                                                        @elseif($item['show_youtube_icon'])
-                                                            <span class="horizontal-scroller-item__overlay-icon !text-white" aria-hidden="true">
-                                                                <svg viewBox="0 0 24 24" focusable="false" fill="currentColor">
-                                                                    <path fill="currentColor" d="M23.5 7.3a3 3 0 0 0-2.1-2.1C19.5 4.7 12 4.7 12 4.7s-7.5 0-9.4.5A3 3 0 0 0 .5 7.3 31.1 31.1 0 0 0 0 12a31.1 31.1 0 0 0 .5 4.7 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31.1 31.1 0 0 0 24 12a31.1 31.1 0 0 0-.5-4.7ZM9.6 15.2V8.8l6.2 3.2-6.2 3.2Z"/>
-                                                                </svg>
-                                                            </span>
-                                                        @endif
-                                                        @if($item['overlay_title'] !== '')
-                                                            <span class="horizontal-scroller-item__overlay-title {{ $item_overlay_title_classes }} {{ $item_overlay_title_color_class }} {{ $item_overlay_title_padding_class }}">
-                                                                {!! TextFormatter::plain((string) $item['overlay_title']) !!}
-                                                            </span>
-                                                        @endif
-                                                    </div>
-                                                    @if($item['overlay_channel'] !== '')
-                                                        <span class="horizontal-scroller-item__overlay-channel {{ $item_overlay_channel_classes }} {{ $item_overlay_channel_color_class }} {{ $item_overlay_channel_padding_class }}">
-                                                            {!! TextFormatter::plain((string) $item['overlay_channel']) !!}
-                                                        </span>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        @endif
                                     </div>
                                 @endif
 

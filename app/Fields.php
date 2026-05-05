@@ -34,5 +34,7 @@ class Fields
     {
         $flexibleContent = $this->componentRegistry->registerFlexibleContent();
         acf_add_local_field_group($flexibleContent->build());
+        Directory\ShopFields::register();
+        Directory\ShopArchiveFields::register();
     }
 }

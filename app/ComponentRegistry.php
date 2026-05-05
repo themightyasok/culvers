@@ -573,6 +573,11 @@ class ComponentRegistry
             ]
         ]);
 
+        $bodyTextToneDefault = match ($componentName) {
+            'info_block' => TailwindColors::DEFAULT_LIGHT_BAND_BODY_TEXT_TONE,
+            default => TailwindColors::DEFAULT_BODY_TEXT_TONE,
+        };
+
         $layout->addSelect('body_text_tone', [
             'label' => __('Body text colour', 'culvers'),
             'instructions' => __(
@@ -580,7 +585,7 @@ class ComponentRegistry
                 'culvers'
             ),
             'choices' => TailwindColors::bodyTextToneChoices(),
-            'default_value' => TailwindColors::DEFAULT_BODY_TEXT_TONE,
+            'default_value' => $bodyTextToneDefault,
             'return_format' => 'value',
             'wrapper' => ['width' => '50'],
         ])
@@ -687,7 +692,11 @@ class ComponentRegistry
             'text' => $layout->addText($fieldName, $options),
             'textarea' => $layout->addTextarea($fieldName, $options),
             'number' => $layout->addNumber($fieldName, $options),
+            'range' => $layout->addRange($fieldName, $options),
             'wysiwyg' => $layout->addWysiwyg($fieldName, $options),
+            'url' => $layout->addUrl($fieldName, $options),
+            'email' => $layout->addEmail($fieldName, $options),
+            'taxonomy' => $layout->addTaxonomy($fieldName, $options),
             'image' => $layout->addImage($fieldName, array_merge([
                 'return_format' => 'array',
                 'preview_size' => 'medium'

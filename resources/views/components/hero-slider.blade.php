@@ -79,6 +79,9 @@
               }
 
               $headline = trim((string) ($slide['slide_headline'] ?? ''));
+              if ($headline !== '') {
+                  $headline = preg_replace('/<br\s*\/?>/i', "\n", $headline);
+              }
               $kicker = trim((string) ($slide['slide_kicker'] ?? ''));
               $body = trim((string) ($slide['slide_body'] ?? ''));
               $ctaLabel = trim((string) ($slide['slide_cta_label'] ?? ''));

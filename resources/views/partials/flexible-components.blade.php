@@ -26,7 +26,9 @@ $templateResolver = TemplateResolver::getInstance();
       @php
         $layout = $component['acf_fc_layout'] ?? '';
         $component = $component + ComponentDefaults::get($layout);
-        $component['body_text_tone'] = TailwindColors::sanitizeBodyTextTone($component['body_text_tone'] ?? null);
+        $component['body_text_tone'] = TailwindColors::sanitizeBodyTextTone(
+            $component['body_text_tone'] ?? TailwindColors::defaultBodyTextToneForLayout($layout)
+        );
 
         $rawWidth = $component['component_width'] ?? Grid::getDefaultComponentWidth($layout);
         $componentWidth = Grid::validateComponentWidth($rawWidth);

@@ -4,135 +4,25 @@ declare(strict_types=1);
 
 namespace App\Helpers;
 
-use App\Constants\ComponentTypes;
-
 /**
- * Flexible layout `three_card_block`: normalize manual/blog cards and demo fallback.
+ * Flexible layout `three_card_block`: normalize manual/blog cards from saved ACF data.
  */
 final class ThreeCardBlock
 {
-    /** @var non-empty-string */
-    private const DEMO_VIDEO_MP4 = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4';
-
     /**
-     * Merge demo headline/body/cards when editors add an empty block (local preview friendly).
+     * Structural normalization only — no demo copy or placeholder media is injected here.
      *
      * @param  array<string, mixed>  $component
      * @return array<string, mixed>
      */
     public static function applyEditorFallback(array $component): array
     {
-        if (! apply_filters('culvers_three_card_demo_fallback', true)) {
-            return $component;
-        }
-
         $source = (string) ($component['cards_source'] ?? 'manual');
         if ($source !== 'manual' && $source !== 'blog') {
-            $source = 'manual';
             $component['cards_source'] = 'manual';
         }
 
-        /** Full starter demo only when Manual + no cards yet (does not overwrite a deliberate empty heading/body once rows exist). */
-        $manualEmptyCards = $source === 'manual' && empty($component['three_cards']);
-
-        if ($manualEmptyCards) {
-            $component['three_cards'] = self::demoRepeaterRows();
-        }
-
-        if ($manualEmptyCards && trim((string) ($component['block_heading'] ?? '')) === '') {
-            $component['block_heading'] = __('Fun for the whole family', 'culvers');
-        }
-
-        if ($manualEmptyCards && trim((string) ($component['block_body'] ?? '')) === '') {
-            $component['block_body'] = sprintf(
-                '<p>%s</p>',
-                esc_html__(
-                    'Discover shops, places to eat, and everything you need to plan your visit — all in one welcoming destination.',
-                    'culvers'
-                )
-            );
-        }
-
         return $component;
-    }
-
-    /**
-     * One flexible-content row: homepage three-up strip with video cards (used when the front page has no three-card block in ACF yet).
-     *
-     * @return array<string, mixed>
-     */
-    public static function homepageFeaturedFlexibleRow(): array
-    {
-        return [
-            'acf_fc_layout' => 'three_card_block',
-            'component_width' => 12,
-            'background_type' => ComponentTypes::BACKGROUND_NONE,
-            'body_text_tone' => TailwindColors::DEFAULT_BODY_TEXT_TONE,
-            'visibility_mobile' => 'visible',
-            'cards_source' => 'manual',
-            'block_heading' => __('Fun for the whole family', 'culvers'),
-            'block_subheading' => '',
-            'block_heading_level' => '2',
-            'block_body' => sprintf(
-                '<p>%s</p>',
-                esc_html__(
-                    'Discover shops, places to eat, and everything you need to plan your visit — all in one welcoming destination.',
-                    'culvers'
-                )
-            ),
-            'three_cards' => self::homepageVideoCardRows(),
-            'top_padding' => ComponentTypes::PADDING_MEDIUM,
-            'bottom_padding' => ComponentTypes::PADDING_MEDIUM,
-        ];
-    }
-
-    /**
-     * Three manual cards with looping video (homepage default until replaced in the editor).
-     *
-     * @return list<array<string, mixed>>
-     */
-    public static function homepageVideoCardRows(): array
-    {
-        $demoUrl = self::DEMO_VIDEO_MP4;
-
-        return [
-            [
-                'card_title' => __('Shop', 'culvers'),
-                'card_url' => home_url('/shopping/'),
-                'card_media_type' => 'video',
-                'card_video' => [
-                    'url' => $demoUrl,
-                    'mime_type' => 'video/mp4',
-                ],
-                'card_image' => null,
-                'card_video_poster' => null,
-                'card_image_alt' => '',
-            ],
-            [
-                'card_title' => __('Eat & Drink', 'culvers'),
-                'card_url' => home_url('/dining/'),
-                'card_media_type' => 'video',
-                'card_video' => [
-                    'url' => $demoUrl,
-                    'mime_type' => 'video/mp4',
-                ],
-                'card_image' => null,
-                'card_video_poster' => null,
-                'card_image_alt' => '',
-            ],
-            [
-                'card_title' => __('Plan My Visit', 'culvers'),
-                'card_url' => home_url('/visit/'),
-                'card_media_type' => 'video',
-                'card_video' => [
-                    'url' => $demoUrl,
-                    'mime_type' => 'video/mp4',
-                ],
-                'card_image' => null,
-                'card_video_poster' => null,
-                'card_image_alt' => '',
-            ],
-        ];
     }
 
     /**
@@ -159,14 +49,6 @@ final class ThreeCardBlock
     }
 
     /**
-     * @return list<array<string, mixed>>
-     */
-    public static function demoRepeaterRows(): array
-    {
-        return self::homepageVideoCardRows();
-    }
-
-    /**
      * @param  list<array<string, mixed>>|array<string, mixed>  $rows
      * @return list<array<string, mixed>>
      */
@@ -185,13 +67,11 @@ final class ThreeCardBlock
             }
 
             /** @var array<string, mixed>|null $img */
-            $img = isset($row['card_image']) && is_array($row['card_image']) ? $row['card_image'] : null;
+            $img = self::normalizeAcfFileField($row['card_image'] ?? null);
             /** @var array<string, mixed>|null $vid */
-            $vid = isset($row['card_video']) && is_array($row['card_video']) ? $row['card_video'] : null;
+            $vid = self::normalizeAcfFileField($row['card_video'] ?? null, true);
             /** @var array<string, mixed>|null $poster */
-            $poster = isset($row['card_video_poster']) && is_array($row['card_video_poster'])
-                ? $row['card_video_poster']
-                : null;
+            $poster = self::normalizeAcfFileField($row['card_video_poster'] ?? null);
 
             $alt = trim((string) ($row['card_image_alt'] ?? ''));
 
@@ -215,6 +95,41 @@ final class ThreeCardBlock
         }
 
         return $out;
+    }
+
+    /**
+     * Resolve ACF image/file fields saved as arrays or attachment IDs.
+     *
+     * @return array<string, mixed>|null
+     */
+    private static function normalizeAcfFileField(mixed $field, bool $isVideo = false): ?array
+    {
+        if (is_array($field) && ! empty($field['url'])) {
+            return $field;
+        }
+
+        if (! is_numeric($field) || (int) $field <= 0) {
+            return null;
+        }
+
+        $id = (int) $field;
+        $url = wp_get_attachment_url($id);
+        if (! is_string($url) || $url === '') {
+            return null;
+        }
+
+        $mime = (string) (get_post_mime_type($id) ?: '');
+        if ($isVideo && $mime !== '' && ! str_starts_with($mime, 'video/')) {
+            return null;
+        }
+
+        $row = [
+            'url' => $url,
+            'mime_type' => $isVideo ? ($mime !== '' ? $mime : 'video/mp4') : $mime,
+            'alt' => trim((string) get_post_meta($id, '_wp_attachment_image_alt', true)),
+        ];
+
+        return $row;
     }
 
     /**

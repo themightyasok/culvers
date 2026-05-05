@@ -14,12 +14,26 @@ class TailwindColors
 {
     public const DEFAULT_BODY_TEXT_TONE = 'text-zinc-100';
 
+    /** Prose on light bands (e.g. info grid intro): editors can override via Body text colour. */
+    public const DEFAULT_LIGHT_BAND_BODY_TEXT_TONE = 'text-deep-moss';
+
     /**
      * Body / prose tone presets — subset of slugs that must exist in `@theme`.
      *
      * @var array<int, string>
      */
-    private const BODY_TEXT_SLUGS = ['zinc-100', 'white', 'zinc-300', 'text-muted', 'brand-500'];
+    private const BODY_TEXT_SLUGS = ['zinc-100', 'white', 'zinc-300', 'text-muted', 'brand-500', 'deep-moss'];
+
+    /**
+     * Fallback tone when the layout omits `body_text_tone` (ACF default + sanitized payloads).
+     */
+    public static function defaultBodyTextToneForLayout(string $layout): string
+    {
+        return match ($layout) {
+            'info_block' => self::DEFAULT_LIGHT_BAND_BODY_TEXT_TONE,
+            default => self::DEFAULT_BODY_TEXT_TONE,
+        };
+    }
 
     /**
      * @return array<int, string>
@@ -115,6 +129,7 @@ class TailwindColors
             'zinc-300' => __('Soft gray', 'culvers'),
             'text-muted' => __('Semantic muted', 'culvers'),
             'brand-500' => __('Brand bright', 'culvers'),
+            'deep-moss' => __('Deep moss', 'culvers'),
             default => ucwords(str_replace('-', ' ', $slug)),
         };
     }

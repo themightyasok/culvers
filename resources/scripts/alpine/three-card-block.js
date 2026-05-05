@@ -1,5 +1,6 @@
 /**
- * Three card block: optional category tabs; video cards show first frame only (poster or primed decode).
+ * Three card block: optional category tabs; video plays on hover/focus-in.
+ * Idle video cards always show decoded frame 0 (never a separate poster bitmap on `<video>`).
  *
  * @param {import('alpinejs').Alpine} Alpine
  */
@@ -10,7 +11,10 @@ export default function registerThreeCardBlockAlpine(Alpine) {
     selectTab(index) {
       this.activeTab = index;
       this.syncTabAccessibility();
-      this.$nextTick(() => this.primeVideoFirstFrames());
+      this.$nextTick(() => {
+        this.primeVideoFirstFrames();
+        this.bindVideoHoverPlayback();
+      });
     },
 
     syncTabAccessibility() {
@@ -30,8 +34,7 @@ export default function registerThreeCardBlockAlpine(Alpine) {
     },
 
     /**
-     * Without an image poster, browsers keep `<video>` blank until metadata loads / play().
-     * Prime the first decoded frame for cards flagged `data-needs-frame-poster="1"`.
+     * Pause at frame 0 so the first decoded raster shows until hover/play (HAVE_CURRENT_DATA+).
      */
     primeVideoFirstFrames() {
       const root = this.$root;
@@ -39,42 +42,115 @@ export default function registerThreeCardBlockAlpine(Alpine) {
         return;
       }
 
-      root
-        .querySelectorAll('[data-three-card-video][data-needs-frame-poster="1"]')
-        .forEach((el) => {
-          if (!(el instanceof HTMLVideoElement)) {
-            return;
-          }
+      root.querySelectorAll('[data-three-card-video]').forEach((el) => {
+        if (!(el instanceof HTMLVideoElement)) {
+          return;
+        }
 
-          const paintFirstFrame = () => {
+        const snapToFirstFrame = () => {
+          try {
+            el.pause();
+          } catch {
+            /* ignore */
+          }
+          try {
+            el.currentTime = 0;
+          } catch {
+            /* ignore */
+          }
+          requestAnimationFrame(() => {
             try {
               el.pause();
-              el.currentTime = 0;
             } catch {
               /* ignore */
             }
-          };
+          });
+        };
 
+        const tryNow = () => {
           if (el.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
-            paintFirstFrame();
+            snapToFirstFrame();
+            return true;
+          }
+          return false;
+        };
 
+        if (tryNow()) {
+          return;
+        }
+
+        let painted = false;
+        const oncePaint = () => {
+          if (painted) {
             return;
           }
+          painted = true;
+          snapToFirstFrame();
+        };
 
-          el.addEventListener('loadeddata', paintFirstFrame, { once: true });
-          el.addEventListener(
-            'error',
-            () => {
-              el.removeEventListener('loadeddata', paintFirstFrame);
-            },
-            { once: true }
-          );
-        });
+        el.addEventListener('loadeddata', oncePaint, { once: true });
+        el.addEventListener('canplay', oncePaint, { once: true });
+      });
+    },
+
+    bindVideoHoverPlayback() {
+      const root = this.$root;
+      if (!(root instanceof HTMLElement)) {
+        return;
+      }
+
+      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        return;
+      }
+
+      root.querySelectorAll('a.three-card-block__card').forEach((card) => {
+        if (!(card instanceof HTMLElement)) {
+          return;
+        }
+        if (card.dataset.culversThreeCardHover === '1') {
+          return;
+        }
+
+        const video = card.querySelector('[data-three-card-video]');
+        if (!(video instanceof HTMLVideoElement)) {
+          return;
+        }
+
+        card.dataset.culversThreeCardHover = '1';
+
+        const playClip = () => {
+          video.play().catch(() => {});
+        };
+
+        const pauseAtStart = () => {
+          video.pause();
+          try {
+            video.currentTime = 0;
+          } catch {
+            /* ignore */
+          }
+          requestAnimationFrame(() => {
+            try {
+              video.pause();
+            } catch {
+              /* ignore */
+            }
+          });
+        };
+
+        card.addEventListener('mouseenter', playClip);
+        card.addEventListener('mouseleave', pauseAtStart);
+        card.addEventListener('focusin', playClip);
+        card.addEventListener('focusout', pauseAtStart);
+      });
     },
 
     init() {
       this.syncTabAccessibility();
-      this.$nextTick(() => this.primeVideoFirstFrames());
+      this.$nextTick(() => {
+        this.primeVideoFirstFrames();
+        this.bindVideoHoverPlayback();
+      });
     },
   }));
 }

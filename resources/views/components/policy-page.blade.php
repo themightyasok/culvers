@@ -54,7 +54,7 @@
             @endif
             @if($body !== '')
               <div
-                class="policy-page__body prose prose-neutral max-w-none font-sans text-base leading-relaxed text-deep-moss prose-headings:font-heading prose-headings:text-deep-moss prose-p:text-deep-moss prose-li:text-deep-moss prose-strong:text-deep-moss [&_a]:text-deep-moss [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 hover:[&_a]:decoration-deep-moss md:text-[17px] md:leading-[1.65]">
+                class="policy-page__body prose max-w-none font-sans text-base leading-relaxed text-deep-moss prose-headings:font-heading prose-headings:text-deep-moss prose-p:text-deep-moss prose-li:text-deep-moss prose-strong:text-deep-moss [&_a]:text-deep-moss [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 hover:[&_a]:decoration-deep-moss md:text-[17px] md:leading-[1.65]">
                 {!! $body !!}
               </div>
             @endif

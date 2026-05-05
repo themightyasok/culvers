@@ -19,6 +19,14 @@ use App\Assets\FrontendAssets;
 FrontendAssets::register();
 
 add_action('init', static function (): void {
+    Directory\DirectoryPostTypes::register();
+}, 5);
+
+add_action('init', static function (): void {
+    Directory\ShopTaxonomySeeder::maybeSeed();
+}, 15);
+
+add_action('init', static function (): void {
     Nav\NavMenuItemMeta::register();
 }, 20);
 
@@ -29,6 +37,10 @@ add_action('init', static function (): void {
 add_action('init', static function (): void {
     Nav\CulverSquareFigmaPrimaryMenu::maybeHydratePreviewAttachments();
 }, 125);
+
+add_action('init', static function (): void {
+    Nav\ShopDirectoryNavSync::maybeSync();
+}, 126);
 
 add_action('init', static function (): void {
     Nav\CulverSquareFigmaFooterMenus::maybeInstall();

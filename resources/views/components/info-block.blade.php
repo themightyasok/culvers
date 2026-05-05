@@ -5,7 +5,9 @@
   $c = is_array($component ?? null) ? $component : [];
   $padding = Padding::getClasses($c);
   $grid = $c['_grid_classes'] ?? '';
-  $tone = TailwindColors::sanitizeBodyTextTone($c['body_text_tone'] ?? null);
+  $tone = TailwindColors::sanitizeBodyTextTone(
+      $c['body_text_tone'] ?? TailwindColors::DEFAULT_LIGHT_BAND_BODY_TEXT_TONE
+  );
 
   $heading = trim((string) ($c['heading'] ?? ''));
   $level = isset($c['heading_semantic_level']) ? (int) $c['heading_semantic_level'] : 2;
@@ -84,7 +86,7 @@
           @endif
           @if(trim(strip_tags($body)) !== '')
             <div
-              class="info-block__body prose prose-neutral prose-lg mx-auto mt-6 max-w-none text-left md:text-center [&_a]:text-deep-moss [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 {{ esc_attr($tone) }}">
+              class="info-block__body prose prose-lg mx-auto mt-6 max-w-none text-left md:text-center text-deep-moss prose-headings:text-deep-moss prose-p:text-deep-moss prose-li:text-deep-moss prose-strong:text-deep-moss [&_a]:text-deep-moss [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 hover:[&_a]:decoration-deep-moss {{ esc_attr($tone) }}">
               {!! $body !!}
             </div>
           @endif

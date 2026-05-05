@@ -23,7 +23,7 @@
 
   @if(! empty($c['body']))
     <div
-      class="prose prose-neutral prose-lg max-w-none [&_a]:text-deep-moss [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 {{ esc_attr($tone) }}">
+      class="prose prose-lg max-w-none text-deep-moss prose-headings:text-deep-moss prose-p:text-deep-moss prose-li:text-deep-moss prose-strong:text-deep-moss [&_a]:text-deep-moss [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 hover:[&_a]:decoration-deep-moss {{ esc_attr($tone) }}">
       {!! $c['body'] !!}
     </div>
   @endif

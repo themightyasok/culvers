@@ -119,6 +119,8 @@ sh_export("PHP_BIN", php_home)
 PY
 )"
 
+export MYSQL_HOME PHPRC SITE_RUN SITE_ID
+
 export WP_CLI_CONFIG_PATH="${LOCAL_APP_WP_CLI}/config.yaml"
 export WP_CLI_DISABLE_AUTO_CHECK_UPDATE=1
 export PATH="${MYSQL_BIN}:${PHP_BIN}:${LOCAL_APP_WP_CLI}/posix:${PATH}"

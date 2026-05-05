@@ -16,7 +16,6 @@ return [
             'type' => 'text',
             'options' => [
                 'label' => __('Heading', 'culvers'),
-                'default_value' => __('A glimpse of what we have to offer', 'culvers'),
             ],
         ],
         'heading_semantic_level' => [
@@ -55,7 +54,6 @@ return [
             'options' => [
                 'label' => __('CTA label', 'culvers'),
                 'instructions' => __('Leave blank to hide the button.', 'culvers'),
-                'default_value' => __('Plan my visit', 'culvers'),
             ],
         ],
         'info_cta_url' => [

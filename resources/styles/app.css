@@ -9,6 +9,7 @@
 @import '@splidejs/splide/css';
 
 @import './components/horizontal-scroller.css';
+@import './components/directory-archive.css';
 
 @layer base {
   /*

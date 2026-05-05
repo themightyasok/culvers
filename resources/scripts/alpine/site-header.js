@@ -129,11 +129,24 @@ export default function registerSiteHeaderAlpine(Alpine) {
       if (!(el instanceof HTMLElement)) {
         return;
       }
-      const url = el.dataset.previewUrl;
-      if (url) {
-        this.previewSrc = url;
-        this.previewAlt = el.textContent?.trim() ?? '';
+      let url = typeof el.dataset.previewUrl === 'string' ? el.dataset.previewUrl.trim() : '';
+      if (!url) {
+        const list = el.closest('[data-mega-parent-id]');
+        const pid = list?.dataset?.megaParentId;
+        if (pid) {
+          const row = this.readMegaDefault(pid);
+          url = typeof row.preview === 'string' ? row.preview.trim() : '';
+          this.previewSrc = url;
+          this.previewAlt =
+            url !== '' ? row.alt || el.textContent?.trim() || '' : (el.textContent?.trim() ?? '');
+
+          return;
+        }
+
+        return;
       }
+      this.previewSrc = url;
+      this.previewAlt = el.textContent?.trim() ?? '';
     },
 
     // --- Search --------------------------------------------------------------

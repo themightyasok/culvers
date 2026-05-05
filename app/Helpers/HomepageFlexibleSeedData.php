@@ -7,18 +7,14 @@ namespace App\Helpers;
 use App\Constants\ComponentTypes;
 
 /**
- * Full homepage flexible-content stack when the front page has no saved rows yet.
- * Copy and raster URLs are taken from the Culver Square Figma developer-release homepage
- * (exported assets expire after ~7 days — replace in the CMS when needed).
+ * Canonical homepage flexible rows — same structure/copy/assets as the former runtime defaults.
+ * Used only when persisting to the database (WP-CLI); the theme does not merge this at render time.
  *
  * @see https://www.figma.com/design/KoBl6rTY98YnvusBgKLx4A/Culver-Square-Website-Design--Developer-Release-
  */
-final class HomepageFlexibleDefaults
+final class HomepageFlexibleSeedData
 {
-    /** Same placeholder clip used elsewhere in the theme for video components. */
     private const DEMO_VIDEO_MP4 = 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4';
-
-    // —— Figma MCP asset URLs (homepage frames) ——
 
     private const FIGMA_HERO_MAIN = 'https://www.figma.com/api/mcp/asset/7b3fa9c0-91a0-4835-809f-e76b8b57221b';
 
@@ -30,7 +26,6 @@ final class HomepageFlexibleDefaults
 
     private const FIGMA_VIDEO_POSTER = 'https://www.figma.com/api/mcp/asset/477b40bd-356a-45e4-a1ba-e7fc2049cbd7';
 
-    /** Brand strip (horizontal scroller). */
     private const FIGMA_SCROLL_LOGO_1 = 'https://www.figma.com/api/mcp/asset/2e9aa2d9-812b-454e-a10a-5c4c9e96bdee';
 
     private const FIGMA_SCROLL_LOGO_2 = 'https://www.figma.com/api/mcp/asset/02822726-b0f9-456d-9042-44dd97100251';
@@ -43,14 +38,12 @@ final class HomepageFlexibleDefaults
 
     private const FIGMA_SCROLL_LOGO_6 = 'https://www.figma.com/api/mcp/asset/8ba40165-250b-4f43-8f8a-d4a4cdbc4fb6';
 
-    /** Blog / events strip posters (left → right as in Figma). */
     private const FIGMA_POST_EASTER = 'https://www.figma.com/api/mcp/asset/8732e173-c4a0-40a4-9132-a0e855137225';
 
     private const FIGMA_POST_SANTA = 'https://www.figma.com/api/mcp/asset/b2c711f4-f628-4baf-8d52-fe5c860c3f0f';
 
     private const FIGMA_POST_MOTHERS = 'https://www.figma.com/api/mcp/asset/ead4bdb3-8fc5-4c5d-9a54-4e97e72dfb13';
 
-    /** Opening hours illustrations. */
     private const FIGMA_HOURS_GRAPHIC_LEFT = 'https://www.figma.com/api/mcp/asset/0fdbac2d-b291-4f77-95db-c2389a0f98c5';
 
     private const FIGMA_HOURS_GRAPHIC_RIGHT = 'https://www.figma.com/api/mcp/asset/76420588-4f2c-4e56-a519-5532a0f303f4';
@@ -73,6 +66,7 @@ final class HomepageFlexibleDefaults
             self::openingHoursRow(),
         ];
 
+        /** @var list<array<string, mixed>> */
         return apply_filters('culvers_homepage_flexible_defaults', $rows);
     }
 
@@ -98,7 +92,6 @@ final class HomepageFlexibleDefaults
     private static function heroSliderRow(): array
     {
         return array_merge(self::base('hero_slider'), [
-            'component_width' => 'full',
             'top_padding' => ComponentTypes::PADDING_NONE,
             'bottom_padding' => ComponentTypes::PADDING_NONE,
             'hero_content_align' => 'center',
@@ -205,9 +198,7 @@ final class HomepageFlexibleDefaults
             'subheading_text_color' => 'text-deep-moss',
             'body_text_color' => 'text-deep-moss',
             'intro_flush_to_content' => true,
-            'scroll_strip_flat_logos' => true,
-            'scroll_strip_edge_to_edge' => true,
-            'media_object_fit' => 'contain',
+            'scroll_strip_item_spacing' => 560,
             'button_variant' => 'primary',
             'button_show_arrow' => true,
             'header_text' => sprintf('<p>%s</p>', esc_html__('Home to great brands', 'culvers')),
@@ -273,8 +264,6 @@ final class HomepageFlexibleDefaults
     }
 
     /**
-     * Manual three-up matching Figma seasonal posts (switch to blog + categories in the CMS if preferred).
-     *
      * @return array<string, mixed>
      */
     private static function threeColBlogRow(): array

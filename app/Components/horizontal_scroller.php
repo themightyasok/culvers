@@ -21,7 +21,6 @@ $componentFields = [
             'label' => 'Header Text',
             'instructions' => 'Enter the main heading text for the horizontal scroller section. HTML is supported.',
             'required' => 0,
-            'default_value' => 'Horizontal Scroller',
             'media_upload' => 0,
             'toolbar' => 'basic',
         ],
@@ -85,32 +84,6 @@ $componentFields = [
             'instructions' => 'Remove the default gap below the header block so the intro sits directly above the card row (e.g. “Over X artists…” as the title for the scroller).',
             'default_value' => 0,
             'ui' => 1,
-        ],
-    ],
-    'scroll_strip_flat_logos' => [
-        'type' => 'true_false',
-        'options' => [
-            'label' => __('Flat logo strip', 'culvers'),
-            'instructions' => __(
-                'Hide overlays and gradient on strip media, remove card rounding, and skip auto-labels from alt text. Best with “Contain” image fit for raw partner logos.',
-                'culvers'
-            ),
-            'default_value' => 0,
-            'ui' => 1,
-            'wrapper' => ['width' => '50'],
-        ],
-    ],
-    'scroll_strip_edge_to_edge' => [
-        'type' => 'true_false',
-        'options' => [
-            'label' => __('Edge-to-edge strip', 'culvers'),
-            'instructions' => __(
-                'Let the scrolling logo row span the full viewport width (intro block above stays in the main grid).',
-                'culvers'
-            ),
-            'default_value' => 0,
-            'ui' => 1,
-            'wrapper' => ['width' => '50'],
         ],
     ],
     'button_text' => [
@@ -195,39 +168,29 @@ $componentFields = [
             'wrapper' => ['width' => '50'],
         ],
     ],
-    'wider_item_gaps' => [
-        'type' => 'true_false',
+    'scroll_strip_item_spacing' => [
+        'type' => 'range',
         'options' => [
-            'label' => 'Wider gaps between items',
-            'instructions' => 'Off: standard spacing between scroller items (default). On: larger gaps.',
-            'default_value' => 0,
-            'ui' => 1,
-            'wrapper' => ['width' => '50'],
+            'label' => __('Space between strip items', 'culvers'),
+            'instructions' => __(
+                'Horizontal gap between logos/media in the scrolling row '
+                    . '(also applies when scroll is disabled). Very high values are allowed '
+                    . 'for extremely loose strips (up to 6000px).',
+                'culvers'
+            ),
+            'default_value' => 240,
+            'min' => 12,
+            'max' => 6000,
+            'step' => 32,
+            'append' => 'px',
         ],
     ],
     'msg_scroll_cards_media' => [
         'type' => 'message',
         'options' => [
-            'message' => '<strong>Floating row</strong><br>Settings below apply to every image and video in this scroller.',
+            'message' => '<strong>Floating row</strong><br>Strip media is always flat (no gradient overlay). '
+                . 'The row spans the full viewport width. Settings below apply to each item.',
             'new_lines' => 'br',
-        ],
-    ],
-    'media_object_fit' => [
-        'type' => 'select',
-        'options' => [
-            'label' => 'Image & video fit (all cards)',
-            'instructions' => __(
-                'Cover fills the frame (may crop). Contain keeps the full image visible without stretching—'
-                . 'use for logos and brand marks. One setting for the whole component.',
-                'culvers'
-            ),
-            'choices' => [
-                'cover' => 'Cover (fill frame)',
-                'contain' => 'Contain (no stretch)',
-            ],
-            'default_value' => 'cover',
-            'allow_null' => 0,
-            'wrapper' => ['width' => '50'],
         ],
     ],
     'scroll_cards' => [
@@ -331,45 +294,6 @@ $componentFields = [
                         'required' => 0,
                         'rows' => 4,
                         'placeholder' => 'Additional supporting text',
-                    ],
-                ],
-                'item_channel_name' => [
-                    'type' => 'text',
-                    'options' => [
-                        'label' => 'Overlay Channel Name (Optional)',
-                        'instructions' => 'Shown in the media overlay as channel/creator name.',
-                        'required' => 0,
-                        'placeholder' => 'Channel name',
-                    ],
-                ],
-                'item_video_title' => [
-                    'type' => 'text',
-                    'options' => [
-                        'label' => 'Overlay Video Title (Optional)',
-                        'instructions' => 'Shown in the media overlay as the video title.',
-                        'required' => 0,
-                        'placeholder' => 'How this soundtrack changed my edit',
-                    ],
-                ],
-                'item_show_youtube_icon' => [
-                    'type' => 'true_false',
-                    'options' => [
-                        'label' => 'Show YouTube Icon in Overlay',
-                        'instructions' => 'Display a YouTube icon in the media overlay.',
-                        'default_value' => 0,
-                        'ui' => 1,
-                    ],
-                ],
-                'item_overlay_icon' => [
-                    'type' => 'image',
-                    'options' => [
-                        'label' => 'Overlay Icon (Optional)',
-                        'instructions' => 'Optional custom icon for this card overlay (e.g. TikTok, ' .
-                            'Instagram). If empty, YouTube icon can be used.',
-                        'required' => 0,
-                        'return_format' => 'array',
-                        'preview_size' => 'thumbnail',
-                        'library' => 'all',
                     ],
                 ],
                 'image' => [
@@ -668,79 +592,6 @@ $componentFields = [
             'wrapper' => ['width' => '50'],
         ],
     ],
-    'item_overlay_channel_size' => [
-        'type' => 'select',
-        'options' => [
-            'label' => 'Overlay Channel Size',
-            'choices' => Typography::getBodySizeChoices(),
-            'default_value' => 'text-sm',
-            'allow_null' => 0,
-            'wrapper' => ['width' => '50'],
-        ],
-    ],
-    'item_overlay_channel_weight' => [
-        'type' => 'radio',
-        'options' => [
-            'label' => 'Overlay Channel Weight',
-            'choices' => Typography::getWeightChoices(),
-            'layout' => 'horizontal',
-            'default_value' => 'font-medium',
-            'allow_null' => 0,
-            'wrapper' => ['width' => '50'],
-        ],
-    ],
-    'item_overlay_title_size' => [
-        'type' => 'select',
-        'options' => [
-            'label' => 'Overlay Title Size',
-            'choices' => Typography::getBodySizeChoices(),
-            'default_value' => 'text-xl',
-            'allow_null' => 0,
-            'wrapper' => ['width' => '50'],
-        ],
-    ],
-    'item_overlay_title_weight' => [
-        'type' => 'radio',
-        'options' => [
-            'label' => 'Overlay Title Weight',
-            'choices' => Typography::getWeightChoices(),
-            'layout' => 'horizontal',
-            'default_value' => 'font-medium',
-            'allow_null' => 0,
-            'wrapper' => ['width' => '50'],
-        ],
-    ],
-    'item_overlay_channel_color' => [
-        'type' => 'select',
-        'options' => [
-            'label' => 'Overlay Channel Color',
-            'choices' => [
-                'text-white' => 'White',
-                'text-white/80' => 'White (muted)',
-                'text-black' => 'Black',
-                'text-brand-500' => __('Brand bright', 'culvers'),
-                'text-deep-moss' => __('Deep moss', 'culvers'),
-            ],
-            'default_value' => 'text-white/80',
-            'allow_null' => 0,
-            'wrapper' => ['width' => '50'],
-        ],
-    ],
-    'item_overlay_title_color' => [
-        'type' => 'select',
-        'options' => [
-            'label' => 'Overlay Title Color',
-            'choices' => [
-                'text-white' => 'White',
-                'text-black' => 'Black',
-                'text-brand-500' => __('Brand bright', 'culvers'),
-                'text-deep-moss' => __('Deep moss', 'culvers'),
-            ],
-            'default_value' => 'text-white',
-            'allow_null' => 0,
-            'wrapper' => ['width' => '50'],
-        ],
-    ],
     'tab_padding' => [
         'type' => 'tab',
         'options' => ['label' => 'Padding'],
@@ -900,46 +751,6 @@ $componentFields = [
         'type' => 'select',
         'options' => [
             'label' => 'Item Body Padding Below',
-            'choices' => Padding::getHeaderSubheaderPaddingChoices(),
-            'default_value' => 'none',
-            'allow_null' => 0,
-            'wrapper' => ['width' => '50'],
-        ],
-    ],
-    'item_overlay_channel_padding_top' => [
-        'type' => 'select',
-        'options' => [
-            'label' => 'Overlay Channel Padding Above',
-            'choices' => Padding::getHeaderSubheaderPaddingChoices(),
-            'default_value' => 'none',
-            'allow_null' => 0,
-            'wrapper' => ['width' => '50'],
-        ],
-    ],
-    'item_overlay_channel_padding_bottom' => [
-        'type' => 'select',
-        'options' => [
-            'label' => 'Overlay Channel Padding Below',
-            'choices' => Padding::getHeaderSubheaderPaddingChoices(),
-            'default_value' => 'none',
-            'allow_null' => 0,
-            'wrapper' => ['width' => '50'],
-        ],
-    ],
-    'item_overlay_title_padding_top' => [
-        'type' => 'select',
-        'options' => [
-            'label' => 'Overlay Title Padding Above',
-            'choices' => Padding::getHeaderSubheaderPaddingChoices(),
-            'default_value' => 'none',
-            'allow_null' => 0,
-            'wrapper' => ['width' => '50'],
-        ],
-    ],
-    'item_overlay_title_padding_bottom' => [
-        'type' => 'select',
-        'options' => [
-            'label' => 'Overlay Title Padding Below',
             'choices' => Padding::getHeaderSubheaderPaddingChoices(),
             'default_value' => 'none',
             'allow_null' => 0,

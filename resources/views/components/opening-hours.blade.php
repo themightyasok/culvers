@@ -84,7 +84,7 @@
           @endif
           @if(trim(strip_tags($body)) !== '')
             <div
-              class="opening-hours__body prose prose-neutral prose-lg mt-6 max-w-none text-left md:text-center [&_a]:text-deep-moss [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 {{ esc_attr($tone) }}">
+              class="opening-hours__body prose prose-lg mt-6 max-w-none text-left md:text-center text-deep-moss prose-headings:text-deep-moss prose-p:text-deep-moss prose-li:text-deep-moss prose-strong:text-deep-moss [&_a]:text-deep-moss [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 hover:[&_a]:decoration-deep-moss {{ esc_attr($tone) }}">
               {!! $body !!}
             </div>
           @endif

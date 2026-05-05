@@ -219,7 +219,7 @@
                       }
                   }
                   $fp = $firstPreview !== '' ? esc_url($firstPreview) : '';
-                  $fpJson = json_encode($fp, JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES);
+                  $fpJs = json_encode($fp, JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES);
                 @endphp
                 <div
                   id="mega-panel-{{ $branch['id'] }}"
@@ -254,14 +254,23 @@
                           @endif
                         </div>
                         <hr class="mt-5 max-w-[525px] border-light-brown/35" />
-                        <ul class="mt-[26px] flex max-w-[525px] flex-col gap-[18px]">
+                        <ul
+                          class="mt-[26px] flex max-w-[525px] flex-col gap-[18px]"
+                          data-mega-parent-id="{{ $branch['id'] }}">
                           @foreach($branch['children'] as $child)
+                            @php
+                              $childHoverPreview =
+                                  ($child['preview'] ?? '') !== ''
+                                      ? (string)($child['preview'] ?? '')
+                                      : $fp;
+                            @endphp
                             <li class="list-none">
                               <a
                                 class="mega-nav__sublink inline-block font-sans text-[22px] leading-6 text-faded-olive transition-colors hover:text-deep-moss focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-faded-olive"
                                 href="{{ esc_url($child['url']) }}"
-                                @if($child['preview'] !== '') data-preview-url="{{ esc_url($child['preview']) }}" @endif
-                                x-on:mouseenter="setPreviewFromEvent($event)">
+                                data-preview-url="{{ $childHoverPreview !== '' ? esc_url($childHoverPreview) : '' }}"
+                                x-on:mouseenter="setPreviewFromEvent($event)"
+                                x-on:focus="setPreviewFromEvent($event)">
                                 {{ $child['title'] }}
                               </a>
                             </li>
@@ -296,9 +305,9 @@
                           <img
                             alt=""
                             class="absolute inset-0 size-full object-cover"
-                            x-bind:src="megaOpenId === {{ $branch['id'] }} ? (previewSrc || {!! $fpJson !!}) : {!! $fpJson !!}"
-                            x-bind:alt="megaOpenId === {{ $branch['id'] }} ? previewAlt : ''"
-                            x-show="(megaOpenId === {{ $branch['id'] }} ? (previewSrc || {!! $fpJson !!}) : {!! $fpJson !!}).length > 0" />
+                            x-bind:src='megaOpenId === {{ $branch['id'] }} ? (previewSrc || {!! $fpJs !!}) : {!! $fpJs !!}'
+                            x-bind:alt='megaOpenId === {{ $branch['id'] }} ? previewAlt : ""'
+                            x-show='(megaOpenId === {{ $branch['id'] }} ? (previewSrc || {!! $fpJs !!}) : {!! $fpJs !!}).length > 0' />
                         </div>
                       </div>
                     </div>

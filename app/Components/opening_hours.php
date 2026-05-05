@@ -16,7 +16,6 @@ return [
             'type' => 'text',
             'options' => [
                 'label' => __('Heading', 'culvers'),
-                'default_value' => __('Opening hours', 'culvers'),
             ],
         ],
         'heading_semantic_level' => [

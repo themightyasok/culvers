@@ -1,0 +1,110 @@
+/**
+ * Shopping directory archive — Figma frames 51:5152 (4-col, filters hidden) & 51:7183 (3-col + sidebar).
+ *
+ * Sidebar + tiles: two-column CSS Grid; filter panel snaps open/closed (no layout transition).
+ */
+
+.directory-archive__main-row {
+  display: grid;
+  align-items: start;
+  row-gap: 14px;
+  column-gap: 0;
+}
+
+@media (max-width: 1023px) {
+  .directory-archive__main-row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .directory-archive__main-row {
+    grid-template-columns: 0px minmax(0, 1fr);
+  }
+
+  .directory-archive__main-row.directory-archive__main-row--filters-visible {
+    grid-template-columns: 325px minmax(0, 1fr);
+    column-gap: 22px;
+  }
+}
+
+.directory-archive__grid {
+  display: grid;
+  gap: 14px;
+  align-items: start;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  .directory-archive__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .directory-archive__grid {
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 252px), 1fr));
+  }
+}
+
+.directory-archive__grid > .directory-shop-card {
+  justify-self: start;
+  width: 100%;
+  max-width: 336px;
+}
+
+.directory-archive__grid--animating .directory-shop-card {
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s ease;
+}
+
+/* Sidebar radios — 12px circles (Figma filter panel). */
+.directory-archive__radio {
+  box-sizing: border-box;
+  height: 12px;
+  width: 12px;
+  flex-shrink: 0;
+  border-radius: 9999px;
+  border: 1px solid var(--color-faded-olive, #4f5438);
+  background-color: var(--color-white, #fff);
+}
+
+.directory-archive__radio--checked {
+  border-color: var(--color-glowleaf, #d4ff50);
+  background-color: var(--color-glowleaf, #d4ff50);
+  box-shadow: inset 0 0 0 2px var(--color-white, #fff);
+}
+
+.directory-archive__filter-option--on span:last-child {
+  color: var(--color-deep-moss, #2e301e);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  line-height: 24px;
+  text-transform: uppercase;
+}
+
+.directory-archive__filter-option--off span:last-child {
+  color: var(--color-faded-olive, #4f5438);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  line-height: 24px;
+  text-transform: uppercase;
+}
+
+/* Hover storefront image — stacked gradients (matches H&M tile treatment). */
+.directory-shop-card__photo-overlay {
+  background-image:
+    linear-gradient(90deg, rgb(0 0 0 / 10%) 0%, rgb(0 0 0 / 10%) 100%),
+    linear-gradient(180deg, rgb(0 0 0 / 0%) 0%, rgb(0 0 0 / 20%) 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .directory-shop-card__hover-photo,
+  .directory-shop-card__photo-overlay,
+  .directory-shop-card__logo-slot {
+    transition-duration: 0.01ms !important;
+  }
+}

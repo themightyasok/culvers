@@ -30,7 +30,6 @@ return [
             'type' => 'text',
             'options' => [
                 'label' => __('Heading', 'culvers'),
-                'default_value' => __('Fun for the whole family', 'culvers'),
             ],
         ],
         'block_subheading' => [
@@ -62,13 +61,6 @@ return [
                 'tabs' => 'all',
                 'toolbar' => 'full',
                 'media_upload' => 1,
-                'default_value' => sprintf(
-                    '<p>%s</p>',
-                    esc_html__(
-                        'Discover shops, places to eat, and everything you need to plan your visit — all in one welcoming destination.',
-                        'culvers'
-                    )
-                ),
             ],
         ],
         'three_cards' => [
@@ -121,17 +113,10 @@ return [
                         'type' => 'image',
                         'options' => [
                             'label' => __('Image', 'culvers'),
+                            'instructions' => __('Used when media type is Image (ignored for video cards).', 'culvers'),
                             'return_format' => 'array',
                             'preview_size' => 'medium',
-                            'conditional_logic' => [
-                                [
-                                    [
-                                        'field' => 'card_media_type',
-                                        'operator' => '==',
-                                        'value' => 'image',
-                                    ],
-                                ],
-                            ],
+                            'library' => 'all',
                         ],
                     ],
                     'card_image_alt' => [
@@ -139,49 +124,29 @@ return [
                         'options' => [
                             'label' => __('Image alt text', 'culvers'),
                             'instructions' => __('Important for screen readers when using an image.', 'culvers'),
-                            'conditional_logic' => [
-                                [
-                                    [
-                                        'field' => 'card_media_type',
-                                        'operator' => '==',
-                                        'value' => 'image',
-                                    ],
-                                ],
-                            ],
                         ],
                     ],
                     'card_video' => [
                         'type' => 'file',
                         'options' => [
                             'label' => __('Video file', 'culvers'),
+                            'instructions' => __('Used when media type is Video (ignored for image cards).', 'culvers'),
                             'mime_types' => 'mp4,webm',
                             'return_format' => 'array',
-                            'conditional_logic' => [
-                                [
-                                    [
-                                        'field' => 'card_media_type',
-                                        'operator' => '==',
-                                        'value' => 'video',
-                                    ],
-                                ],
-                            ],
+                            'library' => 'all',
                         ],
                     ],
                     'card_video_poster' => [
                         'type' => 'image',
                         'options' => [
                             'label' => __('Video poster (optional)', 'culvers'),
+                            'instructions' => __(
+                                'Not used on the live card — the first frame of the video file is shown until hover.',
+                                'culvers'
+                            ),
                             'return_format' => 'array',
                             'preview_size' => 'medium',
-                            'conditional_logic' => [
-                                [
-                                    [
-                                        'field' => 'card_media_type',
-                                        'operator' => '==',
-                                        'value' => 'video',
-                                    ],
-                                ],
-                            ],
+                            'library' => 'all',
                         ],
                     ],
                 ],

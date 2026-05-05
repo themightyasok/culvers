@@ -1,5 +1,14 @@
 # Culvers theme documentation
 
+**Coding agents / Cursor:** Read the workspace **`AGENTS.md`** (repository root) first — Local WP-CLI wrapper, content model (ACF vs CLI populate scripts), Figma reference, and stack overview.
+
+## Shops directory (CPT)
+
+- **Archive:** `/shops/` — template `archive-culvers_shop.php` → Blade `archive-culvers-shop.blade.php` (filters + grid).
+- **Admin:** **Shops** menu → custom post type **`culvers_shop`** with taxonomies **Shop categories** and **Retailer types**. Default terms are seeded once on load (Figma-aligned labels).
+- **Demo retailers + hero / mega URLs:** optional CLI **`scripts/shops-directory-populate.php`** sideloads the Shopping Directory grid logos from the **Figma Developer Release** MCP asset URLs (same pattern as the homepage flexible populate script), assigns categories/types, saves **`Shop directory`** options (**`/shops/` hero slider**), and syncs the primary mega menu so **Shop** → `/shops/` and each category row → `/shops/?category={slug}`. Run via `./scripts/with-local-env.sh wp eval-file wp-content/themes/culvers/scripts/shops-directory-populate.php` from **`app/public`**. Theme **`init`** also runs **`ShopDirectoryNavSync::maybeSync()`** once (option versioned) so existing installs pick up those URLs without re-running the script.
+- **Cards:** ACF **Shop listing fields** on each shop: logo + opening-hours line; fallback featured image + placeholder hours text.
+
 | Doc                                   | Purpose                                     |
 | ------------------------------------- | ------------------------------------------- |
 | [Deployment checklist](DEPLOYMENT.md) | Server requirements, build output paths, CI |
@@ -37,7 +46,15 @@ Use the helper (matches your WordPress root to a site in `~/Library/Application 
 cd wp-content/themes/culvers   # or stay anywhere and pass absolute path to script
 ./scripts/with-local-env.sh wp theme list --status=active
 ./scripts/with-local-env.sh mysql local -e "SHOW TABLES;"
+./scripts/with-local-env.sh wp eval-file wp-content/themes/culvers/scripts/homepage-populate-flexible.php
+./scripts/with-local-env.sh wp eval-file wp-content/themes/culvers/scripts/shops-directory-populate.php
 ```
+
+The **homepage** command creates/finds the **Home** page, sets **Settings → Reading** to that **static front page**, and saves the canonical **Page Components** stack (hero → three video cards → horizontal scroller → video → info grid → three posts → opening hours) via **`update_field('components', …)`** — the same payload as `HomepageFlexibleSeedData` / the former runtime defaults. Re-running replaces that flexible field.
+
+The **shops** command upserts **Shops** demo posts from Figma MCP imagery, saves **`Shop directory`** hero slides (see WP admin → **Shop directory**), and syncs **Shop** mega-menu URLs to **`/shops/`** plus **`?category=`** deep links.
+
+**Note:** do not put `declare(strict_types=1);` in scripts executed by **`wp eval-file`** with Local’s bundled PHP (it fatal-errors); the populate scripts omit it on purpose.
 
 Start the site in Local once so `~/Library/Application Support/Local/run/<site-id>/conf/mysql/my.cnf` exists. Requires Local.app at `/Applications/Local.app`.
 

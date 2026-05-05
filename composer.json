@@ -19,7 +19,7 @@
     "lint": "phpcs app --standard=.phpcs.xml",
     "lint:fix": "phpcbf app --standard=.phpcs.xml",
     "format": "pint app",
-    "analyse": "phpstan analyse --memory-limit=512M"
+    "analyse": "phpstan analyse --memory-limit=1024M"
   },
   "autoload": {
     "psr-4": {

@@ -47,7 +47,6 @@ return [
             'type' => 'text',
             'options' => [
                 'label' => __('Play button label', 'culvers'),
-                'default_value' => __('Play video', 'culvers'),
                 'placeholder' => __('Play video', 'culvers'),
             ],
         ],

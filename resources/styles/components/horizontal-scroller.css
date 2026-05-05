@@ -5,7 +5,7 @@
 
 .horizontal-scroller-component {
   @apply flex flex-col overflow-visible;
-  /* Space between scroller items (gap-4 / gap-8); wide variant via CMS toggle */
+  /* Fallback gap before CMS inline `--hs-item-gap`; Blade sets px from range slider */
   --hs-item-gap: 1rem;
 }
 
@@ -21,20 +21,6 @@
 .horizontal-scroller-strip-breakout .horizontal-scroller-wrapper {
   padding-inline: 0;
   box-sizing: border-box;
-}
-
-/* Raw partner logos: no card rounding, no gradient overlay, alt-driven labels hidden */
-.horizontal-scroller-component--flat-logos .horizontal-scroller-item__media {
-  @apply rounded-none bg-transparent;
-  overflow: visible;
-}
-
-.horizontal-scroller-component--flat-logos .horizontal-scroller-item__overlay {
-  display: none !important;
-}
-
-.horizontal-scroller-component--wide-gaps {
-  --hs-item-gap: 2rem;
 }
 
 .horizontal-scroller-header {
@@ -115,26 +101,26 @@
 
 .horizontal-scroller-item {
   @apply flex shrink-0 flex-col gap-4;
-  width: var(--hs-item-width, 17vw);
-  min-width: max(140px, var(--hs-item-width, 17vw));
-  max-width: min(52vw, 420px);
+  width: var(--hs-item-width, 14vw);
+  min-width: max(120px, var(--hs-item-width, 14vw));
+  max-width: min(46vw, 300px);
   transform-origin: center center;
 }
 
 .horizontal-scroller-item--small {
-  --hs-item-width: 12vw;
+  --hs-item-width: 10vw;
 }
 
 .horizontal-scroller-item--medium {
-  --hs-item-width: 17vw;
+  --hs-item-width: 14vw;
 }
 
 .horizontal-scroller-item--large {
-  --hs-item-width: 22vw;
+  --hs-item-width: 18vw;
 }
 
 .horizontal-scroller-item--xlarge {
-  --hs-item-width: 28vw;
+  --hs-item-width: 22vw;
 }
 
 .horizontal-scroller-item--offset-high-up {
@@ -158,55 +144,7 @@
 }
 
 .horizontal-scroller-item__media {
-  @apply relative w-full overflow-hidden rounded-lg bg-transparent;
-}
-
-/* Overlay: soft gradient at bottom so text/icon are readable */
-.horizontal-scroller-item__overlay {
-  @apply absolute left-0 right-0 bottom-0 flex items-end gap-3 p-8 pointer-events-none;
-  min-height: 45%;
-  background: linear-gradient(
-    180deg,
-    rgba(4, 8, 20, 0) 0%,
-    rgba(4, 8, 20, 0.15) 35%,
-    rgba(4, 8, 20, 0.5) 65%,
-    rgba(4, 8, 20, 0.88) 100%
-  );
-}
-
-.horizontal-scroller-item__overlay-icon {
-  @apply shrink-0 flex items-center justify-center;
-  width: 2rem;
-  min-width: 2rem;
-  height: 2rem;
-  min-height: 2rem;
-  color: white !important;
-}
-
-.horizontal-scroller-item__overlay-icon svg {
-  @apply block fill-current;
-  width: 2rem;
-  height: 2rem;
-}
-
-.horizontal-scroller-item__overlay-icon img {
-  @apply block object-contain;
-  width: 2rem;
-  height: 2rem;
-  max-width: 2rem;
-  max-height: 2rem;
-}
-
-.horizontal-scroller-item__overlay-copy {
-  @apply min-w-0 flex flex-col gap-1;
-}
-
-.horizontal-scroller-item__overlay-title-row {
-  @apply flex items-center gap-2 min-w-0;
-}
-
-.horizontal-scroller-item__overlay-title {
-  @apply whitespace-nowrap overflow-hidden text-ellipsis;
+  @apply relative w-full overflow-visible rounded-none bg-transparent shadow-none;
 }
 
 .horizontal-scroller-item--ratio-portrait .horizontal-scroller-item__media {
@@ -217,8 +155,9 @@
   @apply aspect-square;
 }
 
+/* Wider frame than 16:9 so logo/media tiles read shorter */
 .horizontal-scroller-item--ratio-landscape .horizontal-scroller-item__media {
-  @apply aspect-video;
+  aspect-ratio: 5 / 2;
 }
 
 .horizontal-scroller-item--ratio-tall .horizontal-scroller-item__media {
@@ -227,14 +166,8 @@
 
 .horizontal-scroller-item__image,
 .horizontal-scroller-item__video {
-  @apply w-full h-full block object-cover object-center pointer-events-none select-none;
+  @apply w-full h-full block object-contain object-center pointer-events-none select-none;
   -webkit-user-drag: none;
-}
-
-/* CMS: Image & video fit → Contain — keeps logos/mark at natural aspect ratio inside the card */
-.horizontal-scroller-component--media-contain .horizontal-scroller-item__image,
-.horizontal-scroller-component--media-contain .horizontal-scroller-item__video {
-  @apply object-contain;
 }
 
 .horizontal-scroller-item__kicker {
@@ -255,7 +188,7 @@
 }
 
 .horizontal-scroller-item--text {
-  --hs-item-width: 28vw;
+  --hs-item-width: 24vw;
 }
 
 .horizontal-scroller-item--text .horizontal-scroller-item__copy {
@@ -333,31 +266,31 @@
   }
 
   .horizontal-scroller-component--static-mobile .horizontal-scroller-item {
-    min-width: calc((100vw - 40px) / 1.3);
-    width: calc((100vw - 40px) / 1.3);
-    @apply max-w-[340px] snap-start mt-0;
+    min-width: calc((100vw - 40px) / 1.55);
+    width: calc((100vw - 40px) / 1.55);
+    @apply max-w-[280px] snap-start mt-0;
   }
 }
 
 @media (max-width: 768px) {
   .horizontal-scroller-item {
-    @apply min-w-[46vw] max-w-[72vw];
+    @apply min-w-[38vw] max-w-[58vw];
   }
 
   .horizontal-scroller-item--small {
-    --hs-item-width: 34vw;
+    --hs-item-width: 28vw;
   }
 
   .horizontal-scroller-item--medium {
-    --hs-item-width: 46vw;
+    --hs-item-width: 38vw;
   }
 
   .horizontal-scroller-item--large {
-    --hs-item-width: 56vw;
+    --hs-item-width: 46vw;
   }
 
   .horizontal-scroller-item--xlarge {
-    --hs-item-width: 64vw;
+    --hs-item-width: 54vw;
   }
 
   .horizontal-scroller-item--offset-high-up {

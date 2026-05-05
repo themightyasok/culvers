@@ -49,7 +49,7 @@
 
         @if($body !== '')
           <div
-            class="three-card-block__intro prose prose-neutral prose-lg mx-auto mt-6 max-w-[46rem] text-left md:text-center text-deep-moss prose-headings:text-deep-moss prose-p:text-deep-moss prose-li:text-deep-moss prose-strong:text-deep-moss [&_a]:text-deep-moss [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 hover:[&_a]:decoration-deep-moss">
+            class="three-card-block__intro prose prose-lg mx-auto mt-6 max-w-[46rem] text-left md:text-center text-deep-moss prose-headings:text-deep-moss prose-p:text-deep-moss prose-li:text-deep-moss prose-strong:text-deep-moss [&_a]:text-deep-moss [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 hover:[&_a]:decoration-deep-moss">
             {!! $body !!}
           </div>
         @endif
@@ -101,8 +101,6 @@
                 $video = isset($card['video']) && is_array($card['video']) ? $card['video'] : [];
                 $videoUrl = isset($video['url']) ? (string) $video['url'] : '';
                 $mime = isset($video['mime_type']) ? (string) $video['mime_type'] : 'video/mp4';
-                $poster = isset($card['poster']) && is_array($card['poster']) ? $card['poster'] : [];
-                $posterUrl = isset($poster['url']) ? (string) $poster['url'] : '';
                 $image = isset($card['image']) && is_array($card['image']) ? $card['image'] : [];
                 $imageUrl = isset($image['url']) ? (string) $image['url'] : '';
                 $alt = trim((string) ($card['alt'] ?? $title));
@@ -117,15 +115,18 @@
                     aria-hidden="true">
                     @if($mediaType === 'video' && $videoUrl !== '')
                       <span class="relative z-0 block h-full min-h-0 w-full" data-background-parallax-image="1">
+                        {{--
+                          Idle state must show decoded frame 0 of the file (not an uploaded poster image).
+                          Hover/focus plays the clip; mouseleave snaps back to frame 0 (see three-card-block.js).
+                        --}}
                         <video
                           class="three-card-block__media absolute inset-0 h-full w-full object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:ease-out motion-safe:group-hover/card:scale-[1.08] motion-safe:group-focus-within/card:scale-[1.08] motion-reduce:group-hover/card:scale-100 motion-reduce:group-focus-within/card:scale-100"
                           data-three-card-video
-                          data-needs-frame-poster="{{ $posterUrl === '' ? '1' : '0' }}"
                           data-gsap-autoplay="off"
                           muted
                           playsinline
-                          preload="{{ $posterUrl !== '' ? 'none' : 'auto' }}"
-                          @if($posterUrl !== '') poster="{{ esc_url($posterUrl) }}" @endif>
+                          loop
+                          preload="auto">
                           <source src="{{ esc_url($videoUrl) }}" type="{{ esc_attr($mime) }}" />
                         </video>
                       </span>
@@ -160,7 +161,7 @@
       </div>
     @endforeach
 
-    @if($source === 'blog' && $viewAllUrl !== '')
+    @if($viewAllUrl !== '')
       <div class="mt-12 flex justify-center md:mt-14">
         <a class="btn btn-primary" href="{{ esc_url($viewAllUrl) }}">{{ esc_html($viewAllLabel) }}</a>
       </div>
