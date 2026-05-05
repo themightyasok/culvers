@@ -52,14 +52,6 @@
           x-on:mouseenter="cancelCloseMegaHover()"
           x-on:mouseleave="scheduleCloseMegaHover()">
 
-          {{-- Dim layer: `pointer-events-none` so hover can exit to bridge/panel without trapping. --}}
-          <div
-            class="mega-nav__backdrop pointer-events-none fixed inset-0 z-[52] hidden bg-black/45 md:block"
-            x-show="megaOpenId !== null"
-            x-cloak
-            x-transition.opacity.duration.200ms
-            aria-hidden="true"></div>
-
           {{-- Olive bar (full bleed when scrolled; rounded pill when not). --}}
           <div
             class="mega-nav__bar relative z-[58] w-full rounded-full bg-faded-olive"

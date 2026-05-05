@@ -6,23 +6,25 @@ import Splide from '@splidejs/splide';
 export function initSplideCarousels(root = document) {
   if (!root?.querySelectorAll) return;
 
-  root.querySelectorAll('[data-splide]:not([data-splide-mounted])').forEach((el) => {
-    if (!(el instanceof HTMLElement)) return;
+  root
+    .querySelectorAll('[data-splide]:not([data-splide-mounted]):not([data-splide-manual])')
+    .forEach((el) => {
+      if (!(el instanceof HTMLElement)) return;
 
-    let options = {};
-    const raw = el.getAttribute('data-splide-options');
-    if (raw) {
-      try {
-        options = JSON.parse(raw);
-      } catch {
-        options = {};
+      let options = {};
+      const raw = el.getAttribute('data-splide-options');
+      if (raw) {
+        try {
+          options = JSON.parse(raw);
+        } catch {
+          options = {};
+        }
       }
-    }
 
-    const instance = new Splide(el, options);
-    instance.mount();
-    el.dataset.splideMounted = '1';
-  });
+      const instance = new Splide(el, options);
+      instance.mount();
+      el.dataset.splideMounted = '1';
+    });
 }
 
 export default initSplideCarousels;

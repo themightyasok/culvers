@@ -60,9 +60,9 @@ class BackgroundParallaxManager {
     }
   }
 
-  collectImages() {
+  collectTargets() {
     return Array.from(document.querySelectorAll('[data-background-parallax-image]')).filter(
-      (image) => image instanceof HTMLElement
+      (el) => el instanceof HTMLElement
     );
   }
 
@@ -79,8 +79,14 @@ class BackgroundParallaxManager {
     return null;
   }
 
-  getTriggerForImage(image) {
-    return this.getComponentRoot(image) || image.closest('.col-span-full') || image.parentElement;
+  getTriggerForTarget(target) {
+    const explicit = target.closest('[data-background-parallax-trigger]');
+    if (explicit instanceof HTMLElement) {
+      return explicit;
+    }
+    return (
+      this.getComponentRoot(target) || target.closest('.col-span-full') || target.parentElement
+    );
   }
 
   handleModeChange() {
@@ -123,15 +129,15 @@ class BackgroundParallaxManager {
 
     this.killTweens();
 
-    const images = this.collectImages();
+    const targets = this.collectTargets();
     const parallaxDistance = Math.round(
       Math.min(106, Math.max(40, window.innerHeight * 0.088))
-    ); /* +10% */
-    images.forEach((image, index) => {
-      const trigger = this.getTriggerForImage(image);
-      if (!(trigger instanceof Element)) return;
+    ); /* +10% — matches reference theme feel */
+    targets.forEach((target, index) => {
+      const triggerEl = this.getTriggerForTarget(target);
+      if (!(triggerEl instanceof Element)) return;
 
-      const horizontal = image.getAttribute('data-background-parallax-axis') === 'x';
+      const horizontal = target.getAttribute('data-background-parallax-axis') === 'x';
       const fromVars = horizontal
         ? { x: parallaxDistance, scale: 1.08, force3D: true }
         : { y: -parallaxDistance, scale: 1.08, force3D: true };
@@ -139,11 +145,11 @@ class BackgroundParallaxManager {
         ? { x: -parallaxDistance, scale: 1.08, ease: 'none' }
         : { y: parallaxDistance, scale: 1.08, ease: 'none' };
 
-      const tween = gsap.fromTo(image, fromVars, {
+      const tween = gsap.fromTo(target, fromVars, {
         ...toVars,
         scrollTrigger: {
           id: `background-parallax-${index}`,
-          trigger,
+          trigger: triggerEl,
           start: 'top bottom',
           end: 'bottom top',
           scrub: true,
@@ -162,9 +168,9 @@ class BackgroundParallaxManager {
     });
     this.tweens = [];
 
-    this.collectImages().forEach((image) => {
-      image.style.removeProperty('transform');
-      image.style.removeProperty('will-change');
+    this.collectTargets().forEach((el) => {
+      el.style.removeProperty('transform');
+      el.style.removeProperty('will-change');
     });
   }
 

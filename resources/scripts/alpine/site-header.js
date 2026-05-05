@@ -2,9 +2,10 @@
  * Alpine component: `x-data="siteHeader"` on `.site-header` (see `sections/header.blade.php`).
  *
  * Responsibilities:
- *   Mega menu open/close (hover + click), preview image swaps, body class `mega-open`.
+ *   Mega menu open/close (hover + click), preview image swaps, body class `mega-open` (scroll lock).
  *   Site search UI + debounced REST fetch.
  *   Scroll threshold → `headerScrolled` (full-width bar) + optional entrance reveal.
+ *   Sync `--site-header-offset` on `<html>` so `#smooth-wrapper` padding clears the fixed bar.
  *
  * Private fields use a leading underscore (`_megaHoverCloseTimer`, …).
  */
@@ -39,6 +40,12 @@ export default function registerSiteHeaderAlpine(Alpine) {
 
     /** @type {ReturnType<typeof setTimeout> | undefined} */
     _megaHoverCloseTimer: undefined,
+
+    /** @type {ResizeObserver | undefined} */
+    _headerResizeObserver: undefined,
+
+    /** When ScrollSmoother runs, window scrollY often doesn’t track the eased transform — ticker keeps header state in sync. */
+    _smootherTickerBound: false,
 
     // --- Mega menu -----------------------------------------------------------
 
@@ -202,14 +209,43 @@ export default function registerSiteHeaderAlpine(Alpine) {
 
     // --- Scroll & reveal -----------------------------------------------------
 
+    syncDocumentHeaderOffset() {
+      const root = this.$el;
+      if (!(root instanceof HTMLElement)) {
+        return;
+      }
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          const h = Math.ceil(root.getBoundingClientRect().height);
+          document.documentElement.style.setProperty('--site-header-offset', `${Math.max(h, 0)}px`);
+        });
+      });
+    },
+
     syncHeaderScroll() {
-      const y = window.scrollY ?? document.documentElement.scrollTop ?? 0;
       if (typeof window !== 'undefined' && window.culversHeaderTransformEnabled) {
-        this.headerScrolled = true;
+        if (!this.headerScrolled) {
+          this.headerScrolled = true;
+        }
 
         return;
       }
-      this.headerScrolled = y > HEADER_SCROLL_FULL_WIDTH_AT;
+
+      const smoother = typeof window !== 'undefined' ? window.smoother : null;
+      let y;
+      if (smoother && typeof smoother.scrollTop === 'function') {
+        try {
+          y = smoother.scrollTop();
+        } catch {
+          y = window.scrollY ?? document.documentElement.scrollTop ?? 0;
+        }
+      } else {
+        y = window.scrollY ?? document.documentElement.scrollTop ?? 0;
+      }
+      const next = y > HEADER_SCROLL_FULL_WIDTH_AT;
+      if (this.headerScrolled !== next) {
+        this.headerScrolled = next;
+      }
     },
 
     setupHeaderReveal() {
@@ -249,14 +285,41 @@ export default function registerSiteHeaderAlpine(Alpine) {
       this.syncHeaderScroll();
       const onScroll = () => this.syncHeaderScroll();
       window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', () => this.syncDocumentHeaderOffset(), { passive: true });
+
+      const root = this.$el;
+      if (root instanceof HTMLElement && typeof ResizeObserver !== 'undefined') {
+        this._headerResizeObserver = new ResizeObserver(() => this.syncDocumentHeaderOffset());
+        this._headerResizeObserver.observe(root);
+      }
 
       this.setupHeaderReveal();
 
+      this.syncDocumentHeaderOffset();
+
+      const bindSmootherTicker = () => {
+        if (
+          this._smootherTickerBound ||
+          typeof window === 'undefined' ||
+          !window.smoother ||
+          typeof window.gsap === 'undefined'
+        ) {
+          return;
+        }
+        this._smootherTickerBound = true;
+        const tick = () => this.syncHeaderScroll();
+        window.gsap.ticker.add(tick);
+      };
+      window.addEventListener('gsap:smoother:ready', bindSmootherTicker);
+      bindSmootherTicker();
+
       this.$watch('megaOpenId', () => {
         document.body.classList.toggle('mega-open', this.megaOpenId !== null);
+        this.syncDocumentHeaderOffset();
       });
       this.$watch('mobileOpen', () => {
         document.body.classList.toggle('mobile-nav-open', this.mobileOpen);
+        this.syncDocumentHeaderOffset();
       });
       this.$watch('searchQuery', (value) => {
         window.clearTimeout(this._searchTimer);
@@ -264,6 +327,9 @@ export default function registerSiteHeaderAlpine(Alpine) {
           this.fetchSearch(typeof value === 'string' ? value : '');
         }, SEARCH_DEBOUNCE_MS);
       });
+      this.$watch('headerScrolled', () => this.syncDocumentHeaderOffset());
+      this.$watch('headerRevealed', () => this.syncDocumentHeaderOffset());
+      this.$watch('searchOpen', () => this.syncDocumentHeaderOffset());
     },
   }));
 }

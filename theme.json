@@ -45,8 +45,8 @@
   },
   "styles": {
     "color": {
-      "background": "var(--wp--preset--color--canvas)",
-      "text": "var(--wp--preset--color--text)"
+      "background": "var(--wp--preset--color--white)",
+      "text": "var(--wp--preset--color--deep-moss)"
     },
     "typography": {
       "fontFamily": "var(--wp--preset--font-family--sans)"

@@ -9,7 +9,9 @@ use App\Helpers\TailwindColors;
 use App\Services\TemplateResolver;
 
 $fieldName = $field_name ?? 'components';
-$rawComponents = get_field($fieldName) ?: [];
+$rawComponents = isset($raw_components_override) && is_array($raw_components_override)
+    ? $raw_components_override
+    : (get_field($fieldName) ?: []);
 $isFullScreenScrolling = ! empty(get_field('full_screen_scrolling'));
 
 $components = array_map(static fn ($row) => Sanitizer::component($row), is_array($rawComponents) ? $rawComponents : []);
@@ -34,6 +36,12 @@ $templateResolver = TemplateResolver::getInstance();
             ? trim($gridClasses['column'] . ' ' . $gridClasses['padding'])
             : $gridClasses['column'];
 
+        $hideOnMobile = ($component['visibility_mobile'] ?? 'visible') === 'hidden';
+        $visibilityClass = $hideOnMobile ? 'culvers-hide-below-md' : '';
+        if ($visibilityClass !== '') {
+            $component['_grid_classes'] = trim($visibilityClass . ' ' . $component['_grid_classes']);
+        }
+
         $backgroundData = Background::process($component);
 
         $hasBackground = ($backgroundData['type'] !== 'none')
@@ -53,7 +61,7 @@ $templateResolver = TemplateResolver::getInstance();
 
       @if($templatePath)
         @if($hasBackground)
-          <div class="relative col-span-full w-full min-w-0 {{ $backgroundData['classes'] ?? '' }}"
+          <div class="relative col-span-full w-full min-w-0 {{ esc_attr(trim($visibilityClass . ' ' . ($backgroundData['classes'] ?? ''))) }}"
                data-component-background-wrapper="1"
                data-component-layout="{{ esc_attr($layout) }}"
                data-background-parallax="{{ ! empty($backgroundData['parallax']) ? '1' : '0' }}"

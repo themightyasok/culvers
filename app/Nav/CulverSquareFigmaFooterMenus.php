@@ -38,10 +38,10 @@ final class CulverSquareFigmaFooterMenus
         'footer_brand_subnav' => [
             'title' => 'Culver Square — Footer legal row',
             'items' => [
-                ['label' => 'Cookie Policy', 'url' => '#'],
+                ['label' => 'Cookie Policy', 'url' => '/cookie-policy/'],
                 ['label' => 'Accessibility', 'url' => '#'],
-                ['label' => 'Privacy Policy', 'url' => '#'],
-                ['label' => 'Terms & Conditions', 'url' => '#'],
+                ['label' => 'Privacy Policy', 'url' => '/privacy-policy/'],
+                ['label' => 'Terms & Conditions', 'url' => '/terms-and-conditions/'],
             ],
         ],
     ];
@@ -142,7 +142,15 @@ final class CulverSquareFigmaFooterMenus
     {
         foreach ($links as $row) {
             $label = __($row['label'], 'culvers');
-            $url = esc_url_raw((string) $row['url']);
+            $urlInput = trim((string) $row['url']);
+            if ($urlInput === '#' || $urlInput === '') {
+                $url = '#';
+            } elseif (str_starts_with($urlInput, '/')) {
+                $url = home_url($urlInput);
+            } else {
+                $url = esc_url_raw($urlInput);
+            }
+
             $result = wp_update_nav_menu_item($menuId, 0, [
                 'menu-item-title' => $label,
                 'menu-item-url' => $url,

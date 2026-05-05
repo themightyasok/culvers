@@ -14,6 +14,16 @@ require $composer;
 
 require_once __DIR__ . '/app/blade-instance.php';
 
+if (! function_exists('e')) {
+    /**
+     * HTML-escape a string for Blade `{!! nl2br(e(...)) !!}` and Laravel-style templates.
+     */
+    function e(mixed $value): string
+    {
+        return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', true);
+    }
+}
+
 if (! function_exists('blade')) {
     /**
      * @param array<string, mixed> $data

@@ -34,8 +34,19 @@ add_action('init', static function (): void {
     Nav\CulverSquareFigmaFooterMenus::maybeInstall();
 }, 122);
 
+add_action('init', static function (): void {
+    Legal\PolicyPageInstaller::maybeSeed();
+}, 40);
+
 add_action('customize_register', static function (\WP_Customize_Manager $wp_customize): void {
+    Customizer\SiteShortcutsCustomizer::register($wp_customize);
     Customizer\FooterCustomizer::register($wp_customize);
+});
+
+add_filter('culvers_default_full_width_components', static function (array $layouts): array {
+    $layouts[] = 'hero_slider';
+
+    return $layouts;
 });
 
 add_action('after_setup_theme', static function (): void {
