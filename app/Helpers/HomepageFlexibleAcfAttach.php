@@ -36,6 +36,8 @@ final class HomepageFlexibleAcfAttach
                     'horizontal_scroller' => self::horizontalScrollerRow($row),
                     'video_block' => self::videoBlockRow($row),
                     'opening_hours' => self::openingHoursRow($row),
+                    'shop_image_hero' => self::shopImageHeroRow($row),
+                    'shop_split_highlight' => self::shopSplitHighlightRow($row),
                     default => $row,
                 };
             }
@@ -152,6 +154,30 @@ final class HomepageFlexibleAcfAttach
     {
         $row['graphic_left'] = self::acfImageValue($row['graphic_left'] ?? null);
         $row['graphic_right'] = self::acfImageValue($row['graphic_right'] ?? null);
+
+        return $row;
+    }
+
+    /**
+     * @param  array<string, mixed>  $row
+     * @return array<string, mixed>
+     */
+    private static function shopImageHeroRow(array $row): array
+    {
+        $row['hero_image'] = self::acfImageValue($row['hero_image'] ?? null);
+        $row['hero_image_mobile'] = self::acfImageValue($row['hero_image_mobile'] ?? null);
+        $row['hero_logo'] = self::acfImageValue($row['hero_logo'] ?? null);
+
+        return $row;
+    }
+
+    /**
+     * @param  array<string, mixed>  $row
+     * @return array<string, mixed>
+     */
+    private static function shopSplitHighlightRow(array $row): array
+    {
+        $row['split_image'] = self::acfImageValue($row['split_image'] ?? null);
 
         return $row;
     }
