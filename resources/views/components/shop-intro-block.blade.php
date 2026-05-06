@@ -21,9 +21,10 @@
     data-component-root
     data-shop-intro-block>
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
-      <div class="mx-auto max-w-[46rem] text-center">
+      {{-- Figma shop intro copy: Desktop/Body Copy/Large body copy — 20px / lh 1.3 Book (≈886px column). --}}
+      <div class="mx-auto max-w-[886px] text-center">
         <div
-          class="prose prose-lg max-w-none text-deep-moss prose-headings:font-heading prose-headings:text-deep-moss prose-p:font-sans prose-p:text-deep-moss prose-p:leading-relaxed prose-li:text-deep-moss {{ esc_attr($tone) }}">
+          class="max-w-none font-sans text-lg font-light leading-[1.3] text-deep-moss [&_p+p]:mt-[1.25em] [&_strong]:font-medium {{ esc_attr($tone) }}">
           {!! $body !!}
         </div>
 

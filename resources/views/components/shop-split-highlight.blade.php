@@ -18,31 +18,44 @@
   $imgUrl = isset($img['url']) ? trim((string) $img['url']) : '';
   $imgAlt = isset($img['alt']) ? trim((string) $img['alt']) : '';
 
-  $hasCopy = $kicker !== '' || $headline !== '' || $bodyPlain !== '';
+  $hasSerifLines = $kicker !== '' || $headline !== '';
+  $hasCopy = $hasSerifLines || $bodyPlain !== '';
 @endphp
 
 @if($hasCopy && $imgUrl !== '')
+  {{--
+    Figma — Shopping Individual Page split band (≈51:6191–51:6194).
+    Left: Desktop/Titles/H2-equivalent glowleaf serif lines @64px / lh 1.2 + Large body @20px / lh 1.3 Book white.
+    Full bleed inner radius 10px; band height reference ~597px desktop.
+  --}}
   <section
     class="{{ esc_attr(trim($grid . ' ' . $padding)) }} text-deep-moss"
     data-component-root
     data-shop-split-highlight>
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
-      <div class="overflow-hidden rounded-[22px] bg-deep-moss shadow-sm lg:flex lg:min-h-[420px]">
-        <div class="flex flex-[1.5] flex-col justify-center gap-6 px-8 py-12 lg:w-[60%] lg:flex-none lg:px-12 xl:px-16 xl:py-14">
-          @if($kicker !== '')
-            <p class="font-heading text-[clamp(1.85rem,4vw,2.75rem)] leading-[1.12] text-brand-500">
-              {{ esc_html($kicker) }}
-            </p>
-          @endif
-          @if($headline !== '')
-            <p class="font-heading text-[clamp(2rem,4.5vw,3rem)] leading-[1.08] text-brand-500 lg:-mt-2">
-              {{ esc_html($headline) }}
-            </p>
+      <div
+        class="overflow-hidden rounded-[10px] bg-faded-olive shadow-sm lg:flex lg:min-h-[597px]">
+        <div
+          class="flex flex-[1.5] flex-col items-center justify-center gap-6 px-8 py-12 text-center lg:w-[55%] lg:flex-none lg:gap-8 lg:px-10 xl:px-14 xl:py-12">
+          @if($hasSerifLines)
+            <div class="flex max-w-[34.625rem] flex-col gap-0">
+              {{-- Canela 64px / lh 1.2 → theme token text-5xl leading-[1.2] --}}
+              @if($kicker !== '')
+                <p class="font-heading text-5xl leading-[1.2] text-brand-500">
+                  {{ esc_html($kicker) }}
+                </p>
+              @endif
+              @if($headline !== '')
+                <p class="font-heading text-5xl leading-[1.2] text-brand-500 {{ $kicker !== '' ? '-mt-1' : '' }}">
+                  {{ esc_html($headline) }}
+                </p>
+              @endif
+            </div>
           @endif
 
           @if($bodyPlain !== '')
             <div
-              class="shop-split-highlight__body prose prose-lg max-w-none font-sans text-white prose-headings:font-heading prose-headings:text-white prose-p:text-white prose-p:leading-relaxed prose-strong:text-white prose-li:text-white prose-li:marker:text-brand-500 [&_a]:text-brand-500 [&_a]:underline [&_a]:decoration-brand-500 [&_a]:underline-offset-4">
+              class="shop-split-highlight__body max-w-[34.625rem] font-sans text-lg font-light leading-[1.3] text-white [&_a]:text-brand-500 [&_a]:underline [&_a]:decoration-brand-500 [&_a]:underline-offset-4 [&_li]:marker:text-brand-500 [&_p+p]:mt-4 [&_strong]:font-medium [&_strong]:text-white [&_ul]:my-4 [&_ul]:inline-block [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:text-left">
               {!! $bodyHtml !!}
             </div>
           @endif
@@ -54,7 +67,7 @@
           @endif
         </div>
 
-        <div class="relative min-h-[280px] flex-1 lg:min-h-0 lg:w-[40%] lg:flex-none">
+        <div class="relative min-h-[280px] flex-1 lg:min-h-0 lg:w-[45%] lg:flex-none">
           <img
             src="{{ esc_url($imgUrl) }}"
             alt="{{ esc_attr($imgAlt !== '' ? $imgAlt : ($headline !== '' ? $headline : __('Feature image', 'culvers'))) }}"

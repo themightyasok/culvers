@@ -55,7 +55,7 @@
       @else
         <div
           class="directory-shop-card__logo-slot pointer-events-none absolute inset-x-0 top-0 z-[3] flex h-[213px] items-center justify-center px-6 {{ $logoFadeClasses }}">
-          <span class="text-center font-heading text-xl leading-snug text-white">{{ get_the_title($post_id) }}</span>
+          <span class="text-center font-heading text-[22px] font-medium leading-[26px] text-white">{{ get_the_title($post_id) }}</span>
         </div>
       @endif
 

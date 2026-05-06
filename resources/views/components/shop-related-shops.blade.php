@@ -48,7 +48,7 @@
     data-shop-related-shops>
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
       @if($heading !== '')
-        <{{ $headingTag }} class="mx-auto mb-10 max-w-[52rem] text-center font-heading text-4xl leading-[1.12] tracking-tight text-deep-moss md:mb-14 md:text-5xl lg:text-[3.25rem]">
+        <{{ $headingTag }} class="mx-auto mb-10 max-w-[52rem] text-center font-heading text-[58px] leading-[1.15] tracking-tight text-faded-olive md:mb-14">
           {{ esc_html($heading) }}
         </{{ $headingTag }}>
       @endif

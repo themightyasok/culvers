@@ -66,6 +66,27 @@
   $hasIntro = $heading !== '' || $subheading !== '' || trim(strip_tags($body)) !== '';
   $hasRows = $normalizedRows !== [];
   $showPlaceholders = ! $hasRows && ! $hasIntro && $footnote === '' && current_user_can('edit_posts');
+
+  $isShopSingle = get_post_type() === 'culvers_shop';
+  $hoursHeadingClass = $isShopSingle
+      ? 'font-heading text-[58px] leading-[1.15] tracking-tight text-faded-olive'
+      : 'font-heading text-4xl tracking-tight text-deep-moss md:text-5xl lg:text-[3rem] lg:leading-[1.15]';
+  $hoursSubClass = $isShopSingle
+      ? 'mt-4 font-sans text-lg font-light leading-[1.3] text-faded-olive'
+      : 'mt-4 font-sans text-sm leading-relaxed text-deep-moss/85 md:text-base';
+  $hoursIntroBodyBase = $isShopSingle
+      ? 'opening-hours__body mt-6 max-w-none text-center font-sans text-lg font-light leading-[1.3] text-faded-olive [&_p+p]:mt-4 [&_strong]:font-medium [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 hover:[&_a]:opacity-90'
+      : 'opening-hours__body prose prose-lg mt-6 max-w-none text-left md:text-center text-deep-moss prose-headings:text-deep-moss prose-p:text-deep-moss prose-li:text-deep-moss prose-strong:text-deep-moss [&_a]:text-deep-moss [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 hover:[&_a]:decoration-deep-moss';
+  $hoursListTopBorder = $isShopSingle ? 'border-faded-olive/20' : 'border-deep-moss/20';
+  $hoursRowBase = $isShopSingle
+      ? 'flex items-center justify-between gap-6 border-b border-faded-olive/15 px-1 py-3.5 font-sans text-lg font-light leading-[1.3] text-faded-olive last:border-b-0 sm:px-2'
+      : 'flex items-center justify-between gap-6 border-b border-deep-moss/15 px-1 py-3.5 font-sans text-sm text-deep-moss last:border-b-0 sm:px-2 sm:text-base';
+  $hoursRowToday = $isShopSingle
+      ? '!mx-0 !rounded-full !border-0 bg-brand-500 !px-4 !py-3 text-faded-olive sm:!py-3.5'
+      : '!mx-0 !rounded-full !border-0 bg-brand-500 !px-4 !py-3 sm:!py-3.5';
+  $hoursFootClass = $isShopSingle
+      ? 'mx-auto mt-8 max-w-[40rem] text-center font-sans text-lg font-light leading-[1.3] text-faded-olive'
+      : 'mx-auto mt-8 max-w-[40rem] text-center font-sans text-xs leading-relaxed text-deep-moss/75 md:text-sm';
 @endphp
 
 @if($hasIntro || $hasRows || $footnote !== '' || $leftUrl !== '' || $rightUrl !== '')
@@ -74,18 +95,18 @@
       @if($hasIntro)
         <header class="mx-auto mb-10 max-w-[40rem] text-center md:mb-12">
           @if($heading !== '')
-            <{{ $headingTag }} class="font-heading text-4xl tracking-tight text-deep-moss md:text-5xl lg:text-[3rem] lg:leading-[1.15]">
+            <{{ $headingTag }} class="{{ esc_attr(trim($hoursHeadingClass)) }}">
               {{ esc_html($heading) }}
             </{{ $headingTag }}>
           @endif
           @if($subheading !== '')
-            <p class="mt-4 font-sans text-sm leading-relaxed text-deep-moss/85 md:text-base">
+            <p class="{{ esc_attr(trim($hoursSubClass)) }}">
               {!! nl2br(e($subheading)) !!}
             </p>
           @endif
           @if(trim(strip_tags($body)) !== '')
             <div
-              class="opening-hours__body prose prose-lg mt-6 max-w-none text-left md:text-center text-deep-moss prose-headings:text-deep-moss prose-p:text-deep-moss prose-li:text-deep-moss prose-strong:text-deep-moss [&_a]:text-deep-moss [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 hover:[&_a]:decoration-deep-moss {{ esc_attr($tone) }}">
+              class="{{ esc_attr(trim($hoursIntroBodyBase . ' ' . $tone)) }}">
               {!! $body !!}
             </div>
           @endif
@@ -108,15 +129,15 @@
           @endif
 
           <div class="order-1 min-w-0 flex-1 lg:order-2">
-            <ul class="border-t border-deep-moss/20" role="list">
+            <ul class="border-t {{ esc_attr($hoursListTopBorder) }}" role="list">
               @foreach($normalizedRows as $row)
                 <li
-                  class="flex items-center justify-between gap-6 border-b border-deep-moss/15 px-1 py-3.5 font-sans text-sm text-deep-moss last:border-b-0 sm:px-2 sm:text-base {{ $row['is_today'] ? '!mx-0 !rounded-full !border-0 bg-brand-500 !px-4 !py-3 sm:!py-3.5' : '' }}"
+                  class="{{ esc_attr(trim($hoursRowBase . ($row['is_today'] ? ' ' . $hoursRowToday : ''))) }}"
                   @if($row['is_today'])
                     aria-current="true"
                   @endif>
-                  <span class="min-w-0 font-medium leading-snug">{{ esc_html($row['label']) }}</span>
-                  <span class="shrink-0 tabular-nums text-right leading-snug text-deep-moss/95">{{ esc_html($row['times']) }}</span>
+                  <span class="min-w-0 {{ $isShopSingle ? ($row['is_today'] ? 'font-normal leading-[26px]' : 'font-light leading-[1.3]') : 'font-medium leading-snug' }}">{{ esc_html($row['label']) }}</span>
+                  <span class="shrink-0 tabular-nums text-right {{ $isShopSingle ? ($row['is_today'] ? 'font-normal leading-[26px] text-faded-olive' : 'leading-snug text-faded-olive') : 'leading-snug text-deep-moss/95' }}">{{ esc_html($row['times']) }}</span>
                 </li>
               @endforeach
             </ul>
@@ -138,7 +159,7 @@
       @endif
 
       @if($footnote !== '')
-        <p class="mx-auto mt-8 max-w-[40rem] text-center font-sans text-xs leading-relaxed text-deep-moss/75 md:text-sm">
+        <p class="{{ esc_attr(trim($hoursFootClass)) }}">
           {!! nl2br(e($footnote)) !!}
         </p>
       @endif
