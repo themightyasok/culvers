@@ -195,8 +195,8 @@
   }
 
   /*
-   * Shop image hero — same full-bleed / tuck-under-fixed-header behaviour as the homepage hero slider,
-   * without the neon inset frame (shop detail is photography-led).
+   * Shop image hero — full-bleed / tuck-under-fixed-header like the homepage hero slider,
+   * shorter band (~half viewport, max ~646px) plus the same glowleaf inset keyline.
    */
   .shop-image-hero--viewport {
     width: 100vw;
@@ -204,6 +204,15 @@
     margin-left: calc(50% - 50vw);
     margin-right: calc(50% - 50vw);
     margin-top: calc(-1 * var(--site-header-offset, 11.25rem));
+  }
+
+  .shop-image-hero--viewport::after {
+    content: '';
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    z-index: 15;
+    box-shadow: inset 0 0 0 3px var(--color-glowleaf);
   }
 
   .hero-slider__splide {

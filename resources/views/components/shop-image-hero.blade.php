@@ -33,15 +33,17 @@
   $overlayAlpha = $opPct / 100;
 
   $hasHero = $deskUrl !== '';
+  /** ~half viewport height, capped near Figma 646px desktop hero band */
+  $heroBandMin = 'min-h-[min(50svh,646px)]';
 @endphp
 
 @if($hasHero)
-  {{-- Full-viewport hero under fixed header (matches hero_slider slides). Omit vertical padding — default pt/pb would show as moss bands. --}}
+  {{-- Bleeds under fixed header like homepage hero; band height ~650px / half-svh — omit vertical component padding to avoid moss bars. --}}
   <section
     class="{{ esc_attr(trim($grid)) }} shop-image-hero--viewport relative isolate w-full text-white"
     data-component-root
     data-shop-image-hero>
-    <div class="relative min-h-[100svh] w-full overflow-hidden" data-background-parallax-trigger>
+    <div class="relative {{ $heroBandMin }} w-full overflow-hidden" data-background-parallax-trigger>
       <picture class="absolute inset-0 block size-full">
         @if($mobUrl !== '')
           <source media="(max-width: 767px)" srcset="{{ esc_url($mobUrl) }}" />
@@ -64,7 +66,7 @@
         aria-hidden="true"></div>
 
       <div
-        class="relative z-[2] flex min-h-[100svh] w-full flex-col items-center justify-center px-6 pb-16 pt-[length:var(--site-header-offset,11.25rem)] text-center sm:px-10 md:px-[46px]">
+        class="relative z-[2] flex {{ $heroBandMin }} w-full flex-col items-center justify-center px-6 pb-12 pt-[length:var(--site-header-offset,11.25rem)] text-center sm:px-10 md:px-[46px] md:pb-14">
         @if($logoUrl !== '')
           <h1 class="sr-only">{{ esc_html($titleLine !== '' ? $titleLine : get_the_title()) }}</h1>
           <div class="flex max-w-[min(100%,52rem)] justify-center">
