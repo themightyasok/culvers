@@ -33,7 +33,7 @@
 
 @if($hasDetails)
   <section
-    class="{{ esc_attr(trim($grid . ' ' . $padding)) }} shop-page__pattern-bg text-deep-moss"
+    class="{{ esc_attr(trim($grid . ' ' . $padding)) }} bg-white text-deep-moss"
     data-component-root
     data-shop-store-details>
     <div class="{{ LayoutShell::INNER_READABLE_960 }}">

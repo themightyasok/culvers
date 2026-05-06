@@ -43,7 +43,7 @@
 
 @if($shops !== [])
   <section
-    class="{{ esc_attr(trim($grid . ' ' . $padding)) }} shop-page__pattern-bg text-deep-moss"
+    class="{{ esc_attr(trim($grid . ' ' . $padding)) }} bg-white text-deep-moss"
     data-component-root
     data-shop-related-shops>
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">

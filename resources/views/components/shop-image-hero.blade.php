@@ -36,13 +36,12 @@
 @endphp
 
 @if($hasHero)
+  {{-- Full-viewport hero under fixed header (matches hero_slider slides). Omit vertical padding — default pt/pb would show as moss bands. --}}
   <section
-    class="{{ esc_attr(trim($grid . ' ' . $padding)) }} relative isolate w-full bg-deep-moss text-white"
+    class="{{ esc_attr(trim($grid)) }} shop-image-hero--viewport relative isolate w-full text-white"
     data-component-root
     data-shop-image-hero>
-    <div
-      class="relative w-full min-h-[min(90svh,46rem)] md:min-h-[646px]"
-      data-background-parallax-trigger>
+    <div class="relative min-h-[100svh] w-full overflow-hidden" data-background-parallax-trigger>
       <picture class="absolute inset-0 block size-full">
         @if($mobUrl !== '')
           <source media="(max-width: 767px)" srcset="{{ esc_url($mobUrl) }}" />
@@ -60,11 +59,12 @@
       </picture>
 
       <div
-        class="pointer-events-none absolute inset-0 z-[1] bg-black [opacity:var(--shop-hero-overlay-op)]"
-        style="--shop-hero-overlay-op: {{ esc_attr((string) $overlayAlpha) }}"
+        class="pointer-events-none absolute inset-0 z-[1] bg-black"
+        style="opacity: {{ esc_attr((string) $overlayAlpha) }}"
         aria-hidden="true"></div>
 
-      <div class="relative z-[2] flex min-h-[inherit] flex-col items-center justify-center px-6 pb-24 pt-28 text-center md:px-12 md:pb-28 md:pt-36">
+      <div
+        class="relative z-[2] flex min-h-[100svh] w-full flex-col items-center justify-center px-6 pb-16 pt-[length:var(--site-header-offset,11.25rem)] text-center sm:px-10 md:px-[46px]">
         @if($logoUrl !== '')
           <h1 class="sr-only">{{ esc_html($titleLine !== '' ? $titleLine : get_the_title()) }}</h1>
           <div class="flex max-w-[min(100%,52rem)] justify-center">

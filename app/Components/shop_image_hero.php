@@ -63,7 +63,7 @@ return [
             'type' => 'number',
             'options' => [
                 'label' => __('Image overlay darkness', 'culvers'),
-                'instructions' => __('0 = none, 70 = strong (matches dark treated photography in designs).', 'culvers'),
+                'instructions' => __('Solid black overlay opacity on the hero image (0–85). 0 = none, 70 = strong.', 'culvers'),
                 'default_value' => 50,
                 'min' => 0,
                 'max' => 85,

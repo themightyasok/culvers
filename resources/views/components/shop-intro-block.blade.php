@@ -17,7 +17,7 @@
 
 @if($bodyPlain !== '')
   <section
-    class="{{ esc_attr(trim($grid . ' ' . $padding)) }} shop-page__pattern-bg text-deep-moss"
+    class="{{ esc_attr(trim($grid . ' ' . $padding)) }} bg-white text-deep-moss"
     data-component-root
     data-shop-intro-block>
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">

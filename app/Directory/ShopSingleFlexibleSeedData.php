@@ -58,7 +58,7 @@ final class ShopSingleFlexibleSeedData
                 'hero_image_mobile' => ['url' => $heroMobile],
                 'hero_logo' => $logoUrl !== '' ? ['url' => $logoUrl] : null,
                 'hero_title_line' => $logoUrl !== '' ? '' : mb_strtoupper($title),
-                'hero_subtitle_line' => $logoUrl !== '' ? '' : 'Culver Square',
+                'hero_subtitle_line' => $shopSlug === 'accessorize-london' ? 'LONDON' : ($logoUrl !== '' ? '' : 'Culver Square'),
                 'hero_overlay_opacity' => 52,
             ],
             [
@@ -107,7 +107,7 @@ final class ShopSingleFlexibleSeedData
                 'hours_rows' => self::defaultHoursRepeater(),
                 'hours_footnote' => __('Hours may change on bank holidays.', 'culvers'),
                 'background_type' => ComponentTypes::BACKGROUND_COLOR,
-                'background_color' => '#fdfcf3',
+                'background_color' => '#ffffff',
                 'component_width' => 'full',
             ],
             [

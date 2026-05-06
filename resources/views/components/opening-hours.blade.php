@@ -66,11 +66,10 @@
   $hasIntro = $heading !== '' || $subheading !== '' || trim(strip_tags($body)) !== '';
   $hasRows = $normalizedRows !== [];
   $showPlaceholders = ! $hasRows && ! $hasIntro && $footnote === '' && current_user_can('edit_posts');
-  $showShopPattern = get_post_type() === 'culvers_shop';
 @endphp
 
 @if($hasIntro || $hasRows || $footnote !== '' || $leftUrl !== '' || $rightUrl !== '')
-  <section class="{{ esc_attr(trim($grid . ' ' . $padding . ($showShopPattern ? ' shop-page__opening-hours--shop' : ''))) }} text-deep-moss" id="opening-hours" data-component-root data-opening-hours>
+  <section class="{{ esc_attr(trim($grid . ' ' . $padding)) }} text-deep-moss" id="opening-hours" data-component-root data-opening-hours>
     <div class="{{ LayoutShell::INNER_READABLE_960 }}">
       @if($hasIntro)
         <header class="mx-auto mb-10 max-w-[40rem] text-center md:mb-12">

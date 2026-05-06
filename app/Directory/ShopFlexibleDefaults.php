@@ -63,7 +63,7 @@ final class ShopFlexibleDefaults
             [
                 'acf_fc_layout' => 'opening_hours',
                 'background_type' => ComponentTypes::BACKGROUND_COLOR,
-                'background_color' => '#fdfcf3',
+                'background_color' => '#ffffff',
                 'component_width' => 'full',
             ],
             ['acf_fc_layout' => 'shop_related_shops'],
