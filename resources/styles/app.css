@@ -196,7 +196,7 @@
 
   /*
    * Shop image hero — full-bleed / tuck-under-fixed-header like the homepage hero slider,
-   * shorter band (~half viewport, max ~646px) plus the same glowleaf inset keyline.
+   * shorter band (~half viewport, max ~746px) plus the same glowleaf inset keyline.
    */
   .shop-image-hero--viewport {
     width: 100vw;

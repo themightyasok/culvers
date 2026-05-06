@@ -147,7 +147,7 @@ final class ShopSingleFlexibleSeedData
 
     private static function detailHeroUrl(string $slug): string
     {
-        return 'https://picsum.photos/seed/' . rawurlencode('cs-shop-hero-' . $slug) . '/1440/646';
+        return 'https://picsum.photos/seed/' . rawurlencode('cs-shop-hero-' . $slug) . '/1440/746';
     }
 
     private static function detailHeroMobileUrl(string $slug): string

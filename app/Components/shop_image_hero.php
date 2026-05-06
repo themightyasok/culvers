@@ -16,7 +16,7 @@ return [
             'type' => 'image',
             'options' => [
                 'label' => __('Hero image', 'culvers'),
-                'instructions' => __('Wide lifestyle storefront shot (≈1440×646 in developer designs).', 'culvers'),
+                'instructions' => __('Wide lifestyle storefront shot (≈1440×746 tall band in developer designs).', 'culvers'),
                 'preview_size' => 'large',
                 'library' => 'all',
             ],

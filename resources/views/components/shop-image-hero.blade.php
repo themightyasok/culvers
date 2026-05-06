@@ -33,12 +33,12 @@
   $overlayAlpha = $opPct / 100;
 
   $hasHero = $deskUrl !== '';
-  /** ~half viewport height, capped near Figma 646px desktop hero band */
-  $heroBandMin = 'min-h-[min(50svh,646px)]';
+  /** ~half viewport height, capped (design band +100px vs original 646 reference) */
+  $heroBandMin = 'min-h-[min(50svh,746px)]';
 @endphp
 
 @if($hasHero)
-  {{-- Bleeds under fixed header like homepage hero; band height ~650px / half-svh — omit vertical component padding to avoid moss bars. --}}
+  {{-- Bleeds under fixed header like homepage hero; band ~746px max / half-svh — omit vertical component padding to avoid moss bars. --}}
   <section
     class="{{ esc_attr(trim($grid)) }} shop-image-hero--viewport relative isolate w-full text-white"
     data-component-root
