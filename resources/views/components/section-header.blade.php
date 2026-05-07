@@ -61,8 +61,10 @@
         @endif
 
         @if($heading !== '')
+          {{-- Section H2 (64px desktop / 48px mobile). Tone defaults to text-deep-moss; --}}
+          {{-- the section-header component otherwise inherits page text colour. --}}
           <{{ $headingTag }}
-            class="section-header__heading font-heading text-4xl leading-tight md:text-5xl lg:text-6xl @if($eyebrow !== '') mt-3 @endif">
+            class="section-header__heading {{ Component::sectionHeadingClasses('text-deep-moss', $eyebrow !== '' ? 'mt-3' : '') }}">
             {{ esc_html($heading) }}
           </{{ $headingTag }}>
         @endif

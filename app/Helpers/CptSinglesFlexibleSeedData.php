@@ -54,8 +54,6 @@ final class CptSinglesFlexibleSeedData
             'background_type' => ComponentTypes::BACKGROUND_NONE,
             'body_text_tone' => TailwindColors::DEFAULT_BODY_TEXT_TONE,
             'visibility_mobile' => 'visible',
-            'top_padding' => ComponentTypes::PADDING_MEDIUM,
-            'bottom_padding' => ComponentTypes::PADDING_MEDIUM,
         ];
     }
 
@@ -74,8 +72,6 @@ final class CptSinglesFlexibleSeedData
 
         return [
             array_merge(self::base('image_hero'), [
-                'top_padding' => ComponentTypes::PADDING_NONE,
-                'bottom_padding' => ComponentTypes::PADDING_NONE,
                 'hero_image' => [
                     'url' => PagesFlexibleSeedData::seedAssetUrl(self::CAREER_HERO_FILE),
                     'alt' => __('Subway team at the Culver Square store', 'culvers'),
@@ -205,8 +201,6 @@ final class CptSinglesFlexibleSeedData
 
         return [
             array_merge(self::base('image_hero'), [
-                'top_padding' => ComponentTypes::PADDING_NONE,
-                'bottom_padding' => ComponentTypes::PADDING_NONE,
                 'hero_image' => [
                     'url' => PagesFlexibleSeedData::seedAssetUrl(self::EVENT_HERO_FILE),
                     'alt' => __('Heart-shaped Hotel Chocolat selection box', 'culvers'),
@@ -247,8 +241,6 @@ final class CptSinglesFlexibleSeedData
                 ),
                 'header_align' => 'center',
                 'header_max_width' => 'medium',
-                'top_padding' => ComponentTypes::PADDING_LARGE,
-                'bottom_padding' => ComponentTypes::PADDING_SMALL,
             ]),
             array_merge(self::base('shop_split_highlight'), [
                 'split_ratio' => '50-50',
@@ -289,8 +281,6 @@ final class CptSinglesFlexibleSeedData
                 ),
                 'header_align' => 'center',
                 'header_max_width' => 'medium',
-                'top_padding' => ComponentTypes::PADDING_LARGE,
-                'bottom_padding' => ComponentTypes::PADDING_SMALL,
             ]),
             array_merge(self::base('three_card_block'), [
                 'cards_source' => 'manual',
@@ -352,8 +342,6 @@ final class CptSinglesFlexibleSeedData
     {
         return [
             array_merge(self::base('image_hero'), [
-                'top_padding' => ComponentTypes::PADDING_NONE,
-                'bottom_padding' => ComponentTypes::PADDING_NONE,
                 'hero_image' => [
                     'url' => PagesFlexibleSeedData::seedAssetUrl(self::GREGGS_HERO_FILE),
                     'alt' => __('Greggs storefront at Culver Square', 'culvers'),
@@ -434,8 +422,6 @@ final class CptSinglesFlexibleSeedData
                 'header_body' => '',
                 'header_align' => 'center',
                 'header_max_width' => 'medium',
-                'top_padding' => ComponentTypes::PADDING_LARGE,
-                'bottom_padding' => ComponentTypes::PADDING_SMALL,
             ]),
             array_merge(self::base('three_card_block'), [
                 'cards_source' => 'manual',
@@ -489,8 +475,6 @@ final class CptSinglesFlexibleSeedData
     {
         return [
             array_merge(self::base('image_hero'), [
-                'top_padding' => ComponentTypes::PADDING_NONE,
-                'bottom_padding' => ComponentTypes::PADDING_NONE,
                 'hero_image' => [
                     'url' => PagesFlexibleSeedData::seedAssetUrl(self::EVENT_HERO_FILE),
                     'alt' => __('Family taking part in an Easter Egg Hunt', 'culvers'),
@@ -530,8 +514,6 @@ final class CptSinglesFlexibleSeedData
                 ),
                 'header_align' => 'center',
                 'header_max_width' => 'medium',
-                'top_padding' => ComponentTypes::PADDING_LARGE,
-                'bottom_padding' => ComponentTypes::PADDING_SMALL,
             ]),
         ];
     }
@@ -548,8 +530,6 @@ final class CptSinglesFlexibleSeedData
     {
         return [
             array_merge(self::base('image_hero'), [
-                'top_padding' => ComponentTypes::PADDING_NONE,
-                'bottom_padding' => ComponentTypes::PADDING_NONE,
                 'hero_image' => [
                     'url' => PagesFlexibleSeedData::seedAssetUrl(self::EVENT_OFFER_IMAGE_FILE),
                     'alt' => __('Editorial photo of new spring storefront line-up', 'culvers'),
@@ -574,8 +554,6 @@ final class CptSinglesFlexibleSeedData
                 ),
                 'header_align' => 'center',
                 'header_max_width' => 'medium',
-                'top_padding' => ComponentTypes::PADDING_LARGE,
-                'bottom_padding' => ComponentTypes::PADDING_SMALL,
             ]),
         ];
     }

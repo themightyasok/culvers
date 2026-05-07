@@ -33,11 +33,12 @@
 
 @if($hasDetails)
   <section
-    class="shop-store-details {{ esc_attr($root) }} bg-white text-deep-moss"
+    class="shop-store-details {{ esc_attr($root) }} bg-white py-12 text-deep-moss lg:py-16"
     data-component-root
     data-shop-store-details>
     <div class="{{ LayoutShell::INNER_READABLE_960 }}">
-      <{{ $headingTag }} class="shop-store-details__heading mb-10 text-center font-heading text-6xl tracking-tight text-faded-olive md:mb-12">
+      {{-- Section H2: 64px desktop / 48px mobile (Component::sectionHeadingClasses). --}}
+      <{{ $headingTag }} class="shop-store-details__heading {{ Component::sectionHeadingClasses('text-faded-olive', 'mb-10 text-center md:mb-12') }}">
         {{ esc_html($sectionHeading) }}
       </{{ $headingTag }}>
 

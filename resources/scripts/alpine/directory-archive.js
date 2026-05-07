@@ -33,10 +33,6 @@ export default function registerDirectoryArchiveAlpine(Alpine) {
       this.$nextTick(() => window.dispatchEvent(new Event('resize')));
     },
 
-    toggleCategoryPanel() {
-      this.categoryOpen = !this.categoryOpen;
-    },
-
     setCategory(slug) {
       this.categorySlug = typeof slug === 'string' ? slug : '';
       this.applyFilter();

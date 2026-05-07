@@ -67,9 +67,11 @@
   $hasRows = $normalizedRows !== [];
 
   $isShopSingle = get_post_type() === 'culvers_shop';
-  $hoursHeadingClass = $isShopSingle
-      ? 'font-heading text-6xl tracking-tight text-faded-olive'
-      : 'font-heading text-7xl leading-none tracking-tight text-faded-olive md:text-8xl';
+/** Default: canonical section H2 (Component::sectionHeadingClasses → 64px desktop / 48px mobile). */
+/** Shop-single: deliberately a touch smaller — sub-section heading inside the single page layout. */
+$hoursHeadingClass = $isShopSingle
+    ? 'font-heading text-6xl tracking-tight text-faded-olive'
+    : Component::sectionHeadingClasses('text-faded-olive');
   $hoursSubClass = $isShopSingle
       ? 'mt-4 font-sans text-xl font-light text-faded-olive'
       : 'mt-4 font-sans text-base leading-relaxed text-deep-moss/85 md:text-lg';

@@ -140,9 +140,5 @@ return [
                 ],
             ],
         ],
-        'tab_padding' => [
-            'type' => 'tab',
-            'options' => ['label' => __('Padding', 'culvers')],
-        ],
     ],
 ];

@@ -66,8 +66,24 @@
   /* Prose link underlines: tuned via theme.extend.typography in tailwind.config.js */
 
   /*
-   * Buttons — Figma “Button” / “Button Hover” (59:4936, 59:4934): same fills;
-   * hover widens horizontal padding only (25.773px → 34px). Radius matches full pill (`rounded-full`).
+   * Buttons — Figma “Button” / “Button Hover” (59:4936, 59:4934). Canonical
+   * CTA hover across the whole site is "horizontal padding widens" — fills
+   * stay put, no colour shift. Anything that calls itself a button should
+   * use `.btn` + a `.btn-{variant}` (paint) + an optional `.btn-{size}`
+   * (geometry) so every CTA shares the same hover language.
+   *
+   *   variant: btn-primary  → solid glowleaf fill, deep-moss text
+   *            btn-outline  → transparent + glowleaf border; fills on hover
+   *            btn-dark     → solid deep-moss fill, glowleaf text (inverse of
+   *                            primary; used on light-green surfaces like the
+   *                            travel calculator where glowleaf-on-pale-sage
+   *                            wouldn't carry enough contrast)
+   *   size:    (omitted)    → Figma default (25.773px → 34px on hover)
+   *            btn-large    → hero / banner CTA padding (40px → 56px)
+   *            btn-form     → fixed 46px height + min-width for form rows
+   *
+   * Always use the partial when you can: `@include('components.button', […])`
+   * — consult `resources/views/components/button.blade.php` for the API.
    */
   .btn {
     @apply inline-flex shrink-0 cursor-pointer items-center justify-center rounded-full border border-transparent font-sans text-xs font-semibold leading-[30px] whitespace-nowrap uppercase tracking-wider antialiased transition-[padding,background-color,color,border-color] duration-150 ease-out;
@@ -91,6 +107,39 @@
    */
   .btn-outline {
     @apply border-glowleaf bg-transparent px-[25.773px] py-[7.732px] text-glowleaf hover:bg-brand-500 hover:px-[34px] hover:text-deep-moss;
+  }
+
+  /*
+   * Dark — Figma travel-calculator search button (51:7993). Fills are inverse
+   * of primary (deep-moss surface, glowleaf type) so the CTA reads on the
+   * pale-sage card. Geometry / hover-widen are identical to primary so this
+   * still uses the canonical CTA hover language.
+   */
+  .btn-dark {
+    @apply bg-deep-moss px-[25.773px] py-[7.732px] text-glowleaf hover:px-[34px];
+  }
+  .btn-dark:focus-visible {
+    @apply outline-glowleaf;
+  }
+
+  /*
+   * Size modifiers — composed alongside a `.btn-{variant}`. They override
+   * the default 25.773px → 34px padding ramp with size-appropriate values
+   * but keep the canonical "padding widens on hover" Figma behaviour, so
+   * a hero CTA, a form CTA, and an inline CTA all hover the same way.
+   */
+  .btn-large {
+    /* Hero / info-block banner CTA: chunkier resting padding, hover delta
+       proportional to the default ramp (~+33%). Stays within tracked
+       `.btn` transition list so the widen stays animated. */
+    @apply px-10 py-3 hover:px-14 md:px-12 md:hover:px-16;
+  }
+
+  .btn-form {
+    /* Form-row submit: locks height + min-width so the button aligns with
+       46px input fields without forcing horizontal padding. The default
+       hover-widen still applies because we never overwrite px on the base. */
+    @apply h-[46px] min-w-[120px];
   }
 
   /* Alpine toggles classes on `<body>`; keep here (Tailwind breakpoints, one source of truth). */

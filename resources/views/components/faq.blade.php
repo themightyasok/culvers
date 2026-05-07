@@ -115,7 +115,8 @@
 
       <div class="relative z-10 mx-auto flex w-full max-w-[774px] flex-col items-center">
         @if($heading !== '')
-          <{{ $headingTag }} class="font-heading text-5xl leading-tight text-deep-moss md:text-7xl text-center">
+          {{-- Section H2: 64px desktop / 48px mobile (Component::sectionHeadingClasses). --}}
+          <{{ $headingTag }} class="{{ Component::sectionHeadingClasses('text-deep-moss', 'text-center') }}">
             {{ esc_html($heading) }}
           </{{ $headingTag }}>
           @if($showKeyline)

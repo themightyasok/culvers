@@ -622,23 +622,6 @@ return [
                 'wrapper' => ['width' => '50'],
             ],
         ],
-        'tab_padding' => [
-            'type' => 'tab',
-            'options' => ['label' => __('Padding', 'culvers')],
-        ],
-        'scroller_remove_vertical_padding' => [
-            'type' => 'true_false',
-            'options' => [
-                'label' => __('Remove vertical padding', 'culvers'),
-                'instructions' => __(
-                    'Removes outer section vertical padding (Top/Bottom Padding above) and the horizontal scroller strip\'s '
-                    . 'vertical safe-area padding. Off by default — turn on for a flush block.',
-                    'culvers'
-                ),
-                'default_value' => 0,
-                'ui' => 1,
-            ],
-        ],
         'scroller_msg_padding_section' => [
             'type' => 'message',
             'options' => [

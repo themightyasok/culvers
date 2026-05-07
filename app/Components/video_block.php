@@ -50,9 +50,5 @@ return [
                 'placeholder' => __('Play video', 'culvers'),
             ],
         ],
-        'tab_padding' => [
-            'type' => 'tab',
-            'options' => ['label' => __('Padding', 'culvers')],
-        ],
     ],
 ];

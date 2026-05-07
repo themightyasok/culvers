@@ -20,7 +20,7 @@
 
 @if($bodyPlain !== '')
   <section
-    class="shop-intro-block {{ esc_attr($root) }} bg-white text-deep-moss"
+    class="shop-intro-block {{ esc_attr($root) }} bg-white py-12 text-deep-moss lg:py-16"
     data-component-root
     data-shop-intro-block>
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
@@ -33,7 +33,7 @@
 
         @if($showCta)
           <div class="shop-intro-block__cta mt-10 flex justify-center md:mt-12">
-            <a class="btn btn-primary" href="{{ esc_url($ctaUrl) }}">{{ esc_html($ctaLabel) }}</a>
+            @include('components.button', ['label' => $ctaLabel, 'href' => $ctaUrl])
           </div>
         @endif
       </div>

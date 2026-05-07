@@ -31,10 +31,9 @@ final class ArchiveHeroComponent
         $opacityRaw = self::optionField($prefix . '_hero_overlay_opacity');
 
         return [
-            /* image-hero strips its own component padding so the band bleeds
-               cleanly under the fixed header — no moss strip above/below. */
-            'top_padding' => ComponentTypes::PADDING_NONE,
-            'bottom_padding' => ComponentTypes::PADDING_NONE,
+            /* No background_image — image-hero renders the photo itself via
+               `hero_image` and tucks under the fixed header via the
+               `.image-hero--viewport` negative margin in app.css. */
             'background_type' => ComponentTypes::BACKGROUND_NONE,
             'hero_image' => is_array($image) ? $image : [],
             'hero_image_mobile' => is_array($imageMobile) ? $imageMobile : [],

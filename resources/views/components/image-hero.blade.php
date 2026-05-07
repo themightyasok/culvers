@@ -16,7 +16,7 @@
    */
 
   $c = is_array($component ?? null) ? $component : [];
-  $root = Component::rootClasses($c, includePadding: false);
+  $root = Component::rootClasses($c);
 
   $desk = isset($c['hero_image']) && is_array($c['hero_image']) ? $c['hero_image'] : [];
   $mob = isset($c['hero_image_mobile']) && is_array($c['hero_image_mobile']) ? $c['hero_image_mobile'] : [];

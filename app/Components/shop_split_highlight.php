@@ -192,9 +192,5 @@ return [
                 'library' => 'all',
             ],
         ],
-        'tab_padding' => [
-            'type' => 'tab',
-            'options' => ['label' => __('Padding', 'culvers')],
-        ],
     ],
 ];

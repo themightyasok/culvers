@@ -72,11 +72,6 @@ return [
 
         // Component-specific fields go here. Always prefix with the
         // layout subject (see "Naming rules" below).
-
-        'tab_padding' => [
-            'type' => 'tab',
-            'options' => ['label' => __('Padding', 'culvers')],
-        ],
     ],
 ];
 ```
@@ -96,8 +91,32 @@ duplicates the field and breaks ACF:
 | `body_text_tone`                | Default body copy colour. Read via `Component::bodyTextTone($c[, 'light-band'])`.                 |
 | `visibility_mobile`             | `visible` / `hidden`. Hides at <768px via `culvers-hide-below-md`.                                |
 
-`addPaddingTab()` adds `top_padding` + `bottom_padding`. The Blade picks
-them up via `Component::rootClasses($c)` — no manual `pt-*` / `pb-*`.
+### Vertical rhythm — three-level model declared in code, not in the editor
+
+There is **no per-component "Top padding" / "Bottom padding" control**, and
+component PHP / Blade must not add outer `pt-*` / `pb-*` to the section
+element. Inter-section spacing is decided centrally in
+[`App\Helpers\Rhythm`](../app/Helpers/Rhythm.php). Figma uses three levels:
+
+| Level        | Class    | Pixels | Used when                                                                                       |
+| ------------ | -------- | ------ | ----------------------------------------------------------------------------------------------- |
+| **Standard** | `mt-24`  | 96     | **Default** — space between consecutive flexible components site-wide. |
+| **Hugged**   | `mt-15`  | 60     | Reserved — for an intro band that hugs the content it announces. Apply per-case via `Rhythm`.   |
+| **Flush**    | `mt-0`   | 0      | Reserved — cluster joins where one component flows into the next. Apply per-case via `Rhythm`.  |
+
+The renderer
+([`flexible-components.blade.php`](../resources/views/partials/flexible-components.blade.php))
+walks rows in order and asks `Rhythm::spaceAboveClass($previousLayout,
+$previousComponent)` for the `mt-*` utility to apply to the current row.
+Today every non-first row is Standard. The first row gets no top margin.
+To make a layout always hug or flush against the row that follows it,
+add a branch inside `App\Helpers\Rhythm::spaceAboveClass()`.
+
+If a component paints its own background (`bg-white`, `bg-deep-moss`, …),
+it adds **internal** `py-*` directly inside the Blade template so the bg
+has breathing room around its content. The shared baseline is
+`py-12 lg:py-16` (48 / 64 px) — half of the Standard inter-section gap.
+That is intra-component padding and is not editor-tunable.
 
 ### Naming rules
 
@@ -132,10 +151,10 @@ them up via `Component::rootClasses($c)` — no manual `pt-*` / `pb-*`.
 
 - All editor-facing strings go through `__('…', 'culvers')`.
 
-- Tabs always exist as the **first** key (`tab_general`) and the **last**
-  key (`tab_padding`). For multi-section layouts add intermediate tabs
-  in between (`tab_role`, `tab_fonts`, `tab_padding`) — see
-  `career_detail` and `horizontal_scroller`.
+- The **first** tab key is always `tab_general` (defined by the registry,
+  surfaces the General tab on every layout). For multi-section layouts add
+  intermediate tabs after your main fields (`tab_role`, `tab_fonts`, …) —
+  see `career_detail` and `horizontal_scroller`.
 
 - Field width hints use the standard `'wrapper' => ['width' => '50']`
   (or `'33'` / `'40'` / `'60'`) to lay out paired inputs side-by-side in
@@ -261,6 +280,13 @@ before touching font sizes.
 - Pick **one** stock `text-*` utility per element. Pair with stock
   `tracking-*` / `leading-*` utilities, or arbitrary values when Figma
   sits between defaults (`tracking-[0.22em]`, `leading-[26px]`).
+- **Section H2s use the canonical spine** — call
+  `Component::sectionHeadingClasses($toneClass, $extraClasses)` for every
+  page-level section heading. The spine renders **64 px Canela at desktop
+  / 48 px at mobile** (`text-5xl md:text-7xl` paired with the
+  token-calibrated 1.1 / 1.2 line-heights). The site H1 (image-hero / hero-slider
+  / policy-page / single-page title) is the only heading allowed to go
+  larger. See "Heading typography" below.
 - Use the design tokens defined in `resources/styles/theme.tokens.css`:
   Tailwind colour utilities (`text-deep-moss`, `bg-glowleaf`,
   `border-faded-olive`, `bg-brand-500`) generated from `--color-*`.
@@ -269,6 +295,36 @@ before touching font sizes.
 - Numerical pattern extensions are allowed where Tailwind's own scale
   stops short: `max-w-8xl` (90 rem shell), `z-60`/`z-70`/`z-80` (header
   stack). These are the only invented utilities.
+
+### Heading typography — one ramp, no surprises
+
+Headings on Culver Square pages collapse to two visual roles:
+
+| Role | Tag | Size (mobile → desktop) | Where |
+|------|-----|-------------------------|-------|
+| Page hero (one per page) | `<h1>` | up to `text-9xl` (96 px) | `image-hero`, `hero-slider`, `policy-page`, single-post title partials |
+| Section heading | `<h2>` (default) | `text-5xl` → `text-7xl` (48 → 64 px) | every component that exposes a "Heading" field |
+
+Use `Component::sectionHeadingClasses(string $toneClass, string $extra = '')`:
+
+```blade
+{{-- 1. Plain section heading (deep moss tone) --}}
+<{{ $headingTag }} class="{{ Component::sectionHeadingClasses() }}">
+  {{ esc_html($heading) }}
+</{{ $headingTag }}>
+
+{{-- 2. Tone override + layout extras (margins, alignment, BEM root) --}}
+<{{ $headingTag }} class="my-component__heading {{ Component::sectionHeadingClasses('text-faded-olive', 'mb-10 text-center md:mb-12') }}">
+  {{ esc_html($heading) }}
+</{{ $headingTag }}>
+```
+
+The helper deliberately does **not** emit `leading-*` or `tracking-*`
+utilities — `text-5xl` and `text-7xl` ship paired line-heights (1.1 / 1.2)
+calibrated to Figma in `theme.tokens.css`, and Figma sets letter-spacing to
+0 for headings. Adding `leading-tight` / `leading-none` / `tracking-tight`
+on top of the helper will fight the type tokens and re-introduce the
+exact drift this helper exists to prevent.
 
 ### Do NOT
 
@@ -368,7 +424,6 @@ If the component needs interactivity, add an Alpine factory.
 | `Component::headingTag($value, $default = 2)` | Clamp editor heading-level pick to a valid `h1`–`h6` tag.                |
 | `Component::headingLevelField($instr, $allowH1, $default)` | Drop-in ACF field config for a heading-level select.                  |
 | `Component::bodyTextTone($c, $variant)`      | Sanitise body-text tone; `'light-band'` defends white/cream bands.       |
-| `Padding::getClasses($c)`                    | Translate ACF padding choices to Tailwind `pt-*` / `pb-*`.               |
 | `Grid::stripHorizontalInsetPadding($s)`     | Remove inherited inset padding when the component renders its own shell. |
 | `Background::process($c)`                    | Resolve the General-tab background fields into classes/styles/media.     |
 | `LayoutShell::INNER_MAX_GUTTERED`            | Site-shell inner width (`mx-auto w-full max-w-8xl px-4 md:px-12`). Aligns with header + footer. |
@@ -447,6 +502,39 @@ Every component must:
 
 ---
 
+## 9a. CTAs — one button partial, one hover
+
+Every CTA on the site (link or `<button>`) shares the same Figma hover
+language: **horizontal padding widens** on hover, fills stay put. To keep
+that consistent, route every CTA through the partial:
+
+```blade
+@include('components.button', [
+    'label' => $ctaLabel,
+    'href'  => $ctaUrl,        {{-- omit for a <button> --}}
+    'variant' => 'primary',    {{-- 'primary' (default) | 'outline' --}}
+    'size'    => 'default',    {{-- 'default' | 'large' | 'form' --}}
+])
+```
+
+The `size` token picks geometry; the hover ramp comes for free:
+
+| Size      | Use                                                 | Resting → hover padding |
+| --------- | --------------------------------------------------- | ----------------------- |
+| `default` | Inline CTAs (View all, Apply, Send)                 | 25.773px → 34px         |
+| `large`   | Hero / banner CTAs (`hero_slider`, `info_block`)    | 40/48px → 56/64px       |
+| `form`    | Form-row submits (`contact`, `travel_calculator`)   | 46px tall, min-w 120px  |
+
+**Hand-rolled CTAs** (Alpine slot content, screen-reader spans the partial
+can't model — see `contact`, `travel_calculator`, `event_meta`,
+`career_detail`) MUST keep the same class spine — `btn btn-{variant}
+btn-{size}` — so hover stays in sync. Never add inline `px-*` / `py-*`
+to a CTA: it overrides `.btn-primary`'s `hover:px-[34px]` and silently
+kills the hover-widen. Reach for a size modifier instead, or add a new
+size in `app.css` if your case isn't covered.
+
+---
+
 ## 10. Documentation
 
 **Every component file ships with a documentation page** under
@@ -476,7 +564,8 @@ For an AI agent (or human) creating a brand-new component, in order:
                                     (e.g. event_meta, centre_map).
 [ ] 2. Create app/Components/<layout>.php using the scaffold in §2.
        - Top docblock (what / when / Figma ref).
-       - tab_general → fields → tab_padding.
+       - tab_general → component-specific fields.
+         (No Padding tab — vertical rhythm is owned by the parent grid.)
        - Subject-prefix every field.
        - Use Component::headingLevelField() for any heading select.
 [ ] 3. Create resources/views/components/<layout-kebab>.blade.php
@@ -536,12 +625,17 @@ logged-in.
 
 | Anti-pattern | What to do instead |
 | ------------ | ------------------ |
-| Re-defining `component_width`, `background_*`, `body_text_tone`, `visibility_mobile`, `top_padding`, `bottom_padding` in your component file. | They're added by `ComponentRegistry` to every layout. Just `tab_general` → fields → `tab_padding`. |
+| Re-defining `component_width`, `background_*`, `body_text_tone`, `visibility_mobile` in your component file. | They're added by `ComponentRegistry` to every layout. Just `tab_general` → component-specific fields. |
+| Adding outer `pt-*` / `pb-*` / `mt-*` / `mb-*` to a component's section element. | Inter-section rhythm is owned by `App\Helpers\Rhythm` (Standard 96 / Hugged 60 / Flush 0) and applied by `partials/flexible-components.blade.php`. Components may only add *internal* `py-*` when they paint their own background. |
 | Hand-writing `<img>` tags. | `Image::render($acfImage, [...])`. |
 | `<h2>` hard-coded in markup. | `Component::headingTag($c['<prefix>_heading_level'] ?? null)`. |
 | Skipping the empty-state branch. | Wrap with `$hasContent` and emit the editor placeholder. |
 | Inline arbitrary `text-[42px]` when `text-3xl` is within 2 px. | Snap to the type ladder. See `docs/TYPOGRAPHY-SCALE.md`. |
+| Hand-rolling section H2 sizes (`text-4xl md:text-5xl lg:text-6xl`, `text-7xl md:text-8xl`, `text-3xl md:text-4xl`, …). | Use `Component::sectionHeadingClasses()`. Every page-level section heading on the site is **64 px desktop / 48 px mobile**; the helper enforces it. See §4 "Heading typography". |
+| Adding `leading-tight` / `leading-none` / `tracking-tight` on top of `text-5xl` / `text-7xl`. | Don't. The type tokens already pair the calibrated line-height (1.1 / 1.2) and Figma sets tracking to 0 — these utilities fight the tokens and re-introduce the drift the helper exists to prevent. |
 | Inventing a CSS class (`.my-component-button`) when Tailwind already covers it (`.btn-primary`). | Use the Tailwind utility / existing button class. |
+| Hand-rolling `<a class="btn btn-primary">` when the partial would do. | `@include('components.button', ['label' => …, 'href' => …])` — keeps every CTA hovering the same way. |
+| Hard-coding inline padding on a CTA (`btn btn-primary px-10 py-3`). | Use a `size` modifier (`btn-large` / `btn-form`) — inline `px-*` overrides `.btn-primary`'s `hover:px-*` and breaks the canonical hover-widen. |
 | Reading `get_field(...)` from inside an Alpine module. | Render values into `data-*` attributes from Blade and read those. |
 | Putting an external API call in a component Blade. | Wrap in a `final` class under `app/<Subject>/` + WP REST endpoint with nonce + rate-limit. See §8. |
 | New documentation file outside `docs/`. | All theme docs live in `docs/`. |

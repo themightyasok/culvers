@@ -93,6 +93,22 @@ final class Grid
         return in_array($layout, self::$fullWidthComponents, true);
     }
 
+    /**
+     * Class spine for the main flexible-components grid container.
+     *
+     * Inter-section vertical rhythm is **not** carried by `gap-y-*` here —
+     * Figma-style variation uses three levels (Standard 96 px, Hugged ~60 px,
+     * Flush 0 px) between adjacent components; `gap-y` would paint a uniform
+     * value between every row. Instead each row receives a `mt-*` utility from
+     * {@see Rhythm}, applied by
+     * {@see resources/views/partials/flexible-components.blade.php}.
+     *
+     * Only the horizontal grid (12 columns + `gap-x-6` gutters) lives here.
+     *
+     * Components with their own painted background apply *internal* padding
+     * directly inside the Blade template — that is intra-component breathing
+     * room and is intentionally independent of the inter-section rhythm.
+     */
     public static function getMainGridContainerClasses(): string
     {
         return 'grid grid-cols-12 gap-x-6';

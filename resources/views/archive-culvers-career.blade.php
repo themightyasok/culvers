@@ -53,6 +53,18 @@
         ksort($contract_types);
     }
 
+    /* Filter group expects `list<['slug', 'name']>`. Departments come from
+       a taxonomy; contract types come from aggregated post-meta — both
+       collapse to the same shape for the shared partial. */
+    $career_department_options = array_map(
+        static fn (\WP_Term $term): array => ['slug' => (string) $term->slug, 'name' => (string) $term->name],
+        $departments
+    );
+    $career_contract_options = [];
+    foreach ($contract_types as $slug => $label) {
+        $career_contract_options[] = ['slug' => (string) $slug, 'name' => (string) $label];
+    }
+
     $careersArchiveHero = \App\Directory\ArchiveHeroComponent::fromOptions(\App\Directory\CareerArchiveFields::FIELD_PREFIX);
     /** @var array<string, mixed> $careersArchiveHero */
     $careersArchiveHero = apply_filters('culvers_careers_archive_hero_component', $careersArchiveHero);
@@ -88,21 +100,10 @@
 
         <div class="mt-[72px] flex flex-col gap-[22px] md:mt-[88px]">
           <div class="directory-archive__toolbar flex justify-start">
-            <button
-              id="{{ esc_attr($filter_toggle_id) }}"
-              type="button"
-              class="directory-archive__filter-pill inline-flex w-max max-w-full items-center gap-[12.887px] rounded-full bg-brand-500 py-[7.732px] pl-[25.773px] pr-5 font-sans text-xs font-semibold uppercase leading-[30px] tracking-wider text-deep-moss transition hover:brightness-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-deep-moss"
-              @click="toggleFilters()"
-              :aria-expanded="filtersVisible ? 'true' : 'false'"
-              aria-controls="directory-archive-filters-careers">
-              <span x-text="filtersVisible ? {{ json_encode(__('Hide filters', 'culvers'), JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES) }} : {{ json_encode(__('Show filters', 'culvers'), JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES) }}"></span>
-              <svg class="size-[19.825px] shrink-0" x-show="filtersVisible" x-cloak viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M4 6h12M4 12h8m-8 6h4M18 5l3 3m0 0-9 9m9-9-9 9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
-              <svg class="h-3 w-[18px] shrink-0" x-show="!filtersVisible" x-cloak viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M4 6h16M8 12h8M10 18h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-              </svg>
-            </button>
+            @include('partials.directory-filter-pill', [
+                'toggle_id' => $filter_toggle_id,
+                'controls_id' => 'directory-archive-filters-careers',
+            ])
           </div>
 
           <div class="directory-archive__main-row" :class="{ 'directory-archive__main-row--filters-visible': filtersVisible }">
@@ -115,101 +116,27 @@
               <aside class="directory-archive__aside w-[325px] max-w-full rounded-none bg-white px-0 pb-6 pt-0 shadow-none md:px-0 lg:shrink-0">
                 <h2 class="sr-only">{{ __('Careers filters', 'culvers') }}</h2>
 
-                <div class="directory-archive__filter-section">
-                  <button
-                    type="button"
-                    class="flex w-full items-center justify-between gap-3 py-4 text-left font-sans text-xs font-semibold uppercase tracking-widest text-faded-olive transition hover:text-deep-moss focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"
-                    @click="toggleCategoryPanel()"
-                    :aria-expanded="categoryOpen.toString()"
-                    aria-controls="directory-category-panel-careers">
-                    <span>{{ __('Department', 'culvers') }}</span>
-                    <span class="text-lg leading-none text-deep-moss tabular-nums" aria-hidden="true" x-text="categoryOpen ? '−' : '+'"></span>
-                  </button>
+                @include('partials.directory-filter-group', [
+                    'label' => __('Department', 'culvers'),
+                    'aria_label' => __('Department', 'culvers'),
+                    'panel_id' => 'directory-category-panel-careers',
+                    'state_var' => 'categorySlug',
+                    'toggle_var' => 'categoryOpen',
+                    'setter' => 'setCategory',
+                    'options' => $career_department_options,
+                ])
 
-                  <ul
-                    id="directory-category-panel-careers"
-                    class="directory-archive__filter-list flex flex-col gap-3 pb-5 pt-1"
-                    role="radiogroup"
-                    aria-label="{{ esc_attr__('Department', 'culvers') }}"
-                    x-show="categoryOpen"
-                    x-transition.opacity.duration.150ms>
-                    <li>
-                      <button
-                        type="button"
-                        role="radio"
-                        class="directory-archive__filter-option flex w-full items-center gap-[14px] py-0.5 text-left focus-visible:rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"
-                        :class="categorySlug === '' ? 'directory-archive__filter-option--on' : 'directory-archive__filter-option--off'"
-                        :aria-checked="categorySlug === ''"
-                        @click="setCategory('')">
-                        <span class="directory-archive__radio" :class="categorySlug === '' ? 'directory-archive__radio--checked' : ''" aria-hidden="true"></span>
-                        <span class="font-sans text-xs font-semibold uppercase tracking-widest">{{ __('All', 'culvers') }}</span>
-                      </button>
-                    </li>
-                    @foreach ($departments as $term)
-                      @if ($term instanceof \WP_Term)
-                        <li>
-                          <button
-                            type="button"
-                            role="radio"
-                            class="directory-archive__filter-option flex w-full items-center gap-[14px] py-0.5 text-left focus-visible:rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"
-                            :class="categorySlug === {{ json_encode($term->slug, JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES) }} ? 'directory-archive__filter-option--on' : 'directory-archive__filter-option--off'"
-                            :aria-checked="categorySlug === {{ json_encode($term->slug, JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES) }}"
-                            @click="setCategory({{ json_encode($term->slug, JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES) }})">
-                            <span class="directory-archive__radio" :class="categorySlug === {{ json_encode($term->slug, JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES) }} ? 'directory-archive__radio--checked' : ''" aria-hidden="true"></span>
-                            <span class="leading-snug">{{ esc_html($term->name) }}</span>
-                          </button>
-                        </li>
-                      @endif
-                    @endforeach
-                  </ul>
-                </div>
-
-                @if ($contract_types !== [])
-                  <div class="directory-archive__filter-section pt-2">
-                    <button
-                      type="button"
-                      class="flex w-full items-center justify-between gap-2 py-4 text-left font-sans text-xs font-semibold uppercase tracking-widest text-faded-olive transition hover:text-deep-moss focus-visible:rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"
-                      @click="retailerOpen = !retailerOpen"
-                      :aria-expanded="retailerOpen.toString()"
-                      aria-controls="directory-type-panel-careers">
-                      <span>{{ __('Contract type', 'culvers') }}</span>
-                      <span class="text-lg leading-none text-deep-moss tabular-nums" aria-hidden="true" x-text="retailerOpen ? '−' : '+'"></span>
-                    </button>
-                    <ul
-                      id="directory-type-panel-careers"
-                      class="directory-archive__filter-list flex flex-col gap-3 pb-5 pt-1"
-                      role="radiogroup"
-                      aria-label="{{ esc_attr__('Contract type', 'culvers') }}"
-                      x-show="retailerOpen"
-                      x-transition.opacity.duration.150ms>
-                      <li>
-                        <button
-                          type="button"
-                          role="radio"
-                          class="directory-archive__filter-option flex w-full items-center gap-[14px] py-0.5 text-left focus-visible:rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"
-                          :class="typeSlug === '' ? 'directory-archive__filter-option--on' : 'directory-archive__filter-option--off'"
-                          :aria-checked="typeSlug === ''"
-                          @click="setType('')">
-                          <span class="directory-archive__radio" :class="typeSlug === '' ? 'directory-archive__radio--checked' : ''" aria-hidden="true"></span>
-                          <span class="font-sans text-xs font-semibold uppercase tracking-widest">{{ __('All', 'culvers') }}</span>
-                        </button>
-                      </li>
-                      @foreach ($contract_types as $slug => $label)
-                        <li>
-                          <button
-                            type="button"
-                            role="radio"
-                            class="directory-archive__filter-option flex w-full items-center gap-[14px] py-0.5 text-left focus-visible:rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"
-                            :class="typeSlug === {{ json_encode($slug, JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES) }} ? 'directory-archive__filter-option--on' : 'directory-archive__filter-option--off'"
-                            :aria-checked="typeSlug === {{ json_encode($slug, JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES) }}"
-                            @click="setType({{ json_encode($slug, JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES) }})">
-                            <span class="directory-archive__radio" :class="typeSlug === {{ json_encode($slug, JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES) }} ? 'directory-archive__radio--checked' : ''" aria-hidden="true"></span>
-                            <span>{{ esc_html($label) }}</span>
-                          </button>
-                        </li>
-                      @endforeach
-                    </ul>
-                  </div>
+                @if ($career_contract_options !== [])
+                  @include('partials.directory-filter-group', [
+                      'label' => __('Contract type', 'culvers'),
+                      'aria_label' => __('Contract type', 'culvers'),
+                      'panel_id' => 'directory-type-panel-careers',
+                      'state_var' => 'typeSlug',
+                      'toggle_var' => 'retailerOpen',
+                      'setter' => 'setType',
+                      'options' => $career_contract_options,
+                      'extra_section_classes' => 'pt-2',
+                  ])
                 @endif
               </aside>
             </div>

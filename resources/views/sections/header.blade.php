@@ -221,9 +221,10 @@
                   $fp = $firstPreview !== '' ? esc_url($firstPreview) : '';
                   $fpJs = json_encode($fp, JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES);
                 @endphp
-                {{-- Panel spans the full width of the menu bar shell (`.mega-nav` inherits the
-                     parent `max-w-8xl` / `max-w-none` width) and sits 6px under the bar so the
-                     drop-down reads as part of the same surface — no orphan strip in between. --}}
+                {{-- Panel positioning anchor is full-width of `.mega-nav` (which itself widens
+                     to viewport when scrolled so the olive bar can go full-bleed) — but the
+                     visible card is always capped at `max-w-8xl` to match `.mega-nav__bar-row`
+                     so the dropdown stays aligned with the menu items at every scroll position. --}}
                 <div
                   id="mega-panel-{{ $branch['id'] }}"
                   class="mega-nav__panel absolute inset-x-0 top-[calc(100%+6px)] z-60"
@@ -233,7 +234,7 @@
                   role="region"
                   aria-label="{{ esc_attr($branch['title']) }}">
                   <div
-                    class="mega-nav__panel-inner mx-auto max-h-[min(85vh,560px)] w-full overflow-y-auto rounded-2xl border border-light-brown/25 bg-lighter-cream px-5 py-8 shadow-lg md:px-8 lg:px-10 lg:pb-10 lg:pt-10">
+                    class="mega-nav__panel-inner mx-auto max-h-[min(85vh,560px)] w-full max-w-8xl overflow-y-auto rounded-2xl border border-light-brown/25 bg-lighter-cream px-5 py-8 shadow-lg md:px-8 lg:px-10 lg:pb-10 lg:pt-10">
                     <div class="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-12 xl:gap-16">
                       <div class="flex min-w-0 flex-1 flex-col">
                         <div class="flex flex-wrap items-start gap-4 lg:gap-6">
@@ -262,16 +263,13 @@
                           data-mega-parent-id="{{ $branch['id'] }}">
                           @foreach($branch['children'] as $child)
                             @php
-                              $childHoverPreview =
-                                  ($child['preview'] ?? '') !== ''
-                                      ? (string)($child['preview'] ?? '')
-                                      : $fp;
+                              $childPv = trim((string) ($child['preview'] ?? ''));
                             @endphp
                             <li class="list-none">
                               <a
                                 class="mega-nav__sublink inline-block font-sans text-2xl leading-6 text-faded-olive transition-colors hover:text-deep-moss focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-faded-olive"
                                 href="{{ esc_url($child['url']) }}"
-                                data-preview-url="{{ $childHoverPreview !== '' ? esc_url($childHoverPreview) : '' }}"
+                                data-preview-url="{{ $childPv !== '' ? esc_url($childPv) : '' }}"
                                 x-on:mouseenter="setPreviewFromEvent($event)"
                                 x-on:focus="setPreviewFromEvent($event)">
                                 {{ $child['title'] }}
@@ -308,6 +306,7 @@
                           <img
                             alt=""
                             class="absolute inset-0 size-full object-cover"
+                            x-bind:key="'mega-preview-{{ $branch['id'] }}:' + (megaOpenId === {{ $branch['id'] }} ? (previewSrc || {!! $fpJs !!}) : {!! $fpJs !!})"
                             x-bind:src='megaOpenId === {{ $branch['id'] }} ? (previewSrc || {!! $fpJs !!}) : {!! $fpJs !!}'
                             x-bind:alt='megaOpenId === {{ $branch['id'] }} ? previewAlt : ""'
                             x-show='(megaOpenId === {{ $branch['id'] }} ? (previewSrc || {!! $fpJs !!}) : {!! $fpJs !!}).length > 0' />

@@ -85,8 +85,6 @@ final class PagesFlexibleSeedData
             'background_type' => ComponentTypes::BACKGROUND_NONE,
             'body_text_tone' => TailwindColors::DEFAULT_BODY_TEXT_TONE,
             'visibility_mobile' => 'visible',
-            'top_padding' => ComponentTypes::PADDING_MEDIUM,
-            'bottom_padding' => ComponentTypes::PADDING_MEDIUM,
         ];
     }
 
@@ -102,8 +100,6 @@ final class PagesFlexibleSeedData
     {
         return [
             array_merge(self::base('image_hero'), [
-                'top_padding' => ComponentTypes::PADDING_NONE,
-                'bottom_padding' => ComponentTypes::PADDING_NONE,
                 'hero_image' => [
                     'url' => self::seedAssetUrl(self::CONTACT_HERO_FILE),
                     'alt' => __('Visitor on her phone outside Culver Square', 'culvers'),
@@ -160,8 +156,6 @@ final class PagesFlexibleSeedData
     {
         return [
             array_merge(self::base('image_hero'), [
-                'top_padding' => ComponentTypes::PADDING_NONE,
-                'bottom_padding' => ComponentTypes::PADDING_NONE,
                 'hero_image' => [
                     'url' => self::seedAssetUrl(self::PLAN_VISIT_HERO_FILE),
                     'alt' => __('Friends sharing a laugh on a visit to Culver Square', 'culvers'),
@@ -187,8 +181,6 @@ final class PagesFlexibleSeedData
                 ),
                 'header_align' => 'center',
                 'header_max_width' => 'medium',
-                'top_padding' => ComponentTypes::PADDING_LARGE,
-                'bottom_padding' => ComponentTypes::PADDING_SMALL,
             ]),
             array_merge(self::base('shop_split_highlight'), [
                 'split_ratio' => '50-50',
@@ -323,8 +315,6 @@ final class PagesFlexibleSeedData
     {
         return [
             array_merge(self::base('image_hero'), [
-                'top_padding' => ComponentTypes::PADDING_NONE,
-                'bottom_padding' => ComponentTypes::PADDING_NONE,
                 'hero_image' => [
                     'url' => self::seedAssetUrl(self::GUEST_SERVICES_HERO_FILE),
                     'alt' => __('Couple shopping at Culver Square', 'culvers'),
@@ -350,8 +340,6 @@ final class PagesFlexibleSeedData
                 ),
                 'header_align' => 'center',
                 'header_max_width' => 'medium',
-                'top_padding' => ComponentTypes::PADDING_LARGE,
-                'bottom_padding' => ComponentTypes::PADDING_SMALL,
             ]),
             array_merge(self::base('shop_split_highlight'), [
                 'split_ratio' => '50-50',
@@ -532,8 +520,6 @@ final class PagesFlexibleSeedData
 
         return [
             array_merge(self::base('image_hero'), [
-                'top_padding' => ComponentTypes::PADDING_NONE,
-                'bottom_padding' => ComponentTypes::PADDING_NONE,
                 'hero_image' => [
                     'url' => self::seedAssetUrl(self::LEASING_HERO_FILE),
                     'alt' => __('Aerial view across Colchester rooftops to Culver Square', 'culvers'),
@@ -557,8 +543,6 @@ final class PagesFlexibleSeedData
                 ),
                 'header_align' => 'center',
                 'header_max_width' => 'medium',
-                'top_padding' => ComponentTypes::PADDING_LARGE,
-                'bottom_padding' => ComponentTypes::PADDING_SMALL,
             ]),
             array_merge(self::base('shop_split_highlight'), [
                 'split_ratio' => '50-50',
@@ -600,8 +584,6 @@ final class PagesFlexibleSeedData
                 ),
                 'header_align' => 'center',
                 'header_max_width' => 'medium',
-                'top_padding' => ComponentTypes::PADDING_LARGE,
-                'bottom_padding' => ComponentTypes::PADDING_SMALL,
             ]),
             // Three lettings agent cards. Card titles double up as the agent name; the
             // body copy carries phone + URL because three_card_block doesn't expose
@@ -724,8 +706,6 @@ final class PagesFlexibleSeedData
             'cards_cpt_count' => 3,
             'cards_view_all_url' => '',
             'cards_view_all_label' => $viewAllLabel,
-            'top_padding' => ComponentTypes::PADDING_LARGE,
-            'bottom_padding' => ComponentTypes::PADDING_SMALL,
         ]);
     }
 
@@ -810,8 +790,6 @@ final class PagesFlexibleSeedData
         }
 
         return array_merge(self::base('centre_map'), [
-            'top_padding' => ComponentTypes::PADDING_NONE,
-            'bottom_padding' => ComponentTypes::PADDING_NONE,
             'background_type' => ComponentTypes::BACKGROUND_NONE,
             'centre_map_eyebrow' => '',
             'centre_map_heading' => __('Centre Map', 'culvers'),

@@ -78,9 +78,5 @@ return [
                 'wrapper' => ['width' => '50'],
             ],
         ],
-        'tab_padding' => [
-            'type' => 'tab',
-            'options' => ['label' => __('Padding', 'culvers')],
-        ],
     ],
 ];

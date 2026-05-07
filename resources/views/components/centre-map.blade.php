@@ -21,7 +21,7 @@
    */
 
   $c = is_array($component ?? null) ? $component : [];
-  $root = Component::rootClasses($c, includePadding: false);
+  $root = Component::rootClasses($c);
 
   $eyebrow = trim((string) ($c['centre_map_eyebrow'] ?? ''));
   $heading = trim((string) ($c['centre_map_heading'] ?? ''));
@@ -164,7 +164,8 @@
           : 'lg:hidden'">
         <div class="flex flex-wrap items-center justify-between gap-4">
           @if($heading !== '')
-            <{{ $headingTag }} class="centre-map__heading font-heading text-3xl leading-tight text-lighter-cream md:text-4xl">
+            {{-- Section H2 (64px desktop / 48px mobile) — see Component::sectionHeadingClasses(). --}}
+            <{{ $headingTag }} class="centre-map__heading {{ Component::sectionHeadingClasses('text-lighter-cream') }}">
               {{ esc_html($heading) }}
             </{{ $headingTag }}>
           @endif

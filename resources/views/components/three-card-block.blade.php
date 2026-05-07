@@ -60,8 +60,8 @@
     @if($heading !== '' || $sub !== '' || $body !== '')
       <header class="mx-auto max-w-[52rem] px-1 text-center md:px-4">
         @if($heading !== '')
-          {{-- Figma Desktop/Titles/H1: Canela 84px / lh 1 · Faded Olive (e.g. “Fun for…”, “What are you…”). --}}
-          <{{ $headingTag }} class="font-heading text-7xl leading-none tracking-tight text-faded-olive md:text-8xl">
+          {{-- Section H2: 64px desktop / 48px mobile (Component::sectionHeadingClasses). --}}
+          <{{ $headingTag }} class="{{ Component::sectionHeadingClasses('text-faded-olive') }}">
             {{ esc_html($heading) }}
           </{{ $headingTag }}>
         @endif
@@ -194,7 +194,7 @@
 
     @if($viewAllUrl !== '')
       <div class="mt-12 flex justify-center md:mt-14">
-        <a class="btn btn-primary" href="{{ esc_url($viewAllUrl) }}">{{ esc_html($viewAllLabel) }}</a>
+        @include('components.button', ['label' => $viewAllLabel, 'href' => $viewAllUrl])
       </div>
     @endif
   </div>

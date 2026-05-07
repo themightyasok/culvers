@@ -115,9 +115,10 @@
   @if($heading !== '') aria-labelledby="{{ esc_attr($headingId) }}" @endif>
   <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
     @if($heading !== '')
+      {{-- Section H2: 64px desktop / 48px mobile (Component::sectionHeadingClasses). --}}
       <{{ $headingTag }}
         id="{{ esc_attr($headingId) }}"
-        class="contact__heading mb-10 text-center font-heading text-5xl leading-tight md:mb-14 md:text-6xl">
+        class="contact__heading {{ Component::sectionHeadingClasses('text-deep-moss', 'mb-10 text-center md:mb-14') }}">
         {{ esc_html($heading) }}
       </{{ $headingTag }}>
     @endif
@@ -339,9 +340,12 @@
           </div>
 
           <div class="contact__actions md:col-span-2 mt-2 flex flex-wrap items-center gap-x-6 gap-y-4">
+            {{-- Hand-rolled button (not the partial) because the label swaps with Alpine
+                 between idle / loading states. Class spine matches the partial — `btn
+                 btn-primary btn-form` — so hover stays consistent with every other CTA. --}}
             <button
               type="submit"
-              class="btn btn-primary h-[46px] min-w-[120px]"
+              class="btn btn-primary btn-form"
               x-bind:disabled="loading">
               <span x-show="!loading">{{ esc_html($submitLabel) }}</span>
               <span x-show="loading" x-cloak>{{ esc_html__('Sending…', 'culvers') }}</span>

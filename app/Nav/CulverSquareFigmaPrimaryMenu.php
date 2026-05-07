@@ -379,6 +379,36 @@ final class CulverSquareFigmaPrimaryMenu
     }
 
     /**
+     * WordPress attachment URL for a mega submenu row when menu-item meta is empty but
+     * parent/child titles still match the Figma bootstrap config.
+     *
+     * Uses {@see self::OPTION_ATTACHMENT_MAP} populated during Figma sideload — no network
+     * I/O on the front-end request.
+     */
+    public static function localAttachmentPreviewForMenuItems(\WP_Post $parent, \WP_Post $child): string
+    {
+        $src = self::resolveChildPreviewUrl($parent, $child);
+        if ($src === null || $src === '' || ! filter_var($src, FILTER_VALIDATE_URL)) {
+            return '';
+        }
+
+        /** @var mixed $map */
+        $map = get_option(self::OPTION_ATTACHMENT_MAP, []);
+        if (! is_array($map) || ! isset($map[$src])) {
+            return '';
+        }
+
+        $aid = (int) $map[$src];
+        if ($aid <= 0 || get_post_type($aid) !== 'attachment') {
+            return '';
+        }
+
+        $url = wp_get_attachment_image_url($aid, 'large');
+
+        return is_string($url) && $url !== '' ? esc_url($url) : '';
+    }
+
+    /**
      * Match submenu row to config by sanitized slug first, then by normalized title (handles apostrophes / casing).
      */
     private static function resolveChildPreviewUrl(\WP_Post $parent, \WP_Post $child): ?string

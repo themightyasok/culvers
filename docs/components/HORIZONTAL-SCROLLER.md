@@ -58,11 +58,14 @@ for the canonical definition. Headline groups:
   body, kicker, item heading, item body — each gets its own trio.
 
 ### Padding tab
-- `scroller_remove_vertical_padding` — flush the outer + strip
-  vertical padding for an edge-to-edge band.
 - Per-element padding-above / padding-below selects driven by
   `App\Helpers\Padding::getHeaderSubheaderPaddingChoices()` for
-  fine-tuned design tweaks.
+  fine-tuned spacing between text elements (heading ↔ subheading ↔
+  body, item kicker ↔ item heading ↔ item body) inside the strip.
+- **Outer** vertical rhythm (gap to the components above and below)
+  is owned by the parent flexible-components grid `gap-y-32` and is
+  not tunable from this component — same rhythm as every other
+  flexible component on the site.
 
 ## Behaviour notes
 

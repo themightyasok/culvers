@@ -13,19 +13,17 @@ use App\Helpers\Video;
  * configurable header alignment, and an alternate "disable scroll" centred
  * row. Items can be image, video (file or YouTube embed), text, or image+text.
  *
- * Padding rule: the section opener uses `Component::rootClasses()` like every
- * other component; the editor "Remove vertical padding" toggle then strips
- * vertical Tailwind padding to recover the original tight strip layout.
+ * Spacing: outer vertical rhythm comes from the parent flexible-components
+ * grid (`gap-y-32`, see App\Helpers\Grid). The strip's own internal vertical
+ * "safe area" is owned by `.horizontal-scroller__wrapper` in
+ * resources/styles/components/horizontal-scroller.css — not editor-tunable.
  */
 
 $c = is_array($component ?? null) ? $component : [];
 
 $body_text_tone = Component::bodyTextTone($c);
 // Canonical opener: always strip the inherited horizontal grid inset because
-// the scroller renders its own full-bleed strip + wrapper shell. Vertical
-// padding is the only thing the editor "Remove vertical padding" toggle clears.
-$remove_vertical_padding = !empty($c['scroller_remove_vertical_padding']);
-$padding = $remove_vertical_padding ? '' : Padding::getClasses($c);
+// the scroller renders its own full-bleed strip + wrapper shell.
 $gridClasses = Grid::stripHorizontalInsetPadding(
     isset($c['_grid_classes']) && is_string($c['_grid_classes']) ? $c['_grid_classes'] : ''
 );
@@ -36,7 +34,10 @@ $backgroundStyles = $backgroundData['styles'] ?? '';
 
 $header_text = $c['scroller_header_text'] ?? '';
 $header_text_color = $c['scroller_header_text_color'] ?? 'text-white';
-$header_text_size = $c['scroller_header_text_size'] ?? 'text-8xl';
+// Section H2 default — 64px Canela (text-7xl), matching the rest of the
+// site. The dropdown still allows opting up to text-8xl/text-9xl when a
+// landing page genuinely wants a hero-scale header strip.
+$header_text_size = $c['scroller_header_text_size'] ?? 'text-7xl';
 $header_text_weight = $c['scroller_header_text_weight'] ?? 'font-medium';
 $header_alignment = $c['scroller_header_alignment'] ?? 'top';
 $header_text_alignment = $c['scroller_header_text_alignment'] ?? 'left';
@@ -94,11 +95,27 @@ $scroll_speed_class = $disable_scroll
     };
 
 // Keep heading sizes constrained to the Typography header dropdown choices.
-$header_size_class = in_array(
+// Default is text-7xl (64px) so the strip header sits on the canonical
+// section H2 ramp; editors can opt into larger sizes per layout.
+$header_desktop_size = in_array(
     $header_text_size,
     array_keys(Typography::getHeaderSizeChoices()),
     true
-) ? $header_text_size : 'text-8xl';
+) ? $header_text_size : 'text-7xl';
+// Pair every editor-chosen desktop size with a mobile fallback so the
+// header always steps down on phones (matches the canonical section H2
+// ramp documented in Component::sectionHeadingClasses()).
+$header_mobile_size = match ($header_desktop_size) {
+    'text-3xl' => 'text-2xl',
+    'text-4xl' => 'text-3xl',
+    'text-5xl' => 'text-4xl',
+    'text-6xl' => 'text-5xl',
+    'text-7xl' => 'text-5xl', // canonical 48 → 64
+    'text-8xl' => 'text-6xl',
+    'text-9xl' => 'text-7xl',
+    default => 'text-5xl',
+};
+$header_size_class = $header_mobile_size . ' md:' . $header_desktop_size;
 $header_text_color_class = match ($header_text_color) {
     'text-black', 'text-brand-500', 'text-deep-moss', 'text-faded-olive', 'text-text-muted', 'text-white', 'text-white/80' => $header_text_color,
     default => 'text-white'
@@ -279,14 +296,14 @@ $has_any_content = $hasHeaderBlock || $hasButton || !empty($normalized_items);
 $live_region_id = 'horizontal-scroller-description-' . uniqid();
 
 // Match every other component’s `$root` convention so the editor placeholder
-// fallback can reuse the same name. Padding may have been zeroed out above
-// by the “Remove vertical padding” editor toggle.
-$root = trim($gridClasses . ' ' . $padding);
+// fallback can reuse the same name. Outer vertical rhythm is owned by the
+// parent flexible-components grid (`gap-y-32`), not by this component.
+$root = $gridClasses;
 @endphp
 
 @if($has_any_content)
 <section
-    class="horizontal-scroller {{ $gridClasses }} relative {{ $backgroundClasses }} {{ $padding }} @if($disable_scroll) horizontal-scroller--disable-scroll @endif"
+    class="horizontal-scroller {{ $gridClasses }} relative {{ $backgroundClasses }} @if($disable_scroll) horizontal-scroller--disable-scroll @endif"
     @if($section_styles_attr !== '') style="{{ esc_attr($section_styles_attr) }}" @endif
     data-component-root
     data-horizontal-scroller
@@ -331,17 +348,29 @@ $root = trim($gridClasses . ' ' . $padding);
 
                 @if($hasButton)
                     @php
-                        $btn_classes = match ($button_variant) {
-                            'outline' => 'btn btn-outline',
-                            'secondary' => 'btn btn-outline border-deep-moss text-deep-moss hover:bg-deep-moss hover:text-light-cream',
-                            default => 'btn btn-primary',
+                        /*
+                         * Map editor variant/size choices onto the canonical CTA classes
+                         * defined in `resources/styles/app.css` (`.btn` family). This keeps
+                         * the horizontal-scroller CTA hovering identically to every other
+                         * CTA on the site (Figma "Button Hover" — padding widens, fills
+                         * stay put). DO NOT add inline `px-*` / `py-*` here — that
+                         * silently overrides `.btn-primary`'s `hover:px-[34px]` and breaks
+                         * the canonical hover-widen.
+                         *
+                         * The Culver Square design system ships two paint variants
+                         * (primary, outline). The legacy "secondary" choice from this
+                         * component's older API collapses to `btn-outline` so editors who
+                         * picked it keep a sensible button.
+                         */
+                        $btn_variant_class = match ($button_variant) {
+                            'outline', 'secondary' => 'btn-outline',
+                            default => 'btn-primary',
                         };
-                        $btn_classes .= match ($button_size) {
-                            'sm' => ' px-5 py-2 text-xs',
-                            'lg' => ' px-12 py-4 text-base',
+                        $btn_size_class = match ($button_size) {
+                            'lg' => ' btn-large',
                             default => '',
                         };
-                        $btn_classes .= ' inline-flex items-center gap-2';
+                        $btn_classes = trim('btn ' . $btn_variant_class . $btn_size_class . ' gap-2');
                         $btn_target = trim((string) ($button_link['target'] ?? ''));
                     @endphp
                     <div class="horizontal-scroller__header-cta mt-6">
@@ -368,7 +397,7 @@ $root = trim($gridClasses . ' ' . $padding);
 
         @if(! empty($normalized_items))
             <div class="@if($fullBleedScrollerStrip) horizontal-scroller__strip-breakout @endif">
-            <div class="horizontal-scroller__wrapper {{ $disable_scroll ? 'overflow-visible' : 'overflow-hidden' }} {{ $scroll_speed_class }} {{ $header_text_color_class }} @if($remove_vertical_padding) horizontal-scroller__wrapper--no-vertical-padding @endif">
+            <div class="horizontal-scroller__wrapper {{ $disable_scroll ? 'overflow-visible' : 'overflow-hidden' }} {{ $scroll_speed_class }} {{ $header_text_color_class }}">
                 <div class="horizontal-scroller__container" style="{{ esc_attr($horizontal_scroller_gap_css) }}" aria-label="{{ $disable_scroll ? __('Floating content', 'culvers') : __('Horizontal scrolling floating content', 'culvers') }}">
                     @foreach($disable_scroll ? [0] : [0, 1] as $set_index)
                         @php $is_clone_set = $set_index > 0; @endphp

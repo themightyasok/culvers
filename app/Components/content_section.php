@@ -31,9 +31,5 @@ return [
                 'media_upload' => 1,
             ],
         ],
-        'tab_padding' => [
-            'type' => 'tab',
-            'options' => ['label' => __('Padding', 'culvers')],
-        ],
     ],
 ];

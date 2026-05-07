@@ -81,8 +81,6 @@ final class HomepageFlexibleSeedData
             'background_type' => ComponentTypes::BACKGROUND_NONE,
             'body_text_tone' => TailwindColors::DEFAULT_BODY_TEXT_TONE,
             'visibility_mobile' => 'visible',
-            'top_padding' => ComponentTypes::PADDING_MEDIUM,
-            'bottom_padding' => ComponentTypes::PADDING_MEDIUM,
         ];
     }
 
@@ -92,8 +90,6 @@ final class HomepageFlexibleSeedData
     private static function heroSliderRow(): array
     {
         return array_merge(self::base('hero_slider'), [
-            'top_padding' => ComponentTypes::PADDING_NONE,
-            'bottom_padding' => ComponentTypes::PADDING_NONE,
             'hero_content_align' => 'center',
             'hero_slides' => [
                 [
@@ -194,7 +190,7 @@ final class HomepageFlexibleSeedData
             'scroller_header_text_alignment' => 'center',
             'scroller_header_alignment' => 'middle',
             'scroller_header_text_color' => 'text-faded-olive',
-            'scroller_header_text_size' => 'text-8xl',
+            'scroller_header_text_size' => 'text-7xl',
             'scroller_header_text_weight' => 'font-normal',
             'scroller_subheading_text_color' => 'text-deep-moss',
             'scroller_body_text_color' => 'text-deep-moss',

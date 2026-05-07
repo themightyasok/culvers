@@ -20,14 +20,6 @@ class ComponentTypes
     public const WIDTH_QUARTER = '1/4';
     public const WIDTH_THREE_QUARTERS = '3/4';
 
-    public const PADDING_NONE = 'none';
-    /** No vertical padding at any breakpoint (use when a block should sit flush against the next). */
-    public const PADDING_FLUSH = 'flush';
-    public const PADDING_SMALL = 'sm';
-    public const PADDING_MEDIUM = 'md';
-    public const PADDING_LARGE = 'lg';
-    public const PADDING_EXTRA_LARGE = 'xl';
-
     public const BACKGROUND_NONE = 'none';
     public const BACKGROUND_COLOR = 'color';
     public const BACKGROUND_GRADIENT = 'gradient';
@@ -63,23 +55,6 @@ class ComponentTypes
             self::WIDTH_TWO_THIRDS,
             self::WIDTH_QUARTER,
             self::WIDTH_THREE_QUARTERS,
-        ];
-    }
-
-    /**
-     * Get valid padding options.
-     *
-     * @return list<string>
-     */
-    public static function getPaddingOptions(): array
-    {
-        return [
-            self::PADDING_NONE,
-            self::PADDING_FLUSH,
-            self::PADDING_SMALL,
-            self::PADDING_MEDIUM,
-            self::PADDING_LARGE,
-            self::PADDING_EXTRA_LARGE,
         ];
     }
 

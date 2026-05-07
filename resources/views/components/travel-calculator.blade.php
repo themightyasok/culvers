@@ -7,12 +7,19 @@
   use App\Travel\TravelCalculatorEndpoint;
 
   /**
-   * Travel Calculator — faded-olive band with destination input + travel-by
-   * select + search button, an inline result strip, and an optional Maps
-   * Embed iframe below. Uses `wp-json/culvers/v1/travel-calculator` server-side
-   * (Distance Matrix) and the Maps Embed API client-side. Configure the API
-   * key + destination at Appearance → Customize → Google Maps. Figma ref:
-   * 51:7970.
+   * Travel Calculator — pale-sage (Figma "Light Green" #DFE7BA) card with a
+   * 64px Canela H2, a 20px Halyard subtitle, two pill inputs with 1.5px
+   * faded-olive outlines on a transparent fill, and a deep-moss / glowleaf
+   * search button (the inverse-primary `.btn-dark` CTA, matching Figma
+   * Component 3 at 51:7993). Inline result strip below; optional Maps Embed
+   * iframe below the card.
+   *
+   * Server side: `wp-json/culvers/v1/travel-calculator` (Distance Matrix).
+   * Client side: Maps Embed API. Configure API key + destination at
+   * Appearance → Customize → Google Maps.
+   *
+   * Figma ref: 51:7970 (card 51:7973 — 1248×441, 120/64 padding,
+   * 1008px content, two 336/335 fields with 32px gap + ~115px button).
    */
 
   $c = is_array($component ?? null) ? $component : [];
@@ -106,109 +113,127 @@
   data-travel-calculator
   x-data='travelCalculator({{ $alpineConfig }})'>
   <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
-    <div class="travel-calculator__band rounded-[10px] bg-faded-olive/30 px-6 py-12 md:px-12 md:py-16">
-      @if($hasIntro)
-        <header class="mx-auto max-w-[42rem] text-center">
-          @if($heading !== '')
-            <h2 class="travel-calculator__heading font-heading text-5xl leading-tight md:text-6xl">
-              {{ esc_html($heading) }}
-            </h2>
-          @endif
-          @if($intro !== '')
-            <p class="travel-calculator__intro mt-4 font-sans text-base font-light text-deep-moss/80 md:text-lg">
-              {{ esc_html($intro) }}
-            </p>
-          @endif
-        </header>
-      @endif
+    {{-- Card matches Figma 51:7973 (1248px wide / 64px vertical padding /
+         120px horizontal at desktop). On smaller screens we ramp the
+         horizontal padding down so the inputs never touch the rounded edge. --}}
+    <div class="travel-calculator__band mx-auto w-full max-w-[78rem] rounded-[10px] bg-light-green px-6 py-12 sm:px-10 md:px-16 md:py-16 lg:px-24 xl:px-[120px]">
+      {{-- Inner content area is 1008px wide per Figma (1248 - 120·2). --}}
+      <div class="mx-auto w-full max-w-[63rem]">
+        @if($hasIntro)
+          <header class="text-center">
+            @if($heading !== '')
+              {{-- Section H2: 64px desktop / 48px mobile (Component::sectionHeadingClasses). --}}
+              <h2 class="travel-calculator__heading {{ Component::sectionHeadingClasses('text-deep-moss') }}">
+                {{ esc_html($heading) }}
+              </h2>
+            @endif
+            @if($intro !== '')
+              {{-- Figma Desktop/Body Copy/Large body copy: Halyard Book 20px → text-xl. --}}
+              <p class="travel-calculator__intro mt-6 font-sans text-base font-light text-deep-moss md:text-xl">
+                {{ esc_html($intro) }}
+              </p>
+            @endif
+          </header>
+        @endif
 
-      @if(! $apiConfigured && current_user_can('edit_posts'))
-        <div class="mt-8 rounded border border-amber-400 bg-amber-50 px-4 py-3 text-sm text-amber-950">
-          {{ __('Add a Google Maps API key at Appearance → Customize → Google Maps to enable live travel lookups.', 'culvers') }}
-        </div>
-      @endif
-
-      <form
-        class="travel-calculator__form mt-8 grid gap-6 md:mt-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] md:items-end"
-        x-on:submit.prevent="submit()"
-        novalidate>
-        <div class="travel-calculator__field flex flex-col gap-2">
-          <label
-            for="{{ esc_attr($instanceId) }}-origin"
-            class="font-sans text-xs font-semibold uppercase tracking-wider text-deep-moss">
-            {{ esc_html($destLabel) }}
-          </label>
-          <input
-            id="{{ esc_attr($instanceId) }}-origin"
-            type="text"
-            class="travel-calculator__input h-[46px] w-full rounded-full border border-deep-moss/30 bg-white px-5 font-sans text-sm text-deep-moss placeholder:text-deep-moss/50 focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf"
-            placeholder="{{ esc_attr($destPlaceholder) }}"
-            autocomplete="street-address"
-            maxlength="200"
-            required
-            x-model.trim="origin"
-            x-bind:disabled="loading"
-            x-bind:aria-invalid="error !== '' ? 'true' : 'false'" />
-        </div>
-
-        <div class="travel-calculator__field flex flex-col gap-2">
-          <label
-            for="{{ esc_attr($instanceId) }}-mode"
-            class="font-sans text-xs font-semibold uppercase tracking-wider text-deep-moss">
-            {{ esc_html($modeLabel) }}
-          </label>
-          <div class="relative">
-            <select
-              id="{{ esc_attr($instanceId) }}-mode"
-              class="travel-calculator__select h-[46px] w-full appearance-none rounded-full border border-deep-moss/30 bg-white px-5 pr-10 font-sans text-sm text-deep-moss focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf"
-              x-model="mode"
-              x-bind:disabled="loading">
-              @foreach($modes as $modeOption)
-                <option
-                  value="{{ esc_attr($modeOption['value']) }}"
-                  @if($modeOption['value'] === $defaultMode) selected @endif>
-                  {{ esc_html($modeOption['label']) }}
-                </option>
-              @endforeach
-            </select>
-            <span
-              class="pointer-events-none absolute inset-y-0 right-5 flex items-center text-deep-moss"
-              aria-hidden="true">
-              <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
-            </span>
+        @if(! $apiConfigured && current_user_can('edit_posts'))
+          <div class="mt-8 rounded border border-amber-400 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+            {{ __('Add a Google Maps API key at Appearance → Customize → Google Maps to enable live travel lookups.', 'culvers') }}
           </div>
-        </div>
+        @endif
 
-        <div class="travel-calculator__submit md:justify-self-end">
-          <button
-            type="submit"
-            class="btn btn-primary h-[46px] min-w-[120px]"
-            x-bind:disabled="loading || origin.trim() === ''">
-            <span x-show="!loading">{{ esc_html($buttonLabel) }}</span>
-            <span x-show="loading" x-cloak>{{ esc_html__('Calculating…', 'culvers') }}</span>
-          </button>
-        </div>
-      </form>
+        {{-- Form row: two equal pill inputs (336/335px in Figma) and the Search
+             button to the right. `auto` button column lets the dark CTA hug
+             its label so the canonical `.btn` hover-widen still reads. --}}
+        <form
+          class="travel-calculator__form mx-auto mt-10 grid max-w-[850px] gap-6 md:mt-[38px] md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] md:items-end md:gap-8"
+          x-on:submit.prevent="submit()"
+          novalidate>
+          <div class="travel-calculator__field flex flex-col gap-[14px]">
+            <label
+              for="{{ esc_attr($instanceId) }}-origin"
+              class="font-sans text-xs font-semibold uppercase leading-6 tracking-[1px] text-deep-moss">
+              {{ esc_html($destLabel) }}
+            </label>
+            <input
+              id="{{ esc_attr($instanceId) }}-origin"
+              type="text"
+              class="travel-calculator__input h-[46px] w-full rounded-full border-[1.5px] border-faded-olive bg-transparent px-5 font-sans text-[15px] leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-deep-moss focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-deep-moss"
+              placeholder="{{ esc_attr($destPlaceholder) }}"
+              autocomplete="street-address"
+              maxlength="200"
+              required
+              x-model.trim="origin"
+              x-bind:disabled="loading"
+              x-bind:aria-invalid="error !== '' ? 'true' : 'false'" />
+          </div>
 
-      <div
-        class="travel-calculator__result mt-6 min-h-[1.5rem] text-center font-sans text-xs font-semibold uppercase tracking-wider md:text-sm"
-        role="status"
-        aria-live="polite">
-        <span x-show="error !== ''" class="text-red-700" x-text="error" x-cloak></span>
-        <span
-          x-show="error === '' && result !== null && !loading"
-          x-text="result?.message ?? ''"
-          x-cloak></span>
-        <span x-show="loading" class="text-deep-moss/70" x-cloak>
-          {{ esc_html__('Calculating your journey…', 'culvers') }}
-        </span>
+          <div class="travel-calculator__field flex flex-col gap-[14px]">
+            <label
+              for="{{ esc_attr($instanceId) }}-mode"
+              class="font-sans text-xs font-semibold uppercase leading-6 tracking-[1px] text-deep-moss">
+              {{ esc_html($modeLabel) }}
+            </label>
+            <div class="relative">
+              <select
+                id="{{ esc_attr($instanceId) }}-mode"
+                class="travel-calculator__select h-[46px] w-full appearance-none rounded-full border-[1.5px] border-faded-olive bg-transparent px-5 pr-10 font-sans text-[15px] leading-[1.32] text-deep-moss focus:border-deep-moss focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-deep-moss"
+                x-model="mode"
+                x-bind:disabled="loading">
+                @foreach($modes as $modeOption)
+                  <option
+                    value="{{ esc_attr($modeOption['value']) }}"
+                    @if($modeOption['value'] === $defaultMode) selected @endif>
+                    {{ esc_html($modeOption['label']) }}
+                  </option>
+                @endforeach
+              </select>
+              <span
+                class="pointer-events-none absolute inset-y-0 right-5 flex items-center text-deep-moss"
+                aria-hidden="true">
+                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M2 4l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </span>
+            </div>
+          </div>
+
+          <div class="travel-calculator__submit md:justify-self-start">
+            {{-- Hand-rolled button (not the partial) because the label swaps with Alpine
+                 between idle / loading states. Class spine matches the partial — `btn
+                 btn-dark btn-form` — so hover stays consistent with every other CTA.
+                 `btn-dark` is the Figma travel-calculator search variant: deep-moss
+                 fill, glowleaf text, padding-widen on hover (same as primary). --}}
+            <button
+              type="submit"
+              class="btn btn-dark btn-form"
+              x-bind:disabled="loading || origin.trim() === ''">
+              <span x-show="!loading">{{ esc_html($buttonLabel) }}</span>
+              <span x-show="loading" x-cloak>{{ esc_html__('Calculating…', 'culvers') }}</span>
+            </button>
+          </div>
+        </form>
+
+        <div
+          class="travel-calculator__result mt-10 min-h-[1.5rem] text-center font-sans text-xs font-semibold uppercase leading-6 tracking-[1px] text-deep-moss md:text-xs"
+          role="status"
+          aria-live="polite">
+          <span x-show="error !== ''" class="text-red-700" x-text="error" x-cloak></span>
+          <span
+            x-show="error === '' && result !== null && !loading"
+            x-text="result?.message ?? ''"
+            x-cloak></span>
+          <span x-show="loading" class="text-deep-moss/70" x-cloak>
+            {{ esc_html__('Calculating your journey…', 'culvers') }}
+          </span>
+        </div>
       </div>
     </div>
 
     @if($showMap)
-      <div class="travel-calculator__map mt-6 overflow-hidden rounded-[10px] bg-light-cream">
+      {{-- Match the card width above (Figma 1248px / max-w-7xl) so the map
+           and the band line up vertically rather than the map running wider. --}}
+      <div class="travel-calculator__map mx-auto mt-6 w-full max-w-[78rem] overflow-hidden rounded-[10px] bg-light-cream">
         @if($apiConfigured)
           <iframe
             x-ref="map"

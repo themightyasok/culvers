@@ -265,10 +265,14 @@ final class PrimaryNav
         $children = [];
         $childPosts = $byParent[$parentPost->ID] ?? [];
         foreach ($childPosts as $childPost) {
+            $preview = self::previewUrl($childPost);
+            if ($preview === '') {
+                $preview = CulverSquareFigmaPrimaryMenu::localAttachmentPreviewForMenuItems($parentPost, $childPost);
+            }
             $children[] = [
                 'title' => self::title($childPost),
                 'url' => self::resolvedUrl($childPost),
-                'preview' => self::previewUrl($childPost),
+                'preview' => $preview,
             ];
         }
 

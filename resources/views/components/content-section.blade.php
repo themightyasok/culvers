@@ -22,7 +22,8 @@
   data-component-root
   data-content-section>
   @if($heading !== '')
-    <{{ $headingTag }} class="content-section__heading mb-4 font-heading text-4xl font-semibold tracking-tight md:text-5xl">
+    {{-- Section H2: 64px desktop / 48px mobile (Component::sectionHeadingClasses). --}}
+    <{{ $headingTag }} class="content-section__heading {{ Component::sectionHeadingClasses('text-deep-moss', 'mb-4') }}">
       {{ esc_html($heading) }}
     </{{ $headingTag }}>
   @endif

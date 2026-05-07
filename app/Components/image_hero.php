@@ -128,9 +128,5 @@ return [
                 'default_value' => 0,
             ],
         ],
-        'tab_padding' => [
-            'type' => 'tab',
-            'options' => ['label' => __('Padding', 'culvers')],
-        ],
     ],
 ];

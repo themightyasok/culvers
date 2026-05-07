@@ -52,7 +52,7 @@
 
 @if($hasIntro || $hasGrid)
   <section
-    class="info-block {{ esc_attr($root) }} relative bg-white text-deep-moss"
+    class="info-block {{ esc_attr($root) }} relative bg-white py-12 text-deep-moss lg:py-16"
     data-component-root
     data-info-block>
     {{-- Match three-card / horizontal-scroller: 1440 shell, ~1272px content row --}}
@@ -60,8 +60,8 @@
       @if($hasIntro)
         <header class="mx-auto max-w-[52rem] px-5 text-center sm:px-6 lg:px-8">
           @if($heading !== '')
-            {{-- Figma: “A glimpse…” — Canela 84px · Faded Olive. --}}
-            <{{ $headingTag }} class="font-heading text-7xl leading-none tracking-tight text-faded-olive md:text-8xl">
+            {{-- Section H2: 64px desktop / 48px mobile (Component::sectionHeadingClasses). --}}
+            <{{ $headingTag }} class="{{ Component::sectionHeadingClasses('text-faded-olive') }}">
               {{ esc_html($heading) }}
             </{{ $headingTag }}>
           @endif
@@ -78,9 +78,13 @@
           @endif
           @if($ctaLabel !== '' && $ctaUrl !== '')
             <div class="mt-8 flex justify-center md:mt-10">
-              <a class="btn btn-primary px-10 py-3 md:px-12" href="{{ esc_url($ctaUrl) }}">
-                {{ esc_html($ctaLabel) }}
-              </a>
+              {{-- Banner-scale CTA: `size=large` keeps the canonical Figma hover-widen
+                   (40px → 56px on hover) instead of being killed by an inline `px-*`. --}}
+              @include('components.button', [
+                  'label' => $ctaLabel,
+                  'href' => $ctaUrl,
+                  'size' => 'large',
+              ])
             </div>
           @elseif($ctaLabel !== '' && $ctaUrl === '' && current_user_can('edit_posts'))
             <p class="mt-6 font-sans text-base text-deep-moss/60">

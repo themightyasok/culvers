@@ -43,12 +43,13 @@
 
 @if($shops !== [])
   <section
-    class="shop-related-shops {{ esc_attr($root) }} bg-white text-deep-moss"
+    class="shop-related-shops {{ esc_attr($root) }} bg-white py-12 text-deep-moss lg:py-16"
     data-component-root
     data-shop-related-shops>
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
       @if($heading !== '')
-        <{{ $headingTag }} class="shop-related-shops__heading mx-auto mb-10 max-w-[52rem] text-center font-heading text-6xl tracking-tight text-faded-olive md:mb-14">
+        {{-- Section H2: 64px desktop / 48px mobile (Component::sectionHeadingClasses). --}}
+        <{{ $headingTag }} class="shop-related-shops__heading {{ Component::sectionHeadingClasses('text-faded-olive', 'mx-auto mb-10 max-w-[52rem] text-center md:mb-14') }}">
           {{ esc_html($heading) }}
         </{{ $headingTag }}>
       @endif
@@ -61,7 +62,7 @@
 
       @if($viewUrl !== '')
         <div class="mt-12 flex justify-center md:mt-14">
-          <a class="btn btn-primary" href="{{ esc_url($viewUrl) }}">{{ esc_html($viewLabel) }}</a>
+          @include('components.button', ['label' => $viewLabel, 'href' => $viewUrl])
         </div>
       @endif
     </div>

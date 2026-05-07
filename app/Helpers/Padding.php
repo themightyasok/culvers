@@ -5,7 +5,23 @@ declare(strict_types=1);
 namespace App\Helpers;
 
 /**
- * Converts ACF padding choices to Tailwind spacing utilities (`pt-*`, `pb-*`, …).
+ * Tailwind padding helpers — sub-element spacing only.
+ *
+ * The legacy section-level padding helpers (`getClasses`, `getTopPaddingClass`,
+ * `getBottomPaddingClass`, `getBottomPaddingClassesOnly`) were removed when the
+ * per-component "Top padding" / "Bottom padding" ACF controls were dropped: the
+ * inter-section vertical rhythm between flexible components now comes from a
+ * single `gap-y-32` on the parent grid container (see
+ * {@see Grid::getMainGridContainerClasses()}), so no component is allowed to
+ * contribute to outer spacing. Components that need internal padding around
+ * their own painted background apply it directly in their Blade template.
+ *
+ * What remains here are the **header / subheader / body** padding helpers used
+ * by `horizontal_scroller.php` to let editors fine-tune the spacing between
+ * text elements *inside* the scroller (heading ↔ subheading ↔ body, item
+ * kicker ↔ heading ↔ body). That is genuinely intra-component typography
+ * spacing — a different concern from the dead section-level controls — and
+ * stays editor-tunable.
  */
 final class Padding
 {
@@ -53,70 +69,5 @@ final class Padding
         $bottom = $bottomMap[$paddingBottom] ?? 'pb-0';
 
         return trim("{$top} {$bottom}");
-    }
-
-    /**
-     * @param array<string, mixed>|null $component Component array
-     */
-    public static function getClasses(?array $component = null): string
-    {
-        $top = $component['top_padding'] ?? 'md';
-        $bottom = $component['bottom_padding'] ?? 'md';
-
-        $classes = [];
-
-        if ($top) {
-            $classes[] = self::getTopPaddingClass($top);
-        }
-
-        if ($bottom) {
-            $classes[] = self::getBottomPaddingClass($bottom);
-        }
-
-        return implode(' ', $classes);
-    }
-
-    /**
-     * Bottom padding classes only (no pt-*).
-     *
-     * @param array<string, mixed>|null $component
-     */
-    public static function getBottomPaddingClassesOnly(?array $component = null): string
-    {
-        $bottom = $component['bottom_padding'] ?? 'md';
-
-        return self::getBottomPaddingClass($bottom);
-    }
-
-    /**
-     * @param string $size none|flush|sm|md|lg
-     */
-    private static function getTopPaddingClass(string $size): string
-    {
-        $map = [
-            'none' => 'pt-16 lg:pt-0',
-            'flush' => 'pt-0 lg:pt-0',
-            'sm' => 'pt-16 lg:pt-8',
-            'md' => 'pt-16 lg:pt-16',
-            'lg' => 'pt-16 lg:pt-32',
-        ];
-
-        return $map[$size] ?? 'pt-16 lg:pt-16';
-    }
-
-    /**
-     * @param string $size none|flush|sm|md|lg
-     */
-    private static function getBottomPaddingClass(string $size): string
-    {
-        $map = [
-            'none' => 'pb-16 lg:pb-0',
-            'flush' => 'pb-0 lg:pb-0',
-            'sm' => 'pb-16 lg:pb-8',
-            'md' => 'pb-16 lg:pb-16',
-            'lg' => 'pb-16 lg:pb-32',
-        ];
-
-        return $map[$size] ?? 'pb-16 lg:pb-16';
     }
 }

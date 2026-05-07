@@ -139,9 +139,5 @@ return [
                 'preview_size' => 'medium',
             ],
         ],
-        'tab_padding' => [
-            'type' => 'tab',
-            'options' => ['label' => __('Padding', 'culvers')],
-        ],
     ],
 ];

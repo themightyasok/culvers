@@ -73,7 +73,8 @@
     x-data='textImageSlider({{ $alpineConfig }})'>
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
       @if($heading !== '')
-        <{{ $headingTag }} class="text-image-slider__heading mb-12 text-center font-heading text-5xl text-deep-moss md:text-6xl">
+        {{-- Section H2: 64px desktop / 48px mobile (Component::sectionHeadingClasses). --}}
+        <{{ $headingTag }} class="text-image-slider__heading {{ Component::sectionHeadingClasses('text-deep-moss', 'mb-12 text-center') }}">
           {{ esc_html($heading) }}
         </{{ $headingTag }}>
       @endif

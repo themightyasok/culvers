@@ -483,14 +483,14 @@ class ComponentRegistry
 
         $fields = isset($config['fields']) && is_array($config['fields']) ? $config['fields'] : [];
 
-        // Tab order: General (grid + background + visibility), component fields, Padding.
+        // Tab order: General (grid + background + visibility), then component fields.
+        // The legacy "Padding" tab was removed — vertical rhythm between flexible
+        // components is owned by the parent grid container's `gap-y-32` (see
+        // App\Helpers\Grid::getMainGridContainerClasses) so editors no longer
+        // need (or have) a per-component override.
         foreach ($fields as $fieldName => $fieldConfig) {
             $fieldName = (string) $fieldName;
-            if ($fieldName === 'tab_general') {
-                continue;
-            }
-            if ($fieldName === 'tab_padding') {
-                $this->addPaddingTab($layout);
+            if ($fieldName === 'tab_general' || $fieldName === 'tab_padding') {
                 continue;
             }
             try {
@@ -506,38 +506,6 @@ class ComponentRegistry
                 );
             }
         }
-    }
-
-    /**
-     * Padding tab: top_padding, bottom_padding only.
-     */
-    private function addPaddingTab(FieldsBuilder $layout): void
-    {
-        $layout->addTab(__('Padding', 'culvers'))
-            ->addSelect('top_padding', [
-                'label' => __('Top Padding', 'culvers'),
-                'choices' => [
-                    ComponentTypes::PADDING_NONE => __('None', 'culvers'),
-                    ComponentTypes::PADDING_FLUSH => __('Flush (0px)', 'culvers'),
-                    ComponentTypes::PADDING_SMALL => __('32px', 'culvers'),
-                    ComponentTypes::PADDING_MEDIUM => __('64px (Default)', 'culvers'),
-                    ComponentTypes::PADDING_LARGE => __('128px', 'culvers'),
-                ],
-                'default_value' => ComponentTypes::PADDING_MEDIUM,
-                'wrapper' => ['width' => '50'],
-            ])
-            ->addSelect('bottom_padding', [
-                'label' => __('Bottom Padding', 'culvers'),
-                'choices' => [
-                    ComponentTypes::PADDING_NONE => __('None', 'culvers'),
-                    ComponentTypes::PADDING_FLUSH => __('Flush (0px)', 'culvers'),
-                    ComponentTypes::PADDING_SMALL => __('32px', 'culvers'),
-                    ComponentTypes::PADDING_MEDIUM => __('64px (Default)', 'culvers'),
-                    ComponentTypes::PADDING_LARGE => __('128px', 'culvers'),
-                ],
-                'default_value' => ComponentTypes::PADDING_MEDIUM,
-                'wrapper' => ['width' => '50'],
-            ]);
     }
 
     /**

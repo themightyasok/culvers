@@ -38,8 +38,6 @@ final class ShopArchiveThreeCard
     {
         return [
             'background_type' => ComponentTypes::BACKGROUND_NONE,
-            'top_padding' => ComponentTypes::PADDING_LARGE,
-            'bottom_padding' => ComponentTypes::PADDING_MEDIUM,
             'cards_heading_level' => '2',
             'cards_subheading' => '',
             'cards_body' => '',

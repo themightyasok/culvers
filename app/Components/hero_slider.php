@@ -101,9 +101,5 @@ return [
                 'return_format' => 'value',
             ],
         ],
-        'tab_padding' => [
-            'type' => 'tab',
-            'options' => ['label' => __('Padding', 'culvers')],
-        ],
     ],
 ];

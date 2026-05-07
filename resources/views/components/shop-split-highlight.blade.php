@@ -158,7 +158,11 @@
 
                   @if($tab['show_cta'])
                     <div class="pt-2">
-                      <a class="btn btn-primary self-start" href="{{ esc_url($tab['cta_url']) }}">{{ esc_html($tab['cta_label']) }}</a>
+                      @include('components.button', [
+                          'label' => $tab['cta_label'],
+                          'href' => $tab['cta_url'],
+                          'class' => 'self-start',
+                      ])
                     </div>
                   @endif
                 </div>
@@ -189,7 +193,7 @@
 
             @if($showCta)
               <div class="pt-2">
-                <a class="btn btn-primary" href="{{ esc_url($ctaUrl) }}">{{ esc_html($ctaLabel) }}</a>
+                @include('components.button', ['label' => $ctaLabel, 'href' => $ctaUrl])
               </div>
             @endif
           @endif

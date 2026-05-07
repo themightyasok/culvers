@@ -40,6 +40,10 @@
   --color-light-cream: #fdfcf3;
   --color-off-white: #ededeb;
   --color-lighter-cream: #fffefa;
+  /* Pale sage band (Figma "Light Green") — used by `travel_calculator` and any
+     future quiet-card surface that needs an olive tint without going to
+     `bg-faded-olive/30` (which reads grey on white pages). */
+  --color-light-green: #dfe7ba;
   /* Brand scale maps to Glowleaf / Deep Moss (utilities like bg-brand-500) */
   --color-brand-500: #d4ff50;
   --color-brand-600: #d4ff50;

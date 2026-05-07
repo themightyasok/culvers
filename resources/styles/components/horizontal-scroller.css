@@ -43,12 +43,6 @@
   pointer-events: auto;
 }
 
-/* Padding tab: “Remove vertical padding” — strip safe-area and section pt/pb from Blade */
-.horizontal-scroller__wrapper--no-vertical-padding {
-  --hs-vertical-safe-area: 0px;
-  padding-block: 0;
-}
-
 .horizontal-scroller__wrapper:active {
   @apply cursor-grabbing;
 }

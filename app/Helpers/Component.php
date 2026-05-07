@@ -112,19 +112,54 @@ final class Component
     }
 
     /**
+     * Canonical class spine for a section-level heading (default H2).
+     *
+     * The Culver Square design system treats every section title as **64px
+     * Canela at desktop, 48px at mobile** — Figma "Desktop/Titles/H2 Title"
+     * (Canela 64 / lh 1.2 / tracking 0). The site H1 (page hero, used once)
+     * is the only heading allowed to go larger.
+     *
+     * Notes:
+     *   • `text-5xl` and `text-7xl` ship paired line-heights (1.1 and 1.2) in
+     *     {@see resources/styles/theme.tokens.css} that already match Figma.
+     *     Do **not** add `leading-tight` / `leading-none` / `leading-[1.1]`
+     *     on top — those override the calibrated token line-height.
+     *   • Figma sets tracking to 0 for headings; do not add `tracking-tight`.
+     *   • Pass a tone class as the first argument (defaults to `text-deep-moss`).
+     *   • Pass an `extra` string for component-specific layout utilities
+     *     (margins, alignment, BEM root). Keep typography utilities OUT of
+     *     `extra` — they belong here so the whole site stays in lockstep.
+     */
+    public static function sectionHeadingClasses(
+        string $toneClass = 'text-deep-moss',
+        string $extra = ''
+    ): string {
+        $base = 'font-heading text-5xl md:text-7xl ' . $toneClass;
+
+        return trim($extra !== '' ? $base . ' ' . $extra : $base);
+    }
+
+    /**
      * Standard structural classes shared by every component `<section>`.
      *
-     * Combines `_grid_classes` (after stripping inset gutters when the component
-     * renders its own shell) with the resolved padding utilities. Returned as
-     * a single trimmed string ready to drop into `class="{{ esc_attr(...) }}"`.
+     * Returns the resolved `_grid_classes` (column span + responsive gutters,
+     * plus the inter-section `mt-*` rhythm utility prepended by
+     * {@see resources/views/partials/flexible-components.blade.php}), with
+     * inset horizontal gutters optionally stripped for components that render
+     * their own inner shell.
      *
-     * Pass `includePadding: false` for full-bleed components (hero shells, image
-     * heroes) that must paint edge-to-edge with no `pt-*` / `pb-*` band — the
-     * default `pt-16 pb-16` would otherwise put a moss strip above/below the art.
+     * Outer vertical padding (`pt-*` / `pb-*`) is **never** emitted from a
+     * component — the inter-section gap is owned centrally by
+     * {@see \App\Helpers\Rhythm} (Standard 96 / Hugged 60 / Flush 0 px) and
+     * applied by the renderer. Components with their own painted background
+     * (`bg-white`, `bg-deep-moss`, …) apply *internal* `py-*` directly inside
+     * the template (canonical baseline `py-12 lg:py-16`) so the bg has
+     * breathing room around its content — that concern is intentionally
+     * separate from the inter-section gap.
      *
      * @param array<string, mixed> $component
      */
-    public static function rootClasses(array $component, bool $stripGutters = true, bool $includePadding = true): string
+    public static function rootClasses(array $component, bool $stripGutters = true): string
     {
         $grid = isset($component['_grid_classes']) && is_string($component['_grid_classes'])
             ? $component['_grid_classes']
@@ -134,12 +169,6 @@ final class Component
             $grid = Grid::stripHorizontalInsetPadding($grid);
         }
 
-        if (! $includePadding) {
-            return trim($grid);
-        }
-
-        $padding = Padding::getClasses($component);
-
-        return trim($grid . ' ' . $padding);
+        return trim($grid);
     }
 }

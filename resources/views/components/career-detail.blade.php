@@ -103,6 +103,10 @@
           @endif
 
           @if($hasApply)
+            {{-- Hand-rolled link (not the partial) because external apply URLs need an
+                 inline `sr-only` span the partial doesn't model. Class spine matches
+                 the partial — `btn btn-primary` — so hover stays consistent with every
+                 other CTA on the site. --}}
             <div class="career-detail__sidebar-cta mt-10 @if($meta !== []) border-t border-deep-moss/20 pt-8 @endif">
               <a
                 class="btn btn-primary"

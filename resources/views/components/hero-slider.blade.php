@@ -137,9 +137,13 @@
 
                       @if($ctaLabel !== '' && $ctaUrl !== '')
                         <div class="mt-10 flex w-full {{ esc_attr($btnWrap) }}">
-                          <a class="btn btn-primary px-10 py-3 md:px-12" href="{{ esc_url($ctaUrl) }}">
-                            {{ esc_html($ctaLabel) }}
-                          </a>
+                          {{-- Banner-scale CTA: `size=large` keeps the canonical Figma hover-widen
+                               (40px → 56px on hover) instead of being killed by an inline `px-*`. --}}
+                          @include('components.button', [
+                              'label' => $ctaLabel,
+                              'href' => $ctaUrl,
+                              'size' => 'large',
+                          ])
                         </div>
                       @endif
                     </div>
