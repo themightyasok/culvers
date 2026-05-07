@@ -27,7 +27,7 @@ final class SiteShortcutsCustomizer
 
         $wp_customize->add_setting(self::MOD_CENTRE_MAP_URL, [
             'default' => '',
-            'sanitize_callback' => static fn ($v): string => esc_url_raw((string) $v),
+            'sanitize_callback' => Sanitize::url(...),
         ]);
         $wp_customize->add_control(self::MOD_CENTRE_MAP_URL, [
             'label' => __('Centre map page URL', 'culvers'),
@@ -37,7 +37,7 @@ final class SiteShortcutsCustomizer
 
         $wp_customize->add_setting(self::MOD_GETTING_HERE_URL, [
             'default' => '',
-            'sanitize_callback' => static fn ($v): string => esc_url_raw((string) $v),
+            'sanitize_callback' => Sanitize::url(...),
         ]);
         $wp_customize->add_control(self::MOD_GETTING_HERE_URL, [
             'label' => __('Getting here page URL', 'culvers'),
@@ -47,7 +47,7 @@ final class SiteShortcutsCustomizer
 
         $wp_customize->add_setting(self::MOD_GUEST_SERVICES_URL, [
             'default' => '',
-            'sanitize_callback' => static fn ($v): string => esc_url_raw((string) $v),
+            'sanitize_callback' => Sanitize::url(...),
         ]);
         $wp_customize->add_control(self::MOD_GUEST_SERVICES_URL, [
             'label' => __('Guest services page URL', 'culvers'),

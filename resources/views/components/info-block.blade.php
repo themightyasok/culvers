@@ -1,25 +1,22 @@
 @php
+  use App\Helpers\Component;
+  use App\Helpers\Image;
   use App\Helpers\LayoutShell;
-  use App\Helpers\Padding;
-  use App\Helpers\TailwindColors;
+
+  /**
+   * Info block — intro stack (heading, subheading, body, optional CTA) +
+   * up-to-16 square cells in a 4-column grid (1-col on mobile).
+   * Sits flush on the page white — no coloured band, no decorative motif.
+   */
 
   $c = is_array($component ?? null) ? $component : [];
-  $padding = Padding::getClasses($c);
-  $grid = $c['_grid_classes'] ?? '';
-  $tone = TailwindColors::sanitizeBodyTextTone(
-      $c['body_text_tone'] ?? TailwindColors::DEFAULT_LIGHT_BAND_BODY_TEXT_TONE
-  );
+  $root = Component::rootClasses($c);
+  $tone = Component::bodyTextTone($c, 'light-band');
+  $headingTag = Component::headingTag($c['info_heading_level'] ?? null);
 
-  $heading = trim((string) ($c['heading'] ?? ''));
-  $level = isset($c['heading_semantic_level']) ? (int) $c['heading_semantic_level'] : 2;
-  if ($level < 2 || $level > 4) {
-      $level = 2;
-  }
-  $headingTag = 'h' . $level;
-
-  $subheading = trim((string) ($c['subheading'] ?? ''));
-  $body = (string) ($c['body'] ?? '');
-
+  $heading = trim((string) ($c['info_heading'] ?? ''));
+  $subheading = trim((string) ($c['info_subheading'] ?? ''));
+  $body = (string) ($c['info_body'] ?? '');
   $ctaLabel = trim((string) ($c['info_cta_label'] ?? ''));
   $ctaUrl = trim((string) ($c['info_cta_url'] ?? ''));
 
@@ -51,35 +48,31 @@
       || trim(strip_tags($body)) !== ''
       || ($ctaLabel !== '' && $ctaUrl !== '');
   $hasGrid = $cells !== [];
-  $showPlaceholder =
-      ! $hasIntro && ! $hasGrid && current_user_can('edit_posts');
 @endphp
 
 @if($hasIntro || $hasGrid)
   <section
-    class="{{ esc_attr(trim($grid . ' ' . $padding)) }} relative bg-off-white text-deep-moss"
+    class="info-block {{ esc_attr($root) }} relative bg-white text-deep-moss"
     data-component-root
     data-info-block>
-    {{-- Large faint X motif (matches Figma hero texture feel without competing with cells). --}}
-    <div class="info-block__motif pointer-events-none absolute inset-0 z-0 opacity-[0.04]" aria-hidden="true"></div>
-
     {{-- Match three-card / horizontal-scroller: 1440 shell, ~1272px content row --}}
-    <div class="relative z-[1] {{ LayoutShell::INNER_MAX_FLUSH_X }}">
+    <div class="relative z-10 {{ LayoutShell::INNER_MAX_FLUSH_X }}">
       @if($hasIntro)
         <header class="mx-auto max-w-[52rem] px-5 text-center sm:px-6 lg:px-8">
           @if($heading !== '')
-            <{{ $headingTag }} class="font-heading text-4xl tracking-tight text-deep-moss md:text-5xl lg:text-[3rem] lg:leading-[1.15]">
+            {{-- Figma: “A glimpse…” — Canela 84px · Faded Olive. --}}
+            <{{ $headingTag }} class="font-heading text-7xl leading-none tracking-tight text-faded-olive md:text-8xl">
               {{ esc_html($heading) }}
             </{{ $headingTag }}>
           @endif
           @if($subheading !== '')
-            <p class="mt-4 font-sans text-sm leading-relaxed text-deep-moss/85 md:text-base">
+            <p class="mt-4 font-sans text-xl font-light text-deep-moss md:text-2xl">
               {!! nl2br(e($subheading)) !!}
             </p>
           @endif
           @if(trim(strip_tags($body)) !== '')
             <div
-              class="info-block__body prose prose-lg mx-auto mt-6 max-w-none text-left md:text-center text-deep-moss prose-headings:text-deep-moss prose-p:text-deep-moss prose-li:text-deep-moss prose-strong:text-deep-moss [&_a]:text-deep-moss [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 hover:[&_a]:decoration-deep-moss {{ esc_attr($tone) }}">
+              class="info-block__body prose prose-lg mx-auto mt-6 max-w-[36.75rem] text-left font-light md:text-center text-deep-moss prose-headings:text-deep-moss prose-p:font-sans prose-p:text-xl prose-p:font-light prose-li:text-deep-moss prose-strong:text-deep-moss [&_a]:text-deep-moss [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 hover:[&_a]:decoration-deep-moss {{ esc_attr($tone) }}">
               {!! $body !!}
             </div>
           @endif
@@ -90,7 +83,7 @@
               </a>
             </div>
           @elseif($ctaLabel !== '' && $ctaUrl === '' && current_user_can('edit_posts'))
-            <p class="mt-6 font-sans text-sm text-deep-moss/60">
+            <p class="mt-6 font-sans text-base text-deep-moss/60">
               {{ __('Add a CTA URL to show the button.', 'culvers') }}
             </p>
           @endif
@@ -99,29 +92,24 @@
 
       @if($hasGrid)
         <div
-          class="{{ $hasIntro ? 'mt-12 md:mt-16' : '' }} mx-auto grid w-full max-w-[1272px] grid-cols-1 gap-px bg-deep-moss/15 md:grid-cols-2 lg:grid-cols-4">
+          class="{{ $hasIntro ? 'mt-12 md:mt-16' : '' }} mx-auto grid w-full max-w-7xl grid-cols-1 gap-px bg-deep-moss/15 md:grid-cols-2 lg:grid-cols-4">
           @foreach($cells as $cell)
             <article
-              class="flex aspect-square flex-col items-center justify-center gap-4 bg-off-white px-5 py-8 text-center sm:px-8 sm:py-10 lg:px-10">
+              class="flex aspect-square flex-col items-center justify-center gap-4 bg-white px-5 py-8 text-center sm:px-8 sm:py-10 lg:px-10">
               @if($cell['image'] !== null)
-                @php $im = $cell['image']; @endphp
                 <div class="flex h-[7rem] w-full shrink-0 items-center justify-center sm:h-[8rem]">
-                  <img
-                    src="{{ esc_url((string) ($im['url'] ?? '')) }}"
-                    alt="{{ esc_attr(trim((string) ($im['alt'] ?? ''))) }}"
-                    class="max-h-full max-w-[min(100%,12rem)] object-contain text-deep-moss sm:max-w-[min(100%,13rem)]"
-                    loading="lazy"
-                    decoding="async"
-                    @if(isset($im['width'])) width="{{ (int) $im['width'] }}" @endif
-                    @if(isset($im['height'])) height="{{ (int) $im['height'] }}" @endif />
+                  {!! Image::render($cell['image'], [
+                      'class' => 'max-h-full max-w-[min(100%,12rem)] object-contain text-deep-moss sm:max-w-[min(100%,13rem)]',
+                  ]) !!}
                 </div>
               @endif
-              <h3 class="font-heading text-xl leading-snug text-deep-moss md:text-2xl">
+              {{-- Figma cells: Canela ~42px → text-3xl; label Commuters 12px / lh 24 / tracking 1px. --}}
+              <h3 class="font-heading text-4xl text-faded-olive">
                 {{ esc_html($cell['title']) }}
               </h3>
               @if($cell['description'] !== '')
                 <p
-                  class="mt-2 max-w-[min(100%,18rem)] font-sans text-micro uppercase leading-relaxed tracking-label text-deep-moss/80 md:max-w-[min(100%,22rem)] md:text-xs">
+                  class="mt-2 max-w-[min(100%,18rem)] font-sans text-xs font-semibold uppercase leading-6 tracking-widest text-faded-olive md:max-w-[min(100%,22rem)]">
                   {!! nl2br(e($cell['description'])) !!}
                 </p>
               @endif
@@ -131,9 +119,9 @@
       @endif
     </div>
   </section>
-@elseif($showPlaceholder)
+@elseif(current_user_can('edit_posts'))
   @include('partials.component-editor-placeholder', [
-      'wrapperClasses' => trim($grid . ' ' . $padding),
+      'wrapperClasses' => $root,
       'message' => __('Add heading or info cells to this block.', 'culvers'),
   ])
 @endif

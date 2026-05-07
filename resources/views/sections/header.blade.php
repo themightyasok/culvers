@@ -19,14 +19,14 @@
     mega-nav          Primary nav + mega panels + mobile drawer (`mega-nav__*`).
 
   Content width (matches `site-footer__columns`): horizontal padding on the gutter,
-  then `max-w-[1440px]` on the inner row — never both on one element.
+  then `max-w-8xl` (1440px) on the inner row — never both on one element.
 --}}
 
 <header
   class="site-header fixed inset-x-0 top-0 z-50"
   x-data="siteHeader"
   x-on:keydown.escape.window="closeAll()">
-  {{-- Shell: full width; content width matches footer (`px-[46px]` + inner `max-w-[1440px]`). --}}
+  {{-- Shell: full width; content width matches footer (`md:px-12` + inner `max-w-8xl`). --}}
   <div class="site-header__shell w-full overflow-visible">
     {{-- Entrance animation once the header intersects the viewport. --}}
     <div
@@ -36,12 +36,12 @@
         class="site-header__padding relative transition-[padding] duration-300 ease-in-out"
         x-bind:class="headerScrolled
           ? 'px-4 pb-3 pt-6 md:px-0 md:pb-0 md:pt-0'
-          : 'px-4 pb-3 pt-6 md:px-[46px] md:pb-2.5 md:pt-[46px]'">
+          : 'px-4 pb-3 pt-6 md:px-12 md:pb-2.5 md:pt-12'">
 
         {{-- Same grid as `site-footer__columns`: gutter padding on parent, 1440 cap here (not on shell). --}}
         <div
           class="mx-auto w-full"
-          x-bind:class="headerScrolled ? 'max-w-none' : 'max-w-[1440px]'">
+          x-bind:class="headerScrolled ? 'max-w-none' : 'max-w-8xl'">
 
         {{-- Mega navigation mode --}}
         <div
@@ -54,14 +54,14 @@
 
           {{-- Olive bar (full bleed when scrolled; rounded pill when not). --}}
           <div
-            class="mega-nav__bar relative z-[58] w-full rounded-full bg-faded-olive"
+            class="mega-nav__bar relative z-50 w-full rounded-full bg-faded-olive"
             x-bind:class="headerScrolled ? 'md:rounded-none' : ''">
             <div
               class="mega-nav__bar-gutter w-full py-2"
-              x-bind:class="headerScrolled ? 'px-4 md:px-[46px]' : ''">
+              x-bind:class="headerScrolled ? 'px-4 md:px-12' : ''">
               <div
                 class="mega-nav__bar-row flex min-h-[80px] w-full items-center gap-3 md:gap-6"
-                x-bind:class="headerScrolled ? 'mx-auto max-w-[1440px]' : 'px-4 md:px-5 lg:px-6'">
+                x-bind:class="headerScrolled ? 'mx-auto max-w-8xl' : 'px-4 md:px-5 lg:px-6'">
                 <div class="mega-nav__bar-main flex min-w-0 flex-1 items-center md:gap-[42px]">
                   <a
                     class="mega-nav__logo shrink-0 text-glowleaf"
@@ -96,7 +96,7 @@
                                 x-bind:aria-expanded="megaOpenId === {{ $branch['id'] }} ? 'true' : 'false'"
                                 aria-haspopup="true"
                                 aria-controls="mega-panel-{{ $branch['id'] }}">
-                                <span class="font-sans text-[15px] leading-6">{{ $branch['title'] }}</span>
+                                <span class="font-sans text-base leading-6">{{ $branch['title'] }}</span>
                                 <span class="mega-nav__chevron relative ms-0.5 inline-flex size-3 shrink-0 items-center justify-center" aria-hidden="true">
                                   <svg
                                     class="size-3"
@@ -128,7 +128,7 @@
                               </button>
                             @else
                               <a
-                                class="inline-flex items-center gap-2 font-sans text-[15px] capitalize leading-6 text-white transition-colors hover:text-glowleaf focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
+                                class="inline-flex items-center gap-2 font-sans text-base capitalize leading-6 text-white transition-colors hover:text-glowleaf focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
                                 href="{{ esc_url($branch['url']) }}">
                                 {{ $branch['title'] }}
                               </a>
@@ -165,7 +165,7 @@
                         stroke-linejoin="round" />
                       <circle cx="12" cy="10" r="2.25" stroke="currentColor" stroke-width="1.4" />
                     </svg>
-                    <span class="font-sans text-sm font-normal leading-snug text-white">{{ __('Centre Map', 'culvers') }}</span>
+                    <span class="font-sans text-base font-normal leading-snug text-white">{{ __('Centre Map', 'culvers') }}</span>
                   </a>
                   <a
                     class="inline-flex items-center gap-2 text-white transition-opacity hover:opacity-90 focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
@@ -178,7 +178,7 @@
                         stroke-linejoin="round" />
                       <circle cx="12" cy="10" r="2.25" stroke="currentColor" stroke-width="1.4" />
                     </svg>
-                    <span class="font-sans text-sm font-normal leading-snug text-white">{{ __('Getting Here', 'culvers') }}</span>
+                    <span class="font-sans text-base font-normal leading-snug text-white">{{ __('Getting Here', 'culvers') }}</span>
                   </a>
                   <button
                     type="button"
@@ -199,7 +199,7 @@
 
           {{-- Pointer bridge: fills gap under bar so mega stays open while moving to panel. --}}
           <div
-            class="mega-nav__hover-bridge pointer-events-auto absolute inset-x-0 top-full z-[54] hidden min-h-[calc(100vh-5rem)] md:block"
+            class="mega-nav__hover-bridge pointer-events-auto absolute inset-x-0 top-full z-40 hidden min-h-[calc(100vh-5rem)] md:block"
             x-show="megaOpenId !== null"
             x-cloak
             x-transition.opacity.duration.200ms
@@ -221,20 +221,23 @@
                   $fp = $firstPreview !== '' ? esc_url($firstPreview) : '';
                   $fpJs = json_encode($fp, JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES);
                 @endphp
+                {{-- Panel spans the full width of the menu bar shell (`.mega-nav` inherits the
+                     parent `max-w-8xl` / `max-w-none` width) and sits 6px under the bar so the
+                     drop-down reads as part of the same surface — no orphan strip in between. --}}
                 <div
                   id="mega-panel-{{ $branch['id'] }}"
-                  class="mega-nav__panel absolute left-1/2 top-[calc(100%+18px)] z-[60] w-[min(1348px,calc(100vw-2rem))] -translate-x-1/2"
+                  class="mega-nav__panel absolute inset-x-0 top-[calc(100%+6px)] z-60"
                   x-show="megaOpenId === {{ $branch['id'] }}"
                   x-cloak
                   x-transition.opacity.duration.200ms
                   role="region"
                   aria-label="{{ esc_attr($branch['title']) }}">
                   <div
-                    class="mega-nav__panel-inner mx-auto max-h-[min(85vh,560px)] max-w-[1348px] overflow-y-auto rounded-t-2xl rounded-b-2xl border border-light-brown/25 bg-lighter-cream px-5 py-8 shadow-lg md:px-8 lg:px-10 lg:pb-10 lg:pt-10">
+                    class="mega-nav__panel-inner mx-auto max-h-[min(85vh,560px)] w-full overflow-y-auto rounded-2xl border border-light-brown/25 bg-lighter-cream px-5 py-8 shadow-lg md:px-8 lg:px-10 lg:pb-10 lg:pt-10">
                     <div class="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-12 xl:gap-16">
                       <div class="flex min-w-0 flex-1 flex-col">
                         <div class="flex flex-wrap items-start gap-4 lg:gap-6">
-                          <h2 class="font-heading text-[40px] leading-[1.1] text-faded-olive">
+                          <h2 class="font-heading text-4xl text-faded-olive">
                             {{ $branch['title'] }}
                           </h2>
                           @if($branch['url'] !== '' && $branch['url'] !== '#')
@@ -266,7 +269,7 @@
                             @endphp
                             <li class="list-none">
                               <a
-                                class="mega-nav__sublink inline-block font-sans text-[22px] leading-6 text-faded-olive transition-colors hover:text-deep-moss focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-faded-olive"
+                                class="mega-nav__sublink inline-block font-sans text-2xl leading-6 text-faded-olive transition-colors hover:text-deep-moss focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-faded-olive"
                                 href="{{ esc_url($child['url']) }}"
                                 data-preview-url="{{ $childHoverPreview !== '' ? esc_url($childHoverPreview) : '' }}"
                                 x-on:mouseenter="setPreviewFromEvent($event)"
@@ -278,7 +281,7 @@
                         </ul>
                         <div class="mt-10 flex flex-wrap gap-[34px]">
                           <a
-                            class="inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-[1px] text-faded-olive hover:text-deep-moss focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-faded-olive"
+                            class="inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-widest text-faded-olive hover:text-deep-moss focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-faded-olive"
                             href="{{ esc_url($instagramUrl) }}"
                             rel="noopener noreferrer">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -289,7 +292,7 @@
                             {{ __('Instagram', 'culvers') }}
                           </a>
                           <a
-                            class="inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-[1px] text-faded-olive hover:text-deep-moss focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-faded-olive"
+                            class="inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-widest text-faded-olive hover:text-deep-moss focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-faded-olive"
                             href="{{ esc_url($facebookUrl) }}"
                             rel="noopener noreferrer">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -328,10 +331,10 @@
           <div
             class="site-header__search-bar rounded-full border-4 border-brand-500 bg-light-cream"
             x-bind:class="headerScrolled ? 'md:rounded-none' : ''">
-            <div class="site-header__search-gutter w-full" x-bind:class="headerScrolled ? 'px-4 md:px-[46px]' : ''">
+            <div class="site-header__search-gutter w-full" x-bind:class="headerScrolled ? 'px-4 md:px-12' : ''">
               <div
                 class="site-header__search-row flex min-h-[80px] items-center gap-4 py-2 md:gap-8"
-                x-bind:class="headerScrolled ? 'mx-auto max-w-[1440px]' : 'px-4 md:px-5 lg:px-6'">
+                x-bind:class="headerScrolled ? 'mx-auto max-w-8xl' : 'px-4 md:px-5 lg:px-6'">
                 <a class="shrink-0 text-deep-moss" href="{{ esc_url(home_url('/')) }}" rel="home" aria-label="{{ esc_attr(get_bloginfo('name')) }}">
                   @if(has_custom_logo())
                     <span class="block max-h-[28px] w-[178px] [&_img]:h-full [&_img]:w-auto [&_img]:object-contain [&_img]:object-left">
@@ -348,7 +351,7 @@
                 <label class="sr-only" for="site-search-input">{{ __('Search', 'culvers') }}</label>
                 <input
                   id="site-search-input"
-                  class="site-header__search-input min-w-0 flex-1 border-0 bg-transparent font-sans text-lg leading-snug text-faded-olive placeholder:text-faded-olive/55 focus:outline-none focus:ring-0 md:text-xl"
+                  class="site-header__search-input min-w-0 flex-1 border-0 bg-transparent font-sans text-xl leading-snug text-faded-olive placeholder:text-faded-olive/55 focus:outline-none focus:ring-0 md:text-2xl"
                   type="search"
                   name="s"
                   autocomplete="off"
@@ -383,7 +386,7 @@
     {{-- Mobile primary nav --}}
     <div
       id="mega-mobile-drawer"
-      class="mega-nav__drawer fixed inset-x-0 bottom-0 top-[72px] z-[70] overflow-y-auto bg-deep-moss p-6 text-white md:hidden"
+      class="mega-nav__drawer fixed inset-x-0 bottom-0 top-[72px] z-70 overflow-y-auto bg-deep-moss p-6 text-white md:hidden"
       x-show="mobileOpen"
       x-cloak
       x-transition.opacity.duration.150ms
@@ -392,7 +395,7 @@
       aria-labelledby="mega-mobile-drawer-title">
       <h2 id="mega-mobile-drawer-title" class="sr-only">{{ __('Site menu', 'culvers') }}</h2>
       <div class="flex justify-end">
-        <button type="button" class="rounded-full border border-white/30 px-4 py-2 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf" x-on:click="mobileOpen = false">
+        <button type="button" class="rounded-full border border-white/30 px-4 py-2 text-base focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf" x-on:click="mobileOpen = false">
           {{ __('Close', 'culvers') }}
         </button>
       </div>
@@ -401,18 +404,18 @@
           @foreach($navTree as $branch)
             <li class="list-none border-b border-white/15 pb-4">
               @if($branch['children'] !== [])
-                <p class="font-heading text-lg text-glowleaf">{{ $branch['title'] }}</p>
+                <p class="font-heading text-xl text-glowleaf">{{ $branch['title'] }}</p>
                 <ul class="mt-3 space-y-2 pl-1">
                   @foreach($branch['children'] as $child)
                     <li class="list-none">
-                      <a class="block py-1 font-sans text-base text-white/90 focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf" href="{{ esc_url($child['url']) }}">
+                      <a class="block py-1 font-sans text-lg text-white/90 focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf" href="{{ esc_url($child['url']) }}">
                         {{ $child['title'] }}
                       </a>
                     </li>
                   @endforeach
                 </ul>
               @else
-                <a class="block font-heading text-lg text-glowleaf focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf" href="{{ esc_url($branch['url']) }}">
+                <a class="block font-heading text-xl text-glowleaf focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf" href="{{ esc_url($branch['url']) }}">
                   {{ $branch['title'] }}
                 </a>
               @endif
@@ -421,9 +424,9 @@
         </ul>
       @endif
       <div class="mt-8 flex flex-col gap-3 border-t border-white/15 pt-6">
-        <a class="font-sans text-sm focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf" href="{{ esc_url($mapUrl) }}">{{ __('Centre Map', 'culvers') }}</a>
-        <a class="font-sans text-sm focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf" href="{{ esc_url($hereUrl) }}">{{ __('Getting Here', 'culvers') }}</a>
-        <button type="button" class="text-left font-sans text-sm text-glowleaf focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf" x-on:click="openSearchFromMobile()">
+        <a class="font-sans text-base focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf" href="{{ esc_url($mapUrl) }}">{{ __('Centre Map', 'culvers') }}</a>
+        <a class="font-sans text-base focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf" href="{{ esc_url($hereUrl) }}">{{ __('Getting Here', 'culvers') }}</a>
+        <button type="button" class="text-left font-sans text-base text-glowleaf focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf" x-on:click="openSearchFromMobile()">
           {{ __('Search', 'culvers') }}
         </button>
       </div>

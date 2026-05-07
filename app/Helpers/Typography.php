@@ -6,8 +6,15 @@ namespace App\Helpers;
 
 /**
  * Tailwind typography classes for CMS-driven components (font family + size + weight).
+ *
+ * Sizes are stock Tailwind utilities (`text-xs..text-9xl`) tuned to Figma in
+ * `resources/styles/theme.tokens.css`. The buckets below split the same ladder by
+ * editorial role (body copy vs display heading) so dropdowns stay scoped.
+ *
+ * @see resources/styles/theme.tokens.css
+ * @see docs/TYPOGRAPHY-SCALE.md
  */
-class Typography
+final class Typography
 {
     /** @var array<string, string> */
     private static array $fontFamilyMap = [
@@ -33,34 +40,38 @@ class Typography
         return self::$fontFamilyMap[$elementType] ?? 'font-sans';
     }
 
-    /** @return array<string, string> */
+    /**
+     * Display tier — Canela-style headings 32px → 96px.
+     *
+     * @return array<string, string>
+     */
     public static function getHeaderSizeChoices(): array
     {
         return [
-            'text-2xl' => __('Small (text-2xl)', 'culvers'),
-            'text-3xl' => __('Medium (text-3xl)', 'culvers'),
-            'text-4xl' => __('Large (text-4xl)', 'culvers'),
-            'text-5xl' => __('Extra large (text-5xl)', 'culvers'),
-            'text-6xl' => __('Huge (text-6xl)', 'culvers'),
-            'text-7xl' => __('Extra huge (text-7xl)', 'culvers'),
-            'text-8xl' => __('Massive (text-8xl)', 'culvers'),
-            'text-9xl' => __('Ultra (text-9xl)', 'culvers'),
-            'text-xxl' => __('XXL', 'culvers'),
-            'text-xxxl' => __('XXXL', 'culvers'),
-            'text-xxxxl' => __('XXXXL', 'culvers'),
+            'text-3xl' => __('Small heading — 32px', 'culvers'),
+            'text-4xl' => __('Medium heading — 40px', 'culvers'),
+            'text-5xl' => __('Large heading — 48px', 'culvers'),
+            'text-6xl' => __('Section title — 58px', 'culvers'),
+            'text-7xl' => __('Extra large — 64px', 'culvers'),
+            'text-8xl' => __('Huge — 84px (H1)', 'culvers'),
+            'text-9xl' => __('Hero — 96px', 'culvers'),
         ];
     }
 
-    /** @return array<string, string> */
+    /**
+     * Body tier — Halyard-style copy 12px → 24px.
+     *
+     * @return array<string, string>
+     */
     public static function getBodySizeChoices(): array
     {
         return [
-            'text-xs' => __('Extra small (text-xs)', 'culvers'),
-            'text-sm' => __('Small (text-sm)', 'culvers'),
-            'text-base' => __('Base (text-base)', 'culvers'),
-            'text-lg' => __('Large (text-lg)', 'culvers'),
-            'text-xl' => __('Extra large (text-xl)', 'culvers'),
-            'text-2xl' => __('Huge (text-2xl)', 'culvers'),
+            'text-xs' => __('Eyebrow — 12px', 'culvers'),
+            'text-sm' => __('Caption — 14px', 'culvers'),
+            'text-base' => __('Small body — 16px', 'culvers'),
+            'text-lg' => __('Body — 18px', 'culvers'),
+            'text-xl' => __('Large body — 20px', 'culvers'),
+            'text-2xl' => __('Lead — 24px', 'culvers'),
         ];
     }
 
@@ -76,7 +87,7 @@ class Typography
         ];
     }
 
-    public static function validateSize(string $size, string $default = 'text-base'): string
+    public static function validateSize(string $size, string $default = 'text-lg'): string
     {
         $valid = array_merge(
             array_keys(self::getHeaderSizeChoices()),
@@ -86,7 +97,7 @@ class Typography
         return in_array($size, $valid, true) ? $size : $default;
     }
 
-    public static function validateBodySize(mixed $size, string $default = 'text-base'): string
+    public static function validateBodySize(mixed $size, string $default = 'text-lg'): string
     {
         $valid = array_keys(self::getBodySizeChoices());
         $s = is_string($size) ? trim($size) : '';
@@ -126,7 +137,7 @@ class Typography
             array_keys(self::getBodySizeChoices())
         );
 
-        return in_array($size, $valid, true) ? $size : 'text-base';
+        return in_array($size, $valid, true) ? $size : 'text-lg';
     }
 
     private static function sanitizeWeight(string $weight): string

@@ -4,6 +4,8 @@
  * Opening hours list with optional side illustrations, intro copy, and “today” highlight (site timezone).
  */
 
+use App\Helpers\Component;
+
 return [
     'label' => __('Opening hours', 'culvers'),
     'display' => 'block',
@@ -12,27 +14,14 @@ return [
             'type' => 'tab',
             'options' => ['label' => __('Content', 'culvers')],
         ],
-        'heading' => [
+        'hours_heading' => [
             'type' => 'text',
             'options' => [
                 'label' => __('Heading', 'culvers'),
             ],
         ],
-        'heading_semantic_level' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Heading level', 'culvers'),
-                'instructions' => __('Use one H1 per page (typically the hero).', 'culvers'),
-                'choices' => [
-                    '2' => __('H2 — section title (default)', 'culvers'),
-                    '3' => __('H3', 'culvers'),
-                    '4' => __('H4', 'culvers'),
-                ],
-                'default_value' => '2',
-                'return_format' => 'value',
-            ],
-        ],
-        'subheading' => [
+        'hours_heading_level' => Component::headingLevelField(),
+        'hours_subheading' => [
             'type' => 'textarea',
             'options' => [
                 'label' => __('Subheading', 'culvers'),
@@ -40,7 +29,7 @@ return [
                 'new_lines' => 'br',
             ],
         ],
-        'body' => [
+        'hours_body' => [
             'type' => 'wysiwyg',
             'options' => [
                 'label' => __('Body', 'culvers'),
@@ -49,7 +38,7 @@ return [
                 'media_upload' => 0,
             ],
         ],
-        'graphic_left' => [
+        'hours_graphic_left' => [
             'type' => 'image',
             'options' => [
                 'label' => __('Graphic — left', 'culvers'),
@@ -59,7 +48,7 @@ return [
                 'library' => 'all',
             ],
         ],
-        'graphic_right' => [
+        'hours_graphic_right' => [
             'type' => 'image',
             'options' => [
                 'label' => __('Graphic — right', 'culvers'),

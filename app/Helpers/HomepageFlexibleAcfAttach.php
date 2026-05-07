@@ -24,20 +24,20 @@ final class HomepageFlexibleAcfAttach
 
             $out = [];
             foreach ($rows as $row) {
-                if (! is_array($row)) {
-                    $out[] = $row;
-
-                    continue;
-                }
-                $layout = (string) ($row['acf_fc_layout'] ?? '');
+                $layout = isset($row['acf_fc_layout']) ? Cast::toString($row['acf_fc_layout']) : '';
                 $out[] = match ($layout) {
                     'hero_slider' => self::heroSliderRow($row),
                     'three_card_block' => self::threeCardBlockRow($row),
                     'horizontal_scroller' => self::horizontalScrollerRow($row),
                     'video_block' => self::videoBlockRow($row),
                     'opening_hours' => self::openingHoursRow($row),
-                    'shop_image_hero' => self::shopImageHeroRow($row),
+                    'image_hero' => self::imageHeroRow($row),
                     'shop_split_highlight' => self::shopSplitHighlightRow($row),
+                    'info_block' => self::infoBlockRow($row),
+                    'text_image_slider' => self::textImageSliderRow($row),
+                    'faq' => self::faqRow($row),
+                    'centre_map' => self::centreMapRow($row),
+                    'travel_calculator' => self::travelCalculatorRow($row),
                     default => $row,
                 };
             }
@@ -96,7 +96,7 @@ final class HomepageFlexibleAcfAttach
      */
     private static function threeCardBlockRow(array $row): array
     {
-        $cards = $row['three_cards'] ?? [];
+        $cards = $row['cards_items'] ?? [];
         if (! is_array($cards)) {
             return $row;
         }
@@ -108,7 +108,7 @@ final class HomepageFlexibleAcfAttach
             $cards[$i]['card_video_poster'] = self::acfImageValue($card['card_video_poster'] ?? null);
             $cards[$i]['card_image'] = self::acfImageValue($card['card_image'] ?? null);
         }
-        $row['three_cards'] = $cards;
+        $row['cards_items'] = $cards;
 
         return $row;
     }
@@ -119,7 +119,7 @@ final class HomepageFlexibleAcfAttach
      */
     private static function horizontalScrollerRow(array $row): array
     {
-        $cards = $row['scroll_cards'] ?? [];
+        $cards = $row['scroller_items'] ?? [];
         if (! is_array($cards)) {
             return $row;
         }
@@ -127,9 +127,9 @@ final class HomepageFlexibleAcfAttach
             if (! is_array($item)) {
                 continue;
             }
-            $cards[$i]['image'] = self::acfImageValue($item['image'] ?? null);
+            $cards[$i]['item_image'] = self::acfImageValue($item['item_image'] ?? null);
         }
-        $row['scroll_cards'] = $cards;
+        $row['scroller_items'] = $cards;
 
         return $row;
     }
@@ -140,8 +140,8 @@ final class HomepageFlexibleAcfAttach
      */
     private static function videoBlockRow(array $row): array
     {
-        $row['video'] = self::acfFileValue($row['video'] ?? null);
-        $row['poster'] = self::acfImageValue($row['poster'] ?? null);
+        $row['video_file'] = self::acfFileValue($row['video_file'] ?? null);
+        $row['video_poster'] = self::acfImageValue($row['video_poster'] ?? null);
 
         return $row;
     }
@@ -152,8 +152,8 @@ final class HomepageFlexibleAcfAttach
      */
     private static function openingHoursRow(array $row): array
     {
-        $row['graphic_left'] = self::acfImageValue($row['graphic_left'] ?? null);
-        $row['graphic_right'] = self::acfImageValue($row['graphic_right'] ?? null);
+        $row['hours_graphic_left'] = self::acfImageValue($row['hours_graphic_left'] ?? null);
+        $row['hours_graphic_right'] = self::acfImageValue($row['hours_graphic_right'] ?? null);
 
         return $row;
     }
@@ -162,7 +162,7 @@ final class HomepageFlexibleAcfAttach
      * @param  array<string, mixed>  $row
      * @return array<string, mixed>
      */
-    private static function shopImageHeroRow(array $row): array
+    private static function imageHeroRow(array $row): array
     {
         $row['hero_image'] = self::acfImageValue($row['hero_image'] ?? null);
         $row['hero_image_mobile'] = self::acfImageValue($row['hero_image_mobile'] ?? null);
@@ -178,6 +178,94 @@ final class HomepageFlexibleAcfAttach
     private static function shopSplitHighlightRow(array $row): array
     {
         $row['split_image'] = self::acfImageValue($row['split_image'] ?? null);
+
+        return $row;
+    }
+
+    /**
+     * @param  array<string, mixed>  $row
+     * @return array<string, mixed>
+     */
+    private static function infoBlockRow(array $row): array
+    {
+        $items = $row['info_items'] ?? [];
+        if (! is_array($items)) {
+            return $row;
+        }
+        foreach ($items as $i => $item) {
+            if (! is_array($item)) {
+                continue;
+            }
+            $items[$i]['item_image'] = self::acfImageValue($item['item_image'] ?? null);
+        }
+        $row['info_items'] = $items;
+
+        return $row;
+    }
+
+    /**
+     * @param  array<string, mixed>  $row
+     * @return array<string, mixed>
+     */
+    private static function textImageSliderRow(array $row): array
+    {
+        $items = $row['tis_items'] ?? [];
+        if (! is_array($items)) {
+            return $row;
+        }
+        foreach ($items as $i => $item) {
+            if (! is_array($item)) {
+                continue;
+            }
+            $items[$i]['item_image_left'] = self::acfImageValue($item['item_image_left'] ?? null);
+            $items[$i]['item_image_right'] = self::acfImageValue($item['item_image_right'] ?? null);
+        }
+        $row['tis_items'] = $items;
+
+        return $row;
+    }
+
+    /**
+     * @param  array<string, mixed>  $row
+     * @return array<string, mixed>
+     */
+    private static function faqRow(array $row): array
+    {
+        foreach (['faq_decorations_left', 'faq_decorations_right'] as $key) {
+            $items = $row[$key] ?? [];
+            if (! is_array($items)) {
+                continue;
+            }
+            foreach ($items as $i => $item) {
+                if (! is_array($item)) {
+                    continue;
+                }
+                $items[$i]['item_image'] = self::acfImageValue($item['item_image'] ?? null);
+            }
+            $row[$key] = $items;
+        }
+
+        return $row;
+    }
+
+    /**
+     * @param  array<string, mixed>  $row
+     * @return array<string, mixed>
+     */
+    private static function centreMapRow(array $row): array
+    {
+        $row['centre_map_image'] = self::acfImageValue($row['centre_map_image'] ?? null);
+
+        return $row;
+    }
+
+    /**
+     * @param  array<string, mixed>  $row
+     * @return array<string, mixed>
+     */
+    private static function travelCalculatorRow(array $row): array
+    {
+        $row['tc_map_initial_image'] = self::acfImageValue($row['tc_map_initial_image'] ?? null);
 
         return $row;
     }
@@ -280,7 +368,7 @@ final class HomepageFlexibleAcfAttach
         }
 
         $mime = '';
-        if (is_string($tmp) && is_readable($tmp) && function_exists('mime_content_type')) {
+        if (is_readable($tmp) && function_exists('mime_content_type')) {
             $mime = @mime_content_type($tmp) ?: '';
         }
         if ($mime === '' || $mime === 'application/octet-stream') {

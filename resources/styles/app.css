@@ -9,7 +9,6 @@
 @import '@splidejs/splide/css';
 
 @import './components/horizontal-scroller.css';
-@import './components/info-block.css';
 @import './components/directory-archive.css';
 
 @layer base {
@@ -28,16 +27,6 @@
    */
   #smooth-wrapper {
     padding-top: var(--site-header-offset, 11.25rem);
-  }
-
-  /*
-   * ScrollSmoother only runs at min-width 1024px. Extra slack avoids max-scroll stopping short of the
-   * footer legal row when the first height measurement races late layout (fonts, flexible rows).
-   */
-  @media (min-width: 1024px) {
-    #smooth-content {
-      padding-bottom: max(5rem, 80px);
-    }
   }
 
   /*
@@ -81,7 +70,7 @@
    * hover widens horizontal padding only (25.773px → 34px). Radius matches full pill (`rounded-full`).
    */
   .btn {
-    @apply inline-flex shrink-0 cursor-pointer items-center justify-center rounded-full border border-transparent font-sans text-xs font-semibold leading-[30px] whitespace-nowrap uppercase tracking-cta antialiased transition-[padding,background-color,color,border-color] duration-150 ease-out;
+    @apply inline-flex shrink-0 cursor-pointer items-center justify-center rounded-full border border-transparent font-sans text-xs font-semibold leading-[30px] whitespace-nowrap uppercase tracking-wider antialiased transition-[padding,background-color,color,border-color] duration-150 ease-out;
   }
 
   .btn:focus-visible {
@@ -110,34 +99,11 @@
     @apply overflow-hidden lg:overflow-auto;
   }
 
-  /* Footer — subtle diamond/grid over olive (pattern only; colours from Blade `.site-footer__columns`). */
-  .site-footer__columns::before {
-    content: '';
-    @apply pointer-events-none absolute inset-0 z-0 opacity-[0.055];
-    background-image:
-      linear-gradient(
-        135deg,
-        rgb(255 255 255 / 0.22) 12%,
-        transparent 12.5%,
-        transparent 50%,
-        rgb(255 255 255 / 0.12) 50.5%,
-        rgb(255 255 255 / 0.12) 62%,
-        transparent 62.5%,
-        transparent
-      ),
-      linear-gradient(
-        45deg,
-        transparent 38%,
-        rgb(255 255 255 / 0.08) 38.5%,
-        rgb(255 255 255 / 0.08) 50%,
-        transparent 50.5%
-      );
-    background-size: 28px 28px;
-  }
-
-  /* Always-on underline — footer map link + email only (see tailwind.config.js base plugin). */
+  /* Always-on underline — footer map link + email only (see tailwind.config.js base plugin).
+     `decoration-2` and `underline-offset-2` keep the line readable at footer sizes (text-xs / text-base
+     in glowleaf on faded-olive); the default 1px / 4px-offset underline is too faint to register. */
   .footer-link--persistent-underline {
-    @apply underline decoration-glowleaf underline-offset-4;
+    @apply underline decoration-glowleaf decoration-2 underline-offset-2;
   }
 
   .footer-link--persistent-underline:hover,
@@ -146,10 +112,10 @@
   }
 
   /*
-   * Legal band under wordmark — paint above `.site-footer__columns::before` and keep readable copy.
-   * WP global / inherited body colours must not win here (deep moss on olive reads as “missing”).
+   * Legal band under wordmark — keep its copy readable when WP global / inherited
+   * body colours would otherwise win (deep moss on olive reads as "missing").
+   * `position: relative` paints predictably under ScrollSmoother / transform ancestors.
    */
-  /* Sit above `.site-footer__columns::before` (z-0); avoid isolate so paints predictably with ScrollSmoother/transform ancestors. */
   .site-footer .footer-under-logo {
     position: relative;
     z-index: 5;
@@ -195,10 +161,12 @@
   }
 
   /*
-   * Shop image hero — full-bleed / tuck-under-fixed-header like the homepage hero slider,
-   * shorter band (~half viewport, max ~746px) plus the same glowleaf inset keyline.
+   * Image hero — full-bleed / tuck-under-fixed-header like the homepage hero slider,
+   * static photo header band (Figma 51:9360 — 480/580/646px steps) plus the same
+   * glowleaf inset keyline. Used for any static page header
+   * (Contact, About, brand lockup pages, etc.).
    */
-  .shop-image-hero--viewport {
+  .image-hero--viewport {
     width: 100vw;
     max-width: 100vw;
     margin-left: calc(50% - 50vw);
@@ -206,7 +174,7 @@
     margin-top: calc(-1 * var(--site-header-offset, 11.25rem));
   }
 
-  .shop-image-hero--viewport::after {
+  .image-hero--viewport::after {
     content: '';
     pointer-events: none;
     position: absolute;
@@ -231,17 +199,10 @@
   }
 
   .hero-slider__pagination.splide__pagination {
-    @apply absolute z-[25] flex flex-col items-center justify-center gap-3;
-    top: 50%;
-    right: 1.25rem;
-    bottom: auto;
-    left: auto;
-    width: auto;
-    padding: 0;
-    transform: translateY(-50%);
-    pointer-events: auto;
+    @apply pointer-events-auto absolute top-1/2 right-5 left-auto z-30 m-0 flex w-auto -translate-y-1/2 flex-col items-center justify-center gap-3 p-0;
   }
 
+  /* iOS landscape safe-area: extend right offset by env() when supported (no Tailwind shorthand). */
   @supports (padding: max(0px)) {
     .hero-slider__pagination.splide__pagination {
       right: max(1.25rem, env(safe-area-inset-right, 0px));
@@ -249,22 +210,15 @@
   }
 
   .hero-slider__page.splide__pagination__page {
-    @apply m-0 h-[11px] w-[11px] shrink-0 rounded-none opacity-100;
-    transform: rotate(45deg);
-    background: transparent;
-    border: 2px solid rgb(255 255 255 / 0.95);
-    transition:
-      background-color 0.2s ease,
-      border-color 0.2s ease;
+    @apply m-0 h-[11px] w-[11px] shrink-0 rotate-45 rounded-none border-2 border-white/95 bg-transparent opacity-100 transition-colors duration-200 ease-out;
   }
 
   .hero-slider__page.splide__pagination__page:hover {
-    border-color: rgb(255 255 255 / 1);
+    @apply border-white;
   }
 
   .hero-slider__page.splide__pagination__page.is-active {
-    background: rgb(255 255 255 / 1);
-    border-color: rgb(255 255 255 / 1);
+    @apply border-white bg-white;
   }
 
   @media (prefers-reduced-motion: no-preference) {
@@ -272,48 +226,5 @@
       opacity: 0.25;
       transform: translateY(1.125rem);
     }
-  }
-
-  /* Legal policy templates — light diamond grids over moss hero / cream body (Figma policy frames). */
-  .policy-page__hero-pattern {
-    background-image:
-      linear-gradient(
-        135deg,
-        rgb(255 255 255 / 0.35) 11%,
-        transparent 11.5%,
-        transparent 49%,
-        rgb(255 255 255 / 0.18) 49.5%,
-        rgb(255 255 255 / 0.18) 61%,
-        transparent 61.5%
-      ),
-      linear-gradient(
-        45deg,
-        transparent 37%,
-        rgb(255 255 255 / 0.12) 37.5%,
-        rgb(255 255 255 / 0.12) 50%,
-        transparent 50.5%
-      );
-    background-size: 42px 42px;
-  }
-
-  .policy-page__surface-pattern {
-    background-image:
-      linear-gradient(
-        135deg,
-        rgb(22 57 48 / 0.22) 11%,
-        transparent 11.5%,
-        transparent 49%,
-        rgb(22 57 48 / 0.1) 49.5%,
-        rgb(22 57 48 / 0.1) 61%,
-        transparent 61.5%
-      ),
-      linear-gradient(
-        45deg,
-        transparent 37%,
-        rgb(22 57 48 / 0.08) 37.5%,
-        rgb(22 57 48 / 0.08) 50%,
-        transparent 50.5%
-      );
-    background-size: 48px 48px;
   }
 }

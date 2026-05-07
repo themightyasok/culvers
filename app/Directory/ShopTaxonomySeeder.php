@@ -18,7 +18,7 @@ final class ShopTaxonomySeeder
         }
 
         foreach (self::categoryNames() as $name) {
-            if (! is_string($name) || $name === '') {
+            if ($name === '') {
                 continue;
             }
             if (term_exists($name, 'culvers_shop_category')) {
@@ -28,7 +28,7 @@ final class ShopTaxonomySeeder
         }
 
         foreach (self::retailerTypeNames() as $name) {
-            if (! is_string($name) || $name === '') {
+            if ($name === '') {
                 continue;
             }
             if (term_exists($name, 'culvers_shop_type')) {

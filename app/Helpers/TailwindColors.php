@@ -10,7 +10,7 @@ use App\Config\ThemeTokens;
  * CMS-facing Tailwind utility class maps driven by {@see ThemeTokens} (`theme.tokens.css` `@theme`).
  * Content scanning and plugins live in `tailwind.config.js`.
  */
-class TailwindColors
+final class TailwindColors
 {
     public const DEFAULT_BODY_TEXT_TONE = 'text-zinc-100';
 
@@ -96,6 +96,23 @@ class TailwindColors
         }
 
         return $keys[0] ?? self::DEFAULT_BODY_TEXT_TONE;
+    }
+
+    /**
+     * Body copy on white / light bands (shop intro, store details). Editors can pick an illegible
+     * tone (e.g. white) from shared flexible fields — coerce to {@see DEFAULT_LIGHT_BAND_BODY_TEXT_TONE}.
+     */
+    public static function bodyToneForWhiteBackground(?string $value): string
+    {
+        $tone = self::sanitizeBodyTextTone($value ?? self::DEFAULT_LIGHT_BAND_BODY_TEXT_TONE);
+
+        return match ($tone) {
+            'text-white',
+            'text-zinc-100',
+            'text-zinc-300',
+            'text-brand-500' => self::DEFAULT_LIGHT_BAND_BODY_TEXT_TONE,
+            default => $tone,
+        };
     }
 
     private static function colorChoiceLabel(string $slug): string

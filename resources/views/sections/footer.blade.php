@@ -3,9 +3,8 @@
 
   $newsletterImgId = (int) get_theme_mod(FooterCustomizer::MOD_NEWSLETTER_IMAGE_ID, 0);
   $newsletterAction = FooterCustomizer::newsletterFormAction();
-  // Appearance → Customize (social URLs).
-  $instagramUrl = get_theme_mod('culvers_instagram_url', '');
-  $facebookUrl = get_theme_mod('culvers_facebook_url', '');
+  $instagramUrl = FooterCustomizer::instagramUrl();
+  $facebookUrl = FooterCustomizer::facebookUrl();
 
   // FooterCustomizer string helpers + map link URL.
   $mapUrl = FooterCustomizer::gettingHereMapUrl();
@@ -27,7 +26,7 @@
           'theme_location' => 'footer_brand_subnav',
           'container' => false,
           'menu_class' =>
-              'footer-nav__list footer-nav__list--legal flex flex-wrap items-center justify-center gap-x-4 gap-y-2 whitespace-normal font-sans text-[10px] uppercase leading-snug tracking-[0.08em] text-lighter-cream sm:text-[11px] md:gap-x-8 md:text-micro [&>li]:flex [&>li]:shrink-0 [&>li]:items-center [&>li>a]:inline-flex [&>li>a]:min-h-[2rem] [&>li>a]:items-center [&>li>a]:px-3 [&>li>a]:py-1 md:[&>li>a]:px-5',
+              'footer-nav__list footer-nav__list--legal flex flex-wrap items-center justify-center gap-x-4 gap-y-2 whitespace-normal font-sans text-xs uppercase leading-snug tracking-widest text-lighter-cream md:gap-x-8 [&>li]:flex [&>li]:shrink-0 [&>li]:items-center [&>li>a]:inline-flex [&>li>a]:min-h-[2rem] [&>li>a]:items-center [&>li>a]:px-3 [&>li>a]:py-1 md:[&>li>a]:px-5',
           'fallback_cb' => false,
           'depth' => 1,
           'echo' => false,
@@ -36,7 +35,7 @@
   $footerLegalNavHasItems = str_contains($footerLegalNavHtml, '<li');
 
   $footerLegalFallbackUlClass =
-      'footer-nav__list footer-nav__list--legal flex flex-wrap items-center justify-center gap-x-4 gap-y-2 whitespace-normal font-sans text-[10px] uppercase leading-snug tracking-[0.08em] text-lighter-cream sm:text-[11px] md:gap-x-8 md:text-micro [&>li]:flex [&>li]:shrink-0 [&>li]:items-center [&>li>a]:inline-flex [&>li>a]:min-h-[2rem] [&>li>a]:items-center [&>li>a]:px-3 [&>li>a]:py-1 md:[&>li>a]:px-5';
+      'footer-nav__list footer-nav__list--legal flex flex-wrap items-center justify-center gap-x-4 gap-y-2 whitespace-normal font-sans text-xs uppercase leading-snug tracking-widest text-lighter-cream md:gap-x-8 [&>li]:flex [&>li]:shrink-0 [&>li]:items-center [&>li>a]:inline-flex [&>li>a]:min-h-[2rem] [&>li>a]:items-center [&>li>a]:px-3 [&>li>a]:py-1 md:[&>li>a]:px-5';
 @endphp
 
 {{--
@@ -49,18 +48,20 @@
     footer-link--*       Shared link treatments (e.g. persistent underline).
 
   Layout:
-    `site-footer__columns` uses gutter padding, then `max-w-[1440px]` inner — pair with
+    `site-footer__columns` uses gutter padding, then `max-w-8xl` inner — pair with
     `mega-nav__bar-gutter` / `mega-nav__bar-row` in the header.
 
   Sections (top → bottom): newsletter band → four columns → wordmark → legal row → accent strip.
 --}}
 <footer class="site-footer">
   <div
-    class="site-footer__columns relative overflow-visible bg-faded-olive px-4 pb-4 pt-8 text-light-cream md:px-[46px] md:pb-5 md:pt-10 lg:pb-5 lg:pt-12">
-    <div class="relative z-[1] mx-auto w-full max-w-[1440px]">
-      {{-- Pull up into content area (light bg) and overlap olive below — matches Figma straddle. --}}
+    class="site-footer__columns relative overflow-visible bg-faded-olive px-4 pb-4 pt-8 text-light-cream md:px-12 md:pb-5 md:pt-10 lg:pb-5 lg:pt-12">
+    <div class="relative z-10 mx-auto w-full max-w-8xl">
+      {{-- Newsletter image straddles the white-content/olive-footer boundary ~50/50 (Figma reference is
+           a 374px image with ~46% above the olive band, ~54% inside). Negative `mt` is the only
+           overlap mechanic — the columns sit naturally below the image with `pt-*` for breathing room. --}}
       <section
-        class="footer-newsletter-band relative z-[2] -mt-16 -mb-14 md:-mt-28 md:-mb-16 lg:-mt-36 lg:-mb-20"
+        class="footer-newsletter-band relative z-20 -mt-32 md:-mt-44 lg:-mt-52"
         aria-labelledby="footer-newsletter-heading">
         <div
           class="footer-newsletter relative min-h-[300px] overflow-hidden rounded-lg md:min-h-[380px] md:rounded-[10px] lg:min-h-[420px]"
@@ -95,16 +96,24 @@
           {{-- Mobile: headline above field. Desktop: right column — headline then field. --}}
           <div class="relative z-10 grid grid-cols-1 gap-8 px-6 py-11 md:grid-cols-2 md:items-center md:gap-10 md:px-12 md:py-14 lg:gap-14 lg:px-14 lg:py-16">
             <div class="hidden min-h-[80px] md:block" aria-hidden="true"></div>
-            <div class="flex max-w-full flex-col gap-6 md:max-w-[26rem] md:justify-self-end lg:max-w-[28rem]">
+            <div class="flex max-w-full flex-col gap-6 md:max-w-[26rem] md:justify-self-end lg:max-w-[30rem]">
               <div class="flex flex-col gap-4">
+                @php $headingParts = FooterCustomizer::newsletterHeadingParts(); @endphp
+                {{-- Two-tone headline (Figma): accent words in glowleaf, remainder in white. The
+                     split is data-driven via Customizer (`MOD_NEWSLETTER_HEADING_ACCENT`) so editors
+                     can re-pick which words pop without touching markup. --}}
                 <h2
                   id="footer-newsletter-heading"
-                  class="font-heading text-2xl leading-[1.15] text-lighter-cream md:text-right md:text-3xl lg:text-[34px] lg:leading-[1.12]">
-                  {{ esc_html(FooterCustomizer::newsletterHeading()) }}
+                  class="font-heading text-3xl leading-[1.1] md:text-right md:text-4xl">
+                  @if($headingParts['accent'] !== '')
+                    <span class="text-glowleaf">{{ esc_html($headingParts['accent']) }}</span><span class="text-lighter-cream">{{ esc_html($headingParts['rest']) }}</span>
+                  @else
+                    <span class="text-lighter-cream">{{ esc_html($headingParts['rest']) }}</span>
+                  @endif
                 </h2>
                 @php $newsBody = FooterCustomizer::newsletterBody(); @endphp
                 @if($newsBody !== '')
-                  <p class="font-sans text-base leading-relaxed text-light-cream/88 md:text-right md:text-[17px]">
+                  <p class="font-sans text-lg leading-relaxed text-light-cream/88 md:text-right">
                     {{ esc_html($newsBody) }}
                   </p>
                 @endif
@@ -125,7 +134,7 @@
                     autocomplete="email"
                     placeholder="{{ esc_attr(FooterCustomizer::newsletterPlaceholder()) }}"
                     @if($newsletterAction === null) disabled @endif
-                    class="min-h-[44px] flex-1 border-0 bg-transparent font-sans text-xs font-semibold uppercase tracking-[0.14em] text-lighter-cream placeholder:text-light-cream/50 placeholder:uppercase focus:ring-0 focus:outline-none md:text-sm" />
+                    class="min-h-[44px] flex-1 border-0 bg-transparent font-sans text-xs font-semibold uppercase tracking-widest text-lighter-cream placeholder:text-light-cream/50 placeholder:uppercase focus:ring-0 focus:outline-none md:text-base" />
                   <button
                     type="submit"
                     class="inline-flex size-10 shrink-0 items-center justify-center rounded-full text-white transition-colors hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-40"
@@ -152,21 +161,24 @@
         </div>
       </section>
 
-      {{-- Column menus (What’s Here / Useful Links + address blocks). --}}
-      <div class="relative z-[1] grid grid-cols-1 gap-12 pt-16 sm:grid-cols-2 sm:pt-[4.5rem] lg:grid-cols-4 lg:gap-10 lg:pt-24 xl:gap-14">
+      {{-- Column menus (What’s Here / Useful Links + address blocks). Tight 16-unit padding-top
+           on lg — the newsletter image straddles above via `.footer-newsletter-band`, but the
+           layout spacer in `layouts/app.blade.php` already provides the buffer above the footer,
+           so we don’t need extra breathing room here. --}}
+      <div class="relative z-10 grid grid-cols-1 gap-12 pt-20 sm:grid-cols-2 sm:pt-24 lg:grid-cols-4 lg:gap-10 lg:pt-16 xl:gap-14">
         <div class="flex flex-col">
-          <h2 class="font-heading text-2xl text-lighter-cream">
+          <h2 class="font-heading text-3xl text-lighter-cream">
             {{ esc_html(FooterCustomizer::gettingHereTitle()) }}
           </h2>
           @php $addr = FooterCustomizer::gettingHereAddress(); @endphp
           @if($addr !== '')
-            <div class="mt-6 font-sans text-sm leading-relaxed text-light-cream/85">
+            <div class="mt-6 font-sans text-base leading-relaxed text-light-cream/85">
               {!! nl2br(esc_html($addr)) !!}
             </div>
           @endif
           @if($mapUrl !== '')
             <a
-              class="footer-link--persistent-underline mt-6 inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-[0.14em] text-glowleaf transition-colors hover:text-lighter-cream"
+              class="footer-link--persistent-underline mt-6 inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-widest text-glowleaf transition-colors hover:text-lighter-cream"
               href="{{ esc_url($mapUrl) }}"
               @if(str_starts_with($mapUrl, 'http')) target="_blank" rel="noopener noreferrer" @endif>
               {{ esc_html(FooterCustomizer::gettingHereMapLabel()) }}
@@ -179,7 +191,7 @@
         </div>
 
         <div class="flex flex-col">
-          <h2 class="font-heading text-2xl text-lighter-cream">
+          <h2 class="font-heading text-3xl text-lighter-cream">
             {{ esc_html(FooterCustomizer::contactTitle()) }}
           </h2>
           @php $phone = FooterCustomizer::contactPhone(); @endphp
@@ -192,7 +204,7 @@
           @endif
           @if($contactEmail !== '')
             <a
-              class="footer-link--persistent-underline mt-2 block w-fit font-sans text-sm text-glowleaf transition-colors hover:text-lighter-cream"
+              class="footer-link--persistent-underline mt-2 block w-fit font-sans text-base text-glowleaf transition-colors hover:text-lighter-cream"
               href="{{ esc_url('mailto:' . $contactEmail) }}">
               {{ esc_html($contactEmail) }}
             </a>
@@ -204,7 +216,7 @@
                   class="footer-nav__link-social"
                   href="{{ esc_url($instagramUrl) }}"
                   rel="noopener noreferrer">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.3" />
                     <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.3" />
                     <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" />
@@ -217,7 +229,7 @@
                   class="footer-nav__link-social"
                   href="{{ esc_url($facebookUrl) }}"
                   rel="noopener noreferrer">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                     <path
                       d="M14 8h3V5h-3c-2.2 0-4 1.8-4 4v2H7v3h3v8h3v-8h3.2l.8-3H13v-2c0-.6.4-1 1-1Z" />
                   </svg>
@@ -230,7 +242,7 @@
 
         <div class="contents lg:contents" x-data="footerMenuAccordion()">
           <div class="flex flex-col border-b border-light-cream/25 pb-8 lg:border-0 lg:pb-0">
-            <h2 class="hidden font-heading text-2xl text-lighter-cream lg:block">
+            <h2 class="hidden font-heading text-3xl text-lighter-cream lg:block">
               {{ esc_html(FooterCustomizer::columnOneTitle()) }}
             </h2>
             <button
@@ -240,10 +252,10 @@
               aria-controls="footer-nav-whats-here"
               id="footer-acc-whats-here-trigger"
               x-on:click="toggleWhatsHere()">
-              <span class="font-heading text-2xl leading-snug text-lighter-cream">
+              <span class="font-heading text-3xl leading-snug text-lighter-cream">
                 {{ esc_html(FooterCustomizer::columnOneTitle()) }}
               </span>
-              <span class="mt-0.5 inline-flex min-w-[1.75rem] shrink-0 select-none justify-end font-heading text-3xl font-light leading-none tracking-normal text-lighter-cream lg:hidden" x-text="openWhatsHere ? '\u2212' : '+'" aria-hidden="true"></span>
+              <span class="mt-0.5 inline-flex min-w-[1.75rem] shrink-0 select-none justify-end font-heading text-4xl font-light leading-none tracking-normal text-lighter-cream lg:hidden" x-text="openWhatsHere ? '\u2212' : '+'" aria-hidden="true"></span>
             </button>
             @if($hasFooterMenuWhatsHere)
               <nav
@@ -262,7 +274,7 @@
               </nav>
             @elseif(current_user_can('edit_theme_options'))
               <p
-                class="mt-6 hidden font-sans text-sm text-light-cream/55 lg:block"
+                class="mt-6 hidden font-sans text-base text-light-cream/55 lg:block"
                 x-bind:class="{ '!block': openWhatsHere && !isDesktop }">
                 {{ __('Assign a menu to Appearance → Menus → “Footer column 3 — What’s Here”.', 'culvers') }}
               </p>
@@ -270,7 +282,7 @@
           </div>
 
           <div class="flex flex-col border-b border-light-cream/25 pb-8 lg:border-0 lg:pb-0">
-            <h2 class="hidden font-heading text-2xl text-lighter-cream lg:block">
+            <h2 class="hidden font-heading text-3xl text-lighter-cream lg:block">
               {{ esc_html(FooterCustomizer::columnTwoTitle()) }}
             </h2>
             <button
@@ -280,10 +292,10 @@
               aria-controls="footer-nav-useful-links"
               id="footer-acc-useful-links-trigger"
               x-on:click="toggleUsefulLinks()">
-              <span class="font-heading text-2xl leading-snug text-lighter-cream">
+              <span class="font-heading text-3xl leading-snug text-lighter-cream">
                 {{ esc_html(FooterCustomizer::columnTwoTitle()) }}
               </span>
-              <span class="mt-0.5 inline-flex min-w-[1.75rem] shrink-0 select-none justify-end font-heading text-3xl font-light leading-none tracking-normal text-lighter-cream lg:hidden" x-text="openUsefulLinks ? '\u2212' : '+'" aria-hidden="true"></span>
+              <span class="mt-0.5 inline-flex min-w-[1.75rem] shrink-0 select-none justify-end font-heading text-4xl font-light leading-none tracking-normal text-lighter-cream lg:hidden" x-text="openUsefulLinks ? '\u2212' : '+'" aria-hidden="true"></span>
             </button>
             @if($hasFooterMenuUsefulLinks)
               <nav
@@ -302,7 +314,7 @@
               </nav>
             @elseif(current_user_can('edit_theme_options'))
               <p
-                class="mt-6 hidden font-sans text-sm text-light-cream/55 lg:block"
+                class="mt-6 hidden font-sans text-base text-light-cream/55 lg:block"
                 x-bind:class="{ '!block': openUsefulLinks && !isDesktop }">
                 {{ __('Assign a menu to Appearance → Menus → “Footer column 4 — Useful Links”.', 'culvers') }}
               </p>
@@ -313,7 +325,7 @@
 
       {{-- Wordmark — clip SVG/logo bleed so nothing paints over the legal band below (desktop outline marks can extend past the box). --}}
       <div
-        class="relative z-[1] mt-14 w-full overflow-hidden md:mt-16 lg:mt-20 [&_img]:mx-auto [&_img]:block [&_img]:h-auto [&_img]:w-full [&_img]:max-h-[min(30vw,220px)] [&_img]:max-w-none [&_img]:object-contain [&_svg]:block [&_svg]:h-auto [&_svg]:w-full [&_svg]:max-h-[min(30vw,220px)] [&_svg]:max-w-none">
+        class="relative z-10 mt-14 w-full overflow-hidden md:mt-16 lg:mt-20 [&_img]:mx-auto [&_img]:block [&_img]:h-auto [&_img]:w-full [&_img]:max-h-[min(30vw,220px)] [&_img]:max-w-none [&_img]:object-contain [&_svg]:block [&_svg]:h-auto [&_svg]:w-full [&_svg]:max-h-[min(30vw,220px)] [&_svg]:max-w-none">
         <a
           class="site-footer__logo flex w-full justify-center text-glowleaf"
           href="{{ esc_url(home_url('/')) }}"
@@ -333,11 +345,11 @@
 
       {{-- Rule above legal row — glowleaf like Figma dividers. --}}
       {{-- Avoid overflow-x-auto here: per CSS overflow rules it forces overflow-y away from visible and can clip row text in flex layouts. Stack on small screens instead of horizontal scroll. --}}
-      <div class="footer-under-logo relative z-[15] mt-10 w-full border-t border-glowleaf md:mt-12">
+      <div class="footer-under-logo relative z-20 mt-10 w-full border-t border-glowleaf md:mt-12">
         <div
           class="site-footer__legal-band grid w-full grid-cols-1 gap-y-4 py-6 text-center md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:items-center md:gap-x-6 md:gap-y-0 md:py-7">
           <p
-            class="font-sans text-[10px] uppercase leading-snug tracking-[0.08em] text-lighter-cream sm:text-[11px] md:justify-self-start md:text-left md:text-micro">
+            class="font-sans text-xs uppercase leading-snug tracking-widest text-lighter-cream md:justify-self-start md:text-left">
             &copy;
             {{ esc_html(strtoupper((string) get_bloginfo('name'))) }}
             {{ wp_date('Y') }}
@@ -347,18 +359,17 @@
             @if($footerLegalNavHasItems)
               {!! $footerLegalNavHtml !!}
             @else
+              {{-- Site has no `footer_brand_subnav` menu yet — link directly to the seeded policy pages
+                   so live legal links never depend on the optional WP menu being assigned. --}}
               <ul class="{{ esc_attr($footerLegalFallbackUlClass) }} list-none">
                 <li class="list-none">
-                  <a class="footer-nav__link--legal" href="#">{{ __('Cookie Policy', 'culvers') }}</a>
+                  <a class="footer-nav__link--legal" href="{{ esc_url(home_url('/cookie-policy/')) }}">{{ __('Cookie Policy', 'culvers') }}</a>
                 </li>
                 <li class="list-none">
-                  <a class="footer-nav__link--legal" href="#">{{ __('Accessibility', 'culvers') }}</a>
+                  <a class="footer-nav__link--legal" href="{{ esc_url(home_url('/privacy-policy/')) }}">{{ __('Privacy Policy', 'culvers') }}</a>
                 </li>
                 <li class="list-none">
-                  <a class="footer-nav__link--legal" href="#">{{ __('Privacy Policy', 'culvers') }}</a>
-                </li>
-                <li class="list-none">
-                  <a class="footer-nav__link--legal" href="#">{{ __('Terms & Conditions', 'culvers') }}</a>
+                  <a class="footer-nav__link--legal" href="{{ esc_url(home_url('/terms-and-conditions/')) }}">{{ __('Terms & Conditions', 'culvers') }}</a>
                 </li>
               </ul>
             @endif
@@ -367,7 +378,7 @@
           @php $credit = FooterCustomizer::siteCredit(); @endphp
           @if($credit !== '')
             <p
-              class="font-sans text-[10px] uppercase leading-snug tracking-[0.08em] text-lighter-cream sm:text-[11px] md:justify-self-end md:text-right md:text-micro">
+              class="font-sans text-xs uppercase leading-snug tracking-widest text-lighter-cream md:justify-self-end md:text-right">
               {{ esc_html(strtoupper($credit)) }}
             </p>
           @else
@@ -377,6 +388,7 @@
       </div>
     </div>
   </div>
-  {{-- ~10–12px accent flush to viewport bottom (olive band pb reduced above). --}}
-  <div class="site-footer__accent h-[10px] w-full shrink-0 bg-glowleaf md:h-3" aria-hidden="true"></div>
+  {{-- 10px glowleaf accent at the page bottom (Figma). Fixed height across breakpoints so the
+       border looks identical on every page. Sole source of truth for the page-bottom edge. --}}
+  <div class="site-footer__accent h-[10px] w-full shrink-0 bg-glowleaf" aria-hidden="true"></div>
 </footer>

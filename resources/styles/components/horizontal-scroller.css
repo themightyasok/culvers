@@ -1,16 +1,23 @@
 /**
  * Horizontal Scroller Component
- * Floating mixed-content items: image/video/text/image+text.
+ *
+ * Floating mixed-content items (image / video / text / image+text) on a
+ * GSAP-driven seamless infinite strip with drag, header alignment options,
+ * and an alternate "disable scroll" centred row.
+ *
+ * BEM blocks:
+ *   .horizontal-scroller        — outer section (root)
+ *   .horizontal-scroller-item   — repeating card (sibling block, owns its own elements)
  */
 
-.horizontal-scroller-component {
+.horizontal-scroller {
   @apply flex flex-col overflow-visible;
   /* Fallback gap before CMS inline `--hs-item-gap`; Blade sets px from range slider */
   --hs-item-gap: 1rem;
 }
 
 /* Full-bleed scrolling row (viewport width); header above stays in main grid */
-.horizontal-scroller-strip-breakout {
+.horizontal-scroller__strip-breakout {
   width: 100vw;
   max-width: 100vw;
   margin-left: calc(50% - 50vw);
@@ -18,44 +25,16 @@
 }
 
 /* Kill any horizontal inset on the track so logos meet the viewport edges */
-.horizontal-scroller-strip-breakout .horizontal-scroller-wrapper {
+.horizontal-scroller__strip-breakout .horizontal-scroller__wrapper {
   padding-inline: 0;
   box-sizing: border-box;
 }
 
-.horizontal-scroller-header {
+.horizontal-scroller__header {
   @apply shrink-0 w-full py-6;
 }
 
-.horizontal-scroller-lock-toggle {
-  @apply min-w-12 min-h-7;
-}
-.horizontal-scroller-lock-toggle span[aria-hidden='true'] {
-  @apply bg-white;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-}
-.horizontal-scroller-lock-toggle:focus-visible {
-  @apply outline outline-2 outline-offset-2;
-  outline-color: rgba(255, 255, 255, 0.8);
-}
-
-.horizontal-scroller-drag-hint {
-  @apply flex items-center gap-3.5 mt-2.5;
-}
-
-.horizontal-scroller-drag-icon {
-  @apply inline-block w-6 h-6 bg-current opacity-80 shrink-0;
-  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M5 9l7 7 7-7'/%3E%3C/svg%3E")
-    center/contain no-repeat;
-  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'%3E%3Cpath d='M5 9l7 7 7-7'/%3E%3C/svg%3E")
-    center/contain no-repeat;
-}
-
-.horizontal-scroller-drag-text {
-  @apply m-0 opacity-90;
-}
-
-.horizontal-scroller-wrapper {
+.horizontal-scroller__wrapper {
   @apply w-full overflow-x-hidden overflow-y-visible cursor-grab select-none relative;
   --hs-vertical-safe-area: clamp(24px, 5vh, 56px);
   padding-block: var(--hs-vertical-safe-area);
@@ -65,28 +44,28 @@
 }
 
 /* Padding tab: “Remove vertical padding” — strip safe-area and section pt/pb from Blade */
-.horizontal-scroller-wrapper--no-vertical-padding {
+.horizontal-scroller__wrapper--no-vertical-padding {
   --hs-vertical-safe-area: 0px;
   padding-block: 0;
 }
 
-.horizontal-scroller-wrapper:active {
+.horizontal-scroller__wrapper:active {
   @apply cursor-grabbing;
 }
 
-.horizontal-scroller-wrapper--lenis {
+.horizontal-scroller__wrapper--lenis {
   @apply overflow-x-auto overflow-y-hidden cursor-grab;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
-.horizontal-scroller-wrapper--lenis::-webkit-scrollbar {
+.horizontal-scroller__wrapper--lenis::-webkit-scrollbar {
   @apply hidden;
 }
-.horizontal-scroller-component--lenis .horizontal-scroller-container {
+.horizontal-scroller--lenis .horizontal-scroller__container {
   will-change: auto;
   transform: none;
 }
-.horizontal-scroller-component .horizontal-scroller-container {
+.horizontal-scroller .horizontal-scroller__container {
   @apply w-max flex items-start p-0 select-none cursor-grab;
   gap: var(--hs-item-gap);
   pointer-events: auto;
@@ -95,7 +74,7 @@
   transform: translateZ(0);
 }
 
-.horizontal-scroller-component .horizontal-scroller-container.is-dragging {
+.horizontal-scroller .horizontal-scroller__container.is-dragging {
   @apply cursor-grabbing;
 }
 
@@ -157,7 +136,7 @@
 
 /* Wider frame than 16:9 so logo/media tiles read shorter */
 .horizontal-scroller-item--ratio-landscape .horizontal-scroller-item__media {
-  aspect-ratio: 5 / 2;
+  @apply aspect-[5/2];
 }
 
 .horizontal-scroller-item--ratio-tall .horizontal-scroller-item__media {
@@ -175,8 +154,7 @@
 }
 
 .horizontal-scroller-item__copy {
-  @apply flex flex-col p-8;
-  gap: 0.4rem;
+  @apply flex flex-col gap-1.5 p-8;
 }
 
 .horizontal-scroller-item__heading {
@@ -195,41 +173,41 @@
   @apply min-h-32;
 }
 
-.horizontal-scroller-component--lenis .horizontal-scroller-item {
+.horizontal-scroller--lenis .horizontal-scroller-item {
   will-change: transform, opacity;
 }
 
-.horizontal-scroller-component--reduced-motion .horizontal-scroller-wrapper {
+.horizontal-scroller--reduced-motion .horizontal-scroller__wrapper {
   @apply overflow-x-auto overflow-y-hidden cursor-default;
   padding-block: 0;
 }
 
-.horizontal-scroller-component--reduced-motion .horizontal-scroller-container {
+.horizontal-scroller--reduced-motion .horizontal-scroller__container {
   transform: none !important;
   will-change: auto;
   @apply touch-pan-x cursor-default;
 }
 
-.horizontal-scroller-component--reduced-motion .horizontal-scroller-item {
+.horizontal-scroller--reduced-motion .horizontal-scroller-item {
   @apply !mt-0;
 }
 
-/* CMS "Disable scroll": centered row, no GSAP / infinite loop */
-.horizontal-scroller-component--disable-scroll .horizontal-scroller-wrapper {
+/* CMS "Disable scroll": centred row, no GSAP / infinite loop */
+.horizontal-scroller--disable-scroll .horizontal-scroller__wrapper {
   @apply overflow-visible cursor-default max-lg:px-4;
 }
 
 /* Full-bleed strip wins over disable-scroll gutter padding */
-.horizontal-scroller-component--disable-scroll
-  .horizontal-scroller-strip-breakout
-  .horizontal-scroller-wrapper {
+.horizontal-scroller--disable-scroll
+  .horizontal-scroller__strip-breakout
+  .horizontal-scroller__wrapper {
   @apply px-0;
 }
 
-.horizontal-scroller-component--disable-scroll .horizontal-scroller-wrapper:active {
+.horizontal-scroller--disable-scroll .horizontal-scroller__wrapper:active {
   @apply cursor-default;
 }
-.horizontal-scroller-component--disable-scroll .horizontal-scroller-container {
+.horizontal-scroller--disable-scroll .horizontal-scroller__container {
   @apply w-full max-w-full flex flex-wrap justify-center items-start;
   gap: var(--hs-item-gap);
   transform: none !important;
@@ -239,37 +217,11 @@
   user-select: auto;
   -webkit-user-select: auto;
 }
-.horizontal-scroller-component--disable-scroll .horizontal-scroller-container.is-dragging {
+.horizontal-scroller--disable-scroll .horizontal-scroller__container.is-dragging {
   @apply cursor-default;
 }
-.horizontal-scroller-component--disable-scroll .horizontal-scroller-item {
+.horizontal-scroller--disable-scroll .horizontal-scroller-item {
   @apply mt-0;
-}
-
-/* --static-mobile class is no longer added in JS; rules kept for any legacy markup / reduced-motion scroll fallback. */
-@media (max-width: 1023px) {
-  .horizontal-scroller-component--static-mobile .horizontal-scroller-header {
-    @apply mb-16;
-  }
-
-  .horizontal-scroller-component--static-mobile .horizontal-scroller-wrapper {
-    @apply overflow-x-auto overflow-y-hidden cursor-default;
-    padding-block: 0;
-  }
-
-  .horizontal-scroller-component--static-mobile .horizontal-scroller-container {
-    @apply py-3 px-5 w-max touch-pan-x cursor-default;
-    gap: var(--hs-item-gap);
-    scroll-snap-type: x mandatory;
-    transform: none;
-    will-change: auto;
-  }
-
-  .horizontal-scroller-component--static-mobile .horizontal-scroller-item {
-    min-width: calc((100vw - 40px) / 1.55);
-    width: calc((100vw - 40px) / 1.55);
-    @apply max-w-[280px] snap-start mt-0;
-  }
 }
 
 @media (max-width: 768px) {

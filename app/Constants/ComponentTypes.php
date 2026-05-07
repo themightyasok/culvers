@@ -36,9 +36,9 @@ class ComponentTypes
     public const BACKGROUND_VIDEO = 'video';
 
     /**
-     * Get valid display types
+     * Get valid display types.
      *
-     * @return array
+     * @return list<string>
      */
     public static function getDisplayTypes(): array
     {
@@ -50,9 +50,9 @@ class ComponentTypes
     }
 
     /**
-     * Get valid width options
+     * Get valid width options.
      *
-     * @return array
+     * @return list<string>
      */
     public static function getWidthOptions(): array
     {
@@ -67,9 +67,9 @@ class ComponentTypes
     }
 
     /**
-     * Get valid padding options
+     * Get valid padding options.
      *
-     * @return array
+     * @return list<string>
      */
     public static function getPaddingOptions(): array
     {
@@ -84,9 +84,9 @@ class ComponentTypes
     }
 
     /**
-     * Get valid background types
+     * Get valid background types.
      *
-     * @return array
+     * @return list<string>
      */
     public static function getBackgroundTypes(): array
     {

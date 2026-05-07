@@ -1,35 +1,58 @@
 @php
+  use App\Helpers\Component;
+  use App\Helpers\Image;
   use App\Helpers\LayoutShell;
-  use App\Helpers\Padding;
   use App\Helpers\ThreeCardBlock;
 
-  $c = ThreeCardBlock::applyEditorFallback($component ?? []);
-  $padding = Padding::getClasses($c);
-  $grid = $c['_grid_classes'] ?? '';
+  /**
+   * Three card block — manual cards or category-tabbed blog cards (1–3 cells).
+   * First-frame video preview swaps to playback on hover; reduced-motion safe.
+   * Heading defaults to H2 but the editor can promote to H1 when used as the
+   * page heading on a long-form landing.
+   */
 
-  $level = isset($c['block_heading_level']) ? (int) $c['block_heading_level'] : 2;
-  if ($level < 1 || $level > 6) {
-      $level = 2;
-  }
-  $headingTag = 'h' . $level;
+  $c = is_array($component ?? null) ? $component : [];
+  $c = ThreeCardBlock::applyEditorFallback($c);
+  $root = Component::rootClasses($c);
+  $headingTag = Component::headingTag($c['cards_heading_level'] ?? null);
 
   $tabs = ThreeCardBlock::buildTabPanels($c);
   $showTabs = count($tabs) > 1;
 
-  $heading = trim((string) ($c['block_heading'] ?? ''));
-  $sub = trim((string) ($c['block_subheading'] ?? ''));
-  $body = (string) ($c['block_body'] ?? '');
+  $heading = trim((string) ($c['cards_heading'] ?? ''));
+  $sub = trim((string) ($c['cards_subheading'] ?? ''));
+  $body = (string) ($c['cards_body'] ?? '');
 
-  $source = (string) ($c['cards_source'] ?? 'manual');
-  $viewAllUrl = trim((string) ($c['blog_view_all_url'] ?? ''));
-  $viewAllLabel = trim((string) ($c['blog_view_all_label'] ?? ''));
+  /* Resolve via helper so CPT mode auto-targets the chosen archive URL
+     (e.g. Latest Events strip on /whats-on/ links to /latest-events/
+     with no editor wiring). Manual + blog modes still honour the explicit URL. */
+  $viewAllUrl = ThreeCardBlock::viewAllUrl($c);
+  $viewAllLabel = trim((string) ($c['cards_view_all_label'] ?? ''));
   if ($viewAllLabel === '') {
       $viewAllLabel = __('View all', 'culvers');
   }
+
+  $hasIntro = $heading !== '' || $sub !== '' || trim(strip_tags($body)) !== '';
+  $hasCards = false;
+  foreach ($tabs as $tab) {
+      $tabCards = $tab['cards'] ?? [];
+      if (is_array($tabCards) && $tabCards !== []) {
+          $hasCards = true;
+          break;
+      }
+  }
 @endphp
 
+@if(! $hasIntro && ! $hasCards)
+  @if(current_user_can('edit_posts'))
+    @include('partials.component-editor-placeholder', [
+        'wrapperClasses' => $root,
+        'message' => __('Add cards or a heading to this block.', 'culvers'),
+    ])
+  @endif
+@else
 <section
-  class="{{ esc_attr(trim($grid . ' ' . $padding)) }} relative z-[20] text-deep-moss"
+  class="three-card-block {{ esc_attr($root) }} relative z-20 text-deep-moss"
   data-component-root
   data-three-card-block
   x-data="threeCardBlock()">
@@ -37,20 +60,21 @@
     @if($heading !== '' || $sub !== '' || $body !== '')
       <header class="mx-auto max-w-[52rem] px-1 text-center md:px-4">
         @if($heading !== '')
-          <{{ $headingTag }} class="font-heading text-4xl leading-[1.12] tracking-tight text-deep-moss md:text-5xl lg:text-[3.25rem]">
+          {{-- Figma Desktop/Titles/H1: Canela 84px / lh 1 · Faded Olive (e.g. “Fun for…”, “What are you…”). --}}
+          <{{ $headingTag }} class="font-heading text-7xl leading-none tracking-tight text-faded-olive md:text-8xl">
             {{ esc_html($heading) }}
           </{{ $headingTag }}>
         @endif
 
         @if($sub !== '')
-          <p class="mt-4 font-sans text-micro uppercase tracking-label text-deep-moss md:text-xs">
+          <p class="mt-4 font-sans text-xs uppercase tracking-widest text-faded-olive md:text-xs">
             {{ esc_html($sub) }}
           </p>
         @endif
 
         @if($body !== '')
           <div
-            class="three-card-block__intro prose prose-lg mx-auto mt-6 max-w-[46rem] text-left md:text-center text-deep-moss prose-headings:text-deep-moss prose-p:text-deep-moss prose-li:text-deep-moss prose-strong:text-deep-moss [&_a]:text-deep-moss [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 hover:[&_a]:decoration-deep-moss">
+            class="three-card-block__intro prose prose-lg mx-auto mt-6 max-w-[36.75rem] text-left font-light md:text-center text-deep-moss prose-headings:text-deep-moss prose-p:font-sans prose-p:text-xl prose-p:font-light prose-li:text-deep-moss prose-strong:text-deep-moss [&_a]:text-deep-moss [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 hover:[&_a]:decoration-deep-moss">
             {!! $body !!}
           </div>
         @endif
@@ -61,16 +85,21 @@
       <div
         class="mt-10 flex flex-wrap items-center justify-center gap-3 md:mt-12 md:gap-4"
         role="tablist"
-        aria-label="{{ esc_attr__('Filter stories', 'culvers') }}">
+        aria-label="{{ esc_attr__('Filter stories', 'culvers') }}"
+        x-on:keydown.right.prevent="selectTab((activeTab + 1) % {{ count($tabs) }}, true)"
+        x-on:keydown.left.prevent="selectTab((activeTab - 1 + {{ count($tabs) }}) % {{ count($tabs) }}, true)"
+        x-on:keydown.home.prevent="selectTab(0, true)"
+        x-on:keydown.end.prevent="selectTab({{ count($tabs) - 1 }}, true)">
         @foreach($tabs as $index => $tab)
-          @php $tid = 'three-card-tab-' . $index; @endphp
+          @php $tid = 'three-card-tab-' . $index; $pid = 'three-card-panel-' . $index; @endphp
           <button
             type="button"
-            class="three-card-block__tab rounded-full border border-deep-moss px-5 py-2 font-sans text-micro font-semibold uppercase tracking-label text-deep-moss transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-deep-moss md:px-7 md:py-2.5 md:text-xs"
+            class="three-card-block__tab rounded-full border border-deep-moss px-5 py-2 font-sans text-xs font-semibold uppercase tracking-widest text-deep-moss transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-deep-moss md:px-7 md:py-2.5 md:text-xs"
             id="{{ esc_attr($tid) }}"
             role="tab"
-            aria-selected="{{ $index === 0 ? 'true' : 'false' }}"
-            tabindex="{{ $index === 0 ? '0' : '-1' }}"
+            aria-controls="{{ esc_attr($pid) }}"
+            x-bind:aria-selected="activeTab === {{ $index }} ? 'true' : 'false'"
+            x-bind:tabindex="activeTab === {{ $index }} ? 0 : -1"
             x-bind:class="{ 'border-transparent bg-glowleaf text-deep-moss': activeTab === {{ $index }}, 'bg-transparent hover:bg-light-cream/60': activeTab !== {{ $index }} }"
             x-on:click="selectTab({{ $index }})">
             {{ esc_html($tab['label']) }}
@@ -84,7 +113,9 @@
         class="mt-10 md:mt-14"
         x-show="activeTab === {{ $index }}"
         x-cloak
+        id="three-card-panel-{{ $index }}"
         role="tabpanel"
+        tabindex="0"
         @if($showTabs) aria-labelledby="{{ 'three-card-tab-' . $index }}" @endif>
         @php $cards = $tab['cards'] ?? []; @endphp
         @if($cards !== [])
@@ -93,7 +124,7 @@
             Row width aligns with main 1440 inner (~1272px content) so proportions match design, not isolated tokens on each card.
           --}}
           <div
-            class="three-card-block__grid mx-auto grid w-full max-w-[1272px] grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-3">
+            class="three-card-block__grid mx-auto grid w-full max-w-7xl grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-3">
             @foreach($cards as $card)
               @php
                 $href = trim((string) ($card['url'] ?? ''));
@@ -133,25 +164,24 @@
                       </span>
                     @elseif($imageUrl !== '')
                       <span class="relative z-0 block h-full min-h-0 w-full" data-background-parallax-image="1">
-                        <img
-                          class="three-card-block__media absolute inset-0 h-full w-full object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:ease-out motion-safe:group-hover/card:scale-[1.08] motion-safe:group-focus-within/card:scale-[1.08] motion-reduce:group-hover/card:scale-100 motion-reduce:group-focus-within/card:scale-100"
-                          src="{{ esc_url($imageUrl) }}"
-                          alt="{{ esc_attr($alt) }}"
-                          loading="lazy"
-                          decoding="async"
-                          width="800"
-                          height="1200" />
+                        {!! Image::render($image, [
+                            'class' => 'three-card-block__media absolute inset-0 h-full w-full object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:ease-out motion-safe:group-hover/card:scale-[1.08] motion-safe:group-focus-within/card:scale-[1.08] motion-reduce:group-hover/card:scale-100 motion-reduce:group-focus-within/card:scale-100',
+                            'alt' => $alt,
+                            'width' => 800,
+                            'height' => 1200,
+                        ]) !!}
                       </span>
                     @else
                       <span class="block h-full w-full bg-gradient-to-br from-dustleaf/40 via-deep-moss/25 to-faded-olive/35"></span>
                     @endif
 
                     <span
-                      class="pointer-events-none absolute inset-0 z-[1] bg-gradient-to-t from-black/72 via-black/25 to-transparent"></span>
+                      class="pointer-events-none absolute inset-0 z-10 bg-gradient-to-t from-black/72 via-black/25 to-transparent"></span>
                   </span>
 
+                  {{-- Figma: video strip labels ~46px → text-4xl; image/blog overlays H3 40px → text-3xl. --}}
                   <span
-                    class="relative z-10 flex w-full flex-1 items-center justify-center px-6 py-10 text-center font-heading text-2xl leading-snug text-white md:text-3xl lg:text-[2rem]">
+                    class="{{ ($mediaType === 'video' && $videoUrl !== '') ? 'text-5xl' : 'text-4xl' }} relative z-10 flex w-full flex-1 items-center justify-center px-6 py-10 text-center font-heading text-white">
                     {{ esc_html($title) }}
                   </span>
                 </a>
@@ -169,3 +199,4 @@
     @endif
   </div>
 </section>
+@endif

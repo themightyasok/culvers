@@ -24,6 +24,9 @@ add_action('init', static function (): void {
 
 add_action('init', static function (): void {
     Directory\ShopTaxonomySeeder::maybeSeed();
+    Directory\EatDrinkTaxonomySeeder::maybeSeed();
+    Directory\EventTaxonomySeeder::maybeSeed();
+    Directory\CareerTaxonomySeeder::maybeSeed();
 }, 15);
 
 add_action('init', static function (): void {
@@ -46,6 +49,17 @@ add_action('init', static function (): void {
     Nav\CulverSquareFigmaFooterMenus::maybeInstall();
 }, 122);
 
+// Wire the rest of the mega-menu branches (Eat & Drink, Plan my visit, what's on,
+// Guest Services) and the three footer locations to live URLs once their target
+// pages exist. Both syncs are idempotent and version-gated.
+add_action('init', static function (): void {
+    Nav\PrimaryNavLinkSync::maybeSync();
+}, 127);
+
+add_action('init', static function (): void {
+    Nav\FooterNavLinkSync::maybeSync();
+}, 128);
+
 add_action('init', static function (): void {
     Legal\PolicyPageInstaller::maybeSeed();
 }, 40);
@@ -53,17 +67,23 @@ add_action('init', static function (): void {
 add_action('customize_register', static function (\WP_Customize_Manager $wp_customize): void {
     Customizer\SiteShortcutsCustomizer::register($wp_customize);
     Customizer\FooterCustomizer::register($wp_customize);
+    Customizer\GoogleMapsCustomizer::register($wp_customize);
+});
+
+add_action('rest_api_init', static function (): void {
+    Travel\TravelCalculatorEndpoint::register();
+    Contact\ContactFormEndpoint::register();
 });
 
 add_filter('culvers_default_full_width_components', static function (array $layouts): array {
     $layouts[] = 'hero_slider';
-    $layouts[] = 'shop_image_hero';
+    $layouts[] = 'image_hero';
 
     return $layouts;
 });
 
 add_filter('culvers_full_width_components', static function (array $layouts): array {
-    $layouts[] = 'shop_image_hero';
+    $layouts[] = 'image_hero';
 
     return $layouts;
 });
@@ -114,20 +134,17 @@ add_filter(
     static function (array $atts, \WP_Post $unused_item, mixed $args, int $unused_depth): array {
         unset($unused_item, $unused_depth);
         $loc = '';
-        if (is_object($args) && isset($args->theme_location)) {
-            $loc = (string) $args->theme_location;
+        if (is_object($args) && isset($args->theme_location) && is_string($args->theme_location)) {
+            $loc = $args->theme_location;
         }
         if ($loc === '' || ! str_starts_with($loc, 'footer')) {
             return $atts;
         }
 
-        if ($loc === 'footer_brand_subnav') {
-            $extra = 'footer-nav__link--legal';
-        } else {
-            $extra = 'footer-nav__link';
-        }
+        $extra = $loc === 'footer_brand_subnav' ? 'footer-nav__link--legal' : 'footer-nav__link';
 
-        $atts['class'] = isset($atts['class']) ? trim($atts['class'] . ' ' . $extra) : $extra;
+        $existingClass = isset($atts['class']) && is_string($atts['class']) ? $atts['class'] : '';
+        $atts['class'] = $existingClass !== '' ? trim($existingClass . ' ' . $extra) : $extra;
 
         return $atts;
     },

@@ -21,15 +21,14 @@ class ComponentException extends \Exception
     }
 
     /**
-     * Create exception for invalid component configuration
+     * Create exception for invalid component configuration.
      *
-     * @param string $componentName Component name
-     * @param array $errors Validation errors
-     * @return self
+     * @param list<string> $errors Validation errors
      */
     public static function invalid(string $componentName, array $errors): self
     {
         $message = "Component '{$componentName}' has invalid configuration: " . implode(', ', $errors);
+
         return new self($message);
     }
 

@@ -1,30 +1,42 @@
 @php
-  use App\Helpers\Padding;
-  use App\Helpers\TailwindColors;
+  use App\Helpers\Component;
+
+  /**
+   * Content section — heading + rich body inside the inherited grid gutters.
+   * Lives on long-form/policy pages where it can host the page H1.
+   * No inner shell: keeps the grid gutters as the section frame.
+   */
 
   $c = is_array($component ?? null) ? $component : [];
-  $padding = Padding::getClasses($c);
-  $tone = TailwindColors::sanitizeBodyTextTone($c['body_text_tone'] ?? null);
-  $grid = $c['_grid_classes'] ?? '';
-
-  $level = isset($c['heading_semantic_level']) ? (int) $c['heading_semantic_level'] : 2;
-  if ($level < 1 || $level > 6) {
-      $level = 2;
-  }
-  $headingTag = 'h' . $level;
+  $root = Component::rootClasses($c, stripGutters: false);
+  $tone = Component::bodyTextTone($c);
+  $headingTag = Component::headingTag($c['content_heading_level'] ?? null);
+  $heading = trim((string) ($c['content_heading'] ?? ''));
+  $body = (string) ($c['content_body'] ?? '');
+  $hasContent = $heading !== '' || trim(strip_tags($body)) !== '';
 @endphp
 
-<section class="{{ esc_attr(trim($grid . ' ' . $padding)) }} relative text-deep-moss" data-component-root data-content-section>
-  @if(! empty($c['heading']))
-    <{{ $headingTag }} class="mb-4 font-heading text-3xl font-semibold tracking-tight md:text-4xl">
-      {{ esc_html($c['heading']) }}
+@if($hasContent)
+<section
+  class="content-section {{ esc_attr($root) }} relative text-deep-moss"
+  data-component-root
+  data-content-section>
+  @if($heading !== '')
+    <{{ $headingTag }} class="content-section__heading mb-4 font-heading text-4xl font-semibold tracking-tight md:text-5xl">
+      {{ esc_html($heading) }}
     </{{ $headingTag }}>
   @endif
 
-  @if(! empty($c['body']))
+  @if(trim(strip_tags($body)) !== '')
     <div
-      class="prose prose-lg max-w-none text-deep-moss prose-headings:text-deep-moss prose-p:text-deep-moss prose-li:text-deep-moss prose-strong:text-deep-moss [&_a]:text-deep-moss [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 hover:[&_a]:decoration-deep-moss {{ esc_attr($tone) }}">
-      {!! $c['body'] !!}
+      class="content-section__body prose prose-lg max-w-none text-deep-moss prose-headings:text-deep-moss prose-p:text-deep-moss prose-li:text-deep-moss prose-strong:text-deep-moss [&_a]:text-deep-moss [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 hover:[&_a]:decoration-deep-moss {{ esc_attr($tone) }}">
+      {!! $body !!}
     </div>
   @endif
 </section>
+@elseif(current_user_can('edit_posts'))
+@include('partials.component-editor-placeholder', [
+    'wrapperClasses' => $root,
+    'message' => __('Add a heading or body copy to this content section.', 'culvers'),
+])
+@endif

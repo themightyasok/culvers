@@ -1,16 +1,16 @@
 /**
- * Alpine component: `x-data="siteHeader"` on `.site-header` (see `sections/header.blade.php`).
+ * Site header — mega menu, site search, scroll-driven shell, header offset CSS var.
  *
  * Responsibilities:
- *   Mega menu open/close (hover + click), preview image swaps, body class `mega-open` (scroll lock).
- *   Site search UI + debounced REST fetch.
- *   Scroll threshold → `headerScrolled` (full-width bar) + optional entrance reveal.
- *   Sync `--site-header-offset` on `<html>` so `#smooth-wrapper` padding clears the fixed bar.
+ *   - Mega menu open/close (hover + click), preview image swaps, body class `mega-open` (scroll lock).
+ *   - Site search UI + debounced REST fetch.
+ *   - Scroll threshold → `headerScrolled` (full-width bar) + optional entrance reveal.
+ *   - Sync `--site-header-offset` on `<html>` so `#smooth-wrapper` padding clears the fixed bar.
  *
- * Private fields use a leading underscore (`_megaHoverCloseTimer`, …).
+ * Convention: private fields use a leading underscore (`_megaHoverCloseTimer`, …).
+ *
+ * @param {import('alpinejs').Alpine} Alpine
  */
-
-/** @param {import('alpinejs').Alpine} Alpine */
 
 const HEADER_SCROLL_FULL_WIDTH_AT = 50;
 /** Lets `mouseenter` on bridge/panel win over `mouseleave` ordering on the nav wrapper. */
@@ -210,7 +210,7 @@ export default function registerSiteHeaderAlpine(Alpine) {
             const title = itemTitle(item);
             const href = typeof item.url === 'string' ? item.url : '#';
 
-            return `<a class="block py-2 font-sans text-lg text-faded-olive hover:text-deep-moss focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-faded-olive" href="${escapeHtml(href)}">${highlightMatch(title, query)}</a>`;
+            return `<a class="block py-2 font-sans text-xl text-faded-olive hover:text-deep-moss focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-faded-olive" href="${escapeHtml(href)}">${highlightMatch(title, query)}</a>`;
           })
           .join('');
         this.searchResultsVisible = true;

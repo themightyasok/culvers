@@ -14,7 +14,7 @@ use App\Exceptions\FieldException;
  */
 class FieldValidator
 {
-    /** @var array<string> Valid ACF field types */
+    /** @var list<string> Valid ACF field types */
     private readonly array $validTypes;
 
     public function __construct()
@@ -69,10 +69,10 @@ class FieldValidator
     }
 
     /**
-     * Validate all fields in a component configuration
+     * Validate all fields in a component configuration.
      *
-     * @param array<string, array> $fields Array of field configurations
-     * @return array<string> Array of validation error messages (empty if all valid)
+     * @param array<string, array<string, mixed>> $fields Array of field configurations
+     * @return list<string> Array of validation error messages (empty if all valid)
      */
     public function validateComponent(array $fields): array
     {

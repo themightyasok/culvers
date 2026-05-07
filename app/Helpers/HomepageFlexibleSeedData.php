@@ -120,17 +120,17 @@ final class HomepageFlexibleSeedData
 
         return array_merge(self::base('three_card_block'), [
             'cards_source' => 'manual',
-            'block_heading' => __('Fun for the whole family', 'culvers'),
-            'block_subheading' => '',
-            'block_heading_level' => '2',
-            'block_body' => sprintf(
+            'cards_heading' => __('Fun for the whole family', 'culvers'),
+            'cards_subheading' => '',
+            'cards_heading_level' => '2',
+            'cards_body' => sprintf(
                 '<p>%s</p>',
                 esc_html__(
                     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
                     'culvers'
                 )
             ),
-            'three_cards' => [
+            'cards_items' => [
                 [
                     'card_title' => __('Shop', 'culvers'),
                     'card_url' => home_url('/shopping/'),
@@ -183,40 +183,45 @@ final class HomepageFlexibleSeedData
                 'item_size' => 'medium',
                 'item_vertical_offset' => 'center',
                 'item_aspect_ratio' => 'landscape',
-                'image' => ['url' => $logo['url'], 'alt' => $logo['alt']],
-                'image_alt_text' => $logo['alt'],
+                'item_image' => ['url' => $logo['url'], 'alt' => $logo['alt']],
+                'item_image_alt' => $logo['alt'],
             ];
         }
 
         return array_merge(self::base('horizontal_scroller'), [
-            'background_type' => ComponentTypes::BACKGROUND_COLOR,
-            'background_color' => '#ededeb',
-            'header_text_alignment' => 'center',
-            'header_alignment' => 'middle',
-            'header_text_color' => 'text-deep-moss',
-            'header_text_size' => 'text-6xl',
-            'subheading_text_color' => 'text-deep-moss',
-            'body_text_color' => 'text-deep-moss',
-            'intro_flush_to_content' => true,
-            'scroll_strip_item_spacing' => 560,
-            'button_variant' => 'primary',
-            'button_show_arrow' => true,
-            'header_text' => sprintf('<p>%s</p>', esc_html__('Home to great brands', 'culvers')),
-            'subheading_text' => '',
-            'body_text' => sprintf(
+            // Strip sits on the page white — no coloured band, no texture.
+            'background_type' => ComponentTypes::BACKGROUND_NONE,
+            'scroller_header_text_alignment' => 'center',
+            'scroller_header_alignment' => 'middle',
+            'scroller_header_text_color' => 'text-faded-olive',
+            'scroller_header_text_size' => 'text-8xl',
+            'scroller_header_text_weight' => 'font-normal',
+            'scroller_subheading_text_color' => 'text-deep-moss',
+            'scroller_body_text_color' => 'text-deep-moss',
+            'scroller_body_text_weight' => 'font-light',
+            'scroller_intro_flush' => true,
+            // Tight gap between brand logos (was 560 — far too loose). Editors
+            // can re-tune in WP-Admin via Home → Horizontal scroller → Space
+            // between strip items if a different rhythm is needed.
+            'scroller_item_spacing' => 80,
+            'scroller_button_variant' => 'primary',
+            'scroller_button_show_arrow' => true,
+            'scroller_header_text' => sprintf('<p>%s</p>', esc_html__('Home to great brands', 'culvers')),
+            'scroller_subheading_text' => '',
+            'scroller_body_text' => sprintf(
                 '<p>%s</p>',
                 esc_html__(
                     'We are the home to some of the biggest names in fashion, alongside a range of dining and entertainment options in Colchester.',
                     'culvers'
                 )
             ),
-            'button_text' => __('View all', 'culvers'),
-            'button_link' => [
+            'scroller_button_text' => __('View all', 'culvers'),
+            'scroller_button_link' => [
                 'url' => home_url('/shopping/'),
                 'title' => '',
                 'target' => '',
             ],
-            'scroll_cards' => $scrollCards,
+            'scroller_items' => $scrollCards,
         ]);
     }
 
@@ -226,9 +231,9 @@ final class HomepageFlexibleSeedData
     private static function videoBlockRow(): array
     {
         return array_merge(self::base('video_block'), [
-            'video' => ['url' => self::DEMO_VIDEO_MP4, 'mime_type' => 'video/mp4'],
-            'poster' => ['url' => self::FIGMA_VIDEO_POSTER, 'alt' => __('Video preview', 'culvers')],
-            'play_button_label' => __('Play video', 'culvers'),
+            'video_file' => ['url' => self::DEMO_VIDEO_MP4, 'mime_type' => 'video/mp4'],
+            'video_poster' => ['url' => self::FIGMA_VIDEO_POSTER, 'alt' => __('Video preview', 'culvers')],
+            'video_play_label' => __('Play video', 'culvers'),
         ]);
     }
 
@@ -238,10 +243,10 @@ final class HomepageFlexibleSeedData
     private static function infoBlockRow(): array
     {
         return array_merge(self::base('info_block'), [
-            'heading' => __('A glimpse of what we have to offer', 'culvers'),
-            'heading_semantic_level' => '2',
-            'subheading' => '',
-            'body' => sprintf(
+            'info_heading' => __('A glimpse of what we have to offer', 'culvers'),
+            'info_heading_level' => '2',
+            'info_subheading' => '',
+            'info_body' => sprintf(
                 '<p>%s</p>',
                 esc_html__(
                     'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
@@ -250,17 +255,33 @@ final class HomepageFlexibleSeedData
             ),
             'info_cta_label' => __('Plan my visit', 'culvers'),
             'info_cta_url' => home_url('/visit/'),
-            'info_items' => [
-                ['item_heading' => __('5 places', 'culvers'), 'item_description' => __('to Eat & Drink', 'culvers'), 'item_image' => null],
-                ['item_heading' => __('Fab Fashion', 'culvers'), 'item_description' => __('find your newest look', 'culvers'), 'item_image' => null],
-                ['item_heading' => __('11 Min Walk', 'culvers'), 'item_description' => __('from Colchester station', 'culvers'), 'item_image' => null],
-                ['item_heading' => __('Fun For All', 'culvers'), 'item_description' => __('pop-up family events', 'culvers'), 'item_image' => null],
-                ['item_heading' => __('36 mins', 'culvers'), 'item_description' => __('train journey from ipswich', 'culvers'), 'item_image' => null],
-                ['item_heading' => __('Sweet Tooth?', 'culvers'), 'item_description' => __('We’ve got you covered', 'culvers'), 'item_image' => null],
-                ['item_heading' => __('Pet Friendly', 'culvers'), 'item_description' => __('well behaved ones!', 'culvers'), 'item_image' => null],
-                ['item_heading' => __('But First, Coffee', 'culvers'), 'item_description' => __('and a catch up', 'culvers'), 'item_image' => null],
-            ],
+            'info_items' => self::infoBlockItems(),
         ]);
+    }
+
+    /**
+     * Eight stat tiles for the homepage info block. Item icons are intentionally
+     * left as `null` here — the editor uploads the final Figma SVGs in WP Admin
+     * (Pages → Home → Info Block). Returning `null` keeps the populate script
+     * idempotent (no broken assets re-imported each run) without erasing any
+     * icons an editor has already attached: `update_field()` writes new rows,
+     * but the picker on each row still resolves whatever attachment ID is saved
+     * in post meta if the editor has set one in the admin.
+     *
+     * @return list<array<string, mixed>>
+     */
+    private static function infoBlockItems(): array
+    {
+        return [
+            ['item_heading' => __('5 places', 'culvers'),         'item_description' => __('to Eat & Drink', 'culvers'),       'item_image' => null],
+            ['item_heading' => __('Fab Fashion', 'culvers'),      'item_description' => __('find your newest look', 'culvers'),'item_image' => null],
+            ['item_heading' => __('11 Min Walk', 'culvers'),      'item_description' => __('from Colchester station', 'culvers'),'item_image' => null],
+            ['item_heading' => __('Fun For All', 'culvers'),      'item_description' => __('pop-up family events', 'culvers'),  'item_image' => null],
+            ['item_heading' => __('36 mins', 'culvers'),          'item_description' => __('train journey from ipswich', 'culvers'),'item_image' => null],
+            ['item_heading' => __('Sweet Tooth?', 'culvers'),     'item_description' => __('We’ve got you covered', 'culvers'),'item_image' => null],
+            ['item_heading' => __('Pet Friendly', 'culvers'),     'item_description' => __('well behaved ones!', 'culvers'),   'item_image' => null],
+            ['item_heading' => __('But First, Coffee', 'culvers'),'item_description' => __('and a catch up', 'culvers'),       'item_image' => null],
+        ];
     }
 
     /**
@@ -275,11 +296,11 @@ final class HomepageFlexibleSeedData
 
         return array_merge(self::base('three_card_block'), [
             'cards_source' => 'manual',
-            'block_heading' => __('What are you looking for today?', 'culvers'),
-            'block_subheading' => '',
-            'block_heading_level' => '2',
-            'block_body' => '',
-            'three_cards' => [
+            'cards_heading' => __('What are you looking for today?', 'culvers'),
+            'cards_subheading' => '',
+            'cards_heading_level' => '2',
+            'cards_body' => '',
+            'cards_items' => [
                 [
                     'card_title' => __('Culver Square Easter Egg hunt', 'culvers'),
                     'card_url' => $fallbackUrl,
@@ -317,15 +338,15 @@ final class HomepageFlexibleSeedData
     private static function openingHoursRow(): array
     {
         return array_merge(self::base('opening_hours'), [
-            'heading' => __('Opening Hours', 'culvers'),
-            'heading_semantic_level' => '2',
-            'subheading' => '',
-            'body' => '',
-            'graphic_left' => [
+            'hours_heading' => __('Opening Hours', 'culvers'),
+            'hours_heading_level' => '2',
+            'hours_subheading' => '',
+            'hours_body' => '',
+            'hours_graphic_left' => [
                 'url' => self::FIGMA_HOURS_GRAPHIC_LEFT,
                 'alt' => '',
             ],
-            'graphic_right' => [
+            'hours_graphic_right' => [
                 'url' => self::FIGMA_HOURS_GRAPHIC_RIGHT,
                 'alt' => '',
             ],

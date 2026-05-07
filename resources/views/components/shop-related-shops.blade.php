@@ -1,18 +1,18 @@
 @php
+  use App\Helpers\Component;
   use App\Helpers\LayoutShell;
-  use App\Helpers\Padding;
+
+  /**
+   * Shop — related shops. Up to four picks rendered with the directory card
+   * partial so card styling stays in lockstep with the archive listing.
+   * The current shop is filtered out before rendering.
+   */
 
   $c = is_array($component ?? null) ? $component : [];
-  $padding = Padding::getClasses($c);
-  $grid = $c['_grid_classes'] ?? '';
+  $root = Component::rootClasses($c);
+  $headingTag = Component::headingTag($c['related_heading_level'] ?? null);
 
   $heading = trim((string) ($c['related_heading'] ?? __('More shops you might enjoy', 'culvers')));
-  $level = isset($c['related_heading_level']) ? (int) $c['related_heading_level'] : 2;
-  if ($level < 2 || $level > 4) {
-      $level = 2;
-  }
-  $headingTag = 'h' . $level;
-
   $viewUrl = trim((string) ($c['related_view_all_url'] ?? ''));
   $viewLabel = trim((string) ($c['related_view_all_label'] ?? __('View all', 'culvers')));
 
@@ -43,17 +43,17 @@
 
 @if($shops !== [])
   <section
-    class="{{ esc_attr(trim($grid . ' ' . $padding)) }} bg-white text-deep-moss"
+    class="shop-related-shops {{ esc_attr($root) }} bg-white text-deep-moss"
     data-component-root
     data-shop-related-shops>
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
       @if($heading !== '')
-        <{{ $headingTag }} class="mx-auto mb-10 max-w-[52rem] text-center font-heading text-[58px] leading-[1.15] tracking-tight text-faded-olive md:mb-14">
+        <{{ $headingTag }} class="shop-related-shops__heading mx-auto mb-10 max-w-[52rem] text-center font-heading text-6xl tracking-tight text-faded-olive md:mb-14">
           {{ esc_html($heading) }}
         </{{ $headingTag }}>
       @endif
 
-      <div class="mx-auto grid max-w-[1272px] grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="shop-related-shops__grid mx-auto grid max-w-7xl grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-4">
         @foreach($shops as $shopPost)
           @include('partials.directory-shop-card', ['directory_card_post_id' => (int) $shopPost->ID])
         @endforeach
@@ -68,7 +68,7 @@
   </section>
 @elseif(current_user_can('edit_posts'))
   @include('partials.component-editor-placeholder', [
-      'wrapperClasses' => trim($grid . ' ' . $padding),
+      'wrapperClasses' => $root,
       'message' => __('Pick related shops for this block.', 'culvers'),
   ])
 @endif

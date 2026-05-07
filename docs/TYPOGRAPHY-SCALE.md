@@ -1,51 +1,86 @@
 # Culver Square type ramp
 
-Tailwind utilities **`text-micro`** plus **`text-xs`** through **`text-9xl`** are the **only** font-size tokens. Values are defined in `resources/styles/theme.tokens.css` (`@theme`). **Every step uses an even pixel size** (after merges).
+Font sizes live in `resources/styles/theme.tokens.css` (`@theme`). The theme uses **only stock Tailwind utility names** (`text-xs`..`text-9xl`). Default Tailwind values for the body tier (`text-xs`..`text-2xl`) are kept so external Tailwind examples behave as expected; only the display tier (`text-3xl`..`text-9xl`) is retuned to Culver Square's Halyard / Canela ladder. Each `--text-*` carries its own `--text-*--line-height`, so the type token already delivers the design line-height — only override `leading-*` when intentionally diverging.
 
-**Rule:** Pick **exactly one** class per role. Do not duplicate the same Figma role under another utility.
+**Rules:**
 
-## Merges applied (Figma → single token)
+- Pick **one** stock `text-*` utility per element. Pair with stock `tracking-*` / `leading-*` utilities, or arbitrary values (`tracking-[0.22em]`, `leading-[26px]`) when Figma sits between defaults.
+- Do **not** invent new `text-display-*` / `text-caption` / `text-prose-md` / `text-hero-fluid` semantic tokens. Snap close-fit Figma values onto the ladder; the four documented snap losses below are the only intentional ≤ 2 px deviations.
+- Numerical pattern extensions are allowed where Tailwind's own scale stops short: `--container-8xl` (continues `max-w-{xs..7xl}` → `8xl` for the 1440 px shell) and `--z-index-{60,70,80}` (continues `z-{10..50}` → `60/70/80` for the header / drawer / skip-link stack).
 
-| Merge | Token | Even landing |
-|-------|--------|----------------|
-| 12px + ~12.887px pills | `text-xs` | **12px** |
-| 14px utilities + 15px nav | `text-sm` | **16px** |
-| ~22px cards + 24px store values | `text-xl` | **24px** |
-| 40px H3 + 42px stats | `text-3xl` | **40px** |
-| ~45.714px mega tiles | `text-4xl` | **48px** |
-| 58px section titles + 64px H2 | `text-5xl` | **64px** |
+## Type ladder
 
-**Left unmerged (by design):** **10px** legal (`text-micro`), **18px** footer links (`text-base`), **20px** large body / eyebrow base (`text-lg`), **32px** H4 (`text-2xl`), **84px** H1 (`text-6xl`), **96px** hero (`text-7xl`).
+Body tier keeps Tailwind defaults; display tier (`text-3xl`+) is retuned to Figma.
 
-## Mapping (Tailwind → px → Figma source)
+| Tailwind class | Size | Line height | Notes / Figma role |
+|----------------|------|-------------|--------------------|
+| `text-xs` | **12 px** | 24 px | Action labels, eyebrows, footer legal copy (10 px Figma snaps here +2) |
+| `text-sm` | **14 px** | 20 px | Directory card sub-line, captions |
+| `text-base` | **16 px** | 24 px | Primary nav, mega-nav branch titles, footer body small (15 px snaps here −1) |
+| `text-lg` | **18 px** | 26 px | Footer column body / prose, hero eyebrow (17 px snaps here +1) |
+| `text-xl` | **20 px** | 1.3 | Large body, large eyebrow |
+| `text-2xl` | **24 px** | 26 px | Mega sublinks, directory retail titles, store details (22 px snaps here +2) |
+| `text-3xl` | **32 px** | 1.1 | Footer column titles, store heading, footer newsletter (34 px snaps here −2) |
+| `text-4xl` | **40 px** | 1.1 | H3 — section sub-headings, mega panel heading |
+| `text-5xl` | **48 px** | 1.1 | Mega tile labels |
+| `text-6xl` | **58 px** | 1.15 | Section titles (Opening hours, Related shops) |
+| `text-7xl` | **64 px** | 1.2 | H2 — page section titles |
+| `text-8xl` | **84 px** | 1 | H1 — primary page heading |
+| `text-9xl` | **96 px** | 1 | Hero (Discover…) |
 
-| Tailwind class | Size | Line height | Figma / notes |
-|----------------|------|--------------|----------------|
-| `text-micro` | **10px** | 24px | Footer legal — Commuters uppercase (~10px); kept separate from `text-xs` |
-| `text-xs` | **12px** | 24px | Action Label variable + pill CTAs (replaces ~12.887px artwork) |
-| `text-sm` | **16px** | 24px | Merged **Centre Map / Getting Here (14)** + **primary nav (15)** |
-| `text-base` | **18px** | 26px | Footer column links — kept separate from **20px** body |
-| `text-lg` | **20px** | 1.3 | Large body variable; hero eyebrow uses **`text-lg uppercase tracking-kicker`** |
-| `text-xl` | **24px** | 30px | Merged retail card titles (**22**) + store detail values (**24**) |
-| `text-2xl` | **32px** | 1.1 | **Desktop/Titles/H4 Subtitle** |
-| `text-3xl` | **40px** | 1.1 | **Desktop/Titles/H3** + former **42px** stat titles |
-| `text-4xl` | **48px** | 1.1 | Former fractional **~45.714px** homepage mega labels |
-| `text-5xl` | **64px** | 1.2 | **Desktop/Titles/H2** + former **58px** section titles (“Opening Hours”, etc.) |
-| `text-6xl` | **84px** | 1 | **Desktop/Titles/H1 Title** |
-| `text-7xl` | **96px** | 1 | Hero headline (“Discover…”) |
-| `text-8xl` | **112px** | 1 | Reserve — even step; no matching Figma token yet |
-| `text-9xl` | **128px** | 1 | Reserve — even step; no matching Figma token yet |
+### Snap losses (intentional, ≤ 2 px)
 
-## Components that tweak `text-xs`
+| Figma value | Snapped to | Where | Δ |
+|-------------|-----------|-------|---|
+| 10 px legal copy | `text-xs` (12 px) | Footer legal row, copyright + credit | +2 px |
+| 17 px footer body @ md | `text-lg` (18 px) | Footer newsletter body | +1 px |
+| 22 px directory cards / mega sublinks | `text-2xl` (24 px) | Mega `.mega-nav__sublink`, directory cards | +2 px |
+| 34 px footer newsletter @ lg | `text-3xl` (32 px) | Footer newsletter heading at lg breakpoint | −2 px |
+| 15 px primary nav | `text-base` (16 px) | Mega-nav top-level branch labels | −1 px |
 
-**Pill CTA:** still **`text-xs` (12px)**. Use **`leading-[30px]`** (even) and **`tracking-cta`** via `.btn` — do not use `tracking-label` on pills.
+## Tracking — stock Tailwind utilities
 
-## Tracking utilities
+| Utility | Value | Where used |
+|---------|-------|-------------|
+| `tracking-tight` | −0.025em | Display headings (most large serif blocks) |
+| `tracking-wider` | 0.05em | Pill CTAs (`.btn`, directory filter pill, video outline button) |
+| `tracking-widest` | 0.1em | All uppercase action labels, footer column links / legal row, footer newsletter input, mega CTAs (8 % Figma values snap here) |
 
-| Token | Value | Use |
-|-------|-------|-----|
-| `tracking-label` | 1px | Action labels (`text-xs` + label tracking) |
-| `tracking-kicker` | 4px | Hero eyebrow (`text-lg uppercase`) |
-| `tracking-cta` | ~0.644px | Pill buttons (via `.btn`) |
+For Figma values beyond `tracking-widest`, use arbitrary utilities — these are the only non-default tracking values in the theme:
 
-When Figma updates, change **`theme.tokens.css`** first, then this table.
+| Arbitrary | Where |
+|-----------|-------|
+| `tracking-[0.2em]` | Hero slider eyebrow (`text-lg` uppercase), shop image hero subtitle (mobile) |
+| `tracking-[0.22em]` | Policy / legal hero subtitle |
+| `tracking-[0.28em]` | Shop image hero subtitle from `md` |
+
+## Leading — bundled in type tokens; otherwise stock Tailwind utilities
+
+Most elements just inherit the `--text-*--line-height` carried by their `text-*` token. When a design intentionally overrides:
+
+| Utility | When |
+|---------|------|
+| `leading-tight` (1.25) / `leading-snug` (1.375) / `leading-normal` (1.5) / `leading-relaxed` (1.625) / `leading-loose` (2) | Standard overrides |
+| `leading-[1.05]` / `leading-[1.08]` / `leading-[1.12]` / `leading-[1.15]` | Display headings overriding the type-token default at a specific breakpoint (policy hero, footer newsletter heading) |
+| `leading-[26px]` | Opening-hours rows aligned to body rhythm |
+| `leading-[30px]` | Pill button label rhythm (`.btn`, directory filter pill) |
+
+## Containers — stock Tailwind names + one extension
+
+| Utility | Value | Where |
+|---------|-------|-------|
+| `max-w-7xl` | 80 rem (1280 px) | Standard wide content |
+| `max-w-8xl` | **90 rem (1440 px)** — extension | Site shell (header, footer columns, content) |
+
+The mega panel uses `max-w-[1348px]` and the page header uses `max-w-[1800px]` — both kept as stock arbitrary values rather than minted as new tokens.
+
+## z-index — stock Tailwind 10..50 + extensions for header stack
+
+| Utility | Value | Where |
+|---------|-------|-------|
+| `z-10`..`z-50` | Stock | Body content stacking |
+| `z-60` | Extension | Mega-nav panel above the bar |
+| `z-70` | Extension | Mobile drawer |
+| `z-80` | Extension | Skip-link (focus-visible) |
+
+When Figma updates, change **`theme.tokens.css`** first, then refresh this file.

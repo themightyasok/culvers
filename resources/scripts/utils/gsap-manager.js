@@ -102,7 +102,7 @@ class GSAPManager {
         this.smoother = ScrollSmoother.create({
           smooth: 1,
           effects: false,
-          /* Footer clipped under smoother when max-scroll measured short: fixed via app.js refresh pipeline + #smooth-content padding-bottom. If issues persist, trial `normalizeScroll: false` (GSAP) and retest wheel/trackpad. */
+          /* Footer clipped under smoother when max-scroll measured short: drive ScrollTrigger.refresh + smoother.refresh from the pipeline in resources/scripts/app.js (load, gsap:smoother:ready, document.fonts.ready, resize). If issues persist, trial `normalizeScroll: false` (GSAP) and retest wheel/trackpad. */
           normalizeScroll: true,
           ignoreMobileResize: true,
         });

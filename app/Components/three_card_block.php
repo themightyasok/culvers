@@ -4,8 +4,10 @@
  * Three card block — hero-style row with optional blog category tabs + View all.
  */
 
+use App\Helpers\Component;
+
 return [
-    'label' => 'Three card block',
+    'label' => __('Three card block', 'culvers'),
     'display' => 'block',
     'fields' => [
         'tab_general' => [
@@ -16,44 +18,37 @@ return [
             'type' => 'radio',
             'options' => [
                 'label' => __('Card source', 'culvers'),
-                'instructions' => __('Manual entries or latest posts per category tab.', 'culvers'),
+                'instructions' => __(
+                    'Manual entries, blog posts grouped by category tabs, '
+                        . 'or the latest items from a single directory CPT '
+                        . '(events, offers, news, shops, eat & drink, careers).',
+                    'culvers'
+                ),
                 'choices' => [
                     'manual' => __('Manual (up to three cards)', 'culvers'),
                     'blog' => __('Blog posts (category tabs)', 'culvers'),
+                    'cpt' => __('Directory CPT (latest items)', 'culvers'),
                 ],
                 'default_value' => 'manual',
                 'layout' => 'horizontal',
                 'return_format' => 'value',
             ],
         ],
-        'block_heading' => [
+        'cards_heading' => [
             'type' => 'text',
             'options' => [
                 'label' => __('Heading', 'culvers'),
             ],
         ],
-        'block_subheading' => [
+        'cards_subheading' => [
             'type' => 'text',
             'options' => [
                 'label' => __('Subheading', 'culvers'),
                 'instructions' => __('Optional line above body text (sans, uppercase styling in the theme).', 'culvers'),
             ],
         ],
-        'block_heading_level' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Heading level', 'culvers'),
-                'instructions' => __('Use one H1 per page; this block defaults to H2.', 'culvers'),
-                'choices' => [
-                    '2' => __('H2 (default)', 'culvers'),
-                    '1' => __('H1', 'culvers'),
-                    '3' => __('H3', 'culvers'),
-                ],
-                'default_value' => '2',
-                'return_format' => 'value',
-            ],
-        ],
-        'block_body' => [
+        'cards_heading_level' => Component::headingLevelField(allowH1: true),
+        'cards_body' => [
             'type' => 'wysiwyg',
             'options' => [
                 'label' => __('Body', 'culvers'),
@@ -63,7 +58,7 @@ return [
                 'media_upload' => 1,
             ],
         ],
-        'three_cards' => [
+        'cards_items' => [
             'type' => 'repeater',
             'options' => [
                 'label' => __('Cards', 'culvers'),
@@ -152,7 +147,7 @@ return [
                 ],
             ],
         ],
-        'blog_category_tabs' => [
+        'cards_blog_categories' => [
             'type' => 'taxonomy',
             'options' => [
                 'label' => __('Category tabs', 'culvers'),
@@ -172,7 +167,7 @@ return [
                 ],
             ],
         ],
-        'blog_posts_per_category' => [
+        'cards_blog_per_category' => [
             'type' => 'number',
             'options' => [
                 'label' => __('Posts per tab', 'culvers'),
@@ -192,11 +187,62 @@ return [
                 ],
             ],
         ],
-        'blog_view_all_url' => [
+        'cards_cpt_post_type' => [
+            'type' => 'select',
+            'options' => [
+                'label' => __('Directory CPT', 'culvers'),
+                'instructions' => __('Pick which directory the cards are pulled from.', 'culvers'),
+                'choices' => [
+                    'culvers_event' => __('Latest Events', 'culvers'),
+                    'culvers_offer' => __('Latest Offers', 'culvers'),
+                    'culvers_news' => __('Latest News', 'culvers'),
+                    'culvers_shop' => __('Shops', 'culvers'),
+                    'culvers_eat_drink' => __('Eat & Drink', 'culvers'),
+                    'culvers_career' => __('Careers', 'culvers'),
+                ],
+                'default_value' => 'culvers_event',
+                'allow_null' => 0,
+                'return_format' => 'value',
+                'conditional_logic' => [
+                    [
+                        [
+                            'field' => 'cards_source',
+                            'operator' => '==',
+                            'value' => 'cpt',
+                        ],
+                    ],
+                ],
+            ],
+        ],
+        'cards_cpt_count' => [
+            'type' => 'number',
+            'options' => [
+                'label' => __('Cards to show', 'culvers'),
+                'instructions' => __('Up to three columns; extra items wrap on smaller breakpoints.', 'culvers'),
+                'default_value' => 3,
+                'min' => 1,
+                'max' => 12,
+                'step' => 1,
+                'conditional_logic' => [
+                    [
+                        [
+                            'field' => 'cards_source',
+                            'operator' => '==',
+                            'value' => 'cpt',
+                        ],
+                    ],
+                ],
+            ],
+        ],
+        'cards_view_all_url' => [
             'type' => 'url',
             'options' => [
                 'label' => __('View all URL', 'culvers'),
-                'instructions' => __('Typically your blog index or a landing page.', 'culvers'),
+                'instructions' => __(
+                    'Typically your blog index, the matching CPT archive, or any landing page. '
+                        . 'Leave blank when source is "Directory CPT" to auto-link to that CPT\'s archive.',
+                    'culvers'
+                ),
                 'default_value' => '',
                 'conditional_logic' => [
                     [
@@ -206,10 +252,17 @@ return [
                             'value' => 'blog',
                         ],
                     ],
+                    [
+                        [
+                            'field' => 'cards_source',
+                            'operator' => '==',
+                            'value' => 'cpt',
+                        ],
+                    ],
                 ],
             ],
         ],
-        'blog_view_all_label' => [
+        'cards_view_all_label' => [
             'type' => 'text',
             'options' => [
                 'label' => __('View all label', 'culvers'),
@@ -220,6 +273,13 @@ return [
                             'field' => 'cards_source',
                             'operator' => '==',
                             'value' => 'blog',
+                        ],
+                    ],
+                    [
+                        [
+                            'field' => 'cards_source',
+                            'operator' => '==',
+                            'value' => 'cpt',
                         ],
                     ],
                 ],

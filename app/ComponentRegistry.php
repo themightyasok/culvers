@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App;
 
 use App\Services\ComponentCache;
@@ -10,18 +12,20 @@ use App\Exceptions\FieldException;
 use App\Constants\ComponentTypes;
 use App\Helpers\TailwindColors;
 use StoutLogic\AcfBuilder\FieldsBuilder;
+use StoutLogic\AcfBuilder\FlexibleContentBuilder;
 
 /**
- * Component Registry
+ * Discovers `app/Components/*.php` flexible-content layout config files, validates them, and
+ * registers each as an ACF Flexible Content layout (with shared General + Padding tabs).
  *
- * Automatically discovers and registers ACF components with improved architecture.
- * Handles component discovery, validation, caching, and ACF field registration.
- *
- * @package App
+ * Component files return an associative array (`label`, `display`, `fields`) — they are not
+ * autoloaded classes. Path casing follows the on-disk + PSR-4 form (`app/Components/`).
  */
 class ComponentRegistry
 {
-    /** @var array<string, array> Registered components */
+    private const COMPONENTS_PATH = '/app/Components/';
+
+    /** @var array<string, array<string, mixed>> Registered components */
     private array $components = [];
 
     /** @var ComponentCache Component cache service */
@@ -48,181 +52,71 @@ class ComponentRegistry
      */
     private function loadComponents(): void
     {
-        // Try cache first
         $cached = $this->cache->get();
         if ($cached !== null) {
             $this->components = $cached;
             return;
         }
 
-        // Load from files
         $this->loadFromFiles();
-        $this->loadFromClasses();
 
-        // Only cache when we have components - never cache empty array to avoid
-        // stale empty cache persisting and hiding all components
+        // Never cache an empty result — would hide every component if discovery briefly failed.
         if (! empty($this->components)) {
             $this->cache->set($this->components);
         }
     }
 
     /**
-     * Load components from PHP config files (array-based configuration)
+     * Discover and validate `app/Components/*.php` array configs.
      *
-     * @return void
-     * @throws ComponentException If component loading fails
+     * @throws ComponentException If a component config fails validation.
      */
     private function loadFromFiles(): void
     {
-        $paths = [
-            get_template_directory() . '/app/components/',
-            get_template_directory() . '/app/Components/',
-        ];
-
-        foreach ($paths as $componentsPath) {
-            if (! is_dir($componentsPath)) {
-                continue;
-            }
-
-            $files = glob($componentsPath . '*.php');
-            if (! $files) {
-                continue;
-            }
-
-            foreach ($files as $file) {
-                try {
-                    // Security: Validate file path to prevent directory traversal
-                    $realPath = realpath($file);
-                    $realComponentsPath = realpath($componentsPath);
-
-                    if (! $realPath || ! $realComponentsPath || ! str_starts_with($realPath, $realComponentsPath)) {
-                        $this->logError("Invalid component file path: {$file}");
-                        continue;
-                    }
-
-                    $componentName = basename($file, '.php');
-
-                    // Skip if already loaded as class or from a previous path
-                    if (isset($this->components[$componentName])) {
-                        continue;
-                    }
-
-                    $config = include $file;
-
-                    if (is_array($config) && isset($config['fields'])) {
-                        // Validate fields
-                        $errors = $this->validator->validateComponent($config['fields']);
-
-                        if (! empty($errors)) {
-                            throw ComponentException::invalid($componentName, $errors);
-                        }
-
-                        $this->components[$componentName] = $config;
-                    }
-                } catch (\Exception $e) {
-                    $this->logError("Error loading component from {$file}: " . $e->getMessage());
-                }
-            }
-        }
-    }
-
-    /**
-     * Load components from class files (class-based configuration)
-     *
-     * @return void
-     * @throws ComponentException If component class loading fails
-     */
-    private function loadFromClasses(): void
-    {
-        $componentsPath = get_template_directory() . '/app/Components/';
-
+        $componentsPath = get_template_directory() . self::COMPONENTS_PATH;
         if (! is_dir($componentsPath)) {
             return;
         }
 
-        // Check if AbstractComponent class exists before trying to load class-based components
-        if (! class_exists('App\\Components\\AbstractComponent')) {
+        $files = glob($componentsPath . '*.php');
+        if (! $files) {
             return;
         }
 
-        $files = glob($componentsPath . '*Component.php');
-
-        if (! $files) {
+        $realComponentsPath = realpath($componentsPath);
+        if (! $realComponentsPath) {
             return;
         }
 
         foreach ($files as $file) {
             try {
-                // Security: Validate file path to prevent directory traversal
                 $realPath = realpath($file);
-                $realComponentsPath = realpath($componentsPath);
-
-                if (! $realPath || ! $realComponentsPath || ! str_starts_with($realPath, $realComponentsPath)) {
-                    $this->logError("Invalid component class file path: {$file}");
+                if (! $realPath || ! str_starts_with($realPath, $realComponentsPath)) {
+                    $this->logError("Invalid component file path: {$file}");
                     continue;
                 }
 
-                $className = basename($file, '.php');
-                $fullClassName = "App\\Components\\{$className}";
+                $componentName = basename($file, '.php');
+                $config = include $file;
 
-                if (! class_exists($fullClassName)) {
+                if (! is_array($config) || ! isset($config['fields'])) {
                     continue;
                 }
 
-                $reflection = new \ReflectionClass($fullClassName);
-
-                if (! $reflection->isSubclassOf('App\\Components\\AbstractComponent')) {
-                    continue;
+                $errors = $this->validator->validateComponent($config['fields']);
+                if (! empty($errors)) {
+                    throw ComponentException::invalid($componentName, $errors);
                 }
 
-                // Extract key from class name (e.g., HeaderTextComponent -> header_text)
-                $key = $this->getKeyFromClassName($className);
-
-                // Instantiate component
-                $component = new $fullClassName($key);
-
-                // Validate component
-                if (! $component->validate()) {
-                    $this->logError("Component '{$key}' failed validation");
-                    continue;
-                }
-
-                // Convert to array format for compatibility
-                $this->components[$key] = [
-                    'label' => $component->getLabel(),
-                    'display' => $component->getDisplay(),
-                    'fields' => $component->getFields(),
-                    'metadata' => $component->getMetadata(),
-                    'template' => $component->getTemplateName(),
-                    '_class' => $fullClassName,
-                ];
+                $this->components[$componentName] = $config;
             } catch (\Exception $e) {
-                $this->logError("Error loading component class {$file}: " . $e->getMessage());
+                $this->logError("Error loading component from {$file}: " . $e->getMessage());
             }
         }
     }
 
     /**
-     * Convert class name to component key
-     *
-     * Example: HeaderTextComponent -> header_text
-     *
-     * @param string $className Class name (e.g., "HeaderTextComponent")
-     * @return string Component key (e.g., "header_text")
-     */
-    private function getKeyFromClassName(string $className): string
-    {
-        // Remove "Component" suffix
-        $key = preg_replace('/Component$/', '', $className);
-
-        // Convert PascalCase to snake_case
-        return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $key));
-    }
-
-    /**
-     * Get all loaded components
-     *
-     * @return array<string, array> Array of component configurations keyed by component name
+     * @return array<string, array<string, mixed>> Component configurations keyed by layout name.
      */
     public function getComponents(): array
     {
@@ -230,27 +124,11 @@ class ComponentRegistry
     }
 
     /**
-     * Get component configuration by key
-     *
-     * @param string $key Component key (e.g., "header_text")
-     * @return array|null Component configuration or null if not found
+     * @return array<string, mixed>|null Component configuration, or null when unknown.
      */
     public function getComponent(string $key): ?array
     {
         return $this->components[$key] ?? null;
-    }
-
-    /**
-     * Get components filtered by namespace
-     *
-     * @param string $namespace Component namespace
-     * @return array<string, array> Filtered array of components
-     */
-    public function getComponentsByNamespace(string $namespace): array
-    {
-        return array_filter($this->components, function ($component) use ($namespace) {
-            return ($component['metadata']['namespace'] ?? 'default') === $namespace;
-        });
     }
 
     /**
@@ -283,12 +161,9 @@ class ComponentRegistry
         foreach ($this->components as $componentName => $config) {
             try {
                 $this->addComponentLayout($flexibleContent, $componentName, $config);
-            } catch (ComponentException $e) {
+            } catch (\Throwable $e) {
+                // Skip the offending component; never let a single bad config break registration.
                 $this->logError("Error registering component '{$componentName}': " . $e->getMessage());
-                // Don't re-throw - continue with other components
-            } catch (\Exception $e) {
-                $this->logError("Unexpected error registering component '{$componentName}': " . $e->getMessage());
-                // Don't re-throw - continue with other components
             }
         }
 
@@ -297,21 +172,21 @@ class ComponentRegistry
 
         $components
             ->setLocation('post_type', '==', 'page')
-            ->or('post_type', '==', 'culvers_shop');
+            ->or('post_type', '==', 'culvers_shop')
+            ->or('post_type', '==', 'culvers_eat_drink')
+            ->or('post_type', '==', 'culvers_event')
+            ->or('post_type', '==', 'culvers_career');
 
         return $components;
     }
 
     /**
-     * Add a single component layout to the flexible content field group
+     * Add a single component layout to the flexible content field group.
      *
-     * @param FieldsBuilder $flexibleContent ACF Flexible Content field builder
-     * @param string $componentName Component name/key
      * @param array<string, mixed> $config Component configuration array
-     * @return void
      * @throws ComponentException If layout addition fails
      */
-    private function addComponentLayout($flexibleContent, string $componentName, array $config): void
+    private function addComponentLayout(FlexibleContentBuilder $flexibleContent, string $componentName, array $config): void
     {
         $layout = $flexibleContent->addLayout($componentName, [
             'label' => $config['label'] ?? ucwords(str_replace('_', ' ', $componentName)),
@@ -325,8 +200,10 @@ class ComponentRegistry
     /**
      * General tab: component_width, background, visibility, component content.
      * Does NOT contain: padding, font, tear (those have their own tabs).
+     *
+     * @param array<string, mixed> $config
      */
-    private function addGeneralTab($layout, string $componentName, array $config): void
+    private function addGeneralTab(FieldsBuilder $layout, string $componentName, array $config): void
     {
         $layout->addTab(__('General', 'culvers'))
         ->addSelect('component_width', [
@@ -604,8 +481,11 @@ class ComponentRegistry
             'wrapper' => ['width' => '50'],
         ]);
 
+        $fields = isset($config['fields']) && is_array($config['fields']) ? $config['fields'] : [];
+
         // Tab order: General (grid + background + visibility), component fields, Padding.
-        foreach ($config['fields'] as $fieldName => $fieldConfig) {
+        foreach ($fields as $fieldName => $fieldConfig) {
+            $fieldName = (string) $fieldName;
             if ($fieldName === 'tab_general') {
                 continue;
             }
@@ -614,7 +494,7 @@ class ComponentRegistry
                 continue;
             }
             try {
-                $this->addField($layout, $fieldName, $fieldConfig);
+                $this->addField($layout, $fieldName, is_array($fieldConfig) ? $fieldConfig : []);
             } catch (FieldException $e) {
                 $this->logError(
                     "Error adding field '{$fieldName}' to component '{$componentName}': " . $e->getMessage()
@@ -631,7 +511,7 @@ class ComponentRegistry
     /**
      * Padding tab: top_padding, bottom_padding only.
      */
-    private function addPaddingTab($layout): void
+    private function addPaddingTab(FieldsBuilder $layout): void
     {
         $layout->addTab(__('Padding', 'culvers'))
             ->addSelect('top_padding', [
@@ -675,12 +555,12 @@ class ComponentRegistry
     }
 
     /**
-     * Add a field to a layout based on configuration
+     * Add a field to a layout based on configuration.
      *
-     * @param FieldsBuilder $layout ACF Layout builder
-     * @param string $fieldName Field name/key
+     * @param FieldsBuilder|\StoutLogic\AcfBuilder\GroupBuilder $layout ACF Layout builder
+     *        (top-level FieldsBuilder, or a GroupBuilder/RepeaterBuilder for nested calls —
+     *        both forward `add*` to an internal FieldsBuilder).
      * @param array<string, mixed> $config Field configuration array
-     * @return void
      * @throws FieldException If field type is invalid or configuration is missing
      */
     private function addField($layout, string $fieldName, array $config): void
@@ -728,37 +608,39 @@ class ComponentRegistry
     }
 
     /**
-     * Add repeater field with sub-fields
+     * Add repeater field with sub-fields.
      *
-     * @param FieldsBuilder $layout ACF Layout builder
-     * @param string $fieldName Field name/key
+     * @param FieldsBuilder|\StoutLogic\AcfBuilder\GroupBuilder $layout ACF Layout builder
      * @param array<string, mixed> $options Field options
-     * @return void
      */
     private function addRepeaterFields($layout, string $fieldName, array $options): void
     {
         $repeater = $layout->addRepeater($fieldName, $options);
-        if (isset($options['sub_fields'])) {
+        if (isset($options['sub_fields']) && is_array($options['sub_fields'])) {
             foreach ($options['sub_fields'] as $subFieldName => $subFieldConfig) {
-                $this->addField($repeater, $subFieldName, $subFieldConfig);
+                if (! is_array($subFieldConfig)) {
+                    continue;
+                }
+                $this->addField($repeater, (string) $subFieldName, $subFieldConfig);
             }
         }
     }
 
     /**
-     * Add group field with sub-fields
+     * Add group field with sub-fields.
      *
-     * @param FieldsBuilder $layout ACF Layout builder
-     * @param string $fieldName Field name/key
+     * @param FieldsBuilder|\StoutLogic\AcfBuilder\GroupBuilder $layout ACF Layout builder
      * @param array<string, mixed> $options Field options
-     * @return void
      */
     private function addGroupFields($layout, string $fieldName, array $options): void
     {
         $group = $layout->addGroup($fieldName, $options);
-        if (isset($options['sub_fields'])) {
+        if (isset($options['sub_fields']) && is_array($options['sub_fields'])) {
             foreach ($options['sub_fields'] as $subFieldName => $subFieldConfig) {
-                $this->addField($group, $subFieldName, $subFieldConfig);
+                if (! is_array($subFieldConfig)) {
+                    continue;
+                }
+                $this->addField($group, (string) $subFieldName, $subFieldConfig);
             }
         }
     }

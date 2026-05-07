@@ -22,12 +22,12 @@ HTML;
         $contactAside = <<<'HTML'
 <div class="flex flex-col gap-6 font-sans">
   <div>
-    <p class="mb-2 text-micro font-semibold uppercase tracking-label text-deep-moss">By Email</p>
+    <p class="mb-2 text-xs font-semibold uppercase tracking-widest text-deep-moss">By Email</p>
     <p class="m-0"><a href="mailto:info@culversquare.co.uk">info@culversquare.co.uk</a></p>
   </div>
   <hr class="m-0 border-0 border-t border-deep-moss/15" />
   <div>
-    <p class="mb-2 text-micro font-semibold uppercase tracking-label text-deep-moss">By Post</p>
+    <p class="mb-2 text-xs font-semibold uppercase tracking-widest text-deep-moss">By Post</p>
     <p class="m-0 leading-snug">Data Protection Officer,<br />68 Grafton Way,<br />London, W1T</p>
   </div>
 </div>

@@ -14,37 +14,43 @@ final class CulverSquareFigmaFooterMenus
     public const OPTION_DISABLED = 'culvers_disable_figma_footer_menu_install';
 
     /**
-     * @var array<string, array{title: string, items: list<array{label: string, url: string}>}>
+     * Returns the seeded location → title + item list. Built as a method (not a `const`) so
+     * each label/title is a literal `__()` call that `wp i18n make-pot` can extract statically.
+     *
+     * @return array<string, array{title: string, items: list<array{label: string, url: string}>}>
      */
-    private const LOCATIONS = [
-        'footer_column_one' => [
-            'title' => 'Culver Square — What’s Here',
-            'items' => [
-                ['label' => 'Plan My Visit', 'url' => '#'],
-                ["label" => "What's On", 'url' => '#'],
-                ['label' => 'Guest Services', 'url' => '#'],
-                ['label' => 'Accessibility Guide', 'url' => '#'],
+    private static function locations(): array
+    {
+        return [
+            'footer_column_one' => [
+                'title' => __('Culver Square — What’s Here', 'culvers'),
+                'items' => [
+                    ['label' => __('Plan My Visit', 'culvers'), 'url' => '#'],
+                    ['label' => __('What’s On', 'culvers'), 'url' => '#'],
+                    ['label' => __('Guest Services', 'culvers'), 'url' => '#'],
+                    ['label' => __('Accessibility Guide', 'culvers'), 'url' => '#'],
+                ],
             ],
-        ],
-        'footer_column_two' => [
-            'title' => 'Culver Square — Useful Links',
-            'items' => [
-                ['label' => 'Careers', 'url' => '#'],
-                ['label' => 'Leasing Opportunities', 'url' => '#'],
-                ['label' => 'Parking', 'url' => '#'],
-                ['label' => 'Opening hours', 'url' => '#'],
+            'footer_column_two' => [
+                'title' => __('Culver Square — Useful Links', 'culvers'),
+                'items' => [
+                    ['label' => __('Careers', 'culvers'), 'url' => '#'],
+                    ['label' => __('Leasing Opportunities', 'culvers'), 'url' => '#'],
+                    ['label' => __('Parking', 'culvers'), 'url' => '#'],
+                    ['label' => __('Opening hours', 'culvers'), 'url' => '#'],
+                ],
             ],
-        ],
-        'footer_brand_subnav' => [
-            'title' => 'Culver Square — Footer legal row',
-            'items' => [
-                ['label' => 'Cookie Policy', 'url' => '/cookie-policy/'],
-                ['label' => 'Accessibility', 'url' => '#'],
-                ['label' => 'Privacy Policy', 'url' => '/privacy-policy/'],
-                ['label' => 'Terms & Conditions', 'url' => '/terms-and-conditions/'],
+            'footer_brand_subnav' => [
+                'title' => __('Culver Square — Footer legal row', 'culvers'),
+                'items' => [
+                    ['label' => __('Cookie Policy', 'culvers'), 'url' => '/cookie-policy/'],
+                    ['label' => __('Accessibility', 'culvers'), 'url' => '#'],
+                    ['label' => __('Privacy Policy', 'culvers'), 'url' => '/privacy-policy/'],
+                    ['label' => __('Terms & Conditions', 'culvers'), 'url' => '/terms-and-conditions/'],
+                ],
             ],
-        ],
-    ];
+        ];
+    }
 
     public static function maybeInstall(): void
     {
@@ -56,7 +62,7 @@ final class CulverSquareFigmaFooterMenus
             return;
         }
 
-        foreach (array_keys(self::LOCATIONS) as $location) {
+        foreach (array_keys(self::locations()) as $location) {
             self::maybeInstallLocation((string) $location);
         }
     }
@@ -76,7 +82,8 @@ final class CulverSquareFigmaFooterMenus
             }
         }
 
-        if (! isset(self::LOCATIONS[$location])) {
+        $defs = self::locations();
+        if (! isset($defs[$location])) {
             return;
         }
 
@@ -87,7 +94,7 @@ final class CulverSquareFigmaFooterMenus
 
         $items = wp_get_nav_menu_items($menuId);
         if (! is_array($items) || $items === []) {
-            self::populateItems($menuId, self::LOCATIONS[$location]['items']);
+            self::populateItems($menuId, $defs[$location]['items']);
         }
 
         /** @var array<string, int> $locations */
@@ -99,7 +106,6 @@ final class CulverSquareFigmaFooterMenus
 
     private static function persistMenuId(string $location, int $menuId): void
     {
-        /** @var array<string, int> $map */
         $map = get_option('culvers_figma_footer_menu_term_ids', []);
         if (! is_array($map)) {
             $map = [];
@@ -110,7 +116,6 @@ final class CulverSquareFigmaFooterMenus
 
     private static function resolveMenuId(string $location): int
     {
-        /** @var array<string, mixed> $map */
         $map = get_option('culvers_figma_footer_menu_term_ids', []);
         if (is_array($map) && isset($map[$location])) {
             $savedId = (int) $map[$location];
@@ -122,7 +127,8 @@ final class CulverSquareFigmaFooterMenus
             }
         }
 
-        $title = self::LOCATIONS[$location]['title'] ?? 'Footer menu';
+        $defs = self::locations();
+        $title = $defs[$location]['title'] ?? __('Footer menu', 'culvers');
         $created = wp_create_nav_menu($title);
         if (is_wp_error($created)) {
             if (defined('WP_DEBUG') && WP_DEBUG) {
@@ -141,7 +147,9 @@ final class CulverSquareFigmaFooterMenus
     private static function populateItems(int $menuId, array $links): void
     {
         foreach ($links as $row) {
-            $label = __($row['label'], 'culvers');
+            // Labels are already pulled from `__()` calls in {@see self::locations()}; no second
+            // translation pass here (calling `__($variable)` is invisible to gettext extraction).
+            $label = (string) $row['label'];
             $urlInput = trim((string) $row['url']);
             if ($urlInput === '#' || $urlInput === '') {
                 $url = '#';

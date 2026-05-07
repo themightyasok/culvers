@@ -31,11 +31,9 @@ final class ShopSingleFlexibleSeedData
             );
         }
 
-        $title = (string) ($retailer['title'] ?? '');
-        $logoUrl = isset($retailer['logo_url']) && is_string($retailer['logo_url']) ? trim($retailer['logo_url']) : '';
-        $featuredUrl = isset($retailer['featured_url']) && is_string($retailer['featured_url'])
-            ? trim($retailer['featured_url'])
-            : '';
+        $title = $retailer['title'];
+        $logoUrl = $retailer['logo_url'] !== null ? trim($retailer['logo_url']) : '';
+        $featuredUrl = $retailer['featured_url'] !== null ? trim($retailer['featured_url']) : '';
 
         $heroWide = self::detailHeroUrl($shopSlug);
         $heroMobile = self::detailHeroMobileUrl($shopSlug);
@@ -51,15 +49,15 @@ final class ShopSingleFlexibleSeedData
 
         $brandUrl = self::demoBrandWebsiteUrl($shopSlug);
 
-        return [
+        $rows = [
             [
-                'acf_fc_layout' => 'shop_image_hero',
-                'hero_image' => ['url' => $heroWide],
-                'hero_image_mobile' => ['url' => $heroMobile],
+                'acf_fc_layout' => 'image_hero',
+                'hero_image' => $heroWide !== '' ? ['url' => $heroWide] : null,
+                'hero_image_mobile' => $heroMobile !== '' ? ['url' => $heroMobile] : null,
                 'hero_logo' => $logoUrl !== '' ? ['url' => $logoUrl] : null,
                 'hero_title_line' => $logoUrl !== '' ? '' : mb_strtoupper($title),
                 'hero_subtitle_line' => $shopSlug === 'accessorize-london' ? 'LONDON' : ($logoUrl !== '' ? '' : 'Culver Square'),
-                'hero_overlay_opacity' => 52,
+                'hero_overlay_opacity' => $heroWide !== '' ? 52 : 0,
             ],
             [
                 'acf_fc_layout' => 'shop_intro_block',
@@ -69,7 +67,15 @@ final class ShopSingleFlexibleSeedData
                     : '',
                 'intro_cta_url' => $brandUrl,
             ],
-            [
+        ];
+
+        // Only emit the split-highlight section for shops with a real Figma
+        // photo asset. Skipping it (rather than faking a placeholder) keeps
+        // the page honest to the design library — the singles for shops
+        // without a Figma export render hero → intro → details → hours →
+        // related, which still tells a complete story.
+        if ($featuredUrl !== '') {
+            $rows[] = [
                 'acf_fc_layout' => 'shop_split_highlight',
                 'split_kicker' => __('New season', 'culvers'),
                 'split_headline' => __('Layers you will wear on repeat', 'culvers'),
@@ -84,26 +90,29 @@ final class ShopSingleFlexibleSeedData
                     . '</p>',
                 'split_cta_label' => __('Plan your visit', 'culvers'),
                 'split_cta_url' => $archive !== '' ? $archive : '/shops/',
-                'split_image' => $featuredUrl !== '' ? ['url' => $featuredUrl] : ['url' => $heroWide],
-            ],
+                'split_image' => ['url' => $featuredUrl],
+            ];
+        }
+
+        $rows = array_merge($rows, [
             [
                 'acf_fc_layout' => 'shop_store_details',
                 'details_heading' => __('Store Details', 'culvers'),
                 'details_heading_level' => '2',
-                'contact_label' => __('Contact Number', 'culvers'),
-                'contact_phone' => '01452 302646',
-                'address_label' => __('Address', 'culvers'),
-                'address_text' => $title . "\n" . __('Culver Square', 'culvers') . "\n" . __('Gloucester GL1 2LG', 'culvers'),
-                'social_label' => __('Social Media', 'culvers'),
-                'social_instagram_url' => $shopSlug === 'accessorize-london' ? 'https://www.instagram.com/accessorize/' : '',
-                'social_instagram_handle' => $shopSlug === 'accessorize-london' ? '@accessorize' : '',
+                'details_contact_label' => __('Contact Number', 'culvers'),
+                'details_contact_phone' => '01452 302646',
+                'details_address_label' => __('Address', 'culvers'),
+                'details_address' => '10B Culver St W, Colchester CO1 1WF',
+                'details_social_label' => __('Social Media', 'culvers'),
+                'details_instagram_url' => $shopSlug === 'accessorize-london' ? 'https://www.instagram.com/accessorize/' : '',
+                'details_instagram_handle' => $shopSlug === 'accessorize-london' ? '@accessorize' : '',
             ],
             [
                 'acf_fc_layout' => 'opening_hours',
-                'heading' => __('Opening hours', 'culvers'),
-                'heading_semantic_level' => '2',
-                'subheading' => __('Typical centre hours — confirm before travelling.', 'culvers'),
-                'body' => '',
+                'hours_heading' => __('Opening hours', 'culvers'),
+                'hours_heading_level' => '2',
+                'hours_subheading' => __('Typical centre hours — confirm before travelling.', 'culvers'),
+                'hours_body' => '',
                 'hours_rows' => self::defaultHoursRepeater(),
                 'hours_footnote' => __('Hours may change on bank holidays.', 'culvers'),
                 'background_type' => ComponentTypes::BACKGROUND_COLOR,
@@ -118,7 +127,9 @@ final class ShopSingleFlexibleSeedData
                 'related_view_all_url' => $archive !== '' ? $archive : '/shops/',
                 'related_view_all_label' => __('View all', 'culvers'),
             ],
-        ];
+        ]);
+
+        return $rows;
     }
 
     /**
@@ -133,7 +144,7 @@ final class ShopSingleFlexibleSeedData
     private static function retailerRowForSlug(string $slug): ?array
     {
         foreach (ShopDirectorySeedData::retailers() as $row) {
-            $title = isset($row['title']) ? (string) $row['title'] : '';
+            $title = $row['title'];
             if ($title === '') {
                 continue;
             }
@@ -145,14 +156,34 @@ final class ShopSingleFlexibleSeedData
         return null;
     }
 
+    /**
+     * Per-shop hero photo URL (desktop / mobile).
+     *
+     * The Figma developer release only ships a real hero photograph for H&M
+     * (the centre's anchor tile, exposed via {@see ShopDirectorySeedData::HERO_DESKTOP_IMAGE}
+     * and {@see ShopDirectorySeedData::FEAT_HM_STOREFRONT}). Every other shop
+     * uses its logo on a brand-coloured deep-moss band — image_hero falls back
+     * to that styling when `hero_image` is empty and `hero_logo` is present.
+     *
+     * Returning an empty string here intentionally drops the prior random
+     * `picsum.photos` placeholders so we never ship imagery that isn't from
+     * the Figma file. To wire up a real Figma hero export per shop, add a
+     * match arm and reference the local seed asset (or a Figma MCP URL).
+     */
     private static function detailHeroUrl(string $slug): string
     {
-        return 'https://picsum.photos/seed/' . rawurlencode('cs-shop-hero-' . $slug) . '/1440/746';
+        return match ($slug) {
+            'h-m', 'hm' => ShopDirectorySeedData::HERO_DESKTOP_IMAGE,
+            default => '',
+        };
     }
 
     private static function detailHeroMobileUrl(string $slug): string
     {
-        return 'https://picsum.photos/seed/' . rawurlencode('cs-shop-hero-m-' . $slug) . '/800/960';
+        return match ($slug) {
+            'h-m', 'hm' => ShopDirectorySeedData::HERO_DESKTOP_IMAGE,
+            default => '',
+        };
     }
 
     /**
@@ -212,7 +243,7 @@ final class ShopSingleFlexibleSeedData
                 'suppress_filters' => true,
                 'no_found_rows' => true,
             ]);
-            if (is_array($found) && isset($found[0])) {
+            if (isset($found[0])) {
                 $ids[] = (int) $found[0];
             }
             if (count($ids) >= 4) {
@@ -235,10 +266,6 @@ final class ShopSingleFlexibleSeedData
             'suppress_filters' => true,
             'no_found_rows' => true,
         ]);
-
-        if (! is_array($more)) {
-            return $ids;
-        }
 
         foreach ($more as $mid) {
             $mid = (int) $mid;

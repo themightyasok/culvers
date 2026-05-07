@@ -12,7 +12,7 @@
   <body @php body_class('bg-white text-deep-moss font-sans antialiased'); @endphp>
     @php wp_body_open(); @endphp
 
-    <a class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[80] focus:rounded-md focus:bg-brand-500 focus:px-4 focus:py-2 focus:text-deep-moss focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-deep-moss"
+    <a class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-80 focus:rounded-md focus:bg-brand-500 focus:px-4 focus:py-2 focus:text-deep-moss focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-deep-moss"
        href="#main">
       {{ __('Skip to content', 'culvers') }}
     </a>
@@ -31,6 +31,17 @@
           <main id="main" tabindex="-1">
             @yield('content')
           </main>
+
+          {{--
+            Footer-overlap spacer.
+            `.footer-newsletter-band` lives inside the olive footer with `-mt-32 md:-mt-44 lg:-mt-52`
+            (pulls the newsletter image up into the white area above). Without a buffer between
+            `<main>` and `<footer>`, that pull-up overlays the last flexible component on the page.
+            The spacer matches the negative-margin amount per breakpoint so the newsletter pulls
+            into safe whitespace instead of real content. Every page benefits — no per-component
+            padding needed.
+          --}}
+          <div aria-hidden="true" class="site-footer-spacer h-32 w-full bg-white md:h-44 lg:h-52"></div>
 
           @include('sections.footer')
         </div>

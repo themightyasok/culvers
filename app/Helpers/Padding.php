@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Helpers;
 
 /**
  * Converts ACF padding choices to Tailwind spacing utilities (`pt-*`, `pb-*`, …).
  */
-class Padding
+final class Padding
 {
     /**
      * ACF choices for header/subheader padding (above and below).

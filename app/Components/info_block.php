@@ -4,6 +4,8 @@
  * Info grid — intro (heading, subheading, body, CTA) + square cells (icon, title, description).
  */
 
+use App\Helpers\Component;
+
 return [
     'label' => __('Info block', 'culvers'),
     'display' => 'block',
@@ -12,27 +14,14 @@ return [
             'type' => 'tab',
             'options' => ['label' => __('Content', 'culvers')],
         ],
-        'heading' => [
+        'info_heading' => [
             'type' => 'text',
             'options' => [
                 'label' => __('Heading', 'culvers'),
             ],
         ],
-        'heading_semantic_level' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Heading level', 'culvers'),
-                'instructions' => __('Use one H1 per page (typically the hero).', 'culvers'),
-                'choices' => [
-                    '2' => __('H2 — section title (default)', 'culvers'),
-                    '3' => __('H3', 'culvers'),
-                    '4' => __('H4', 'culvers'),
-                ],
-                'default_value' => '2',
-                'return_format' => 'value',
-            ],
-        ],
-        'subheading' => [
+        'info_heading_level' => Component::headingLevelField(),
+        'info_subheading' => [
             'type' => 'textarea',
             'options' => [
                 'label' => __('Subheading', 'culvers'),
@@ -40,7 +29,7 @@ return [
                 'new_lines' => 'br',
             ],
         ],
-        'body' => [
+        'info_body' => [
             'type' => 'wysiwyg',
             'options' => [
                 'label' => __('Body', 'culvers'),

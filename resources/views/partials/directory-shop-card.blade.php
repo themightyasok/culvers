@@ -34,17 +34,17 @@
         <img
           src="{{ esc_url($feat_thumb_url) }}"
           alt=""
-          class="directory-shop-card__hover-photo absolute inset-0 z-[1] size-full rounded-[11px] object-cover opacity-0 transition-opacity duration-300 ease-out motion-reduce:transition-none group-hover:opacity-100 group-focus-within:opacity-100"
+          class="directory-shop-card__hover-photo absolute inset-0 z-10 size-full rounded-[11px] object-cover opacity-0 transition-opacity duration-300 ease-out motion-reduce:transition-none group-hover:opacity-100 group-focus-within:opacity-100"
           loading="lazy"
           decoding="async" />
         <div
-          class="directory-shop-card__photo-overlay pointer-events-none absolute inset-0 z-[2] rounded-[11px] opacity-0 transition-opacity duration-300 ease-out motion-reduce:transition-none group-hover:opacity-100 group-focus-within:opacity-100"
+          class="directory-shop-card__photo-overlay pointer-events-none absolute inset-0 z-20 rounded-[11px] opacity-0 transition-opacity duration-300 ease-out motion-reduce:transition-none group-hover:opacity-100 group-focus-within:opacity-100"
           aria-hidden="true"></div>
       @endif
 
       @if ($logo_url !== '')
         <div
-          class="directory-shop-card__logo-slot pointer-events-none absolute inset-x-0 top-0 z-[3] flex h-[213px] items-center justify-center px-8 {{ $logoFadeClasses }}">
+          class="directory-shop-card__logo-slot pointer-events-none absolute inset-x-0 top-0 z-30 flex h-[213px] items-center justify-center px-8 {{ $logoFadeClasses }}">
           <img
             src="{{ esc_url($logo_url) }}"
             alt=""
@@ -54,17 +54,17 @@
         </div>
       @else
         <div
-          class="directory-shop-card__logo-slot pointer-events-none absolute inset-x-0 top-0 z-[3] flex h-[213px] items-center justify-center px-6 {{ $logoFadeClasses }}">
-          <span class="text-center font-heading text-[22px] font-medium leading-[26px] text-white">{{ get_the_title($post_id) }}</span>
+          class="directory-shop-card__logo-slot pointer-events-none absolute inset-x-0 top-0 z-30 flex h-[213px] items-center justify-center px-6 {{ $logoFadeClasses }}">
+          <span class="text-center font-heading text-2xl font-medium text-white">{{ get_the_title($post_id) }}</span>
         </div>
       @endif
 
-      <div class="pointer-events-none absolute left-0 right-0 top-[213px] z-[5] h-px bg-white" aria-hidden="true"></div>
+      <div class="pointer-events-none absolute left-0 right-0 top-[213px] z-40 h-px bg-white" aria-hidden="true"></div>
 
-      <h2 class="absolute left-[23px] top-[233px] z-[5] max-w-[calc(100%-46px)] font-sans text-[22px] font-medium leading-[26px] text-white">
+      <h2 class="absolute left-[23px] top-[233px] z-40 max-w-[calc(100%-46px)] font-sans text-2xl font-medium text-white">
         {{ get_the_title($post_id) }}
       </h2>
-      <p class="absolute left-[23px] top-[263px] z-[5] max-w-[calc(100%-46px)] font-sans text-[14px] font-light leading-5 text-white">
+      <p class="absolute left-[23px] top-[263px] z-40 max-w-[calc(100%-46px)] font-sans text-sm font-light text-white">
         {{ esc_html($hours) }}
       </p>
     </div>

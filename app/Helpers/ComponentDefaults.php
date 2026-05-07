@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Helpers;
 
 /**
  * Optional defaults merged only for keys missing from ACF (`$component + defaults`).
  */
-class ComponentDefaults
+final class ComponentDefaults
 {
     /**
      * @param string $layout acf_fc_layout

@@ -26,6 +26,8 @@ final class FrontendAssets
      *
      * `global-styles` carries theme.json CSS (including link typography). Depending on it keeps
      * dependency order predictable when WP registers it as a linked asset.
+     *
+     * @return list<string>
      */
     private static function frontStyleDependencies(): array
     {
@@ -107,8 +109,9 @@ final class FrontendAssets
             $css_path = $theme_path . '/app.css';
             $css_uri = $theme_uri . '/app.css';
         }
-        if ($css_path !== null && $css_uri !== null) {
-            $ver = $is_local_runtime ? (string) time() : (string) filemtime($css_path);
+        if ($css_uri !== null) {
+            // $css_uri and $css_path are assigned together in each branch above.
+            $ver = $is_local_runtime ? (string) time() : (string) filemtime((string) $css_path);
             wp_enqueue_style(self::STYLE_HANDLE, $css_uri, self::frontStyleDependencies(), $ver ?: $version);
         }
 

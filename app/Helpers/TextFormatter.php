@@ -9,7 +9,7 @@ namespace App\Helpers;
  *
  * Supports editor-authored {@code <highlight>...</highlight>} (semantic alias for brand accent).
  */
-class TextFormatter
+final class TextFormatter
 {
     public static function replaceHighlightTags(string $text): string
     {
@@ -58,10 +58,9 @@ class TextFormatter
             $with_tags = wpautop($with_tags, true);
         }
         $allowed = wp_kses_allowed_html('post');
-        if (! isset($allowed['span'])) {
-            $allowed['span'] = [];
-        }
-        $allowed['span']['class'] = true;
+        $span = isset($allowed['span']) && is_array($allowed['span']) ? $allowed['span'] : [];
+        $span['class'] = true;
+        $allowed['span'] = $span;
         $allowed['small'] = $allowed['small'] ?? [];
         $allowed['br'] = $allowed['br'] ?? [];
         $allowed['em'] = $allowed['em'] ?? [];

@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Helpers;
 
 /**
- * Video helper utilities.
- *
- * Handles parsing YouTube URLs/iframe snippets and building safe embed URLs.
+ * Parses YouTube URLs / iframe snippets and builds privacy-enhanced embed URLs.
  */
-class Video
+final class Video
 {
     private const YOUTUBE_ID_PATTERN = '/^[A-Za-z0-9_-]{11}$/';
 
@@ -193,7 +193,7 @@ class Video
 
         $segments = explode('/', $trimmed);
 
-        return (string) ($segments[0] ?? '');
+        return $segments[0];
     }
 
     private static function validateYouTubeId(string $id): ?string

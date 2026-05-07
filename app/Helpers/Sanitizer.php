@@ -1,13 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Helpers;
 
 /**
- * Sanitization Helper
- *
- * Provides safe sanitization methods for component data
+ * Sanitisers for component-shaped data (WYSIWYG, text, colours, image arrays, full components).
  */
-class Sanitizer
+final class Sanitizer
 {
     /**
      * Sanitize WYSIWYG content (allows safe HTML)
@@ -104,14 +104,14 @@ class Sanitizer
     }
 
     /**
-     * Sanitize image array from ACF
+     * Sanitize image array from ACF.
      *
-     * @param array|null $image Image array from ACF
-     * @return array|null Sanitized image array or null
+     * @param array<string, mixed>|null $image Image array from ACF
+     * @return array<string, mixed>|null Sanitized image array or null
      */
     public static function image(?array $image): ?array
     {
-        if (! is_array($image)) {
+        if ($image === null) {
             return null;
         }
 
@@ -145,23 +145,24 @@ class Sanitizer
     }
 
     /**
-     * Sanitize component data array
+     * Sanitize component data array.
      *
-     * @param array $component Component data array
-     * @return array Sanitized component data
+     * @param array<string, mixed> $component Component data array
+     * @return array<string, mixed> Sanitized component data
      */
     public static function component(array $component): array
     {
         $sanitized = [];
 
         foreach ($component as $key => $value) {
+            $key = (string) $key;
             // Skip internal keys
             if (str_starts_with($key, '_')) {
                 $sanitized[$key] = $value;
                 continue;
             }
 
-            // ACF select with return_format "array": [ 'value' => 'text-lg', 'label' => '…' ] — templates expect the value string.
+            // ACF select with return_format "array": [ 'value' => 'text-xl', 'label' => '…' ] — templates expect the value string.
             if (
                 is_array($value)
                 && array_key_exists('value', $value)
@@ -204,29 +205,18 @@ class Sanitizer
                     $sanitized[$key] = TailwindColors::sanitizeBodyTextTone($value);
                 } elseif (
                     in_array($key, [
-                    'footnote',
-                    'header', 'header_text', 'header_mobile', 'header_text_mobile',
-                    'subheader', 'subheader_text', 'subheader_mobile', 'subheader_text_mobile',
-                    'subheading_text', 'subheading_text_mobile',
-                    'body', 'body_text', 'body_copy', 'body_content', 'body_mobile', 'body_text_mobile', 'body_copy_mobile',
-                    'content', 'description', 'intro_text', 'intro_text_mobile', 'content_mobile',
-                    'intro_subheader', 'intro_subheader_text_mobile', 'intro_body', 'intro_body_text_mobile',
-                    'split_body',
-                    'hero_subtitle_line',
-                    'address_text',
-                    'title', 'title_mobile',
-                    'section_title', 'section_subheader', 'section_body',
-                    'section_title_mobile', 'section_subheader_mobile', 'section_body_mobile',
-                    'left_heading', 'left_subheader', 'left_content',
-                    'left_heading_mobile', 'left_subheader_mobile', 'left_content_mobile',
-                    'right_heading', 'right_subheader', 'right_content',
-                    'right_heading_mobile', 'right_subheader_mobile', 'right_content_mobile',
-                    'column_1_header', 'column_1_subheader', 'column_1_body',
-                    'column_1_header_mobile', 'column_1_subheader_mobile', 'column_1_body_mobile',
-                    'column_2_header', 'column_2_subheader', 'column_2_body',
-                    'column_2_header_mobile', 'column_2_subheader_mobile', 'column_2_body_mobile',
-                    'question', 'answer',
-                    'popup_content', 'card_body', 'item_text_body',
+                        // Component subject-prefixed wysiwyg/rich-text keys (one rule per layout).
+                        'content_body',
+                        'info_body',
+                        'hours_body',
+                        'cards_body',
+                        'intro_body',
+                        'split_body',
+                        'scroller_header_text', 'scroller_subheading_text', 'scroller_body_text',
+                        'details_address',
+                        // Repeater sub-fields & misc rich-text holders kept across components.
+                        'hero_subtitle_line',
+                        'item_body', 'card_body',
                     ], true)
                 ) {
                     $sanitized[$key] = self::wysiwyg($value);

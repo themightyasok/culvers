@@ -22,14 +22,15 @@ class ComponentCache
     private int $cacheExpiry = self::DEFAULT_EXPIRY;
 
     /**
-     * Get cached components
+     * Get cached components.
+     *
+     * @return array<string, mixed>|null
      */
     public function get(): ?array
     {
         $cached = wp_cache_get($this->cacheKey, self::CACHE_GROUP);
 
-        // wp_cache_get returns false on miss, we return null for clarity
-        if ($cached === false) {
+        if ($cached === false || ! is_array($cached)) {
             return null;
         }
 
@@ -37,7 +38,9 @@ class ComponentCache
     }
 
     /**
-     * Set cached components
+     * Set cached components.
+     *
+     * @param array<string, mixed> $components
      */
     public function set(array $components): bool
     {

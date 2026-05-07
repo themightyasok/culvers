@@ -17,7 +17,7 @@ return [
             'options' => [
                 'label' => __('Intro copy', 'culvers'),
                 'instructions' => __('Single centred column (sans body in designs).', 'culvers'),
-                'tabs' => 'visual',
+                'tabs' => 'all',
                 'toolbar' => 'basic',
                 'media_upload' => 0,
             ],

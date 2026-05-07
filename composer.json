@@ -11,9 +11,9 @@
   },
   "require-dev": {
     "laravel/pint": "^1.13",
-    "phpstan/phpstan": "^1.12",
+    "phpstan/phpstan": "^2.1",
     "squizlabs/php_codesniffer": "^4.0",
-    "szepeviktor/phpstan-wordpress": "^1.3"
+    "szepeviktor/phpstan-wordpress": "^2.0"
   },
   "scripts": {
     "lint": "phpcs app --standard=.phpcs.xml",

@@ -1,7 +1,8 @@
 /**
  * Shop directory archive — filter sidebar + responsive grid reflow (Figma Shopping Directory).
+ *
+ * @param {import('alpinejs').Alpine} Alpine
  */
-
 export default function registerDirectoryArchiveAlpine(Alpine) {
   Alpine.data('directoryArchive', () => ({
     /** Matches Figma Shopping Directory default: filters hidden, four-column grid (frame 51:5152). */

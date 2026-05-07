@@ -100,7 +100,12 @@
   }
 }
 
-.directory-archive__grid > .directory-shop-card {
+/*
+ * Cards target the universal `[data-directory-card]` hook (set on every
+ * directory card root) so a new CPT card type slots into the same grid
+ * with no extra rules.
+ */
+.directory-archive__grid > [data-directory-card] {
   justify-self: stretch;
   width: 100%;
   min-width: 0;
@@ -120,7 +125,7 @@
   border-bottom: none;
 }
 
-.directory-archive__grid--animating .directory-shop-card {
+.directory-archive__grid--animating [data-directory-card] {
   transition:
     opacity 0.22s ease,
     transform 0.22s ease;

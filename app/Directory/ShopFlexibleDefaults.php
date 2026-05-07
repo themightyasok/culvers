@@ -56,7 +56,7 @@ final class ShopFlexibleDefaults
     public static function defaultLayoutRows(): array
     {
         return [
-            ['acf_fc_layout' => 'shop_image_hero'],
+            ['acf_fc_layout' => 'image_hero'],
             ['acf_fc_layout' => 'shop_intro_block'],
             ['acf_fc_layout' => 'shop_split_highlight'],
             ['acf_fc_layout' => 'shop_store_details'],

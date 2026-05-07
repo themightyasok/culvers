@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Directory;
 
+use App\Helpers\Cast;
 use App\Nav\ShopDirectoryNavSync;
 
 /**
@@ -43,7 +44,7 @@ final class ShopDirectoryPopulate
             self::cliError('ACF is required (update_field missing).');
         }
 
-        $userId = (int) apply_filters('culvers_shop_directory_populate_user_id', 1);
+        $userId = Cast::toInt(apply_filters('culvers_shop_directory_populate_user_id', 1));
         if ($userId > 0) {
             wp_set_current_user($userId);
         }
@@ -63,7 +64,13 @@ final class ShopDirectoryPopulate
             }
 
             if ($replaceHero) {
-                self::seedArchiveHeroOption();
+                /* The /shops/ hero now uses the static `image_hero` band
+                   (~half-viewport image banner with stacked title +
+                   subtitle), seeded centrally for every directory archive
+                   by {@see DirectoryArchiveHeroPopulate} and triggered by
+                   `scripts/archives-hero-populate.php`. We delegate here
+                   rather than duplicate the slider→banner migration logic. */
+                DirectoryArchiveHeroPopulate::runSeed(true);
             }
 
             ShopDirectoryNavSync::syncPrimaryShopMegaLinks();
@@ -83,7 +90,7 @@ final class ShopDirectoryPopulate
      */
     private static function upsertShopPost(array $row, int &$created, int &$updated): int
     {
-        $title = trim((string) ($row['title'] ?? ''));
+        $title = trim($row['title']);
         if ($title === '') {
             return 0;
         }
@@ -98,7 +105,7 @@ final class ShopDirectoryPopulate
             'suppress_filters' => true,
         ]);
 
-        $postId = is_array($existing) && isset($existing[0]) ? (int) $existing[0] : 0;
+        $postId = isset($existing[0]) ? (int) $existing[0] : 0;
 
         $payload = [
             'post_title' => $title,
@@ -130,8 +137,8 @@ final class ShopDirectoryPopulate
 
         self::acfUpdateField('opening_hours_summary', ShopDirectorySeedData::DEFAULT_HOURS_LINE, $postId);
 
-        $logoUrl = isset($row['logo_url']) && is_string($row['logo_url']) ? trim($row['logo_url']) : '';
-        $featUrl = isset($row['featured_url']) && is_string($row['featured_url']) ? trim($row['featured_url']) : '';
+        $logoUrl = $row['logo_url'] !== null ? trim($row['logo_url']) : '';
+        $featUrl = $row['featured_url'] !== null ? trim($row['featured_url']) : '';
 
         delete_post_thumbnail($postId);
         self::acfUpdateField('shop_logo', false, $postId);
@@ -296,7 +303,7 @@ final class ShopDirectoryPopulate
 
         $id = media_handle_sideload($fileArray, 0, __('Culver Square directory seed', 'culvers'));
         if (is_wp_error($id)) {
-            if (is_string($tmp) && $tmp !== '' && file_exists($tmp)) {
+            if ($tmp !== '' && file_exists($tmp)) {
                 unlink($tmp);
             }
             self::cliWarning('[sideload] ' . $id->get_error_message());
@@ -305,29 +312,6 @@ final class ShopDirectoryPopulate
         }
 
         return (int) $id;
-    }
-
-    private static function seedArchiveHeroOption(): void
-    {
-        $heroId = self::sideloadFromUrl(ShopDirectorySeedData::HERO_DESKTOP_IMAGE, 'shops-archive-hero');
-
-        if ($heroId <= 0) {
-            self::cliWarning('Hero image sideload failed — skipping shops_archive_hero_slides option.');
-
-            return;
-        }
-
-        $slide = [
-            'slide_image' => $heroId,
-            'slide_headline' => "Good vibes,\nGreat finds.",
-            'slide_kicker' => __('Find your newest look', 'culvers'),
-            'slide_body' => '',
-            'slide_cta_label' => '',
-            'slide_cta_url' => '',
-        ];
-
-        self::acfUpdateField('shops_archive_hero_slides', [$slide], 'option');
-        self::acfUpdateField('shops_archive_hero_align', 'center', 'option');
     }
 
     private static function cliSuccess(string $msg): void

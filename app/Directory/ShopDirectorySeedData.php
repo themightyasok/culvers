@@ -243,8 +243,24 @@ final class ShopDirectorySeedData
     /**
      * Deterministic demo storefront/interior for directory hover (replace with real photography per retailer).
      */
-    private static function storefrontDemoPhoto(string $seedKey): string
+    /**
+     * Per-shop storefront photo URL.
+     *
+     * The Figma developer release only ships a real storefront photo for the
+     * H&M anchor tile ({@see FEAT_HM_STOREFRONT}); every other shop tile in
+     * the design uses the logo on a brand-coloured card. Returning `null`
+     * here keeps that intent — the shop card component renders logo-only when
+     * featured_url is missing — and avoids the prior random `picsum.photos`
+     * landscape placeholders that obviously aren't from Figma.
+     *
+     * Pass-through API kept (callers reference each shop by `$seedKey`) so
+     * that wiring up additional Figma storefront exports later is a one-line
+     * change per shop.
+     */
+    private static function storefrontDemoPhoto(string $seedKey): null
     {
-        return 'https://picsum.photos/seed/' . rawurlencode('cs-store-' . $seedKey) . '/672/588';
+        unset($seedKey); // intentional — no per-shop Figma storefront yet beyond H&M
+
+        return null;
     }
 }

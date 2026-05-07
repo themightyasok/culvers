@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Helpers;
 
 /**
  * Twelve-column layout helpers using Tailwind grid + default spacing scale utilities.
  */
-class Grid
+final class Grid
 {
     /** @var array<int|string, string>|null */
     private static ?array $gridClassMappings = null;
@@ -97,8 +99,14 @@ class Grid
     }
 
     /**
-     * Strip responsive horizontal gutters (`px-*` / `sm:px-*` …) from {@see self::getClasses()} column classes.
-     * Full-bleed components (heroes, horizontal strip) sit in `col-span-12` but must not inherit outer grid padding.
+     * Strip the responsive horizontal gutters (`px-*` / `sm:px-*` / `lg:px-*` …) that
+     * {@see self::getClasses()} adds to a column class string.
+     *
+     * **Rule:** every component that renders its own inner shell (`LayoutShell::INNER_*`,
+     * a custom `mx-auto max-w-* px-*` wrapper, or a full-bleed media element) MUST call
+     * this helper on `_grid_classes` to avoid double-padding (grid gutter + inner gutter).
+     * Components without an inner shell (e.g. `content-section`) leave the grid gutters
+     * intact — they ARE the gutters that frame the section content.
      */
     public static function stripHorizontalInsetPadding(string $gridClasses): string
     {
@@ -142,6 +150,7 @@ class Grid
 
     public static function getInternalGridClasses(int $componentWidth, int $columns): string
     {
+        /** @var array<int, string> $columnMappings */
         static $columnMappings = [
             2 => 'grid-cols-1 lg:grid-cols-2',
             3 => 'grid-cols-1 lg:grid-cols-3',
@@ -154,13 +163,14 @@ class Grid
     }
 
     /**
-     * @return array<int, int>
+     * @param list<int|float> $splits
+     * @return list<int>
      */
     public static function calculateInternalColumnSpans(int $parentWidth, array $splits): array
     {
         $spans = [];
         foreach ($splits as $split) {
-            $span = round(($split / 100) * $parentWidth);
+            $span = (int) round(($split / 100) * $parentWidth);
             $spans[] = max(1, min(12, $span));
         }
 

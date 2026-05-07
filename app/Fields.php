@@ -37,5 +37,15 @@ class Fields
         acf_add_local_field_group($flexibleContent->build());
         Directory\ShopFields::register();
         Directory\ShopArchiveFields::register();
+        Directory\EatDrinkFields::register();
+        Directory\EatDrinkArchiveFields::register();
+        Directory\EventFields::register();
+        Directory\EventArchiveFields::register();
+        Directory\OfferFields::register();
+        Directory\OfferArchiveFields::register();
+        Directory\NewsFields::register();
+        Directory\NewsArchiveFields::register();
+        Directory\CareerFields::register();
+        Directory\CareerArchiveFields::register();
     }
 }

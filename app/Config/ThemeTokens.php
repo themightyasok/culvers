@@ -206,17 +206,17 @@ final class ThemeTokens
     }
 
     /**
-     * @param array<int, string> $hexes
-     * @return array<int, string>
+     * @param list<string> $hexes
+     * @return list<string>
      */
     private static function sortedUnique(array $hexes): array
     {
         $hexes = array_map(static fn (string $h): string => self::normalizeHex($h), $hexes);
-        $hexes = array_filter(array_unique($hexes));
+        $hexes = array_values(array_filter(array_unique($hexes)));
 
         sort($hexes);
 
-        return array_values($hexes);
+        return $hexes;
     }
 
     private static function normalizeHex(string $hex): string

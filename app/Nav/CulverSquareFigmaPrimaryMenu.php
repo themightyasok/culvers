@@ -147,7 +147,6 @@ final class CulverSquareFigmaPrimaryMenu
      */
     private static function attachmentIdForSourceUrl(string $url): int
     {
-        /** @var array<string, int> $map */
         $map = get_option(self::OPTION_ATTACHMENT_MAP, []);
         if (! is_array($map)) {
             $map = [];
@@ -183,7 +182,7 @@ final class CulverSquareFigmaPrimaryMenu
 
         $id = media_handle_sideload($file_array, 0, __('Culver Square mega menu preview', 'culvers'));
         if (is_wp_error($id)) {
-            if (is_string($tmp) && $tmp !== '' && file_exists($tmp)) {
+            if ($tmp !== '' && file_exists($tmp)) {
                 unlink($tmp);
             }
             if (defined('WP_DEBUG') && WP_DEBUG) {
@@ -276,10 +275,35 @@ final class CulverSquareFigmaPrimaryMenu
             foreach ($branch['children'] as $childRow) {
                 $childTitle = $childRow['title'];
                 $previewUrl = $childRow['preview'];
-                $isShopBranch = ($branch['parent_slug'] ?? '') === 'shop';
-                $childUrl = $isShopBranch
-                    ? esc_url_raw(add_query_arg(['category' => (string) $childRow['slug']], $shopArchive))
-                    : '#';
+                $isShopBranch = $branch['parent_slug'] === 'shop';
+                $childSlug = (string) $childRow['slug'];
+
+                /* URL resolution rules:
+                 *  - Shop children deep-link into the directory archive via
+                 *    `?category=` (single-slug categories — keep as-is).
+                 *  - What's On children resolve to top-level archives at
+                 *    `/<slug>/` (Latest Events / Offers / News are first-
+                 *    class CPTs; the parent What's On is a landing page,
+                 *    not an archive container).
+                 *  - Children whose slug contains a "/" are treated as
+                 *    nested paths under the site root (kept for any future
+                 *    nested sub-archives — currently unused).
+                 *  - Everything else falls back to "#" so the menu item
+                 *    survives until {@see PrimaryNavLinkSync} or an editor
+                 *    wires up the destination. */
+                if ($isShopBranch) {
+                    $childUrl = esc_url_raw(
+                        add_query_arg(['category' => $childSlug], $shopArchive)
+                    );
+                } elseif ($branch['parent_slug'] === 'whats-on') {
+                    $path = '/' . ltrim($childSlug, '/') . '/';
+                    $childUrl = function_exists('home_url') ? home_url($path) : $path;
+                } elseif (str_contains($childSlug, '/')) {
+                    $path = '/' . trim($childSlug, '/') . '/';
+                    $childUrl = function_exists('home_url') ? home_url($path) : $path;
+                } else {
+                    $childUrl = '#';
+                }
 
                 $childResult = wp_update_nav_menu_item($menuId, 0, [
                     'menu-item-title' => $childTitle,
@@ -431,13 +455,13 @@ final class CulverSquareFigmaPrimaryMenu
         $out = [];
 
         foreach (self::branches() as $branch) {
-            if (($branch['parent_slug'] ?? '') !== 'shop') {
+            if ($branch['parent_slug'] !== 'shop') {
                 continue;
             }
             foreach ($branch['children'] as $childRow) {
                 $out[] = [
-                    'title' => (string) $childRow['title'],
-                    'url' => esc_url_raw(add_query_arg(['category' => (string) $childRow['slug']], $archive)),
+                    'title' => $childRow['title'],
+                    'url' => esc_url_raw(add_query_arg(['category' => $childRow['slug']], $archive)),
                 ];
             }
 
@@ -481,7 +505,13 @@ final class CulverSquareFigmaPrimaryMenu
     }
 
     /**
-     * Stable demo imagery per submenu row (734×458 mega slot). Replace with production assets anytime.
+     * Mega-nav configuration for the Figma-bootstrapped primary menu.
+     *
+     * Per-child `preview` defaults to the parent branch's `panel_image` so
+     * every hover preview ships a real Figma asset (rather than the prior
+     * `picsum.photos` random landscapes that obviously aren't from the
+     * developer release). Editors can override the per-row preview via the
+     * Mega menu item meta box once a brand-specific export is available.
      *
      * @return list<array{
      *     title: string,
@@ -502,13 +532,13 @@ final class CulverSquareFigmaPrimaryMenu
                 'parent_slug' => 'shop',
                 'panel_image' => self::IMG_SHOP,
                 'children' => [
-                    ['slug' => 'beauty-wellbeing', 'title' => __('Beauty & Wellbeing', 'culvers'), 'preview' => 'https://picsum.photos/seed/cs-shop-beauty-wellbeing/734/458'],
-                    ['slug' => 'fashion', 'title' => __('Fashion', 'culvers'), 'preview' => 'https://picsum.photos/seed/cs-shop-fashion/734/458'],
-                    ['slug' => 'jewellery', 'title' => __('Jewellery', 'culvers'), 'preview' => 'https://picsum.photos/seed/cs-shop-jewellery/734/458'],
-                    ['slug' => 'toys-gifts', 'title' => __('Toys & Gifts', 'culvers'), 'preview' => 'https://picsum.photos/seed/cs-shop-toys-gifts/734/458'],
-                    ['slug' => 'technology', 'title' => __('Technology', 'culvers'), 'preview' => 'https://picsum.photos/seed/cs-shop-technology/734/458'],
-                    ['slug' => 'services', 'title' => __('Services', 'culvers'), 'preview' => 'https://picsum.photos/seed/cs-shop-services/734/458'],
-                    ['slug' => 'home', 'title' => __('Home', 'culvers'), 'preview' => 'https://picsum.photos/seed/cs-shop-home/734/458'],
+                    ['slug' => 'beauty-wellbeing', 'title' => __('Beauty & Wellbeing', 'culvers'), 'preview' => self::IMG_SHOP],
+                    ['slug' => 'fashion', 'title' => __('Fashion', 'culvers'), 'preview' => self::IMG_SHOP],
+                    ['slug' => 'jewellery', 'title' => __('Jewellery', 'culvers'), 'preview' => self::IMG_SHOP],
+                    ['slug' => 'toys-gifts', 'title' => __('Toys & Gifts', 'culvers'), 'preview' => self::IMG_SHOP],
+                    ['slug' => 'technology', 'title' => __('Technology', 'culvers'), 'preview' => self::IMG_SHOP],
+                    ['slug' => 'services', 'title' => __('Services', 'culvers'), 'preview' => self::IMG_SHOP],
+                    ['slug' => 'home', 'title' => __('Home', 'culvers'), 'preview' => self::IMG_SHOP],
                 ],
             ],
             [
@@ -517,10 +547,10 @@ final class CulverSquareFigmaPrimaryMenu
                 'parent_slug' => 'eat-drink',
                 'panel_image' => self::IMG_EAT_DRINK,
                 'children' => [
-                    ['slug' => 'grab-go', 'title' => __('Grab & Go', 'culvers'), 'preview' => 'https://picsum.photos/seed/cs-eat-grab-go/734/458'],
-                    ['slug' => 'restaurant', 'title' => __('Restaurant', 'culvers'), 'preview' => 'https://picsum.photos/seed/cs-eat-restaurant/734/458'],
-                    ['slug' => 'healthy-options', 'title' => __('Healthy Options', 'culvers'), 'preview' => 'https://picsum.photos/seed/cs-eat-healthy/734/458'],
-                    ['slug' => 'cafe', 'title' => __('Cafe', 'culvers'), 'preview' => 'https://picsum.photos/seed/cs-eat-cafe/734/458'],
+                    ['slug' => 'grab-go', 'title' => __('Grab & Go', 'culvers'), 'preview' => self::IMG_EAT_DRINK],
+                    ['slug' => 'restaurant', 'title' => __('Restaurant', 'culvers'), 'preview' => self::IMG_EAT_DRINK],
+                    ['slug' => 'healthy-options', 'title' => __('Healthy Options', 'culvers'), 'preview' => self::IMG_EAT_DRINK],
+                    ['slug' => 'cafe', 'title' => __('Cafe', 'culvers'), 'preview' => self::IMG_EAT_DRINK],
                 ],
             ],
             [
@@ -529,10 +559,10 @@ final class CulverSquareFigmaPrimaryMenu
                 'parent_slug' => 'plan-my-visit',
                 'panel_image' => self::IMG_PLAN_VISIT,
                 'children' => [
-                    ['slug' => 'getting-here', 'title' => __('Getting Here', 'culvers'), 'preview' => 'https://picsum.photos/seed/cs-plan-getting-here/734/458'],
-                    ['slug' => 'centre-map', 'title' => __('Centre Map', 'culvers'), 'preview' => 'https://picsum.photos/seed/cs-plan-centre-map/734/458'],
-                    ['slug' => 'accessible-access', 'title' => __('Accessible Access', 'culvers'), 'preview' => 'https://picsum.photos/seed/cs-plan-access/734/458'],
-                    ['slug' => 'opening-hours', 'title' => __('Opening Hours', 'culvers'), 'preview' => 'https://picsum.photos/seed/cs-plan-hours/734/458'],
+                    ['slug' => 'getting-here', 'title' => __('Getting Here', 'culvers'), 'preview' => self::IMG_PLAN_VISIT],
+                    ['slug' => 'centre-map', 'title' => __('Centre Map', 'culvers'), 'preview' => self::IMG_PLAN_VISIT],
+                    ['slug' => 'accessible-access', 'title' => __('Accessible Access', 'culvers'), 'preview' => self::IMG_PLAN_VISIT],
+                    ['slug' => 'opening-hours', 'title' => __('Opening Hours', 'culvers'), 'preview' => self::IMG_PLAN_VISIT],
                 ],
             ],
             [
@@ -541,9 +571,21 @@ final class CulverSquareFigmaPrimaryMenu
                 'parent_slug' => 'whats-on',
                 'panel_image' => self::IMG_WHATS_ON,
                 'children' => [
-                    ['slug' => 'latest-events', 'title' => __('Latest Events', 'culvers'), 'preview' => 'https://picsum.photos/seed/cs-whats-events/734/458'],
-                    ['slug' => 'latest-news', 'title' => __('Latest News', 'culvers'), 'preview' => 'https://picsum.photos/seed/cs-whats-news/734/458'],
-                    ['slug' => 'latest-offers', 'title' => __('Latest Offers', 'culvers'), 'preview' => 'https://picsum.photos/seed/cs-whats-offers/734/458'],
+                    [
+                        'slug' => 'latest-events',
+                        'title' => __('Latest Events', 'culvers'),
+                        'preview' => self::IMG_WHATS_ON,
+                    ],
+                    [
+                        'slug' => 'latest-news',
+                        'title' => __('Latest News', 'culvers'),
+                        'preview' => self::IMG_WHATS_ON,
+                    ],
+                    [
+                        'slug' => 'latest-offers',
+                        'title' => __('Latest Offers', 'culvers'),
+                        'preview' => self::IMG_WHATS_ON,
+                    ],
                 ],
             ],
             [
@@ -552,12 +594,12 @@ final class CulverSquareFigmaPrimaryMenu
                 'parent_slug' => 'guest-services',
                 'panel_image' => self::IMG_GUEST_SERVICES,
                 'children' => [
-                    ['slug' => 'about-colchester', 'title' => __('About Colchester', 'culvers'), 'preview' => 'https://picsum.photos/seed/cs-guest-about/734/458'],
-                    ['slug' => 'click-collect', 'title' => __('Click & Collect', 'culvers'), 'preview' => 'https://picsum.photos/seed/cs-guest-click-collect/734/458'],
-                    ['slug' => 'security', 'title' => __('Security', 'culvers'), 'preview' => 'https://picsum.photos/seed/cs-guest-security/734/458'],
-                    ['slug' => 'facilities', 'title' => __('Facilities', 'culvers'), 'preview' => 'https://picsum.photos/seed/cs-guest-facilities/734/458'],
-                    ['slug' => 'faqs', 'title' => __("FAQ's", 'culvers'), 'preview' => 'https://picsum.photos/seed/cs-guest-faq/734/458'],
-                    ['slug' => 'contact-us', 'title' => __('Contact Us', 'culvers'), 'preview' => 'https://picsum.photos/seed/cs-guest-contact/734/458'],
+                    ['slug' => 'about-colchester', 'title' => __('About Colchester', 'culvers'), 'preview' => self::IMG_GUEST_SERVICES],
+                    ['slug' => 'click-collect', 'title' => __('Click & Collect', 'culvers'), 'preview' => self::IMG_GUEST_SERVICES],
+                    ['slug' => 'security', 'title' => __('Security', 'culvers'), 'preview' => self::IMG_GUEST_SERVICES],
+                    ['slug' => 'facilities', 'title' => __('Facilities', 'culvers'), 'preview' => self::IMG_GUEST_SERVICES],
+                    ['slug' => 'faqs', 'title' => __("FAQ's", 'culvers'), 'preview' => self::IMG_GUEST_SERVICES],
+                    ['slug' => 'contact-us', 'title' => __('Contact Us', 'culvers'), 'preview' => self::IMG_GUEST_SERVICES],
                 ],
             ],
         ];

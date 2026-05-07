@@ -4,6 +4,8 @@
  * Shop detail — “More shops” row using directory card styling (up to four picks).
  */
 
+use App\Helpers\Component;
+
 return [
     'label' => __('Shop — related shops', 'culvers'),
     'display' => 'block',
@@ -19,19 +21,7 @@ return [
                 'default_value' => __('More shops you might enjoy', 'culvers'),
             ],
         ],
-        'related_heading_level' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Heading level', 'culvers'),
-                'choices' => [
-                    '2' => __('H2 — default', 'culvers'),
-                    '3' => __('H3', 'culvers'),
-                    '4' => __('H4', 'culvers'),
-                ],
-                'default_value' => '2',
-                'return_format' => 'value',
-            ],
-        ],
+        'related_heading_level' => Component::headingLevelField(),
         'related_shop_posts' => [
             'type' => 'post_object',
             'options' => [

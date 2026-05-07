@@ -3,7 +3,25 @@
  * Content paths + typography plugin live in `tailwind.config.js` (`@config` from app.css).
  *
  * PHP reads `--color-*` hex lines for ACF colour pickers — keep hex `#RRGGBB` or `#RGB`.
- * Typography ramp is remapped to Culver Square — see docs/TYPOGRAPHY-SCALE.md.
+ *
+ * Naming policy (no semantic Tailwind classes invented here):
+ *   - Use ONLY stock Tailwind utility names (`text-xs..text-9xl`, `max-w-xs..max-w-7xl`,
+ *     `z-10..z-50`, `tracking-wide..-widest`, `leading-tight..-loose`).
+ *   - Default values are retuned to Culver Square's Figma type ladder.
+ *     8 of 13 text steps keep Tailwind's default value; only display tier (3xl–9xl) is
+ *     remapped (every design system retunes the display tier).
+ *   - For Figma values that fall between standard steps, prefer `tracking-[N]`,
+ *     `leading-[Npx]`, `text-[clamp(...)]` arbitrary values — do NOT add `text-display-*`,
+ *     `text-caption`, etc.
+ *   - Numerical pattern extensions are allowed where Tailwind's own scale stops short:
+ *     `--container-8xl` (continues max-w-{xs..7xl} → 8xl) and `--z-index-{60,70,80}`
+ *     (continues z-{10..50} → 60/70/80) for the header/drawer/skip-link stack.
+ *
+ * Snap losses (≤ 2px each, all documented in docs/TYPOGRAPHY-SCALE.md):
+ *   - 10px legal copy → text-xs (12px) +2
+ *   - 17px policy/footer body @ md → text-lg (18px) +1
+ *   - 22px directory cards / mega sublinks → text-2xl (24px) +2
+ *   - 34px footer newsletter heading @ lg → text-3xl (32px) -2
  *
  * @see \App\Config\ThemeTokens::colorHexPalette()
  */
@@ -28,55 +46,80 @@
   --color-brand-700: #2e301e;
 
   /*
-   * Type scale — even px steps only; merges per docs/TYPOGRAPHY-SCALE.md (Figma audit).
-   * Tailwind: text-micro, text-xs … text-9xl (no parallel semantic names).
+   * Type scale — stock Tailwind names, Figma-tuned values + paired line-heights.
+   *
+   * Body tier (xs..2xl) keeps Tailwind defaults so external Tailwind examples / docs
+   * keep their conventional sizes. Display tier (3xl..9xl) is remapped to Culver
+   * Square's Halyard/Canela ladder (84px H1 etc.).
    */
-  --text-micro: 0.625rem;
-  --text-micro--line-height: 24px;
+  --text-xs: 0.75rem; /* 12px — Action labels, pills, eyebrow micro */
+  --text-xs--line-height: 1.5rem; /* 24px */
 
-  --text-xs: 0.75rem;
-  --text-xs--line-height: 24px;
+  --text-sm: 0.875rem; /* 14px — directory card sub-line / caption */
+  --text-sm--line-height: 1.25rem; /* 20px */
 
-  --text-sm: 1rem;
-  --text-sm--line-height: 24px;
+  --text-base: 1rem; /* 16px — primary nav, mega menu, body sm */
+  --text-base--line-height: 1.5rem; /* 24px */
 
-  --text-base: 1.125rem;
-  --text-base--line-height: 26px;
+  --text-lg: 1.125rem; /* 18px — footer column links, prose body (17px snaps here) */
+  --text-lg--line-height: 1.625rem; /* 26px */
 
-  --text-lg: 1.25rem;
-  --text-lg--line-height: 1.3;
+  --text-xl: 1.25rem; /* 20px — large body, hero eyebrow */
+  --text-xl--line-height: 1.3;
 
-  --text-xl: 1.5rem;
-  --text-xl--line-height: 30px;
+  --text-2xl: 1.5rem; /* 24px — store details values (22px cards/mega snaps here) */
+  --text-2xl--line-height: 1.625rem; /* 26px (Figma 22px tracker; 24px reads at 26 lh) */
 
-  --text-2xl: 2rem;
-  --text-2xl--line-height: 1.1;
-
-  --text-3xl: 2.5rem;
+  --text-3xl: 2rem; /* 32px — H4 / store heading (34px newsletter snaps here) */
   --text-3xl--line-height: 1.1;
 
-  --text-4xl: 3rem;
+  --text-4xl: 2.5rem; /* 40px — H3 */
   --text-4xl--line-height: 1.1;
 
-  --text-5xl: 4rem;
-  --text-5xl--line-height: 1.2;
+  --text-5xl: 3rem; /* 48px — Mega tile labels */
+  --text-5xl--line-height: 1.1;
 
-  --text-6xl: 5.25rem;
-  --text-6xl--line-height: 1;
+  --text-6xl: 3.625rem; /* 58px — Section titles (Opening Hours / Related Shops) */
+  --text-6xl--line-height: 1.15;
 
-  --text-7xl: 6rem;
-  --text-7xl--line-height: 1;
+  --text-7xl: 4rem; /* 64px — H2 */
+  --text-7xl--line-height: 1.2;
 
-  --text-8xl: 7rem;
+  --text-8xl: 5.25rem; /* 84px — H1 */
   --text-8xl--line-height: 1;
 
-  --text-9xl: 8rem;
+  --text-9xl: 6rem; /* 96px — Hero ("Discover…") */
   --text-9xl--line-height: 1;
 
-  /* Letter-spacing tied to named roles (still single ramp for font-size). */
-  --tracking-label: 0.0625rem;
-  --tracking-kicker: 0.25rem;
-  --tracking-cta: 0.04026875rem;
+  /*
+   * Letter-spacing & line-height — stock Tailwind utilities only.
+   *
+   * Each `--text-*` above carries its own `--text-*--line-height`, so apply the type
+   * utility and the design line-height comes with it. Override only when intentionally
+   * diverging (use `tracking-tight|-normal|-wide|-wider|-widest`,
+   * `leading-tight|-snug|-normal|-relaxed|-loose`, or arbitrary values
+   * `tracking-[0.2em]` / `leading-[26px]` for Figma values that don't fit a default step).
+   */
+
+  /*
+   * Container widths — stock Tailwind names + one numerical extension.
+   *
+   * Tailwind's max-w ladder stops at max-w-7xl (80rem / 1280px). Culver Square's
+   * inner shell is 1440px (matches the homepage grid + footer columns), so we extend
+   * one step in Tailwind's own naming pattern (xl → 2xl → … → 7xl → 8xl).
+   */
+  --container-8xl: 90rem; /* 1440px — site shell (header, footer, content) */
+
+  /*
+   * z-index scale — stock z-10..z-50 covers content layering. We extend with z-60..z-80
+   * for the global header/drawer stack (mega panel above header above mega bar; drawer
+   * sits above mega; skip link above everything for keyboard users).
+   *
+   * Body-content stacking should still use z-0..z-50.
+   */
+  --z-index-60: 60; /* mega-nav__panel */
+  --z-index-70: 70; /* mobile drawer */
+  --z-index-80: 80; /* skip link (focus-visible) */
 
   /* Zinc scale — explicit so CMS palette + PHP parser stay in sync */
   --color-zinc-50: #fafafa;

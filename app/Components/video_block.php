@@ -22,7 +22,7 @@ return [
                 'new_lines' => 'wpautop',
             ],
         ],
-        'video' => [
+        'video_file' => [
             'type' => 'file',
             'options' => [
                 'label' => __('Video file', 'culvers'),
@@ -32,7 +32,7 @@ return [
                 'library' => 'all',
             ],
         ],
-        'poster' => [
+        'video_poster' => [
             'type' => 'image',
             'options' => [
                 'label' => __('Poster image', 'culvers'),
@@ -43,7 +43,7 @@ return [
                 'library' => 'all',
             ],
         ],
-        'play_button_label' => [
+        'video_play_label' => [
             'type' => 'text',
             'options' => [
                 'label' => __('Play button label', 'culvers'),

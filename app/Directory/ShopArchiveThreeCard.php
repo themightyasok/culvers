@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Directory;
 
 use App\Constants\ComponentTypes;
+use App\Helpers\Cast;
 use App\Helpers\ThreeCardBlock;
 
 /**
@@ -15,7 +16,9 @@ use App\Helpers\ThreeCardBlock;
 final class ShopArchiveThreeCard
 {
     /**
-     * @return array<string, mixed>|null Component payload for `components.three-card-block`, or null when disabled / empty.
+     * Component payload for `components.three-card-block`, or null when disabled / empty.
+     *
+     * @return array<string, mixed>|null
      */
     public static function componentOrNull(): ?array
     {
@@ -37,13 +40,16 @@ final class ShopArchiveThreeCard
             'background_type' => ComponentTypes::BACKGROUND_NONE,
             'top_padding' => ComponentTypes::PADDING_LARGE,
             'bottom_padding' => ComponentTypes::PADDING_MEDIUM,
-            'block_heading_level' => '2',
-            'block_subheading' => '',
-            'block_body' => '',
-            '_grid_classes' => 'relative z-[20] w-full text-deep-moss',
+            'cards_heading_level' => '2',
+            'cards_subheading' => '',
+            'cards_body' => '',
+            '_grid_classes' => 'relative z-20 w-full text-deep-moss',
         ];
     }
 
+    /**
+     * @return array<string, mixed>|null
+     */
     private static function fromOptions(): ?array
     {
         if (! function_exists('get_field')) {
@@ -55,22 +61,22 @@ final class ShopArchiveThreeCard
             return null;
         }
 
-        $heading = trim((string) (get_field('shops_archive_three_card_heading', 'option') ?: ''));
+        $heading = trim(Cast::toString(get_field('shops_archive_three_card_heading', 'option')));
         if ($heading === '') {
             $heading = __('What are you looking for today?', 'culvers');
         }
 
-        $viewAllUrl = trim((string) (get_field('shops_archive_three_card_view_all_url', 'option') ?: ''));
+        $viewAllUrl = trim(Cast::toString(get_field('shops_archive_three_card_view_all_url', 'option')));
         if ($viewAllUrl === '') {
             $viewAllUrl = self::defaultPostsIndexUrl();
         }
 
-        $viewAllLabel = trim((string) (get_field('shops_archive_three_card_view_all_label', 'option') ?: ''));
+        $viewAllLabel = trim(Cast::toString(get_field('shops_archive_three_card_view_all_label', 'option')));
         if ($viewAllLabel === '') {
             $viewAllLabel = __('View all', 'culvers');
         }
 
-        $perPage = (int) get_field('shops_archive_three_card_posts_per_tab', 'option');
+        $perPage = Cast::toInt(get_field('shops_archive_three_card_posts_per_tab', 'option'));
         if ($perPage < 1) {
             $perPage = 3;
         }
@@ -78,27 +84,25 @@ final class ShopArchiveThreeCard
             $perPage = 12;
         }
 
-        /** @var mixed $categoryRaw */
-        $categoryRaw = get_field('shops_archive_three_card_category_tabs', 'option');
-        $categoryIds = self::normalizeCategoryIds($categoryRaw);
+        $categoryIds = self::normalizeCategoryIds(get_field('shops_archive_three_card_category_tabs', 'option'));
 
         $base = array_merge(self::defaultsSkeleton(), [
-            'block_heading' => $heading,
-            'blog_view_all_url' => $viewAllUrl,
-            'blog_view_all_label' => $viewAllLabel,
+            'cards_heading' => $heading,
+            'cards_view_all_url' => $viewAllUrl,
+            'cards_view_all_label' => $viewAllLabel,
         ]);
 
         if ($categoryIds !== []) {
             return self::finalizeOrNull(array_merge($base, [
                 'cards_source' => 'blog',
-                'blog_category_tabs' => $categoryIds,
-                'blog_posts_per_category' => $perPage,
+                'cards_blog_categories' => $categoryIds,
+                'cards_blog_per_category' => $perPage,
             ]));
         }
 
         return self::finalizeOrNull(array_merge($base, [
             'cards_source' => 'manual',
-            'three_cards' => self::manualCardsFromRecentPosts($perPage),
+            'cards_items' => self::manualCardsFromRecentPosts($perPage),
         ]));
     }
 
@@ -108,11 +112,11 @@ final class ShopArchiveThreeCard
     private static function fallbackWithoutAcf(): array
     {
         return [
-            'block_heading' => __('What are you looking for today?', 'culvers'),
+            'cards_heading' => __('What are you looking for today?', 'culvers'),
             'cards_source' => 'manual',
-            'three_cards' => self::manualCardsFromRecentPosts(3),
-            'blog_view_all_url' => self::defaultPostsIndexUrl(),
-            'blog_view_all_label' => __('View all', 'culvers'),
+            'cards_items' => self::manualCardsFromRecentPosts(3),
+            'cards_view_all_url' => self::defaultPostsIndexUrl(),
+            'cards_view_all_label' => __('View all', 'culvers'),
         ];
     }
 
@@ -202,12 +206,13 @@ final class ShopArchiveThreeCard
 
     /**
      * @param  array<string, mixed>  $component
+     * @return array<string, mixed>|null
      */
     private static function finalizeOrNull(array $component): ?array
     {
         $normalized = ThreeCardBlock::applyEditorFallback($component);
         foreach (ThreeCardBlock::buildTabPanels($normalized) as $tab) {
-            if (($tab['cards'] ?? []) !== []) {
+            if ($tab['cards'] !== []) {
                 return $normalized;
             }
         }

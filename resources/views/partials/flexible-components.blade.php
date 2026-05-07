@@ -26,9 +26,10 @@ $templateResolver = TemplateResolver::getInstance();
       @php
         $layout = $component['acf_fc_layout'] ?? '';
         $component = $component + ComponentDefaults::get($layout);
-        $component['body_text_tone'] = TailwindColors::sanitizeBodyTextTone(
-            $component['body_text_tone'] ?? TailwindColors::defaultBodyTextToneForLayout($layout)
-        );
+        $rawTone = $component['body_text_tone'] ?? TailwindColors::defaultBodyTextToneForLayout($layout);
+        $component['body_text_tone'] = in_array($layout, ['shop_intro_block', 'shop_store_details'], true)
+            ? TailwindColors::bodyToneForWhiteBackground($rawTone)
+            : TailwindColors::sanitizeBodyTextTone($rawTone);
 
         $rawWidth = $component['component_width'] ?? Grid::getDefaultComponentWidth($layout);
         $componentWidth = Grid::validateComponentWidth($rawWidth);

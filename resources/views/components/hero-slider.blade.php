@@ -1,13 +1,15 @@
 @php
-  use App\Helpers\Grid;
-  use App\Helpers\Padding;
+  use App\Helpers\Component;
+  use App\Helpers\Image;
+
+  /**
+   * Hero slider — full-viewport Splide carousel. First slide hosts the page H1
+   * (lazy/fetchpriority="high"); subsequent slides demote to H2.
+   * Bleeds under the fixed header via `--site-header-offset` reserved padding.
+   */
 
   $c = is_array($component ?? null) ? $component : [];
-  $padding = Padding::getClasses($c);
-  $grid = $c['_grid_classes'] ?? '';
-  if ($grid !== '') {
-      $grid = Grid::stripHorizontalInsetPadding($grid);
-  }
+  $root = Component::rootClasses($c);
 
   $slidesRaw = $c['hero_slides'] ?? [];
   $slides = is_array($slidesRaw) ? $slidesRaw : [];
@@ -49,7 +51,7 @@
 
 @if($slides !== [])
   <section
-    class="{{ esc_attr(trim($grid . ' ' . $padding)) }} hero-slider--viewport relative isolate bg-deep-moss text-white"
+    class="hero-slider hero-slider--viewport {{ esc_attr($root) }} relative isolate bg-deep-moss text-white"
     data-component-root
     data-hero-slider
     data-hero-slide-count="{{ $slideCount }}"
@@ -97,37 +99,38 @@
                     @if($mobUrl !== '')
                       <source media="(max-width: 767px)" srcset="{{ esc_url($mobUrl) }}" />
                     @endif
-                    <img
-                      class="absolute inset-0 size-full object-cover"
-                      src="{{ esc_url($deskUrl) }}"
-                      alt="{{ esc_attr($alt) }}"
-                      width="{{ isset($desk['width']) ? (int) $desk['width'] : 1920 }}"
-                      height="{{ isset($desk['height']) ? (int) $desk['height'] : 1080 }}"
-                      decoding="async"
-                      fetchpriority="{{ $idx === 0 ? 'high' : 'low' }}"
-                      loading="{{ $idx === 0 ? 'eager' : 'lazy' }}"
-                      data-background-parallax-image="1" />
+                    {!! Image::render($desk, [
+                        'class' => 'absolute inset-0 size-full object-cover',
+                        'alt' => $alt,
+                        'width' => isset($desk['width']) ? (int) $desk['width'] : 1920,
+                        'height' => isset($desk['height']) ? (int) $desk['height'] : 1080,
+                        'loading' => $idx === 0 ? 'eager' : 'lazy',
+                        'decoding' => 'async',
+                        'fetchpriority' => $idx === 0 ? 'high' : 'low',
+                        'data' => ['background-parallax-image' => '1'],
+                    ]) !!}
                   </picture>
 
                   <div class="pointer-events-none absolute inset-0 z-0 bg-gradient-to-b from-black/45 via-black/25 to-black/35" aria-hidden="true"></div>
 
                   <div
-                    class="hero-slider__stage relative z-[1] flex min-h-[100svh] w-full items-center px-6 pb-16 pt-[length:var(--site-header-offset,11.25rem)] sm:px-10 md:px-[46px] {{ esc_attr($justify) }}">
+                    class="hero-slider__stage relative z-10 flex min-h-[100svh] w-full items-center px-6 pb-16 pt-[length:var(--site-header-offset,11.25rem)] sm:px-10 md:px-12 {{ esc_attr($justify) }}">
                     <div class="hero-slider__copy pointer-events-auto max-w-[40rem] motion-safe:transition-[opacity,transform] motion-safe:duration-300 motion-safe:ease-out {{ esc_attr($textAlign) }}">
                       @if($headline !== '')
-                        <{{ $headingTag }} class="font-heading text-4xl leading-[1.08] tracking-tight text-brand-500 sm:text-5xl md:text-6xl lg:text-[4rem] lg:leading-[1.05]">
+                        {{-- Figma homepage hero: Canela 96px / lh 96 (Glowleaf); kicker Commuters 20px / lh 24 / tracking 4px. --}}
+                        <{{ $headingTag }} class="font-heading text-7xl leading-none tracking-tight text-brand-500 sm:text-8xl md:text-9xl">
                           {!! nl2br(e($headline)) !!}
                         </{{ $headingTag }}>
                       @endif
 
                       @if($kicker !== '')
-                        <p class="mt-5 font-sans text-xs font-semibold uppercase tracking-[0.22em] text-white md:text-sm">
+                        <p class="mt-5 font-sans text-xl font-semibold uppercase leading-6 tracking-[0.2em] text-white">
                           {{ esc_html($kicker) }}
                         </p>
                       @endif
 
                       @if($body !== '')
-                        <p class="mt-5 font-sans text-base leading-relaxed text-white/90 md:text-lg">
+                        <p class="mt-5 font-sans text-lg leading-relaxed text-white/90 md:text-xl">
                           {!! nl2br(e($body)) !!}
                         </p>
                       @endif
@@ -151,7 +154,7 @@
   </section>
 @elseif(current_user_can('edit_posts'))
   @include('partials.component-editor-placeholder', [
-      'wrapperClasses' => trim($grid . ' ' . $padding),
+      'wrapperClasses' => $root,
       'message' => __('Add at least one hero slide with a desktop image.', 'culvers'),
   ])
 @endif

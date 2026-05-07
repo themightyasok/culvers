@@ -8,9 +8,22 @@ export default function registerThreeCardBlockAlpine(Alpine) {
   Alpine.data('threeCardBlock', () => ({
     activeTab: 0,
 
-    selectTab(index) {
+    /**
+     * @param {number} index
+     * @param {boolean} [focus] When true (keyboard nav), move focus to the newly active tab.
+     */
+    selectTab(index, focus = false) {
       this.activeTab = index;
       this.syncTabAccessibility();
+      if (focus) {
+        const root = this.$root;
+        if (root instanceof HTMLElement) {
+          const next = root.querySelectorAll('[role="tab"]')[index];
+          if (next instanceof HTMLElement) {
+            next.focus();
+          }
+        }
+      }
       this.$nextTick(() => {
         this.primeVideoFirstFrames();
         this.bindVideoHoverPlayback();

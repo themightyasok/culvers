@@ -1,16 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Helpers;
 
 use App\Config\ThemeTokens;
 use App\Constants\ComponentTypes;
+use App\Helpers\Sanitizer;
+use App\Helpers\Video;
 
 /**
- * Background Helper
- *
- * Processes background data from components and generates CSS classes/styles
+ * Resolves component background data into CSS classes / inline styles
+ * (solid, gradient, image, image-centered, video, overlay).
  */
-class Background
+final class Background
 {
     private const DEFAULT_OVERLAY_ALPHA = 0.3;
 
@@ -48,31 +51,31 @@ class Background
     public static function sectionPaintStylesWhenOnWrapper(array $component): string
     {
         $processed = self::process($component);
-        $type = $processed['type'] ?? '';
+        $type = $processed['type'];
         if (! in_array($type, ['color', 'gradient'], true)) {
             return '';
         }
 
-        return trim((string) ($processed['styles'] ?? ''));
+        return trim($processed['styles']);
     }
 
     /**
-     * Process background data from component and generate CSS classes/styles
+     * Process background data from component and generate CSS classes/styles.
      *
      * @param array<string, mixed> $component Component data array
      * @return array{
      *   type: string,
      *   classes: string,
      *   styles: string,
-     *   image: array|null,
-     *   video: array|null,
+     *   image: array<string, mixed>|null,
+     *   video: array<string, mixed>|null,
      *   video_embed_url: string|null,
- *   video_poster: array|null,
- *   overlay_styles: string,
- *   centered_card_styles: string,
- *   centered_card_classes: string,
- *   parallax: bool
- * } Background data array
+     *   video_poster: array<string, mixed>|null,
+     *   overlay_styles: string,
+     *   centered_card_styles: string,
+     *   centered_card_classes: string,
+     *   parallax: bool,
+     * }
      */
     public static function process(array $component): array
     {
@@ -99,7 +102,7 @@ class Background
             case 'color':
                 $color = $component['background_color'] ?? '';
                 if ($color) {
-                    $sanitizedColor = \App\Helpers\Sanitizer::color((string) $color);
+                    $sanitizedColor = Sanitizer::color((string) $color);
                     if ($sanitizedColor) {
                         $themeClass = self::themeSolidBackgroundClass($sanitizedColor);
                         if ($themeClass !== null) {
@@ -116,8 +119,8 @@ class Background
                 $colorTo = self::normalizeColorInput($component['background_gradient_color_to'] ?? '');
                 $angle = (string) ($component['background_gradient_angle'] ?? '90');
                 if ($colorFrom !== '' && $colorTo !== '') {
-                    $sanitizedFrom = \App\Helpers\Sanitizer::color($colorFrom);
-                    $sanitizedTo = \App\Helpers\Sanitizer::color($colorTo);
+                    $sanitizedFrom = Sanitizer::color($colorFrom);
+                    $sanitizedTo = Sanitizer::color($colorTo);
                     if ($sanitizedFrom && $sanitizedTo) {
                         $cssAngle = self::gradientAngleToCss($angle);
                         $result['styles'] = sprintf(
@@ -135,14 +138,14 @@ class Background
                 $image = $component['background_image'] ?? null;
                 if ($image && is_array($image)) {
                     // Sanitize image array
-                    $sanitizedImage = \App\Helpers\Sanitizer::image($image);
+                    $sanitizedImage = Sanitizer::image($image);
                     if ($sanitizedImage && isset($sanitizedImage['url'])) {
                         $result['image'] = $sanitizedImage;
                     }
                 }
                 if ($type === ComponentTypes::BACKGROUND_IMAGE_CENTERED) {
                     $cardColor = (string) ($component['background_image_color'] ?? '');
-                    $sanitizedCardColor = \App\Helpers\Sanitizer::color($cardColor);
+                    $sanitizedCardColor = Sanitizer::color($cardColor);
                     if ($sanitizedCardColor !== '') {
                         $themeCardClass = self::themeSolidBackgroundClass($sanitizedCardColor);
                         if ($themeCardClass !== null) {
@@ -163,16 +166,16 @@ class Background
                 $youtubeInput = (string) ($component['background_video_youtube_url'] ?? '');
                 if ($video && is_array($video)) {
                     // Sanitize video array
-                    $sanitizedVideo = \App\Helpers\Sanitizer::image($video);
+                    $sanitizedVideo = Sanitizer::image($video);
                     if ($sanitizedVideo && isset($sanitizedVideo['url'])) {
                         $result['video'] = $sanitizedVideo;
                         if ($poster && is_array($poster)) {
-                            $result['video_poster'] = \App\Helpers\Sanitizer::image($poster);
+                            $result['video_poster'] = Sanitizer::image($poster);
                         }
                     }
                 }
                 if ($result['video'] === null && $youtubeInput !== '') {
-                    $youtubeEmbedUrl = \App\Helpers\Video::youtubeEmbedUrl($youtubeInput);
+                    $youtubeEmbedUrl = Video::youtubeEmbedUrl($youtubeInput);
                     if ($youtubeEmbedUrl !== null) {
                         $result['video_embed_url'] = $youtubeEmbedUrl;
                     }
@@ -182,7 +185,7 @@ class Background
 
         // Handle flat overlay color. Only apply when explicitly set; treat legacy default as none.
         $overlay = (string) ($component['background_overlay'] ?? '');
-        $sanitizedOverlay = \App\Helpers\Sanitizer::color($overlay);
+        $sanitizedOverlay = Sanitizer::color($overlay);
         if ($sanitizedOverlay !== '') {
             $overlayAlpha = self::resolveOverlayAlpha($component);
             $normalizedOverlay = self::ensureOverlayAlpha($sanitizedOverlay, $overlayAlpha);

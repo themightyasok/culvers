@@ -4,11 +4,17 @@ import Alpine from 'alpinejs';
 
 import registerSiteHeaderAlpine from './alpine/site-header.js';
 import registerThreeCardBlockAlpine from './alpine/three-card-block.js';
+import registerSplitHighlightAlpine from './alpine/split-highlight.js';
 import registerHeroSliderAlpine from './alpine/hero-slider.js';
 import registerHorizontalScrollerAlpine from './alpine/horizontal-scroller.js';
 import registerDirectoryArchiveAlpine from './alpine/directory-archive.js';
 import registerVideoBlockAlpine from './alpine/video-block.js';
 import registerFooterMenuAccordionAlpine from './alpine/footer-menu-accordion.js';
+import registerFaqAlpine from './alpine/faq.js';
+import registerTravelCalculatorAlpine from './alpine/travel-calculator.js';
+import registerTextImageSliderAlpine from './alpine/text-image-slider.js';
+import registerContactAlpine from './alpine/contact.js';
+import registerCentreMapAlpine from './alpine/centre-map.js';
 import gsapManager from './utils/gsap-manager.js';
 import fullScreenScrollManager from './utils/full-screen-scroll-manager.js';
 import backgroundParallaxManager from './utils/background-parallax-manager.js';
@@ -16,11 +22,17 @@ import initSplideCarousels from './utils/splide-init.js';
 
 registerSiteHeaderAlpine(Alpine);
 registerThreeCardBlockAlpine(Alpine);
+registerSplitHighlightAlpine(Alpine);
 registerHeroSliderAlpine(Alpine);
 registerHorizontalScrollerAlpine(Alpine);
 registerDirectoryArchiveAlpine(Alpine);
 registerVideoBlockAlpine(Alpine);
 registerFooterMenuAccordionAlpine(Alpine);
+registerFaqAlpine(Alpine);
+registerTravelCalculatorAlpine(Alpine);
+registerTextImageSliderAlpine(Alpine);
+registerContactAlpine(Alpine);
+registerCentreMapAlpine(Alpine);
 Alpine.start();
 
 gsapManager.init();

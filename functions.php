@@ -77,15 +77,13 @@ if (! function_exists('blade_component')) {
     }
 }
 
-foreach (['setup', 'filters'] as $file) {
-    $path = locate_template("app/{$file}.php");
-    if ($path) {
-        require_once $path;
-    }
+$setupPath = locate_template('app/setup.php');
+if ($setupPath) {
+    require_once $setupPath;
 }
 
 add_action('wp', static function (): void {
-    $title = \App\culvers_document_title();
+    $title = \App\Support\DocumentTitle::current();
     if (function_exists('wp_bladeone')) {
         wp_bladeone()->share('title', $title);
 

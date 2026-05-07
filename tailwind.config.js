@@ -27,15 +27,22 @@ const culversThemePlugin = plugin(({ addBase, addComponents }) => {
       '@apply font-sans text-sm leading-snug text-light-cream/85 transition-colors hover:text-glowleaf':
         {},
     },
+    /* Column nav `<a>` styling — wp_nav_menu emits bare `<li><a>`, so we target descendants here
+     * once instead of repeating `[&>li>a]:…` arbitrary variants on every menu_class string. */
+    '.footer-nav--col li > a': {
+      '@apply font-sans text-lg leading-7 text-light-cream transition-colors hover:text-glowleaf':
+        {},
+    },
     '.footer-nav__link--legal': {
-      '@apply font-sans text-micro uppercase tracking-label text-lighter-cream transition-colors hover:text-glowleaf':
+      '@apply font-sans text-xs uppercase tracking-widest text-lighter-cream transition-colors hover:text-glowleaf':
         {},
     },
     '.footer-nav__link-phone': {
-      '@apply font-sans text-sm text-light-cream/85 transition-colors hover:text-glowleaf': {},
+      '@apply font-sans text-xl leading-tight text-lighter-cream transition-colors hover:text-glowleaf':
+        {},
     },
     '.footer-nav__link-social': {
-      '@apply inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-label text-light-cream/90 transition-colors hover:text-glowleaf':
+      '@apply inline-flex items-center gap-2 font-sans text-sm font-semibold uppercase tracking-widest text-light-cream/90 transition-colors hover:text-glowleaf':
         {},
     },
   });

@@ -44,8 +44,14 @@ if ($front_id <= 0 || ! is_string(get_post_status($front_id)) || get_post_status
     }
 }
 
-update_option('show_on_front', 'page');
-update_option('page_on_front', $front_id);
+// Idempotent: only write when the values would actually change. Re-running with no edits
+// becomes a true no-op and avoids clobbering an admin's manual front-page reassignment.
+if (get_option('show_on_front') !== 'page') {
+    update_option('show_on_front', 'page');
+}
+if ((int) get_option('page_on_front') !== $front_id) {
+    update_option('page_on_front', $front_id);
+}
 
 $user_id = (int) apply_filters('culvers_homepage_populate_user_id', 1);
 if ($user_id > 0) {

@@ -66,6 +66,9 @@ final class NavMenuItemMeta
         <?php
     }
 
+    /**
+     * @param array<string, mixed> $menu_item_data
+     */
     public static function saveField(int $menu_id, int $menu_item_db_id, array $menu_item_data): void
     {
         unset($menu_id, $menu_item_data);
@@ -74,7 +77,7 @@ final class NavMenuItemMeta
         }
 
         $posted = wp_unslash($_POST['culvers-mega-preview']);
-        if (! is_array($posted) || ! isset($posted[$menu_item_db_id])) {
+        if (! isset($posted[$menu_item_db_id])) {
             return;
         }
 

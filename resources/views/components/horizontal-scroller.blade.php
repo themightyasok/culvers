@@ -1,55 +1,67 @@
 @php
 use App\Helpers\Background;
+use App\Helpers\Component;
 use App\Helpers\Grid;
 use App\Helpers\Image;
 use App\Helpers\Padding;
 use App\Helpers\TextFormatter;
 use App\Helpers\Typography;
 use App\Helpers\Video;
-use App\Helpers\TailwindColors;
+
+/**
+ * Horizontal scroller — GSAP-driven seamless infinite strip with drag,
+ * configurable header alignment, and an alternate "disable scroll" centred
+ * row. Items can be image, video (file or YouTube embed), text, or image+text.
+ *
+ * Padding rule: the section opener uses `Component::rootClasses()` like every
+ * other component; the editor "Remove vertical padding" toggle then strips
+ * vertical Tailwind padding to recover the original tight strip layout.
+ */
 
 $c = is_array($component ?? null) ? $component : [];
 
-$body_text_tone = $c['body_text_tone'] ?? TailwindColors::DEFAULT_BODY_TEXT_TONE;
-$remove_vertical_padding = !empty($c['remove_vertical_padding']);
+$body_text_tone = Component::bodyTextTone($c);
+// Canonical opener: always strip the inherited horizontal grid inset because
+// the scroller renders its own full-bleed strip + wrapper shell. Vertical
+// padding is the only thing the editor "Remove vertical padding" toggle clears.
+$remove_vertical_padding = !empty($c['scroller_remove_vertical_padding']);
 $padding = $remove_vertical_padding ? '' : Padding::getClasses($c);
+$gridClasses = Grid::stripHorizontalInsetPadding(
+    isset($c['_grid_classes']) && is_string($c['_grid_classes']) ? $c['_grid_classes'] : ''
+);
 $backgroundHandled = !empty($c['_background_handled']);
 $backgroundData = $backgroundHandled ? Background::getEmptyStub() : Background::process($c);
 $backgroundClasses = $backgroundData['classes'] ?? '';
 $backgroundStyles = $backgroundData['styles'] ?? '';
-$gridClasses = '';
-if (isset($c['_grid_classes']) && is_string($c['_grid_classes'])) {
-    $gridClasses = $c['_grid_classes'];
-}
 
-$header_text = $c['header_text'] ?? '';
-$header_text_color = $c['header_text_color'] ?? 'text-white';
-$header_text_size = $c['header_text_size'] ?? 'text-6xl';
-$header_text_weight = $c['header_text_weight'] ?? 'font-medium';
-$header_alignment = $c['header_alignment'] ?? 'top';
-$header_text_alignment = $c['header_text_alignment'] ?? 'left';
-$subheading_text = $c['subheading_text'] ?? '';
-$subheading_text_color = $c['subheading_text_color'] ?? 'text-white';
-$subheading_text_size = $c['subheading_text_size'] ?? 'text-lg';
-$subheading_text_weight = $c['subheading_text_weight'] ?? 'font-medium';
-$button_text = $c['button_text'] ?? '';
-$button_link = is_array($c['button_link'] ?? null) ? $c['button_link'] : [];
-$button_variant = match($c['button_variant'] ?? 'primary') {
-    'outline', 'primary', 'secondary' => $c['button_variant'] ?? 'primary',
+$header_text = $c['scroller_header_text'] ?? '';
+$header_text_color = $c['scroller_header_text_color'] ?? 'text-white';
+$header_text_size = $c['scroller_header_text_size'] ?? 'text-8xl';
+$header_text_weight = $c['scroller_header_text_weight'] ?? 'font-medium';
+$header_alignment = $c['scroller_header_alignment'] ?? 'top';
+$header_text_alignment = $c['scroller_header_text_alignment'] ?? 'left';
+$subheading_text = $c['scroller_subheading_text'] ?? '';
+$subheading_text_color = $c['scroller_subheading_text_color'] ?? 'text-white';
+$subheading_text_size = $c['scroller_subheading_text_size'] ?? 'text-xl';
+$subheading_text_weight = $c['scroller_subheading_text_weight'] ?? 'font-medium';
+$button_text = $c['scroller_button_text'] ?? '';
+$button_link = is_array($c['scroller_button_link'] ?? null) ? $c['scroller_button_link'] : [];
+$button_variant = match($c['scroller_button_variant'] ?? 'primary') {
+    'outline', 'primary', 'secondary' => $c['scroller_button_variant'] ?? 'primary',
     default => 'primary',
 };
-$button_size = match($c['button_size'] ?? 'md') {
-    'lg', 'md', 'sm' => $c['button_size'] ?? 'md',
+$button_size = match($c['scroller_button_size'] ?? 'md') {
+    'lg', 'md', 'sm' => $c['scroller_button_size'] ?? 'md',
     default => 'md',
 };
-$button_show_arrow = $c['button_show_arrow'] ?? true;
-$body_text = $c['body_text'] ?? '';
-$body_text_color = $c['body_text_color'] ?? 'text-white';
-$scroll_cards = is_array($c['scroll_cards'] ?? null) ? $c['scroll_cards'] : [];
-$scroll_speed = $c['scroll_speed'] ?? 'medium';
-$disable_scroll = !empty($c['disable_scroll']);
+$button_show_arrow = $c['scroller_button_show_arrow'] ?? true;
+$body_text = $c['scroller_body_text'] ?? '';
+$body_text_color = $c['scroller_body_text_color'] ?? 'text-white';
+$scroll_cards = is_array($c['scroller_items'] ?? null) ? $c['scroller_items'] : [];
+$scroll_speed = $c['scroller_speed'] ?? 'medium';
+$disable_scroll = !empty($c['scroller_disabled']);
 // Horizontal gap between row items (logos/cards). Set on the flex container so it cannot be lost to inheritance.
-$raw_strip_spacing = $c['scroll_strip_item_spacing'] ?? null;
+$raw_strip_spacing = $c['scroller_item_spacing'] ?? null;
 if ($raw_strip_spacing === null || $raw_strip_spacing === '' || $raw_strip_spacing === false) {
     $strip_item_spacing = 32;
 } elseif (is_numeric($raw_strip_spacing)) {
@@ -81,13 +93,14 @@ $scroll_speed_class = $disable_scroll
         default => 'horizontal-scroll-medium'
     };
 
-// Keep heading sizes constrained to allowed Tailwind utilities.
-$header_size_class = match ($header_text_size) {
-    'text-2xl', 'text-3xl', 'text-4xl', 'text-5xl', 'text-6xl', 'text-7xl', 'text-8xl', 'text-9xl', 'text-xxl', 'text-xxxl', 'text-xxxxl' => $header_text_size,
-    default => 'text-6xl'
-};
+// Keep heading sizes constrained to the Typography header dropdown choices.
+$header_size_class = in_array(
+    $header_text_size,
+    array_keys(Typography::getHeaderSizeChoices()),
+    true
+) ? $header_text_size : 'text-8xl';
 $header_text_color_class = match ($header_text_color) {
-    'text-black', 'text-brand-500', 'text-deep-moss', 'text-text-muted', 'text-white', 'text-white/80' => $header_text_color,
+    'text-black', 'text-brand-500', 'text-deep-moss', 'text-faded-olive', 'text-text-muted', 'text-white', 'text-white/80' => $header_text_color,
     default => 'text-white'
 };
 $header_text_weight_class = match($header_text_weight) {
@@ -95,9 +108,9 @@ $header_text_weight_class = match($header_text_weight) {
     default => 'font-medium',
 };
 
-$subheading_size_class = Typography::validateBodySize($subheading_text_size ?? null, 'text-lg');
+$subheading_size_class = Typography::validateBodySize($subheading_text_size ?? null, 'text-xl');
 $subheading_text_color_class = match ($subheading_text_color) {
-    'text-black', 'text-brand-500', 'text-deep-moss', 'text-text-muted', 'text-white', 'text-white/80' => $subheading_text_color,
+    'text-black', 'text-brand-500', 'text-deep-moss', 'text-faded-olive', 'text-text-muted', 'text-white', 'text-white/80' => $subheading_text_color,
     default => 'text-white'
 };
 $subheading_text_weight_class = match($subheading_text_weight) {
@@ -105,48 +118,48 @@ $subheading_text_weight_class = match($subheading_text_weight) {
     default => 'font-medium',
 };
 $header_padding_class = Padding::getHeaderSubheaderPaddingClasses(
-    $c['header_padding_top'] ?? 'none',
-    $c['header_padding_bottom'] ?? 'none'
+    $c['scroller_header_padding_top'] ?? 'none',
+    $c['scroller_header_padding_bottom'] ?? 'none'
 );
 $subheader_padding_class = Padding::getHeaderSubheaderPaddingClasses(
-    $c['subheader_padding_top'] ?? 'none',
-    $c['subheader_padding_bottom'] ?? 'none'
+    $c['scroller_subheader_padding_top'] ?? 'none',
+    $c['scroller_subheader_padding_bottom'] ?? 'none'
 );
 $body_padding_class = Padding::getHeaderSubheaderPaddingClasses(
-    $c['body_padding_top'] ?? 'none',
-    $c['body_padding_bottom'] ?? 'none'
+    $c['scroller_body_padding_top'] ?? 'none',
+    $c['scroller_body_padding_bottom'] ?? 'none'
 );
 $body_classes = Typography::classes(
     'body',
-    $c['body_text_size'] ?? 'text-lg',
-    $c['body_text_weight'] ?? 'font-medium'
+    $c['scroller_body_text_size'] ?? 'text-xl',
+    $c['scroller_body_text_weight'] ?? 'font-medium'
 );
 $body_text_color_class = match ($body_text_color) {
-    'text-black', 'text-brand-500', 'text-deep-moss', 'text-text-muted', 'text-white', 'text-white/80' => $body_text_color,
+    'text-black', 'text-brand-500', 'text-deep-moss', 'text-faded-olive', 'text-text-muted', 'text-white', 'text-white/80' => $body_text_color,
     default => 'text-white'
 };
 
-$intro_flush_to_content = !empty($c['intro_flush_to_content']);
+$intro_flush_to_content = !empty($c['scroller_intro_flush']);
 
 $item_kicker_classes = Typography::classes(
     'body',
-    $c['item_kicker_size'] ?? 'text-xs',
-    $c['item_kicker_weight'] ?? 'font-semibold'
+    $c['scroller_item_kicker_size'] ?? 'text-xs',
+    $c['scroller_item_kicker_weight'] ?? 'font-semibold'
 );
 $item_heading_classes = Typography::classes(
     'heading',
-    $c['item_heading_size'] ?? 'text-xl',
-    $c['item_heading_weight'] ?? 'font-medium'
+    $c['scroller_item_heading_size'] ?? 'text-2xl',
+    $c['scroller_item_heading_weight'] ?? 'font-medium'
 );
 $item_body_classes = Typography::classes(
     'body',
-    $c['item_body_size'] ?? 'text-base',
-    $c['item_body_weight'] ?? 'font-normal'
+    $c['scroller_item_body_size'] ?? 'text-lg',
+    $c['scroller_item_body_weight'] ?? 'font-normal'
 );
 
-$item_kicker_padding_class = Padding::getHeaderSubheaderPaddingClasses($c['item_kicker_padding_top'] ?? 'none', $c['item_kicker_padding_bottom'] ?? 'none');
-$item_heading_padding_class = Padding::getHeaderSubheaderPaddingClasses($c['item_heading_padding_top'] ?? 'none', $c['item_heading_padding_bottom'] ?? 'none');
-$item_body_padding_class = Padding::getHeaderSubheaderPaddingClasses($c['item_body_padding_top'] ?? 'none', $c['item_body_padding_bottom'] ?? 'none');
+$item_kicker_padding_class = Padding::getHeaderSubheaderPaddingClasses($c['scroller_item_kicker_padding_top'] ?? 'none', $c['scroller_item_kicker_padding_bottom'] ?? 'none');
+$item_heading_padding_class = Padding::getHeaderSubheaderPaddingClasses($c['scroller_item_heading_padding_top'] ?? 'none', $c['scroller_item_heading_padding_bottom'] ?? 'none');
+$item_body_padding_class = Padding::getHeaderSubheaderPaddingClasses($c['scroller_item_body_padding_top'] ?? 'none', $c['scroller_item_body_padding_bottom'] ?? 'none');
 
 $hasHeaderText = TextFormatter::hasVisibleContent((string) $header_text);
 $hasSubheadingText = TextFormatter::hasVisibleContent((string) $subheading_text);
@@ -160,7 +173,7 @@ foreach ($scroll_cards as $item) {
         continue;
     }
 
-    $image = $item['image'] ?? null;
+    $image = $item['item_image'] ?? null;
     // Normalize image when stored as attachment ID (e.g. from CLI/import)
     if (is_numeric($image) && (int) $image > 0 && function_exists('acf_get_attachment')) {
         $image = acf_get_attachment((int) $image);
@@ -187,7 +200,7 @@ foreach ($scroll_cards as $item) {
     $kicker = trim((string)($item['item_kicker'] ?? ''));
     $heading = trim((string)($item['item_heading'] ?? ''));
     $body = trim((string)($item['item_body'] ?? ''));
-    $alt_text = trim((string)($item['image_alt_text'] ?? ''));
+    $alt_text = trim((string)($item['item_image_alt'] ?? ''));
 
     $has_image = is_array($image) && !empty($image['url']);
     $has_video = (is_array($video) && !empty($video['url'])) || !empty($video_embed_url);
@@ -253,10 +266,8 @@ foreach ($scroll_cards as $item) {
     ];
 }
 
+// Horizontal grid inset is already stripped at the canonical opener above.
 $fullBleedScrollerStrip = ! empty($normalized_items);
-if ($fullBleedScrollerStrip && $gridClasses !== '') {
-    $gridClasses = Grid::stripHorizontalInsetPadding($gridClasses);
-}
 
 $section_style_parts = [];
 if (is_string($backgroundStyles) && $backgroundStyles !== '') {
@@ -266,13 +277,19 @@ $section_styles_attr = implode('; ', array_filter($section_style_parts));
 
 $has_any_content = $hasHeaderBlock || $hasButton || !empty($normalized_items);
 $live_region_id = 'horizontal-scroller-description-' . uniqid();
+
+// Match every other component’s `$root` convention so the editor placeholder
+// fallback can reuse the same name. Padding may have been zeroed out above
+// by the “Remove vertical padding” editor toggle.
+$root = trim($gridClasses . ' ' . $padding);
 @endphp
 
 @if($has_any_content)
 <section
-    class="horizontal-scroller-component {{ $gridClasses }} relative {{ $backgroundClasses }} {{ $padding }} @if($disable_scroll) horizontal-scroller-component--disable-scroll @endif"
+    class="horizontal-scroller {{ $gridClasses }} relative {{ $backgroundClasses }} {{ $padding }} @if($disable_scroll) horizontal-scroller--disable-scroll @endif"
     @if($section_styles_attr !== '') style="{{ esc_attr($section_styles_attr) }}" @endif
     data-component-root
+    data-horizontal-scroller
     data-hs-disable-scroll="{{ $disable_scroll ? '1' : '0' }}"
     data-hs-scroll-speed="{{ esc_attr((string) $scroll_speed) }}"
     x-data="horizontalScroller"
@@ -289,7 +306,7 @@ $live_region_id = 'horizontal-scroller-description-' . uniqid();
 
         {{-- Top: Header --}}
         @if($hasHeaderBlock || $hasButton)
-            <div class="horizontal-scroller-header mx-auto flex max-w-[1272px] flex-col justify-start px-5 lg:min-h-[240px] lg:px-16 {{ $header_alignment_class }} {{ $header_text_align_class }}">
+            <div class="horizontal-scroller__header mx-auto flex max-w-7xl flex-col justify-start px-5 lg:min-h-[240px] lg:px-16 {{ $header_alignment_class }} {{ $header_text_align_class }}">
                 @if($hasHeaderBlock)
                     <div class="{{ $intro_flush_to_content ? 'mb-0' : 'mb-10 md:mb-14' }} {{ $header_text_align_class }}">
                         @if($hasHeaderText)
@@ -320,14 +337,14 @@ $live_region_id = 'horizontal-scroller-description-' . uniqid();
                             default => 'btn btn-primary',
                         };
                         $btn_classes .= match ($button_size) {
-                            'sm' => ' px-5 py-2 text-micro',
-                            'lg' => ' px-12 py-4 text-sm',
+                            'sm' => ' px-5 py-2 text-xs',
+                            'lg' => ' px-12 py-4 text-base',
                             default => '',
                         };
                         $btn_classes .= ' inline-flex items-center gap-2';
                         $btn_target = trim((string) ($button_link['target'] ?? ''));
                     @endphp
-                    <div class="horizontal-scroller-header-cta mt-6">
+                    <div class="horizontal-scroller__header-cta mt-6">
                         <a
                             href="{{ esc_url((string) ($button_link['url'] ?? '')) }}"
                             class="{{ esc_attr(trim($btn_classes)) }}"
@@ -350,9 +367,9 @@ $live_region_id = 'horizontal-scroller-description-' . uniqid();
         @endif
 
         @if(! empty($normalized_items))
-            <div class="@if($fullBleedScrollerStrip) horizontal-scroller-strip-breakout @endif">
-            <div class="horizontal-scroller-wrapper {{ $disable_scroll ? 'overflow-visible' : 'overflow-hidden' }} {{ $scroll_speed_class }} {{ $header_text_color_class }} @if($remove_vertical_padding) horizontal-scroller-wrapper--no-vertical-padding @endif">
-                <div class="horizontal-scroller-container" style="{{ esc_attr($horizontal_scroller_gap_css) }}" aria-label="{{ $disable_scroll ? __('Floating content', 'culvers') : __('Horizontal scrolling floating content', 'culvers') }}">
+            <div class="@if($fullBleedScrollerStrip) horizontal-scroller__strip-breakout @endif">
+            <div class="horizontal-scroller__wrapper {{ $disable_scroll ? 'overflow-visible' : 'overflow-hidden' }} {{ $scroll_speed_class }} {{ $header_text_color_class }} @if($remove_vertical_padding) horizontal-scroller__wrapper--no-vertical-padding @endif">
+                <div class="horizontal-scroller__container" style="{{ esc_attr($horizontal_scroller_gap_css) }}" aria-label="{{ $disable_scroll ? __('Floating content', 'culvers') : __('Horizontal scrolling floating content', 'culvers') }}">
                     @foreach($disable_scroll ? [0] : [0, 1] as $set_index)
                         @php $is_clone_set = $set_index > 0; @endphp
                         @foreach($normalized_items as $item)
@@ -447,4 +464,9 @@ $live_region_id = 'horizontal-scroller-description-' . uniqid();
         @endif
     </div>
 </section>
+@elseif(current_user_can('edit_posts'))
+@include('partials.component-editor-placeholder', [
+    'wrapperClasses' => $root,
+    'message' => __('Add header text or scroller items to this block.', 'culvers'),
+])
 @endif

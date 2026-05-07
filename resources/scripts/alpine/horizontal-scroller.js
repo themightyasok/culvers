@@ -1,6 +1,8 @@
 /**
  * Horizontal scroller — GSAP Observer drag + ticker auto-scroll (infinite row).
- * Registers as Alpine.js `horizontalScroller` (reads options from `data-hs-*` on the root).
+ * Reads options from `data-hs-*` on the component root.
+ *
+ * @param {import('alpinejs').Alpine} Alpine
  */
 
 const MAX_SETUP_RETRIES = 40;
@@ -163,22 +165,16 @@ function horizontalScrollerData() {
       });
     },
 
-    setupStaticMobile() {
-      if (!this.$el) return;
-      this.$el.classList.add('horizontal-scroller-component--static-mobile');
-      this.removeDuplicateSets();
-    },
-
     setupReducedMotion() {
       if (!this.$el) return;
-      this.$el.classList.add('horizontal-scroller-component--reduced-motion');
+      this.$el.classList.add('horizontal-scroller--reduced-motion');
       this.removeDuplicateSets();
       this._isSetup = true;
     },
 
     setupDisableScroll() {
       if (!this.$el) return;
-      this.$el.classList.add('horizontal-scroller-component--disable-scroll');
+      this.$el.classList.add('horizontal-scroller--disable-scroll');
       this.removeDuplicateSets();
       this._isSetup = true;
     },
@@ -222,7 +218,7 @@ function horizontalScrollerData() {
 
     trySetup(retryCount) {
       if (this._isSetup) return;
-      const content = this.$el?.querySelector('.horizontal-scroller-container');
+      const content = this.$el?.querySelector('.horizontal-scroller__container');
       if (!content) {
         this.debug('❌ Container not found');
         return;
@@ -502,7 +498,7 @@ function horizontalScrollerData() {
         this.tl.kill();
         this.tl = null;
       }
-      const content = this.$el?.querySelector('.horizontal-scroller-container');
+      const content = this.$el?.querySelector('.horizontal-scroller__container');
       if (content && window.gsap) {
         window.gsap.killTweensOf(content);
       }
@@ -529,13 +525,12 @@ function horizontalScrollerData() {
       }
       this._lenisScrollHandler = null;
       if (this.lenisWrapper) {
-        this.lenisWrapper.classList.remove('horizontal-scroller-wrapper--lenis');
+        this.lenisWrapper.classList.remove('horizontal-scroller__wrapper--lenis');
         this.lenisWrapper = null;
       }
-      this.$el?.classList.remove('horizontal-scroller-component--lenis');
-      this.$el?.classList.remove('horizontal-scroller-component--reduced-motion');
-      this.$el?.classList.remove('horizontal-scroller-component--static-mobile');
-      this.$el?.classList.remove('horizontal-scroller-component--disable-scroll');
+      this.$el?.classList.remove('horizontal-scroller--lenis');
+      this.$el?.classList.remove('horizontal-scroller--reduced-motion');
+      this.$el?.classList.remove('horizontal-scroller--disable-scroll');
 
       if (typeof window.ScrollTrigger !== 'undefined' && this.$el) {
         window.ScrollTrigger.getAll().forEach((st) => {
