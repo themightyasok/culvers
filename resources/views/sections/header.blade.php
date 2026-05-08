@@ -47,7 +47,7 @@
       class="site-header__reveal transition-all duration-700 ease-out"
       x-bind:class="headerRevealed ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'">
       <div
-        class="site-header__padding relative px-4 pb-3 pt-3 transition-[padding] duration-300 ease-in-out md:px-12 md:pb-2.5 md:pt-8">
+        class="site-header__padding relative transition-[padding] duration-300 ease-in-out max-md:px-0 max-md:py-0 md:px-12 md:pb-2.5 md:pt-8">
 
         <div class="mx-auto w-full max-w-8xl">
 
@@ -61,22 +61,37 @@
           x-on:mouseleave="scheduleCloseMegaHover()">
 
           {{-- Olive bar — fixed chrome width (max-w-8xl parent); scroll only hides the dock, no morph. --}}
-          <div class="mega-nav__bar relative z-50 w-full rounded-full bg-faded-olive">
-            <div class="mega-nav__bar-gutter w-full py-2">
+          {{-- Mobile: Figma "Mobile — Nav" 75px flat bar, glowleaf rule; burger | centred wordmark | search. Desktop: pill bar unchanged. --}}
+          <div
+            class="mega-nav__bar relative z-50 w-full bg-faded-olive max-md:rounded-none max-md:border-b max-md:border-glowleaf md:rounded-full">
+            <div class="mega-nav__bar-gutter w-full max-md:py-0 py-2">
               <div
-                class="mega-nav__bar-row flex min-h-[80px] w-full items-center gap-3 px-4 md:gap-6 md:px-5 lg:px-6">
-                <div class="mega-nav__bar-main flex min-w-0 flex-1 items-center md:gap-[42px]">
+                class="mega-nav__bar-row relative flex h-[75px] min-h-[75px] w-full items-center gap-3 px-4 max-md:gap-2 md:h-auto md:min-h-[80px] md:gap-6 md:px-5 lg:px-6">
+                <button
+                  type="button"
+                  class="mega-nav__burger relative z-20 inline-flex size-11 shrink-0 items-center justify-center text-glowleaf md:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
+                  aria-controls="mega-mobile-drawer"
+                  x-bind:aria-expanded="mobileOpen ? 'true' : 'false'"
+                  x-on:click="mobileOpen = !mobileOpen">
+                  <span class="sr-only" x-show="!mobileOpen" x-cloak>{{ __('Open menu', 'culvers') }}</span>
+                  <span class="sr-only" x-show="mobileOpen" x-cloak>{{ __('Close menu', 'culvers') }}</span>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                  </svg>
+                </button>
+                <div
+                  class="mega-nav__bar-main pointer-events-none flex min-w-0 flex-1 items-center md:pointer-events-auto md:gap-[42px]">
                   <a
-                    class="mega-nav__logo shrink-0 text-glowleaf"
+                    class="mega-nav__logo shrink-0 text-glowleaf max-md:pointer-events-auto max-md:absolute max-md:left-1/2 max-md:top-1/2 max-md:z-10 max-md:-translate-x-1/2 max-md:-translate-y-1/2 md:static md:translate-x-0 md:translate-y-0"
                     href="{{ esc_url(home_url('/')) }}"
                     rel="home"
                     aria-label="{{ esc_attr(get_bloginfo('name')) }}">
                     @if(has_custom_logo())
-                      <span class="block max-h-[28px] w-[178px] [&_img]:h-full [&_img]:w-auto [&_img]:max-h-[28px] [&_img]:object-contain [&_img]:object-left">
+                      <span class="block max-h-[28px] w-[178px] max-md:max-h-[24px] [&_img]:h-full [&_img]:w-auto [&_img]:max-h-[28px] max-md:[&_img]:max-h-[24px] [&_img]:object-contain [&_img]:object-left max-md:[&_img]:object-center">
                         {!! get_custom_logo() !!}
                       </span>
                     @else
-                      @include('partials.culver-square-logo')
+                      @include('partials.culver-square-logo', ['class' => 'block h-[22px] w-[178px] max-w-[min(100%,178px)] shrink-0 text-glowleaf max-md:h-[20px] md:max-w-full [&_svg]:max-h-full'])
                     @endif
                   </a>
 
@@ -143,20 +158,21 @@
                   @endif
                 </div>
 
-                <button
-                  type="button"
-                  class="mega-nav__burger ml-auto inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/25 text-white md:ml-0 md:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
-                  aria-controls="mega-mobile-drawer"
-                  x-bind:aria-expanded="mobileOpen ? 'true' : 'false'"
-                  x-on:click="mobileOpen = !mobileOpen">
-                  <span class="sr-only" x-show="!mobileOpen" x-cloak>{{ __('Open menu', 'culvers') }}</span>
-                  <span class="sr-only" x-show="mobileOpen" x-cloak>{{ __('Close menu', 'culvers') }}</span>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                  </svg>
-                </button>
+                <div class="mega-nav__bar-end relative z-20 flex shrink-0 items-center gap-2 md:gap-[18px]">
+                  <button
+                    type="button"
+                    class="relative flex size-[43px] shrink-0 items-center justify-center rounded-full bg-brand-500 text-faded-olive transition-transform hover:scale-[1.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf md:hidden"
+                    x-bind:aria-expanded="searchOpen ? 'true' : 'false'"
+                    aria-controls="site-header-search"
+                    x-on:click="openSearch()">
+                    <span class="sr-only">{{ __('Open search', 'culvers') }}</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="1.6" />
+                      <path d="m16.5 16.5 4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+                    </svg>
+                  </button>
 
-                <div class="mega-nav__utilities hidden shrink-0 items-center md:flex md:gap-[18px]">
+                  <div class="mega-nav__utilities hidden shrink-0 items-center md:flex md:gap-[18px]">
                   <a
                     class="inline-flex items-center gap-2 text-white transition-opacity hover:opacity-90 focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
                     href="{{ esc_url($mapUrl) }}">
@@ -195,6 +211,7 @@
                       <path d="m16.5 16.5 4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
                     </svg>
                   </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -327,9 +344,11 @@
           x-show="searchOpen"
           x-cloak
           x-transition.opacity.duration.150ms>
-          <div class="site-header__search-bar rounded-full border-4 border-brand-500 bg-light-cream">
-            <div class="site-header__search-gutter w-full">
-              <div class="site-header__search-row flex min-h-[80px] items-center gap-4 px-4 py-2 md:gap-8 md:px-5 lg:px-6">
+          <div
+            class="site-header__search-bar border-brand-500 bg-light-cream max-md:rounded-none max-md:border-0 max-md:border-b-4 max-md:border-glowleaf md:rounded-full md:border-4">
+            <div class="site-header__search-gutter w-full max-md:py-0 md:py-0">
+              <div
+                class="site-header__search-row flex min-h-[75px] items-center gap-4 px-4 py-2 md:min-h-[80px] md:gap-8 md:px-5 lg:px-6">
                 <a class="shrink-0 text-deep-moss" href="{{ esc_url(home_url('/')) }}" rel="home" aria-label="{{ esc_attr(get_bloginfo('name')) }}">
                   @if(has_custom_logo())
                     <span class="block max-h-[28px] w-[178px] [&_img]:h-full [&_img]:w-auto [&_img]:object-contain [&_img]:object-left">
