@@ -127,7 +127,7 @@ export default function registerSiteHeaderAlpine(Alpine) {
     },
 
     scheduleCloseMegaHover() {
-      if (!window.matchMedia('(hover: hover) and (min-width: 768px)').matches) {
+      if (!window.matchMedia('(hover: hover) and (min-width: 1024px)').matches) {
         return;
       }
       if (this.megaOpenId === null) {
@@ -146,7 +146,7 @@ export default function registerSiteHeaderAlpine(Alpine) {
     },
 
     openMegaFromHover(id) {
-      if (!window.matchMedia('(hover: hover) and (min-width: 768px)').matches) {
+      if (!window.matchMedia('(hover: hover) and (min-width: 1024px)').matches) {
         return;
       }
       window.clearTimeout(this._megaHoverCloseTimer);

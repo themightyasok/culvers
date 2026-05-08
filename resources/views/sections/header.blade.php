@@ -40,14 +40,14 @@
     class="site-header__chrome will-change-transform transition-transform duration-700 ease-[cubic-bezier(0.33,1,0.68,1)] motion-reduce:transition-none"
     x-ref="headerChrome"
     x-bind:class="headerDockHidden ? '-translate-y-full pointer-events-none' : 'translate-y-0'">
-  {{-- Shell: full width; content width matches footer (`md:px-12` + inner `max-w-8xl`). --}}
+  {{-- Shell: full width; content width matches footer (`lg:px-12` + inner `max-w-8xl`). --}}
   <div class="site-header__shell w-full overflow-visible">
     {{-- Entrance animation once the header intersects the viewport. --}}
     <div
       class="site-header__reveal transition-all duration-700 ease-out"
       x-bind:class="headerRevealed ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'">
       <div
-        class="site-header__padding relative transition-[padding] duration-300 ease-in-out max-md:px-0 max-md:py-0 md:px-12 md:pb-2.5 md:pt-8">
+        class="site-header__padding relative transition-[padding] duration-300 ease-in-out max-lg:px-0 max-lg:py-0 lg:px-12 lg:pb-2.5 lg:pt-8">
 
         <div class="mx-auto w-full max-w-8xl">
 
@@ -61,15 +61,15 @@
           x-on:mouseleave="scheduleCloseMegaHover()">
 
           {{-- Olive bar — fixed chrome width (max-w-8xl parent); scroll only hides the dock, no morph. --}}
-          {{-- Mobile: Figma "Mobile — Nav" 75px flat bar, glowleaf rule; burger | centred wordmark | search. Desktop: pill bar unchanged. --}}
+          {{-- Mobile / tablet (<lg, 1024px): Figma "Mobile — Nav" 75px flat bar; burger | centred wordmark | search. Desktop: pill bar. --}}
           <div
-            class="mega-nav__bar relative z-50 w-full bg-faded-olive max-md:rounded-none max-md:border-b max-md:border-glowleaf md:rounded-full">
-            <div class="mega-nav__bar-gutter w-full max-md:py-0 py-2">
+            class="mega-nav__bar relative z-50 w-full bg-faded-olive max-lg:rounded-none max-lg:border-b max-lg:border-glowleaf lg:rounded-full">
+            <div class="mega-nav__bar-gutter w-full max-lg:py-0 py-2">
               <div
-                class="mega-nav__bar-row relative flex h-[75px] min-h-[75px] w-full items-center gap-3 px-4 max-md:gap-2 md:h-auto md:min-h-[80px] md:gap-6 md:px-5 lg:px-6">
+                class="mega-nav__bar-row relative flex h-[75px] min-h-[75px] w-full items-center gap-3 px-4 max-lg:gap-2 lg:h-auto lg:min-h-[80px] lg:gap-6 lg:px-5 xl:px-6">
                 <button
                   type="button"
-                  class="mega-nav__burger relative z-20 inline-flex size-11 shrink-0 items-center justify-center text-glowleaf md:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
+                  class="mega-nav__burger relative z-20 inline-flex size-11 shrink-0 items-center justify-center text-glowleaf lg:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
                   aria-controls="mega-mobile-drawer"
                   x-bind:aria-expanded="mobileOpen ? 'true' : 'false'"
                   x-on:click="mobileOpen = !mobileOpen">
@@ -80,23 +80,23 @@
                   </svg>
                 </button>
                 <div
-                  class="mega-nav__bar-main pointer-events-none flex min-w-0 flex-1 items-center md:pointer-events-auto md:gap-[42px]">
+                  class="mega-nav__bar-main pointer-events-none flex min-w-0 flex-1 items-center lg:pointer-events-auto lg:gap-[42px]">
                   <a
-                    class="mega-nav__logo shrink-0 text-glowleaf max-md:pointer-events-auto max-md:absolute max-md:left-1/2 max-md:top-1/2 max-md:z-10 max-md:-translate-x-1/2 max-md:-translate-y-1/2 md:static md:translate-x-0 md:translate-y-0"
+                    class="mega-nav__logo shrink-0 text-glowleaf max-lg:pointer-events-auto max-lg:absolute max-lg:left-1/2 max-lg:top-1/2 max-lg:z-10 max-lg:-translate-x-1/2 max-lg:-translate-y-1/2 lg:static lg:translate-x-0 lg:translate-y-0"
                     href="{{ esc_url(home_url('/')) }}"
                     rel="home"
                     aria-label="{{ esc_attr(get_bloginfo('name')) }}">
                     @if(has_custom_logo())
-                      <span class="block max-h-[28px] w-[178px] max-md:max-h-[24px] [&_img]:h-full [&_img]:w-auto [&_img]:max-h-[28px] max-md:[&_img]:max-h-[24px] [&_img]:object-contain [&_img]:object-left max-md:[&_img]:object-center">
+                      <span class="block max-h-[28px] w-[178px] max-lg:max-h-[24px] [&_img]:h-full [&_img]:w-auto [&_img]:max-h-[28px] max-lg:[&_img]:max-h-[24px] [&_img]:object-contain [&_img]:object-left max-lg:[&_img]:object-center">
                         {!! get_custom_logo() !!}
                       </span>
                     @else
-                      @include('partials.culver-square-logo', ['class' => 'block h-[22px] w-[178px] max-w-[min(100%,178px)] shrink-0 text-glowleaf max-md:h-[20px] md:max-w-full [&_svg]:max-h-full'])
+                      @include('partials.culver-square-logo', ['class' => 'block h-[22px] w-[178px] max-w-[min(100%,178px)] shrink-0 text-glowleaf max-lg:h-[20px] lg:max-w-full [&_svg]:max-h-full'])
                     @endif
                   </a>
 
                   @if($navTree !== [])
-                    <nav class="mega-nav__primary hidden flex-1 justify-start md:flex" aria-label="{{ esc_attr__('Primary', 'culvers') }}">
+                    <nav class="mega-nav__primary hidden flex-1 justify-start lg:flex" aria-label="{{ esc_attr__('Primary', 'culvers') }}">
                       <ul class="flex flex-wrap items-center gap-x-[30px] gap-y-2">
                         @foreach($navTree as $branch)
                           @php $hasMega = $branch['children'] !== []; @endphp
@@ -158,10 +158,10 @@
                   @endif
                 </div>
 
-                <div class="mega-nav__bar-end relative z-20 flex shrink-0 items-center gap-2 md:gap-[18px]">
+                <div class="mega-nav__bar-end relative z-20 flex shrink-0 items-center gap-2 lg:gap-[18px]">
                   <button
                     type="button"
-                    class="relative flex size-[43px] shrink-0 items-center justify-center rounded-full bg-brand-500 text-faded-olive transition-transform hover:scale-[1.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf md:hidden"
+                    class="relative flex size-[43px] shrink-0 items-center justify-center rounded-full bg-brand-500 text-faded-olive transition-transform hover:scale-[1.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf lg:hidden"
                     x-bind:aria-expanded="searchOpen ? 'true' : 'false'"
                     aria-controls="site-header-search"
                     x-on:click="openSearch()">
@@ -172,7 +172,7 @@
                     </svg>
                   </button>
 
-                  <div class="mega-nav__utilities hidden shrink-0 items-center md:flex md:gap-[18px]">
+                  <div class="mega-nav__utilities hidden shrink-0 items-center lg:flex lg:gap-[18px]">
                   <a
                     class="inline-flex items-center gap-2 text-white transition-opacity hover:opacity-90 focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
                     href="{{ esc_url($mapUrl) }}">
@@ -217,6 +217,7 @@
             </div>
           </div>
 
+          @if($navTree !== [])
             @foreach($navTree as $branch)
               @if($branch['children'] !== [])
                 @php
@@ -325,6 +326,7 @@
               @endif
             @endforeach
           @endif
+
         </div>
 
         {{-- Search mode (same gutter / max-width pattern as mega bar). --}}
@@ -335,10 +337,10 @@
           x-cloak
           x-transition.opacity.duration.150ms>
           <div
-            class="site-header__search-bar border-brand-500 bg-light-cream max-md:rounded-none max-md:border-0 max-md:border-b-4 max-md:border-glowleaf md:rounded-full md:border-4">
-            <div class="site-header__search-gutter w-full max-md:py-0 md:py-0">
+            class="site-header__search-bar border-brand-500 bg-light-cream max-lg:rounded-none max-lg:border-0 max-lg:border-b-4 max-lg:border-glowleaf lg:rounded-full lg:border-4">
+            <div class="site-header__search-gutter w-full max-lg:py-0 lg:py-0">
               <div
-                class="site-header__search-row flex min-h-[75px] items-center gap-4 px-4 py-2 md:min-h-[80px] md:gap-8 md:px-5 lg:px-6">
+                class="site-header__search-row flex min-h-[75px] items-center gap-4 px-4 py-2 lg:min-h-[80px] lg:gap-8 lg:px-5 xl:px-6">
                 <a class="shrink-0 text-deep-moss" href="{{ esc_url(home_url('/')) }}" rel="home" aria-label="{{ esc_attr(get_bloginfo('name')) }}">
                   @if(has_custom_logo())
                     <span class="block max-h-[28px] w-[178px] [&_img]:h-full [&_img]:w-auto [&_img]:object-contain [&_img]:object-left">
@@ -355,7 +357,7 @@
                 <label class="sr-only" for="site-search-input">{{ __('Search', 'culvers') }}</label>
                 <input
                   id="site-search-input"
-                  class="site-header__search-input min-w-0 flex-1 border-0 bg-transparent font-sans text-xl leading-snug text-faded-olive placeholder:text-faded-olive/55 focus:outline-none focus:ring-0 md:text-2xl"
+                  class="site-header__search-input min-w-0 flex-1 border-0 bg-transparent font-sans text-xl leading-snug text-faded-olive placeholder:text-faded-olive/55 focus:outline-none focus:ring-0 lg:text-2xl"
                   type="search"
                   name="s"
                   autocomplete="off"
@@ -374,7 +376,7 @@
             </div>
           </div>
           <div
-            class="site-header__search-results max-h-[min(40vh,320px)] overflow-y-auto rounded-[14px] bg-light-cream px-6 py-5 shadow-md md:px-10"
+            class="site-header__search-results max-h-[min(40vh,320px)] overflow-y-auto rounded-[14px] bg-light-cream px-6 py-5 shadow-md lg:px-10"
             x-show="searchResultsVisible"
             x-html="searchHtml"
             role="region"
@@ -394,7 +396,7 @@
   {{-- Mobile menu — Figma: white full-screen, wordmark + lime close, drill-down panels, useful links grid. --}}
   <div
     id="mega-mobile-drawer"
-    class="mega-nav__drawer fixed inset-0 z-[100] flex max-h-[100dvh] flex-col bg-white text-deep-moss md:hidden"
+    class="mega-nav__drawer fixed inset-0 z-[100] flex max-h-[100dvh] flex-col bg-white text-deep-moss lg:hidden"
     x-show="mobileOpen"
     x-cloak
     x-transition:enter="transition ease-out duration-300 motion-reduce:transition-none"
