@@ -3,9 +3,9 @@
   use App\Helpers\LayoutShell;
 
   /**
-   * Video block — contained 16:9 video with branded brand-500 frame, subtle in-frame
-   * hover zoom (clipped), and a custom Play CTA. Idle state shows the configured poster
-   * (or the first decoded frame when no poster is set); playback is user-initiated.
+   * Video block — contained 16:9 video with branded brand-500 frame. Hover uses a light
+   * scale on the framed stage (clipped) plus in-frame video zoom — capped a bit wider
+   * than the site 8xl shell but well under the old 112rem full-bleed width.
    */
 
   $c = is_array($component ?? null) ? $component : [];
@@ -27,19 +27,21 @@
     class="video-block {{ esc_attr($root) }}"
     data-component-root
     data-video-block>
-    <div class="video-block__shell mx-auto w-full max-w-8xl {{ LayoutShell::GUTTER_X }}">
-      <div
-        class="video-block__stage group relative rounded-3xl border-4 border-brand-500 bg-deep-moss"
-        x-data="videoBlock()"
-        role="region"
-        aria-label="{{ esc_attr__('Video', 'culvers') }}">
+    <div class="video-block__shell mx-auto w-full max-w-[min(100%,97.5rem)] {{ LayoutShell::GUTTER_X }}">
+      {{-- Clips stage scale so hover growth stays inside rounded chrome (no viewport bleed). --}}
+      <div class="overflow-hidden rounded-3xl">
+        <div
+          class="video-block__stage group relative rounded-3xl border-4 border-brand-500 bg-deep-moss motion-safe:transition-transform motion-safe:duration-700 motion-safe:ease-out motion-safe:hover:scale-[1.02] motion-safe:focus-within:scale-[1.02] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:focus-within:scale-100"
+          x-data="videoBlock()"
+          role="region"
+          aria-label="{{ esc_attr__('Video', 'culvers') }}">
         <div
           class="relative aspect-video w-full min-h-[240px] overflow-hidden rounded-[1.15rem] sm:min-h-[320px] md:min-h-[400px] lg:min-h-[min(52vw,760px)] sm:rounded-[1.25rem]"
           data-background-parallax-trigger>
           <div class="absolute inset-0 z-0 size-full" data-background-parallax-image="1">
             <video
               x-ref="video"
-              class="video-block__video absolute inset-0 z-0 size-full object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:ease-out motion-safe:group-hover:scale-[1.04] motion-safe:group-focus-within:scale-[1.04] motion-reduce:group-hover:scale-100 motion-reduce:group-focus-within:scale-100"
+              class="video-block__video absolute inset-0 z-0 size-full object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:ease-out motion-safe:group-hover:scale-[1.06] motion-safe:group-focus-within:scale-[1.06] motion-reduce:group-hover:scale-100 motion-reduce:group-focus-within:scale-100"
               data-gsap-autoplay="off"
               data-video-manual-start="1"
               preload="{{ $posterUrl !== '' ? 'none' : 'metadata' }}"
@@ -73,6 +75,7 @@
               <span>{{ esc_html($playLabel) }}</span>
             </button>
           </div>
+        </div>
         </div>
       </div>
     </div>
