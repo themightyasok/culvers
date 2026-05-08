@@ -3,9 +3,9 @@
   use App\Helpers\LayoutShell;
 
   /**
-   * Video block — contained 16:9 video with branded brand-500 frame, hover scale,
-   * and a custom Play CTA. Idle state shows the configured poster (or the first
-   * decoded frame when no poster is set); playback is user-initiated.
+   * Video block — contained 16:9 video with branded brand-500 frame, subtle in-frame
+   * hover zoom (clipped), and a custom Play CTA. Idle state shows the configured poster
+   * (or the first decoded frame when no poster is set); playback is user-initiated.
    */
 
   $c = is_array($component ?? null) ? $component : [];
@@ -27,9 +27,9 @@
     class="video-block {{ esc_attr($root) }}"
     data-component-root
     data-video-block>
-    <div class="video-block__shell mx-auto w-full max-w-[min(100%,112rem)] {{ LayoutShell::GUTTER_X }}">
+    <div class="video-block__shell mx-auto w-full max-w-8xl {{ LayoutShell::GUTTER_X }}">
       <div
-        class="video-block__stage group relative origin-center rounded-3xl border-4 border-brand-500 bg-deep-moss motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out motion-safe:hover:scale-[1.03] motion-safe:focus-within:scale-[1.03] motion-reduce:hover:scale-100 motion-reduce:focus-within:scale-100 motion-reduce:transition-none"
+        class="video-block__stage group relative rounded-3xl border-4 border-brand-500 bg-deep-moss"
         x-data="videoBlock()"
         role="region"
         aria-label="{{ esc_attr__('Video', 'culvers') }}">
@@ -39,7 +39,7 @@
           <div class="absolute inset-0 z-0 size-full" data-background-parallax-image="1">
             <video
               x-ref="video"
-              class="video-block__video absolute inset-0 z-0 size-full object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:ease-out motion-safe:group-hover:scale-[1.08] motion-safe:group-focus-within:scale-[1.08] motion-reduce:group-hover:scale-100 motion-reduce:group-focus-within:scale-100"
+              class="video-block__video absolute inset-0 z-0 size-full object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:ease-out motion-safe:group-hover:scale-[1.04] motion-safe:group-focus-within:scale-[1.04] motion-reduce:group-hover:scale-100 motion-reduce:group-focus-within:scale-100"
               data-gsap-autoplay="off"
               data-video-manual-start="1"
               preload="{{ $posterUrl !== '' ? 'none' : 'metadata' }}"
