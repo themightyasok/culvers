@@ -26,6 +26,12 @@
   class="site-header fixed inset-x-0 top-0 z-50"
   x-data="siteHeader"
   x-on:keydown.escape.window="closeAll()">
+  <script
+    type="application/json"
+    id="culvers-mobile-nav-tree">{!! wp_json_encode(
+        $navTree,
+        JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES
+    ) !!}</script>
   {{--
     Scroll-hide transform lives on `.site-header__chrome` only. The mobile drawer stays a direct
     child of `<header>` so `position:fixed` resolves to the viewport (transform ancestors would clip it).
@@ -376,85 +382,241 @@
   </div>
   {{-- /site-header__chrome --}}
 
-  {{-- Mobile: full-viewport overlay (viewport-fixed — outside transformed chrome). Lickd-style takeover, site palette. --}}
+  {{-- Mobile menu — Figma: white full-screen, wordmark + lime close, drill-down panels, useful links grid. --}}
   <div
     id="mega-mobile-drawer"
-    class="mega-nav__drawer fixed inset-0 z-[100] md:hidden"
+    class="mega-nav__drawer fixed inset-0 z-[100] flex max-h-[100dvh] flex-col bg-white text-deep-moss md:hidden"
     x-show="mobileOpen"
     x-cloak
-    x-transition:enter="transition ease-out duration-200"
-    x-transition:enter-start="opacity-0"
-    x-transition:enter-end="opacity-100"
-    x-transition:leave="transition ease-in duration-150"
-    x-transition:leave-start="opacity-100"
-    x-transition:leave-end="opacity-0"
+    x-transition:enter="transition ease-out duration-300 motion-reduce:transition-none"
+    x-transition:enter-start="-translate-x-full opacity-0"
+    x-transition:enter-end="translate-x-0 opacity-100"
+    x-transition:leave="transition ease-in duration-200 motion-reduce:transition-none"
+    x-transition:leave-start="translate-x-0 opacity-100"
+    x-transition:leave-end="-translate-x-full opacity-0"
     role="dialog"
     aria-modal="true"
     aria-labelledby="mega-mobile-drawer-title">
+    <h2 id="mega-mobile-drawer-title" class="sr-only">{{ __('Site menu', 'culvers') }}</h2>
+
     <div
-      class="pointer-events-auto absolute inset-0 bg-deep-moss/97"
-      x-on:click="mobileOpen = false"
-      aria-hidden="true"></div>
-    <div
-      class="pointer-events-auto relative z-10 flex h-full max-h-[100dvh] flex-col overflow-hidden pt-[max(0.75rem,env(safe-area-inset-top))]">
-      <h2 id="mega-mobile-drawer-title" class="sr-only">{{ __('Site menu', 'culvers') }}</h2>
-      <div class="flex shrink-0 items-center justify-between gap-4 border-b border-white/15 px-4 pb-4 sm:px-5">
-        <span class="font-heading text-lg text-glowleaf md:text-xl">{{ __('Menu', 'culvers') }}</span>
-        <button
-          type="button"
-          class="rounded-full border-2 border-white/35 px-5 py-2.5 font-sans text-sm font-semibold uppercase tracking-widest text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
-          x-on:click="mobileOpen = false">
-          {{ __('Close', 'culvers') }}
-        </button>
-      </div>
-      <nav class="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-10 pt-6 sm:px-5" aria-label="{{ esc_attr__('Primary navigation', 'culvers') }}">
-        @if($navTree !== [])
-          <ul class="space-y-1">
-            @foreach($navTree as $branch)
-              <li class="list-none border-b border-white/12 py-4 first:pt-0">
-                @if($branch['children'] !== [])
-                  <p class="font-heading text-2xl text-glowleaf">{{ $branch['title'] }}</p>
-                  <ul class="mt-4 space-y-3 ps-1">
-                    @foreach($branch['children'] as $child)
-                      <li class="list-none">
-                        <a
-                          class="block py-1.5 font-sans text-lg leading-snug text-white focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
-                          href="{{ esc_url($child['url']) }}">
-                          {{ $child['title'] }}
-                        </a>
-                      </li>
-                    @endforeach
-                  </ul>
-                @else
-                  <a
-                    class="block font-heading text-2xl text-glowleaf focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
-                    href="{{ esc_url($branch['url']) }}">
-                    {{ $branch['title'] }}
-                  </a>
-                @endif
-              </li>
-            @endforeach
-          </ul>
+      class="flex shrink-0 items-center justify-between gap-4 border-b border-deep-moss/10 px-5 pb-4 pt-[max(0.5rem,env(safe-area-inset-top))] sm:px-6">
+      <a
+        class="shrink-0 focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
+        href="{{ esc_url(home_url('/')) }}"
+        rel="home"
+        aria-label="{{ esc_attr(get_bloginfo('name')) }}">
+        @if(has_custom_logo())
+          <span class="block max-h-[28px] w-[178px] max-w-[70vw] [&_img]:h-full [&_img]:w-auto [&_img]:object-contain [&_img]:object-left">
+            {!! get_custom_logo() !!}
+          </span>
+        @else
+          @include('partials.culver-square-logo', ['class' => 'block h-[22px] w-[178px] max-w-[70vw] text-deep-moss'])
         @endif
-        <div class="mt-10 flex flex-col gap-4 border-t border-white/15 pt-8">
-          <a
-            class="font-sans text-lg text-white focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
-            href="{{ esc_url($mapUrl) }}">
-            {{ __('Centre Map', 'culvers') }}
-          </a>
-          <a
-            class="font-sans text-lg text-white focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
-            href="{{ esc_url($hereUrl) }}">
-            {{ __('Getting Here', 'culvers') }}
-          </a>
+      </a>
+      <button
+        type="button"
+        class="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-glowleaf text-deep-moss transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
+        x-on:click="mobileOpen = false"
+        aria-label="{{ esc_attr__('Close menu', 'culvers') }}">
+        <svg class="size-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path
+            d="m6 6 12 12M18 6 6 18"
+            stroke="currentColor"
+            stroke-width="1.8"
+            stroke-linecap="round" />
+        </svg>
+      </button>
+    </div>
+
+    <div class="relative min-h-0 flex-1 overflow-hidden">
+      <div
+        class="flex h-full min-h-0 w-[200%] transition-transform duration-300 ease-[cubic-bezier(0.33,1,0.68,1)] motion-reduce:transition-none"
+        :class="mobileNavDepth === 0 ? 'translate-x-0' : '-translate-x-1/2'">
+        {{-- Root panel --}}
+        <div
+          class="flex h-full w-1/2 min-w-[50%] flex-col overflow-y-auto overscroll-contain px-5 pb-10 pt-2 sm:px-6"
+          id="mega-mobile-panel-root"
+          :aria-hidden="mobileNavDepth === 1">
+          <nav aria-label="{{ esc_attr__('Primary navigation', 'culvers') }}">
+            @if($navTree !== [])
+              <ul class="divide-y divide-deep-moss/10">
+                @foreach($navTree as $idx => $branch)
+                  <li class="list-none">
+                    @if($branch['children'] !== [])
+                      <button
+                        type="button"
+                        class="flex w-full items-center justify-between gap-4 py-5 text-left font-heading text-3xl leading-none text-deep-moss focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf sm:text-4xl"
+                        x-on:click="openMobileSubmenuByIndex({{ (int) $idx }})">
+                        <span>{{ $branch['title'] }}</span>
+                        <span class="inline-flex size-9 shrink-0 items-center justify-center text-deep-moss/50" aria-hidden="true">
+                          <svg class="size-4" viewBox="0 0 24 24" fill="none">
+                            <path
+                              d="m9 6 6 6-6 6"
+                              stroke="currentColor"
+                              stroke-width="1.8"
+                              stroke-linecap="round"
+                              stroke-linejoin="round" />
+                          </svg>
+                        </span>
+                      </button>
+                    @else
+                      <a
+                        class="flex w-full items-center justify-between gap-4 py-5 font-heading text-3xl leading-none text-deep-moss focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf sm:text-4xl"
+                        href="{{ esc_url($branch['url']) }}">
+                        <span>{{ $branch['title'] }}</span>
+                        <span class="inline-flex size-9 shrink-0 items-center justify-center text-deep-moss/35" aria-hidden="true">
+                          <svg class="size-4" viewBox="0 0 24 24" fill="none">
+                            <path
+                              d="m9 6 6 6-6 6"
+                              stroke="currentColor"
+                              stroke-width="1.8"
+                              stroke-linecap="round"
+                              stroke-linejoin="round" />
+                          </svg>
+                        </span>
+                      </a>
+                    @endif
+                  </li>
+                @endforeach
+              </ul>
+            @endif
+          </nav>
+
+          <div class="mt-10 border-t border-deep-moss/10 pt-8">
+            <p class="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-deep-moss/55">
+              {{ __('Useful links', 'culvers') }}
+            </p>
+            <div class="mt-5 grid grid-cols-2 gap-3">
+              <a
+                class="flex flex-col items-center gap-2 rounded-2xl bg-lighter-cream px-3 py-5 text-center text-deep-moss shadow-sm transition-colors hover:bg-light-cream focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"
+                href="{{ esc_url($mapUrl) }}">
+                <svg class="size-6 text-deep-moss" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path
+                    d="M4 6.75 12 3l8 3.75v8.5L12 21l-8-5.75v-8.5Z"
+                    stroke="currentColor"
+                    stroke-width="1.4"
+                    stroke-linejoin="round" />
+                  <path d="m9 9 2.25 2.25L15 7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+                </svg>
+                <span class="font-sans text-[11px] font-semibold uppercase tracking-wider">{{ __('Centre Map', 'culvers') }}</span>
+              </a>
+              <a
+                class="flex flex-col items-center gap-2 rounded-2xl bg-lighter-cream px-3 py-5 text-center text-deep-moss shadow-sm transition-colors hover:bg-light-cream focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"
+                href="{{ esc_url($hereUrl) }}">
+                <svg class="size-6 text-deep-moss" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path
+                    d="M12 20s7-4.35 7-11a7 7 0 1 0-14 0c0 6.65 7 11 7 11Z"
+                    stroke="currentColor"
+                    stroke-width="1.4"
+                    stroke-linejoin="round" />
+                  <circle cx="12" cy="9" r="2.25" stroke="currentColor" stroke-width="1.4" />
+                </svg>
+                <span class="font-sans text-[11px] font-semibold uppercase tracking-wider">{{ __('Getting Here', 'culvers') }}</span>
+              </a>
+              @if($instagramUrl !== '' && $instagramUrl !== '#')
+                <a
+                  class="flex flex-col items-center gap-2 rounded-2xl bg-glowleaf px-3 py-5 text-center text-deep-moss transition-opacity hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-moss"
+                  href="{{ esc_url($instagramUrl) }}"
+                  target="_blank"
+                  rel="noopener noreferrer">
+                  <svg class="size-6" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.3" />
+                    <circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="1.3" />
+                    <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" />
+                  </svg>
+                  <span class="font-sans text-[11px] font-bold uppercase tracking-wider">{{ __('Instagram', 'culvers') }}</span>
+                </a>
+              @else
+                <span class="flex flex-col items-center gap-2 rounded-2xl bg-glowleaf/50 px-3 py-5 text-center opacity-50">
+                  <span class="font-sans text-[11px] font-bold uppercase tracking-wider text-deep-moss/50">{{ __('Instagram', 'culvers') }}</span>
+                </span>
+              @endif
+              @if($facebookUrl !== '' && $facebookUrl !== '#')
+                <a
+                  class="flex flex-col items-center gap-2 rounded-2xl bg-glowleaf px-3 py-5 text-center text-deep-moss transition-opacity hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-moss"
+                  href="{{ esc_url($facebookUrl) }}"
+                  target="_blank"
+                  rel="noopener noreferrer">
+                  <svg class="size-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path
+                      d="M14 8h3V5h-3c-2.2 0-4 1.8-4 4v2H7v3h3v8h3v-8h3.2l.8-3H13v-2c0-.6.4-1 1-1Z" />
+                  </svg>
+                  <span class="font-sans text-[11px] font-bold uppercase tracking-wider">{{ __('Facebook', 'culvers') }}</span>
+                </a>
+              @else
+                <span class="flex flex-col items-center gap-2 rounded-2xl bg-glowleaf/50 px-3 py-5 text-center opacity-50">
+                  <span class="font-sans text-[11px] font-bold uppercase tracking-wider text-deep-moss/50">{{ __('Facebook', 'culvers') }}</span>
+                </span>
+              @endif
+            </div>
+            <button
+              type="button"
+              class="mt-6 font-sans text-sm font-semibold uppercase tracking-widest text-deep-moss/70 underline decoration-glowleaf decoration-2 underline-offset-4 hover:text-deep-moss focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
+              x-on:click="openSearchFromMobile()">
+              {{ __('Search', 'culvers') }}
+            </button>
+          </div>
+        </div>
+
+        {{-- Submenu panel --}}
+        <div
+          class="flex h-full w-1/2 min-w-[50%] flex-col overflow-y-auto overscroll-contain border-l border-deep-moss/10 px-5 pb-10 pt-2 sm:px-6"
+          id="mega-mobile-panel-sub"
+          :aria-hidden="mobileNavDepth === 0">
           <button
             type="button"
-            class="text-left font-sans text-lg text-glowleaf focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
-            x-on:click="openSearchFromMobile()">
-            {{ __('Search', 'culvers') }}
+            class="mb-4 flex items-center gap-3 py-2 text-left focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"
+            x-on:click="resetMobileSubmenu()">
+            <span
+              class="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-glowleaf text-deep-moss"
+              aria-hidden="true">
+              <svg class="size-5" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="m15 6-6 6 6 6"
+                  stroke="currentColor"
+                  stroke-width="1.8"
+                  stroke-linecap="round"
+                  stroke-linejoin="round" />
+              </svg>
+            </span>
+            <span class="font-sans text-xs font-bold uppercase tracking-[0.2em] text-deep-moss">{{ __('Back', 'culvers') }}</span>
           </button>
+
+          <template x-if="mobileActiveBranch">
+            <div class="min-h-0 flex-1">
+              <div class="flex items-start justify-between gap-3 border-b border-deep-moss/10 pb-5">
+                <h3 class="font-heading text-3xl leading-none text-deep-moss sm:text-4xl" x-text="mobileActiveBranch.title"></h3>
+                <a
+                  class="mt-1 inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-glowleaf text-deep-moss focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-moss"
+                  x-bind:href="mobileActiveBranch.url || '#'"
+                  x-on:click="mobileOpen = false">
+                  <span class="sr-only">{{ __('Open section', 'culvers') }}</span>
+                  <svg class="size-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path
+                      d="m9 6 6 6-6 6"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round" />
+                  </svg>
+                </a>
+              </div>
+              <ul class="divide-y divide-deep-moss/10">
+                <template x-for="(child, cIdx) in mobileActiveBranch.children" :key="(child.url || '') + '-' + cIdx">
+                  <li class="list-none">
+                    <a
+                      class="block py-4 font-sans text-base font-normal leading-snug text-deep-moss focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"
+                      x-bind:href="child.url"
+                      x-on:click="mobileOpen = false"
+                      x-text="child.title"></a>
+                  </li>
+                </template>
+              </ul>
+            </div>
+          </template>
         </div>
-      </nav>
+      </div>
     </div>
   </div>
 </header>

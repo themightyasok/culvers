@@ -43,6 +43,18 @@ export default function registerSiteHeaderAlpine(Alpine) {
     previewSrc: '',
     previewAlt: '',
     mobileOpen: false,
+    /**
+     * Primary nav tree for mobile drill-down (JSON from `#culvers-mobile-nav-tree`).
+     *
+     * @type {Array<{ id: number, title: string, url: string, children: Array<{ title: string, url: string, preview?: string }> }>}
+     */
+    mobileNavTree: [],
+    /** 0 = root panel, 1 = submenu */
+    mobileNavDepth: 0,
+    /**
+     * @type {null | { id: number, title: string, url: string, children: Array<{ title: string, url: string, preview?: string }> }}
+     */
+    mobileActiveBranch: null,
     searchOpen: false,
     searchQuery: '',
     searchHtml: '',
@@ -177,16 +189,59 @@ export default function registerSiteHeaderAlpine(Alpine) {
       this.previewAlt = el.textContent?.trim() ?? '';
     },
 
-    // --- Search --------------------------------------------------------------
+    // --- Search & mobile drill-down ------------------------------------------
+
+    hydrateMobileNavTree() {
+      const el = document.getElementById('culvers-mobile-nav-tree');
+      if (!el?.textContent) {
+        this.mobileNavTree = [];
+
+        return;
+      }
+      try {
+        const parsed = JSON.parse(el.textContent.trim());
+        this.mobileNavTree = Array.isArray(parsed) ? parsed : [];
+      } catch {
+        this.mobileNavTree = [];
+      }
+    },
+
+    resetMobileSubmenu() {
+      this.mobileNavDepth = 0;
+      this.mobileActiveBranch = null;
+    },
+
+    /**
+     * @param {number} index
+     */
+    openMobileSubmenuByIndex(index) {
+      const branch = this.mobileNavTree[Number(index)];
+      if (!branch) {
+        return;
+      }
+      const kids = branch.children;
+      if (!kids || kids.length === 0) {
+        if (typeof branch.url === 'string' && branch.url !== '') {
+          window.location.assign(branch.url);
+        }
+
+        return;
+      }
+      this.mobileActiveBranch = branch;
+      this.mobileNavDepth = 1;
+    },
 
     openSearch() {
       this.mobileOpen = false;
+      this.resetMobileSubmenu();
       this.searchOpen = true;
       this.closeMega();
     },
 
     openSearchFromMobile() {
+      this.resetMobileSubmenu();
       this.mobileOpen = false;
+      this.closeMega();
       this.searchOpen = true;
     },
 
@@ -200,6 +255,7 @@ export default function registerSiteHeaderAlpine(Alpine) {
     closeAll() {
       this.closeMega();
       this.mobileOpen = false;
+      this.resetMobileSubmenu();
       this.closeSearch();
     },
 
@@ -392,6 +448,7 @@ export default function registerSiteHeaderAlpine(Alpine) {
     init() {
       this._dockMountTs = Date.now();
       this._lastScrollY = this.readScrollY();
+      this.hydrateMobileNavTree();
 
       this.syncHeaderDock();
       const onScroll = () => this.syncHeaderDock();
@@ -432,8 +489,11 @@ export default function registerSiteHeaderAlpine(Alpine) {
         this.revealDock();
         this.syncDocumentHeaderOffset();
       });
-      this.$watch('mobileOpen', () => {
-        document.body.classList.toggle('mobile-nav-open', this.mobileOpen);
+      this.$watch('mobileOpen', (open) => {
+        document.body.classList.toggle('mobile-nav-open', !!open);
+        if (!open) {
+          this.resetMobileSubmenu();
+        }
         this.revealDock();
         this.syncDocumentHeaderOffset();
       });
