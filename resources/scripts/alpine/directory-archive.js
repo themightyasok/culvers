@@ -5,9 +5,9 @@
  */
 export default function registerDirectoryArchiveAlpine(Alpine) {
   Alpine.data('directoryArchive', () => ({
-    /** Matches Figma Shopping Directory default: filters hidden, four-column grid (frame 51:5152). */
-    filtersVisible: false,
-    retailerOpen: false,
+    /** Sidebar + filter groups start open; users can collapse via toolbar pill / section toggles. */
+    filtersVisible: true,
+    retailerOpen: true,
     categoryOpen: true,
     categorySlug: '',
     typeSlug: '',
@@ -21,9 +21,6 @@ export default function registerDirectoryArchiveAlpine(Alpine) {
       }
       if (typeof typ === 'string' && typ !== '') {
         this.typeSlug = typ;
-      }
-      if ((typeof cat === 'string' && cat !== '') || (typeof typ === 'string' && typ !== '')) {
-        this.filtersVisible = true;
       }
       this.$nextTick(() => this.applyFilter());
     },
