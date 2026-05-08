@@ -314,7 +314,7 @@
                           <img
                             alt=""
                             class="absolute inset-0 size-full object-cover"
-                            x-bind:key="'mega-preview-{{ $branch['id'] }}:' + (megaOpenId === {{ $branch['id'] }} ? (previewSrc || {!! $fpJs !!}) : {!! $fpJs !!})"
+                            x-bind:key='"mega-preview-{{ $branch['id'] }}:" + (megaOpenId === {{ $branch['id'] }} ? (previewSrc || {!! $fpJs !!}) : {!! $fpJs !!})'
                             x-bind:src='megaOpenId === {{ $branch['id'] }} ? (previewSrc || {!! $fpJs !!}) : {!! $fpJs !!}'
                             x-bind:alt='megaOpenId === {{ $branch['id'] }} ? previewAlt : ""'
                             x-show='(megaOpenId === {{ $branch['id'] }} ? (previewSrc || {!! $fpJs !!}) : {!! $fpJs !!}).length > 0' />

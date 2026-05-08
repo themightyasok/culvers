@@ -178,6 +178,16 @@ final class HomepageFlexibleAcfAttach
     private static function shopSplitHighlightRow(array $row): array
     {
         $row['split_image'] = self::acfImageValue($row['split_image'] ?? null);
+        $tabs = $row['split_tabs'] ?? [];
+        if (is_array($tabs)) {
+            foreach ($tabs as $i => $tab) {
+                if (! is_array($tab)) {
+                    continue;
+                }
+                $tabs[$i]['tab_image'] = self::acfImageValue($tab['tab_image'] ?? null);
+            }
+            $row['split_tabs'] = $tabs;
+        }
 
         return $row;
     }

@@ -42,6 +42,15 @@
               continue;
           }
 
+          $tabOwn = isset($row['tab_image']) && is_array($row['tab_image']) ? $row['tab_image'] : [];
+          $tabOwnUrl = isset($tabOwn['url']) ? trim((string) $tabOwn['url']) : '';
+          $effectiveMedia = $tabOwnUrl !== '' ? $tabOwn : $img;
+          $effectiveUrl = isset($effectiveMedia['url']) ? trim((string) $effectiveMedia['url']) : '';
+          $effectiveAlt = trim((string) ($effectiveMedia['alt'] ?? ''));
+          if ($effectiveAlt === '') {
+              $effectiveAlt = $headline !== '' ? $headline : ($label !== '' ? $label : __('Feature image', 'culvers'));
+          }
+
           $tabs[] = [
               'label' => $label,
               'kicker' => $kicker,
@@ -51,10 +60,28 @@
               'cta_label' => $ctaLabel,
               'cta_url' => $ctaUrl,
               'show_cta' => $ctaLabel !== '' && $ctaUrl !== '',
+              'media' => $effectiveMedia,
+              'media_url' => $effectiveUrl,
+              'media_alt' => $effectiveAlt,
           ];
       }
   }
   $hasTabs = $useTabs && ! empty($tabs);
+
+  $hasRightMedia = $imgUrl !== '';
+  $tabsMediaUniform = true;
+  if ($hasTabs) {
+      $hasRightMedia = false;
+      $distinctUrls = [];
+      foreach ($tabs as $tab) {
+          $u = $tab['media_url'];
+          if ($u !== '') {
+              $hasRightMedia = true;
+              $distinctUrls[$u] = true;
+          }
+      }
+      $tabsMediaUniform = count($distinctUrls) <= 1;
+  }
 
   $kicker = trim((string) ($c['split_kicker'] ?? ''));
   $headline = trim((string) ($c['split_headline'] ?? ''));
@@ -76,7 +103,7 @@
   $tablistId = 'split-highlight-tabs-' . uniqid();
 @endphp
 
-@if($hasCopy && $imgUrl !== '')
+@if($hasCopy && $hasRightMedia)
   <section
     class="shop-split-highlight {{ esc_attr($root) }} text-deep-moss"
     data-component-root
@@ -84,7 +111,7 @@
     @if($hasTabs) x-data="splitHighlight" @endif>
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
       <div
-        class="overflow-hidden rounded-[10px] bg-faded-olive shadow-sm lg:flex lg:min-h-[597px]">
+        class="overflow-hidden rounded-[10px] bg-faded-olive shadow-sm flex flex-col lg:flex-row lg:min-h-[597px]">
         {{-- Copy column --}}
         <div
           class="flex flex-col gap-6 px-8 py-12 lg:flex-none lg:gap-8 lg:px-10 xl:px-14 xl:py-12 {{ $copyColWidth }} {{ $hasTabs ? 'items-stretch text-left' : 'items-center justify-center text-center' }}">
@@ -113,9 +140,7 @@
                   x-on:keydown.left.prevent="selectTab(({{ $i }} - 1 + {{ count($tabs) }}) % {{ count($tabs) }}, true)"
                   x-on:keydown.home.prevent="selectTab(0, true)"
                   x-on:keydown.end.prevent="selectTab({{ count($tabs) - 1 }}, true)"
-                  x-bind:class="activeTab === {{ $i }}
-                      ? 'bg-glowleaf text-deep-moss'
-                      : 'bg-transparent text-light-cream hover:text-glowleaf'">
+                  x-bind:class="activeTab === {{ $i }} ? 'bg-glowleaf text-deep-moss' : 'bg-transparent text-light-cream hover:text-glowleaf'">
                   {{ esc_html($tab['label'] !== '' ? $tab['label'] : ($tab['headline'] !== '' ? $tab['headline'] : __('Tab', 'culvers'))) }}
                 </button>
               @endforeach
@@ -199,26 +224,49 @@
           @endif
         </div>
 
-        {{-- Image column. `overflow-hidden` clips the BackgroundParallaxManager's
-             ±106px translate so the image never leaks over the copy column. The
-             parallax data attribute ships on the `<img>` itself; the manager
-             walks up to the closest `data-component-root` for its scroll trigger. --}}
-        <div class="shop-split-highlight__media relative min-h-[280px] flex-none overflow-hidden lg:min-h-0 {{ $imageColWidth }}">
-          {!! Image::render($img, [
-              'class' => 'absolute inset-0 size-full object-cover',
-              'alt' => $imgAlt !== '' ? $imgAlt : ($headline !== '' ? $headline : __('Feature image', 'culvers')),
-              'data' => ['background-parallax-image' => '1'],
-          ]) !!}
+        {{-- Image column: single asset (static) or stacked layers cross-faded with `activeTab` (tabbed). --}}
+        <div class="shop-split-highlight__media relative min-h-[280px] w-full flex-none overflow-hidden self-stretch lg:h-full {{ $imageColWidth }}">
+          @if($hasTabs && ! $tabsMediaUniform)
+            @foreach($tabs as $i => $tab)
+              @php $mUrl = $tab['media_url']; @endphp
+              @if($mUrl !== '')
+                <div
+                  class="shop-split-highlight__media-layer absolute inset-0 transition-opacity duration-300 ease-out {{ $i === 0 ? 'opacity-100 z-[1]' : 'opacity-0 pointer-events-none z-0' }}"
+                  x-bind:class="activeTab === {{ $i }} ? 'opacity-100 z-[1]' : 'opacity-0 pointer-events-none z-0'"
+                  x-bind:aria-hidden="activeTab === {{ $i }} ? 'false' : 'true'">
+                  {!! Image::render($tab['media'], [
+                      'class' => 'absolute inset-0 size-full object-cover',
+                      'alt' => $tab['media_alt'],
+                      'data' => ['background-parallax-image' => '1'],
+                  ]) !!}
+                </div>
+              @endif
+            @endforeach
+          @else
+            @php
+              $soloImg = $img;
+              $soloAlt = $imgAlt !== '' ? $imgAlt : ($headline !== '' ? $headline : __('Feature image', 'culvers'));
+              if ($hasTabs && isset($tabs[0]) && is_array($tabs[0]['media'] ?? null)) {
+                  $soloImg = $tabs[0]['media'];
+                  $soloAlt = $tabs[0]['media_alt'];
+              }
+            @endphp
+            {!! Image::render($soloImg, [
+                'class' => 'absolute inset-0 size-full object-cover',
+                'alt' => $soloAlt,
+                'data' => ['background-parallax-image' => '1'],
+            ]) !!}
+          @endif
         </div>
       </div>
     </div>
   </section>
 @elseif(current_user_can('edit_posts'))
   @php
-      if ($imgUrl === '' && ! $hasCopy) {
+      if (! $hasRightMedia && ! $hasCopy) {
           $editorHint = __('Add split copy (or tabs) and a right-column image.', 'culvers');
-      } elseif ($imgUrl === '') {
-          $editorHint = __('Add a right-column image.', 'culvers');
+      } elseif (! $hasRightMedia) {
+          $editorHint = __('Add a right-column image (or a panel image on each tab).', 'culvers');
       } elseif ($useTabs) {
           $editorHint = __('Add at least one tab with content.', 'culvers');
       } else {

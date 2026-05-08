@@ -179,6 +179,20 @@ return [
                             'wrapper' => ['width' => '50'],
                         ],
                     ],
+                    'tab_image' => [
+                        'type' => 'image',
+                        'options' => [
+                            'label' => __('Panel image', 'culvers'),
+                            'instructions' => __(
+                                'Optional. Right-column image while this tab is active. ' .
+                                'If empty, the component’s main right column image (below) is used.',
+                                'culvers'
+                            ),
+                            'return_format' => 'array',
+                            'preview_size' => 'medium',
+                            'wrapper' => ['width' => '100'],
+                        ],
+                    ],
                 ],
             ],
         ],
@@ -186,7 +200,11 @@ return [
             'type' => 'image',
             'options' => [
                 'label' => __('Right column image', 'culvers'),
-                'instructions' => __('Lifestyle crop; fills the image column.', 'culvers'),
+                'instructions' => __(
+                    'Lifestyle crop; fills the image column. With tabs, use this as the default ' .
+                    'right-hand image; override per tab with “Panel image” on each tab row.',
+                    'culvers'
+                ),
                 'return_format' => 'array',
                 'preview_size' => 'medium',
                 'library' => 'all',

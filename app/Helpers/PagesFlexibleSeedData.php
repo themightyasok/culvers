@@ -216,6 +216,10 @@ final class PagesFlexibleSeedData
                             . '</p>',
                         'tab_cta_label' => __('Parking information', 'culvers'),
                         'tab_cta_url' => 'https://www.culversquare.co.uk/visit/parking',
+                        'tab_image' => [
+                            'url' => self::seedAssetUrl(self::PLAN_VISIT_BY_CAR_FILE),
+                            'alt' => __('Family travelling to Culver Square by car', 'culvers'),
+                        ],
                     ],
                     [
                         'tab_label' => __('By Bus', 'culvers'),
@@ -231,6 +235,10 @@ final class PagesFlexibleSeedData
                             . '</p>',
                         'tab_cta_label' => __('Plan your route', 'culvers'),
                         'tab_cta_url' => 'https://www.firstbus.co.uk/essex',
+                        'tab_image' => [
+                            'url' => self::seedAssetUrl('guest-services-hero.jpg'),
+                            'alt' => __('Visitors near Culver Square shops', 'culvers'),
+                        ],
                     ],
                     [
                         'tab_label' => __('By Train', 'culvers'),
@@ -246,6 +254,10 @@ final class PagesFlexibleSeedData
                             . '</p>',
                         'tab_cta_label' => __('Live train times', 'culvers'),
                         'tab_cta_url' => 'https://www.greateranglia.co.uk',
+                        'tab_image' => [
+                            'url' => self::seedAssetUrl(self::CONTACT_HERO_FILE),
+                            'alt' => __('Traveller checking journey details', 'culvers'),
+                        ],
                     ],
                     [
                         'tab_label' => __('By Bicycle', 'culvers'),
@@ -261,6 +273,10 @@ final class PagesFlexibleSeedData
                             . '</p>',
                         'tab_cta_label' => __('See cycle routes', 'culvers'),
                         'tab_cta_url' => 'https://www.colchester.gov.uk/cycling',
+                        'tab_image' => [
+                            'url' => self::seedAssetUrl('career-perks.jpg'),
+                            'alt' => __('Visitors outdoors in Colchester', 'culvers'),
+                        ],
                     ],
                 ],
             ]),
@@ -369,6 +385,10 @@ final class PagesFlexibleSeedData
                             . '</p>',
                         'tab_cta_label' => __('Visit Colchester', 'culvers'),
                         'tab_cta_url' => 'https://www.visitcolchester.com',
+                        'tab_image' => [
+                            'url' => self::seedAssetUrl(self::GUEST_SERVICES_HISTORY_FILE),
+                            'alt' => __('Colchester Castle in golden light', 'culvers'),
+                        ],
                     ],
                     [
                         'tab_label' => __('Art & Culture', 'culvers'),
@@ -384,6 +404,10 @@ final class PagesFlexibleSeedData
                             . '</p>',
                         'tab_cta_label' => __('What’s on this season', 'culvers'),
                         'tab_cta_url' => function_exists('home_url') ? home_url('/whats-on/') : '/whats-on/',
+                        'tab_image' => [
+                            'url' => self::seedAssetUrl('event-hero.jpg'),
+                            'alt' => __('Evening event at Culver Square', 'culvers'),
+                        ],
                     ],
                     [
                         'tab_label' => __('Open Spaces', 'culvers'),
@@ -399,6 +423,10 @@ final class PagesFlexibleSeedData
                             . '</p>',
                         'tab_cta_label' => '',
                         'tab_cta_url' => '',
+                        'tab_image' => [
+                            'url' => self::seedAssetUrl(self::PLAN_VISIT_HERO_FILE),
+                            'alt' => __('Friends enjoying Castle Park near the centre', 'culvers'),
+                        ],
                     ],
                 ],
             ]),
