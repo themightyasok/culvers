@@ -323,7 +323,7 @@ $root = $gridClasses;
 
         {{-- Top: Header --}}
         @if($hasHeaderBlock || $hasButton)
-            <div class="horizontal-scroller__header mx-auto flex max-w-7xl flex-col justify-start px-5 lg:min-h-[240px] lg:px-16 {{ $header_alignment_class }} {{ $header_text_align_class }}">
+            <div class="horizontal-scroller__header mx-auto flex w-full max-w-8xl flex-col justify-start px-4 md:px-5 lg:px-6 lg:min-h-[240px] {{ $header_alignment_class }} {{ $header_text_align_class }}">
                 @if($hasHeaderBlock)
                     <div class="{{ $intro_flush_to_content ? 'mb-0' : 'mb-10 md:mb-14' }} {{ $header_text_align_class }}">
                         @if($hasHeaderText)

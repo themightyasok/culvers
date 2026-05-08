@@ -49,13 +49,13 @@ final class Grid
     {
         if (self::$gridClassMappings === null) {
             self::$gridClassMappings = [
-                6 => 'col-span-12 px-5 sm:px-6 lg:col-span-6 lg:col-start-4 lg:px-16',
-                7 => 'col-span-12 px-5 sm:px-6 lg:col-span-7 lg:col-start-3 lg:px-16',
-                8 => 'col-span-12 px-5 sm:px-6 lg:col-span-8 lg:col-start-3 lg:px-16',
-                9 => 'col-span-12 px-5 sm:px-6 lg:col-span-9 lg:col-start-2 lg:px-16',
-                10 => 'col-span-12 px-5 sm:px-6 lg:col-span-10 lg:col-start-2 lg:px-16',
-                11 => 'col-span-12 px-5 sm:px-6 lg:col-span-11 lg:col-start-1 lg:px-16',
-                12 => 'col-span-12 px-5 sm:px-6 lg:px-16',
+                6 => 'col-span-12 lg:col-span-6 lg:col-start-4',
+                7 => 'col-span-12 lg:col-span-7 lg:col-start-3',
+                8 => 'col-span-12 lg:col-span-8 lg:col-start-3',
+                9 => 'col-span-12 lg:col-span-9 lg:col-start-2',
+                10 => 'col-span-12 lg:col-span-10 lg:col-start-2',
+                11 => 'col-span-12 lg:col-span-11 lg:col-start-1',
+                12 => 'col-span-12',
                 'full' => 'col-span-12 w-full min-w-0',
             ];
         }

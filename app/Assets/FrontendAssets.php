@@ -19,6 +19,11 @@ final class FrontendAssets
 
     private const STYLE_HANDLE = 'culvers-styles';
 
+    /** BugHerd sidebar (public project key — safe to ship in HTML). */
+    private const BUGHERD_HANDLE = 'culvers-bugherd';
+
+    private const BUGHERD_SCRIPT_URL = 'https://www.bugherd.com/sidebarv2.js?apikey=vj2lspmxd5z7tpnd3zwkiw';
+
     private static bool $deferMainScript = false;
 
     /**
@@ -94,6 +99,8 @@ final class FrontendAssets
             );
             wp_localize_script(self::SCRIPT_HANDLE, 'culversTheme', $theme_script_extra);
 
+            self::enqueueBugHerd();
+
             return;
         }
 
@@ -132,6 +139,30 @@ final class FrontendAssets
             wp_enqueue_script(self::SCRIPT_HANDLE, $theme_uri . '/js/app.js', [], $ver_js ?: $version, true);
             wp_localize_script(self::SCRIPT_HANDLE, 'culversTheme', $theme_script_extra);
         }
+
+        self::enqueueBugHerd();
+    }
+
+    /**
+     * BugHerd task overlay — loads async in the footer. Disabled when the
+     * `culvers_load_bugherd` filter returns false (e.g. production go-live).
+     */
+    private static function enqueueBugHerd(): void
+    {
+        if (! apply_filters('culvers_load_bugherd', true)) {
+            return;
+        }
+
+        wp_enqueue_script(
+            self::BUGHERD_HANDLE,
+            self::BUGHERD_SCRIPT_URL,
+            [],
+            null,
+            [
+                'in_footer' => true,
+                'strategy' => 'async',
+            ]
+        );
     }
 
     /**

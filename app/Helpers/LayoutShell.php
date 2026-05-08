@@ -5,19 +5,23 @@ declare(strict_types=1);
 namespace App\Helpers;
 
 /**
- * Repeated inner widths / gutters — mirror header & footer (`resources/views/sections/header.blade.php`, `footer.blade.php`).
+ * Repeated inner widths / gutters — aligned to the **initial** site chrome (footer band +
+ * mega-nav bar row insets), using **static Tailwind only**.
  *
- * Use these class strings in Blade so flexible components stay visually aligned without duplicating literals.
+ * Main content deliberately does **not** follow `site-header` Alpine scroll state
+ * (`max-w-8xl` vs `max-w-none`, padding swaps, etc.) — widths stay fixed per load.
  *
- * `max-w-8xl` is a numerical pattern extension on Tailwind's container scale
- * (xs..7xl → 8xl), defined as `--container-8xl: 90rem` in `theme.tokens.css`.
+ * `max-w-8xl` is defined as `--container-8xl: 90rem` in `theme.tokens.css`.
  */
 final class LayoutShell
 {
-    /** Site shell — `max-w-8xl` (1440px) + Figma horizontal gutters (`px-4 md:px-12`). */
-    public const INNER_MAX_GUTTERED = 'mx-auto w-full max-w-8xl px-4 md:px-12';
+    /**
+     * Primary blocks (contact, centre map, split highlight, etc.): cap at 8xl and match
+     * `mega-nav__bar-row` horizontal inset (`px-4 md:px-5 lg:px-6`) — not the scrolled header.
+     */
+    public const INNER_MAX_GUTTERED = 'mx-auto w-full max-w-8xl px-4 md:px-5 lg:px-6';
 
-    /** Full-width inner shell without horizontal padding (grid sections manage their own inset). */
+    /** Edge-to-edge within the 8xl cap (card grids, info strips). */
     public const INNER_MAX_FLUSH_X = 'mx-auto w-full max-w-8xl px-0';
 
     /** Narrow readable column (opening hours, store details). */

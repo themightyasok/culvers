@@ -1,14 +1,14 @@
 @php
   use App\Helpers\Component;
+  use App\Helpers\LayoutShell;
 
   /**
-   * Content section — heading + rich body inside the inherited grid gutters.
-   * Lives on long-form/policy pages where it can host the page H1.
-   * No inner shell: keeps the grid gutters as the section frame.
+   * Content section — heading + rich body inside the fixed site shell (static
+   * `max-w-8xl` + bar-row inset), not the flexible grid’s old px gutters.
    */
 
   $c = is_array($component ?? null) ? $component : [];
-  $root = Component::rootClasses($c, stripGutters: false);
+  $root = Component::rootClasses($c);
   $tone = Component::bodyTextTone($c);
   $headingTag = Component::headingTag($c['content_heading_level'] ?? null);
   $heading = trim((string) ($c['content_heading'] ?? ''));
@@ -21,6 +21,7 @@
   class="content-section {{ esc_attr($root) }} relative text-deep-moss"
   data-component-root
   data-content-section>
+  <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
   @if($heading !== '')
     {{-- Section H2: 64px desktop / 48px mobile (Component::sectionHeadingClasses). --}}
     <{{ $headingTag }} class="content-section__heading {{ Component::sectionHeadingClasses('text-deep-moss', 'mb-4') }}">
@@ -34,6 +35,7 @@
       {!! $body !!}
     </div>
   @endif
+  </div>
 </section>
 @elseif(current_user_can('edit_posts'))
 @include('partials.component-editor-placeholder', [
