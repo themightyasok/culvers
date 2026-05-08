@@ -217,17 +217,6 @@
             </div>
           </div>
 
-          {{-- Pointer bridge: fills gap under bar so mega stays open while moving to panel. --}}
-          <div
-            class="mega-nav__hover-bridge pointer-events-auto absolute inset-x-0 top-full z-40 hidden min-h-[calc(100vh-5rem)] md:block"
-            x-show="megaOpenId !== null"
-            x-cloak
-            x-transition.opacity.duration.200ms
-            x-on:click="closeMega()"
-            x-on:mouseenter="cancelCloseMegaHover()"
-            aria-hidden="true"></div>
-
-          @if($navTree !== [])
             @foreach($navTree as $branch)
               @if($branch['children'] !== [])
                 @php
@@ -248,6 +237,7 @@
                   x-show="megaOpenId === {{ $branch['id'] }}"
                   x-cloak
                   x-transition.opacity.duration.200ms
+                  x-on:mouseenter="cancelCloseMegaHover()"
                   role="region"
                   aria-label="{{ esc_attr($branch['title']) }}">
                   <div
@@ -277,7 +267,9 @@
                         <hr class="mt-5 max-w-[525px] border-light-brown/35" />
                         <ul
                           class="mt-[26px] flex max-w-[525px] flex-col gap-[18px]"
-                          data-mega-parent-id="{{ $branch['id'] }}">
+                          data-mega-parent-id="{{ $branch['id'] }}"
+                          x-on:mouseover="megaListMouseOver($event)"
+                          x-on:focusin="megaListFocusIn($event)">
                           @foreach($branch['children'] as $child)
                             @php
                               $childPv = trim((string) ($child['preview'] ?? ''));
@@ -286,9 +278,7 @@
                               <a
                                 class="mega-nav__sublink inline-block font-sans text-2xl leading-6 text-faded-olive transition-colors hover:text-deep-moss focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-faded-olive"
                                 href="{{ esc_url($child['url']) }}"
-                                data-preview-url="{{ $childPv !== '' ? esc_url($childPv) : '' }}"
-                                x-on:mouseenter="setPreviewFromEvent($event)"
-                                x-on:focus="setPreviewFromEvent($event)">
+                                data-preview-url="{{ $childPv !== '' ? esc_url($childPv) : '' }}">
                                 {{ $child['title'] }}
                               </a>
                             </li>

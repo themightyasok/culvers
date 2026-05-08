@@ -163,16 +163,42 @@ export default function registerSiteHeaderAlpine(Alpine) {
       this.previewAlt = row.alt;
     },
 
-    setPreviewFromEvent(event) {
+    /**
+     * Mega submenu list (capturing): updates the right-rail preview while moving between links.
+     * Uses mouseover + focusin on the list because `mouseenter` on each <a> can miss moves between
+     * inline boxes, and event.target can be a Text node (no dataset).
+     */
+    megaListMouseOver(event) {
+      if (!(event instanceof MouseEvent)) {
+        return;
+      }
       this.cancelCloseMegaHover();
-      const el = event.currentTarget;
+      const raw = event.target;
+      const node = raw instanceof Element ? raw : raw?.parentElement;
+      const el = node instanceof Element ? node.closest('a.mega-nav__sublink') : null;
       if (!(el instanceof HTMLElement)) {
         return;
       }
-      let url = typeof el.dataset.previewUrl === 'string' ? el.dataset.previewUrl.trim() : '';
-      if (!url) {
+      this.applyMegaPreviewFromLink(el);
+    },
+
+    megaListFocusIn(event) {
+      const t = event.target;
+      if (t instanceof HTMLElement && t.matches('a.mega-nav__sublink')) {
+        this.cancelCloseMegaHover();
+        this.applyMegaPreviewFromLink(t);
+      }
+    },
+
+    /**
+     * @param {HTMLElement} el
+     */
+    applyMegaPreviewFromLink(el) {
+      const attr = el.getAttribute('data-preview-url');
+      let url = typeof attr === 'string' ? attr.trim() : '';
+      if (url === '') {
         const list = el.closest('[data-mega-parent-id]');
-        const pid = list?.dataset?.megaParentId;
+        const pid = list?.getAttribute('data-mega-parent-id')?.trim();
         if (pid) {
           const row = this.readMegaDefault(pid);
           url = typeof row.preview === 'string' ? row.preview.trim() : '';
