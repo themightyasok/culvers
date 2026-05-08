@@ -157,8 +157,8 @@ $pageDefinitions = [
         /*
          * What's On landing page — curates the three top-level sibling
          * archives (/latest-events/, /latest-offers/, /latest-news/).
-         * Three CPT-driven `three_card_block` strips + an opening_hours
-         * component, per the Figma What's On landing spec.
+         * `image_hero` + three CPT-driven `three_card_block` strips +
+         * opening_hours, per the Figma What's On landing spec.
          */
         'slug' => 'whats-on',
         'title' => __('What’s on', 'culvers'),

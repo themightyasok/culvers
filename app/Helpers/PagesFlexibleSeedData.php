@@ -58,6 +58,12 @@ final class PagesFlexibleSeedData
     private const LEASING_PROMO_FILE = 'leasing-promo.jpg';
 
     /**
+     * What’s On landing (51:6386) — same lifestyle band as /latest-events/ archive
+     * ({@see DirectoryArchiveHeroPopulate} `archive-whats-on-hero.jpg`).
+     */
+    private const WHATS_ON_LANDING_HERO_FILE = 'archive-whats-on-hero.jpg';
+
+    /**
      * Resolve a seed asset filename to a live URL on the active theme so
      * {@see HomepageFlexibleAcfAttach} can sideload it.
      *
@@ -645,7 +651,7 @@ final class PagesFlexibleSeedData
 
     /* -----------------------------------------------------------------
      * What's On landing (Figma — `/whats-on/`)
-     * Stack: three_card_block (Latest Events, CPT) →
+     * Stack: image_hero → three_card_block (Latest Events, CPT) →
      *        three_card_block (Latest News, CPT) →
      *        three_card_block (Latest Offers, CPT) →
      *        opening_hours
@@ -662,6 +668,22 @@ final class PagesFlexibleSeedData
     public static function whatsOnLandingPage(): array
     {
         return [
+            array_merge(self::base('image_hero'), [
+                'hero_image' => [
+                    'url' => self::seedAssetUrl(self::WHATS_ON_LANDING_HERO_FILE),
+                    'alt' => __('Visitors enjoying an event at Culver Square', 'culvers'),
+                ],
+                'hero_image_mobile' => null,
+                'hero_logo' => null,
+                'hero_title_line' => __('What’s on.', 'culvers'),
+                'hero_title_tone' => 'glowleaf',
+                'hero_subtitle_line' => __(
+                    'The latest events, news and offers — all in one place.',
+                    'culvers'
+                ),
+                'hero_overlay_opacity' => 35,
+                'hero_title_in_image' => false,
+            ]),
             self::whatsOnStrip(
                 'culvers_event',
                 __('Latest Events', 'culvers'),
