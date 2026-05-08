@@ -96,7 +96,7 @@
       @endif
 
       <div
-        class="relative z-20 flex {{ $heroBandMin }} w-full flex-col items-center justify-center px-6 pb-12 pt-[length:var(--site-header-offset,11.25rem)] text-center sm:px-10 md:px-12 md:pb-14">
+        class="relative z-20 flex {{ $heroBandMin }} w-full flex-col items-center justify-center px-4 pb-12 pt-[length:var(--site-header-offset,11.25rem)] text-center md:px-5 lg:px-6 md:pb-14">
         @if($titleInImage)
           {{-- Title (and any subtitle) is part of the supplied artwork; render --}}
           {{-- only an sr-only h1 so the page still has a real heading for AT. --}}

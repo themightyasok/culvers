@@ -56,9 +56,9 @@
   data-component-root
   data-three-card-block
   x-data="threeCardBlock()">
-  <div class="{{ LayoutShell::INNER_MAX_FLUSH_X }}">
+  <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
     @if($heading !== '' || $sub !== '' || $body !== '')
-      <header class="mx-auto max-w-[52rem] px-1 text-center md:px-4">
+      <header class="mx-auto max-w-[52rem] text-center">
         @if($heading !== '')
           {{-- Section H2: 64px desktop / 48px mobile (Component::sectionHeadingClasses). --}}
           <{{ $headingTag }} class="{{ Component::sectionHeadingClasses('text-faded-olive') }}">

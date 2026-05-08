@@ -1,5 +1,6 @@
 @php
   use App\Helpers\Component;
+  use App\Helpers\LayoutShell;
 
   /**
    * Video block — contained 16:9 video with branded brand-500 frame, hover scale,
@@ -26,7 +27,7 @@
     class="video-block {{ esc_attr($root) }}"
     data-component-root
     data-video-block>
-    <div class="video-block__shell mx-auto w-full max-w-[min(100%,112rem)] px-4 sm:px-6 lg:px-10">
+    <div class="video-block__shell mx-auto w-full max-w-[min(100%,112rem)] {{ LayoutShell::GUTTER_X }}">
       <div
         class="video-block__stage group relative origin-center rounded-3xl border-4 border-brand-500 bg-deep-moss motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out motion-safe:hover:scale-[1.03] motion-safe:focus-within:scale-[1.03] motion-reduce:hover:scale-100 motion-reduce:focus-within:scale-100 motion-reduce:transition-none"
         x-data="videoBlock()"

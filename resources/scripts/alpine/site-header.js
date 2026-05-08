@@ -1,19 +1,38 @@
 /**
- * Site header — mega menu, site search, scroll-driven shell, header offset CSS var.
+ * Site header — mega menu, site search, scroll-away dock, header offset CSS var.
  *
  * Responsibilities:
  *   - Mega menu open/close (hover + click), preview image swaps, body class `mega-open` (scroll lock).
  *   - Site search UI + debounced REST fetch.
- *   - Scroll threshold → `headerScrolled` (full-width bar) + optional entrance reveal.
- *   - Sync `--site-header-offset` on `<html>` so `#smooth-wrapper` padding clears the fixed bar.
- *
- * Convention: private fields use a leading underscore (`_megaHoverCloseTimer`, …).
+ *   - After a short grace period: scrolling down (past a threshold) starts a delayed hide; the bar
+ *     slides up. Scrolling up or returning near the top shows it again. Layout stays the pill /
+ *     max-w-8xl chrome — no full-width morph on scroll (width is static Tailwind only).
+ *   - Sync `--site-header-offset` on `<html>` so `#smooth-wrapper` padding clears the fixed bar
+ *     (0 when the dock is hidden).
  *
  * @param {import('alpinejs').Alpine} Alpine
  */
 
-const HEADER_SCROLL_FULL_WIDTH_AT = 50;
-/** Lets `mouseenter` on bridge/panel win over `mouseleave` ordering on the nav wrapper. */
+/** Ignore sub-pixel noise when inferring scroll direction (down path / timer start). */
+const SCROLL_DIRECTION_EPS = 3;
+/**
+ * Only treat scroll as “up” for revealing the dock if we moved up by at least this many px.
+ * Smaller jitter (smooth scroll, touch, ScrollSmoother) was constantly clearing the hide timer so
+ * the bar felt like it only hid after scrolling stopped.
+ */
+const DOCK_REVEAL_MIN_SCROLL_UP_PX = 28;
+/** Near top of page — always keep the dock visible. */
+const DOCK_ALWAYS_VISIBLE_BELOW_Y = 24;
+/** Require this much scroll before a downward hide timer can start. */
+const DOCK_HIDE_MIN_SCROLL_Y = 72;
+/**
+ * After qualifying scroll-down, hide the dock this long (ms) before the slide-up runs.
+ * Keep modest so hide feels comparable to scroll-up reveal (same `duration-*` on `.site-header__chrome`).
+ */
+const DOCK_HIDE_DELAY_MS = 380;
+/** Right after load / init, do not schedule hide (hero legibility). */
+const DOCK_INITIAL_GRACE_MS = 2000;
+
 const MEGA_HOVER_CLOSE_DELAY_MS = 90;
 const SEARCH_DEBOUNCE_MS = 220;
 const SEARCH_MIN_QUERY_LENGTH = 2;
@@ -30,7 +49,17 @@ export default function registerSiteHeaderAlpine(Alpine) {
     searchResultsVisible: false,
 
     headerRevealed: false,
-    headerScrolled: false,
+    /** When true, the fixed header is translated off-screen (scroll-down + delay path). */
+    headerDockHidden: false,
+
+    /** @type {number} */
+    _lastScrollY: 0,
+
+    /** @type {ReturnType<typeof setTimeout> | undefined} */
+    _dockHideTimer: undefined,
+
+    /** @type {number} */
+    _dockMountTs: 0,
 
     /** @type {IntersectionObserver | undefined} */
     _headerRevealObserver: undefined,
@@ -44,7 +73,6 @@ export default function registerSiteHeaderAlpine(Alpine) {
     /** @type {ResizeObserver | undefined} */
     _headerResizeObserver: undefined,
 
-    /** When ScrollSmoother runs, window scrollY often doesn’t track the eased transform — ticker keeps header state in sync. */
     _smootherTickerBound: false,
 
     // --- Mega menu -----------------------------------------------------------
@@ -227,37 +255,104 @@ export default function registerSiteHeaderAlpine(Alpine) {
       if (!(root instanceof HTMLElement)) {
         return;
       }
+      const chrome = root.querySelector('.site-header__chrome');
+      const measureEl = chrome instanceof HTMLElement ? chrome : root;
       window.requestAnimationFrame(() => {
         window.requestAnimationFrame(() => {
-          const h = Math.ceil(root.getBoundingClientRect().height);
-          document.documentElement.style.setProperty('--site-header-offset', `${Math.max(h, 0)}px`);
+          if (this.headerDockHidden) {
+            document.documentElement.style.setProperty('--site-header-offset', '0px');
+
+            return;
+          }
+          const h = Math.ceil(measureEl.getBoundingClientRect().height);
+          const px = `${Math.max(Math.round(h), 0)}px`;
+          document.documentElement.style.setProperty('--site-header-offset', px);
         });
       });
     },
 
-    syncHeaderScroll() {
-      if (typeof window !== 'undefined' && window.culversHeaderTransformEnabled) {
-        if (!this.headerScrolled) {
-          this.headerScrolled = true;
+    /** Clears dock-hide debounce and forces the header visible. */
+    revealDock() {
+      window.clearTimeout(this._dockHideTimer);
+      this._dockHideTimer = undefined;
+      if (this.headerDockHidden) {
+        this.headerDockHidden = false;
+      }
+    },
+
+    readScrollY() {
+      const smoother = typeof window !== 'undefined' ? window.smoother : null;
+      if (smoother && typeof smoother.scrollTop === 'function') {
+        try {
+          return smoother.scrollTop();
+        } catch {
+          /* fall through */
         }
+      }
+
+      return window.scrollY ?? document.documentElement.scrollTop ?? 0;
+    },
+
+    syncHeaderDock() {
+      if (typeof window !== 'undefined' && window.culversHeaderTransformEnabled) {
+        this.revealDock();
+        this._lastScrollY = this.readScrollY();
 
         return;
       }
 
-      const smoother = typeof window !== 'undefined' ? window.smoother : null;
-      let y;
-      if (smoother && typeof smoother.scrollTop === 'function') {
-        try {
-          y = smoother.scrollTop();
-        } catch {
-          y = window.scrollY ?? document.documentElement.scrollTop ?? 0;
-        }
-      } else {
-        y = window.scrollY ?? document.documentElement.scrollTop ?? 0;
+      if (this.megaOpenId !== null || this.searchOpen || this.mobileOpen) {
+        this.revealDock();
+        this._lastScrollY = this.readScrollY();
+
+        return;
       }
-      const next = y > HEADER_SCROLL_FULL_WIDTH_AT;
-      if (this.headerScrolled !== next) {
-        this.headerScrolled = next;
+
+      const y = this.readScrollY();
+      const now = Date.now();
+      if (now - this._dockMountTs < DOCK_INITIAL_GRACE_MS) {
+        this.revealDock();
+        this._lastScrollY = y;
+
+        return;
+      }
+
+      if (y <= DOCK_ALWAYS_VISIBLE_BELOW_Y) {
+        this.revealDock();
+        this._lastScrollY = y;
+
+        return;
+      }
+
+      if (y < this._lastScrollY - DOCK_REVEAL_MIN_SCROLL_UP_PX) {
+        this.revealDock();
+        this._lastScrollY = y;
+
+        return;
+      }
+
+      if (y > this._lastScrollY + SCROLL_DIRECTION_EPS && y > DOCK_HIDE_MIN_SCROLL_Y) {
+        if (this._dockHideTimer === undefined) {
+          this._dockHideTimer = window.setTimeout(() => {
+            this._dockHideTimer = undefined;
+            const y2 = this.readScrollY();
+            if (
+              y2 > DOCK_HIDE_MIN_SCROLL_Y &&
+              this.megaOpenId === null &&
+              !this.searchOpen &&
+              !this.mobileOpen
+            ) {
+              this.headerDockHidden = true;
+            }
+          }, DOCK_HIDE_DELAY_MS);
+        }
+      }
+
+      /* Don’t advance _lastScrollY on tiny upward noise — avoids starving the hide timer. */
+      if (y >= this._lastScrollY - DOCK_REVEAL_MIN_SCROLL_UP_PX) {
+        this._lastScrollY = Math.max(this._lastScrollY, y);
+      } else {
+        this._lastScrollY = y;
       }
     },
 
@@ -295,15 +390,21 @@ export default function registerSiteHeaderAlpine(Alpine) {
     // --- Lifecycle -----------------------------------------------------------
 
     init() {
-      this.syncHeaderScroll();
-      const onScroll = () => this.syncHeaderScroll();
+      this._dockMountTs = Date.now();
+      this._lastScrollY = this.readScrollY();
+
+      this.syncHeaderDock();
+      const onScroll = () => this.syncHeaderDock();
       window.addEventListener('scroll', onScroll, { passive: true });
       window.addEventListener('resize', () => this.syncDocumentHeaderOffset(), { passive: true });
 
       const root = this.$el;
       if (root instanceof HTMLElement && typeof ResizeObserver !== 'undefined') {
         this._headerResizeObserver = new ResizeObserver(() => this.syncDocumentHeaderOffset());
-        this._headerResizeObserver.observe(root);
+        const observeEl = root.querySelector('.site-header__chrome') ?? root;
+        if (observeEl instanceof HTMLElement) {
+          this._headerResizeObserver.observe(observeEl);
+        }
       }
 
       this.setupHeaderReveal();
@@ -320,7 +421,7 @@ export default function registerSiteHeaderAlpine(Alpine) {
           return;
         }
         this._smootherTickerBound = true;
-        const tick = () => this.syncHeaderScroll();
+        const tick = () => this.syncHeaderDock();
         window.gsap.ticker.add(tick);
       };
       window.addEventListener('gsap:smoother:ready', bindSmootherTicker);
@@ -328,10 +429,12 @@ export default function registerSiteHeaderAlpine(Alpine) {
 
       this.$watch('megaOpenId', () => {
         document.body.classList.toggle('mega-open', this.megaOpenId !== null);
+        this.revealDock();
         this.syncDocumentHeaderOffset();
       });
       this.$watch('mobileOpen', () => {
         document.body.classList.toggle('mobile-nav-open', this.mobileOpen);
+        this.revealDock();
         this.syncDocumentHeaderOffset();
       });
       this.$watch('searchQuery', (value) => {
@@ -340,9 +443,14 @@ export default function registerSiteHeaderAlpine(Alpine) {
           this.fetchSearch(typeof value === 'string' ? value : '');
         }, SEARCH_DEBOUNCE_MS);
       });
-      this.$watch('headerScrolled', () => this.syncDocumentHeaderOffset());
+      this.$watch('searchOpen', () => {
+        if (this.searchOpen) {
+          this.revealDock();
+        }
+        this.syncDocumentHeaderOffset();
+      });
+      this.$watch('headerDockHidden', () => this.syncDocumentHeaderOffset());
       this.$watch('headerRevealed', () => this.syncDocumentHeaderOffset());
-      this.$watch('searchOpen', () => this.syncDocumentHeaderOffset());
     },
   }));
 }

@@ -8,6 +8,15 @@
 
 @import '@splidejs/splide/css';
 
+/*
+ * Splide ships `.splide.is-initialized:not(.is-active) .splide__list { display: block }` so single /
+ * non-overflow carousels stack. Our full-viewport hero always needs a horizontal track; when
+ * `is-active` is late or missing during layout, both slides were stacking vertically on load.
+ */
+.hero-slider__splide.is-initialized .splide__list {
+  display: flex !important;
+}
+
 @import './components/horizontal-scroller.css';
 @import './components/directory-archive.css';
 
@@ -273,7 +282,6 @@
   @media (prefers-reduced-motion: no-preference) {
     .hero-slider--bp-shift .hero-slider__copy {
       opacity: 0.25;
-      transform: translateY(1.125rem);
     }
   }
 }

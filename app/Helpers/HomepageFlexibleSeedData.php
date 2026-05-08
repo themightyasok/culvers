@@ -103,6 +103,17 @@ final class HomepageFlexibleSeedData
                     'slide_cta_label' => __('Explore', 'culvers'),
                     'slide_cta_url' => home_url('/'),
                 ],
+                [
+                    'slide_image' => [
+                        'url' => self::FIGMA_CARD_EAT_POSTER,
+                        'alt' => __('Hero — Eat & Drink', 'culvers'),
+                    ],
+                    'slide_headline' => "Good brews,\nGreat bites.",
+                    'slide_kicker' => __('From quick bites to long lunches', 'culvers'),
+                    'slide_body' => '',
+                    'slide_cta_label' => __('Eat & Drink', 'culvers'),
+                    'slide_cta_url' => home_url('/eat-drink/'),
+                ],
             ],
         ]);
     }

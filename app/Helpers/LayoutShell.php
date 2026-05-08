@@ -16,14 +16,19 @@ namespace App\Helpers;
 final class LayoutShell
 {
     /**
-     * Primary blocks (contact, centre map, split highlight, etc.): cap at 8xl and match
-     * `mega-nav__bar-row` horizontal inset (`px-4 md:px-5 lg:px-6`) — not the scrolled header.
+     * Canonical horizontal inset — matches `mega-nav__bar-row` and Plan / content sections.
+     * Use on any full-bleed band: background edge-to-edge, content inset with this.
      */
-    public const INNER_MAX_GUTTERED = 'mx-auto w-full max-w-8xl px-4 md:px-5 lg:px-6';
+    public const GUTTER_X = 'px-4 md:px-5 lg:px-6';
 
-    /** Edge-to-edge within the 8xl cap (card grids, info strips). */
+    /**
+     * Primary blocks (contact, centre map, split highlight, etc.): cap at 8xl + {@see self::GUTTER_X}.
+     */
+    public const INNER_MAX_GUTTERED = 'mx-auto w-full max-w-8xl ' . self::GUTTER_X;
+
+    /** Edge-to-edge within the 8xl cap (rare — prefer {@see self::INNER_MAX_GUTTERED}). */
     public const INNER_MAX_FLUSH_X = 'mx-auto w-full max-w-8xl px-0';
 
     /** Narrow readable column (opening hours, store details). */
-    public const INNER_READABLE_960 = 'mx-auto max-w-[960px] px-5 sm:px-6 lg:px-8';
+    public const INNER_READABLE_960 = 'mx-auto max-w-[960px] ' . self::GUTTER_X;
 }

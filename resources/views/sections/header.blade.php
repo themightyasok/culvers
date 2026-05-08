@@ -26,6 +26,14 @@
   class="site-header fixed inset-x-0 top-0 z-50"
   x-data="siteHeader"
   x-on:keydown.escape.window="closeAll()">
+  {{--
+    Scroll-hide transform lives on `.site-header__chrome` only. The mobile drawer stays a direct
+    child of `<header>` so `position:fixed` resolves to the viewport (transform ancestors would clip it).
+  --}}
+  <div
+    class="site-header__chrome will-change-transform transition-transform duration-700 ease-[cubic-bezier(0.33,1,0.68,1)] motion-reduce:transition-none"
+    x-ref="headerChrome"
+    x-bind:class="headerDockHidden ? '-translate-y-full pointer-events-none' : 'translate-y-0'">
   {{-- Shell: full width; content width matches footer (`md:px-12` + inner `max-w-8xl`). --}}
   <div class="site-header__shell w-full overflow-visible">
     {{-- Entrance animation once the header intersects the viewport. --}}
@@ -33,15 +41,9 @@
       class="site-header__reveal transition-all duration-700 ease-out"
       x-bind:class="headerRevealed ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'">
       <div
-        class="site-header__padding relative transition-[padding] duration-300 ease-in-out"
-        x-bind:class="headerScrolled
-          ? 'px-4 pb-3 pt-6 md:px-0 md:pb-0 md:pt-0'
-          : 'px-4 pb-3 pt-6 md:px-12 md:pb-2.5 md:pt-12'">
+        class="site-header__padding relative px-4 pb-3 pt-3 transition-[padding] duration-300 ease-in-out md:px-12 md:pb-2.5 md:pt-8">
 
-        {{-- Same grid as `site-footer__columns`: gutter padding on parent, 1440 cap here (not on shell). --}}
-        <div
-          class="mx-auto w-full"
-          x-bind:class="headerScrolled ? 'max-w-none' : 'max-w-8xl'">
+        <div class="mx-auto w-full max-w-8xl">
 
         {{-- Mega navigation mode --}}
         <div
@@ -52,16 +54,11 @@
           x-on:mouseenter="cancelCloseMegaHover()"
           x-on:mouseleave="scheduleCloseMegaHover()">
 
-          {{-- Olive bar (full bleed when scrolled; rounded pill when not). --}}
-          <div
-            class="mega-nav__bar relative z-50 w-full rounded-full bg-faded-olive"
-            x-bind:class="headerScrolled ? 'md:rounded-none' : ''">
-            <div
-              class="mega-nav__bar-gutter w-full py-2"
-              x-bind:class="headerScrolled ? 'px-4 md:px-12' : ''">
+          {{-- Olive bar — fixed chrome width (max-w-8xl parent); scroll only hides the dock, no morph. --}}
+          <div class="mega-nav__bar relative z-50 w-full rounded-full bg-faded-olive">
+            <div class="mega-nav__bar-gutter w-full py-2">
               <div
-                class="mega-nav__bar-row flex min-h-[80px] w-full items-center gap-3 md:gap-6"
-                x-bind:class="headerScrolled ? 'mx-auto max-w-8xl' : 'px-4 md:px-5 lg:px-6'">
+                class="mega-nav__bar-row flex min-h-[80px] w-full items-center gap-3 px-4 md:gap-6 md:px-5 lg:px-6">
                 <div class="mega-nav__bar-main flex min-w-0 flex-1 items-center md:gap-[42px]">
                   <a
                     class="mega-nav__logo shrink-0 text-glowleaf"
@@ -221,10 +218,7 @@
                   $fp = $firstPreview !== '' ? esc_url($firstPreview) : '';
                   $fpJs = json_encode($fp, JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES);
                 @endphp
-                {{-- Panel positioning anchor is full-width of `.mega-nav` (which itself widens
-                     to viewport when scrolled so the olive bar can go full-bleed) — but the
-                     visible card is always capped at `max-w-8xl` to match `.mega-nav__bar-row`
-                     so the dropdown stays aligned with the menu items at every scroll position. --}}
+                {{-- Panel anchor is full-width of `.mega-nav`; inner card stays `max-w-8xl`. --}}
                 <div
                   id="mega-panel-{{ $branch['id'] }}"
                   class="mega-nav__panel absolute inset-x-0 top-[calc(100%+6px)] z-60"
@@ -327,13 +321,9 @@
           x-show="searchOpen"
           x-cloak
           x-transition.opacity.duration.150ms>
-          <div
-            class="site-header__search-bar rounded-full border-4 border-brand-500 bg-light-cream"
-            x-bind:class="headerScrolled ? 'md:rounded-none' : ''">
-            <div class="site-header__search-gutter w-full" x-bind:class="headerScrolled ? 'px-4 md:px-12' : ''">
-              <div
-                class="site-header__search-row flex min-h-[80px] items-center gap-4 py-2 md:gap-8"
-                x-bind:class="headerScrolled ? 'mx-auto max-w-8xl' : 'px-4 md:px-5 lg:px-6'">
+          <div class="site-header__search-bar rounded-full border-4 border-brand-500 bg-light-cream">
+            <div class="site-header__search-gutter w-full">
+              <div class="site-header__search-row flex min-h-[80px] items-center gap-4 px-4 py-2 md:gap-8 md:px-5 lg:px-6">
                 <a class="shrink-0 text-deep-moss" href="{{ esc_url(home_url('/')) }}" rel="home" aria-label="{{ esc_attr(get_bloginfo('name')) }}">
                   @if(has_custom_logo())
                     <span class="block max-h-[28px] w-[178px] [&_img]:h-full [&_img]:w-auto [&_img]:object-contain [&_img]:object-left">
@@ -381,54 +371,90 @@
         </div>
       </div>
     </div>
+  </div>
+  {{-- /site-header__shell --}}
+  </div>
+  {{-- /site-header__chrome --}}
 
-    {{-- Mobile primary nav --}}
+  {{-- Mobile: full-viewport overlay (viewport-fixed — outside transformed chrome). Lickd-style takeover, site palette. --}}
+  <div
+    id="mega-mobile-drawer"
+    class="mega-nav__drawer fixed inset-0 z-[100] md:hidden"
+    x-show="mobileOpen"
+    x-cloak
+    x-transition:enter="transition ease-out duration-200"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-150"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="mega-mobile-drawer-title">
     <div
-      id="mega-mobile-drawer"
-      class="mega-nav__drawer fixed inset-x-0 bottom-0 top-[72px] z-70 overflow-y-auto bg-deep-moss p-6 text-white md:hidden"
-      x-show="mobileOpen"
-      x-cloak
-      x-transition.opacity.duration.150ms
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="mega-mobile-drawer-title">
+      class="pointer-events-auto absolute inset-0 bg-deep-moss/97"
+      x-on:click="mobileOpen = false"
+      aria-hidden="true"></div>
+    <div
+      class="pointer-events-auto relative z-10 flex h-full max-h-[100dvh] flex-col overflow-hidden pt-[max(0.75rem,env(safe-area-inset-top))]">
       <h2 id="mega-mobile-drawer-title" class="sr-only">{{ __('Site menu', 'culvers') }}</h2>
-      <div class="flex justify-end">
-        <button type="button" class="rounded-full border border-white/30 px-4 py-2 text-base focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf" x-on:click="mobileOpen = false">
+      <div class="flex shrink-0 items-center justify-between gap-4 border-b border-white/15 px-4 pb-4 sm:px-5">
+        <span class="font-heading text-lg text-glowleaf md:text-xl">{{ __('Menu', 'culvers') }}</span>
+        <button
+          type="button"
+          class="rounded-full border-2 border-white/35 px-5 py-2.5 font-sans text-sm font-semibold uppercase tracking-widest text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
+          x-on:click="mobileOpen = false">
           {{ __('Close', 'culvers') }}
         </button>
       </div>
-      @if($navTree !== [])
-        <ul class="mt-6 space-y-4">
-          @foreach($navTree as $branch)
-            <li class="list-none border-b border-white/15 pb-4">
-              @if($branch['children'] !== [])
-                <p class="font-heading text-xl text-glowleaf">{{ $branch['title'] }}</p>
-                <ul class="mt-3 space-y-2 pl-1">
-                  @foreach($branch['children'] as $child)
-                    <li class="list-none">
-                      <a class="block py-1 font-sans text-lg text-white/90 focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf" href="{{ esc_url($child['url']) }}">
-                        {{ $child['title'] }}
-                      </a>
-                    </li>
-                  @endforeach
-                </ul>
-              @else
-                <a class="block font-heading text-xl text-glowleaf focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf" href="{{ esc_url($branch['url']) }}">
-                  {{ $branch['title'] }}
-                </a>
-              @endif
-            </li>
-          @endforeach
-        </ul>
-      @endif
-      <div class="mt-8 flex flex-col gap-3 border-t border-white/15 pt-6">
-        <a class="font-sans text-base focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf" href="{{ esc_url($mapUrl) }}">{{ __('Centre Map', 'culvers') }}</a>
-        <a class="font-sans text-base focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf" href="{{ esc_url($hereUrl) }}">{{ __('Getting Here', 'culvers') }}</a>
-        <button type="button" class="text-left font-sans text-base text-glowleaf focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf" x-on:click="openSearchFromMobile()">
-          {{ __('Search', 'culvers') }}
-        </button>
-      </div>
+      <nav class="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-10 pt-6 sm:px-5" aria-label="{{ esc_attr__('Primary navigation', 'culvers') }}">
+        @if($navTree !== [])
+          <ul class="space-y-1">
+            @foreach($navTree as $branch)
+              <li class="list-none border-b border-white/12 py-4 first:pt-0">
+                @if($branch['children'] !== [])
+                  <p class="font-heading text-2xl text-glowleaf">{{ $branch['title'] }}</p>
+                  <ul class="mt-4 space-y-3 ps-1">
+                    @foreach($branch['children'] as $child)
+                      <li class="list-none">
+                        <a
+                          class="block py-1.5 font-sans text-lg leading-snug text-white focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
+                          href="{{ esc_url($child['url']) }}">
+                          {{ $child['title'] }}
+                        </a>
+                      </li>
+                    @endforeach
+                  </ul>
+                @else
+                  <a
+                    class="block font-heading text-2xl text-glowleaf focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
+                    href="{{ esc_url($branch['url']) }}">
+                    {{ $branch['title'] }}
+                  </a>
+                @endif
+              </li>
+            @endforeach
+          </ul>
+        @endif
+        <div class="mt-10 flex flex-col gap-4 border-t border-white/15 pt-8">
+          <a
+            class="font-sans text-lg text-white focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
+            href="{{ esc_url($mapUrl) }}">
+            {{ __('Centre Map', 'culvers') }}
+          </a>
+          <a
+            class="font-sans text-lg text-white focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
+            href="{{ esc_url($hereUrl) }}">
+            {{ __('Getting Here', 'culvers') }}
+          </a>
+          <button
+            type="button"
+            class="text-left font-sans text-lg text-glowleaf focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
+            x-on:click="openSearchFromMobile()">
+            {{ __('Search', 'culvers') }}
+          </button>
+        </div>
+      </nav>
     </div>
   </div>
 </header>

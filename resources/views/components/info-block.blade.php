@@ -55,10 +55,9 @@
     class="info-block {{ esc_attr($root) }} relative bg-white py-12 text-deep-moss lg:py-16"
     data-component-root
     data-info-block>
-    {{-- Match three-card / horizontal-scroller: 1440 shell, ~1272px content row --}}
-    <div class="relative z-10 {{ LayoutShell::INNER_MAX_FLUSH_X }}">
+    <div class="relative z-10 {{ LayoutShell::INNER_MAX_GUTTERED }}">
       @if($hasIntro)
-        <header class="mx-auto max-w-[52rem] px-5 text-center sm:px-6 lg:px-8">
+        <header class="mx-auto max-w-[52rem] text-center">
           @if($heading !== '')
             {{-- Section H2: 64px desktop / 48px mobile (Component::sectionHeadingClasses). --}}
             <{{ $headingTag }} class="{{ Component::sectionHeadingClasses('text-faded-olive') }}">

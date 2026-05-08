@@ -40,6 +40,11 @@ export default function registerHeroSliderAlpine(Alpine) {
         height: '100%',
         cover: true,
         trimSpace: false,
+        autoplay: slideCount > 1,
+        interval: 6500,
+        pauseOnHover: true,
+        pauseOnFocus: true,
+        resetProgress: false,
         classes: {
           pagination: 'splide__pagination hero-slider__pagination',
           page: 'splide__pagination__page hero-slider__page',
@@ -47,8 +52,18 @@ export default function registerHeroSliderAlpine(Alpine) {
       });
 
       this.splide.mount();
+      const splideInstance = this.splide;
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          if (this.splide === splideInstance && typeof splideInstance.refresh === 'function') {
+            splideInstance.refresh();
+          }
+        });
+      });
+    },
 
-      return () => this.teardown();
+    destroy() {
+      this.teardown();
     },
 
     onResize() {
@@ -60,6 +75,9 @@ export default function registerHeroSliderAlpine(Alpine) {
       root.classList.add('hero-slider--bp-shift');
       this.resizeTimer = window.setTimeout(() => {
         root.classList.remove('hero-slider--bp-shift');
+        if (this.splide && typeof this.splide.refresh === 'function') {
+          this.splide.refresh();
+        }
       }, 420);
     },
 

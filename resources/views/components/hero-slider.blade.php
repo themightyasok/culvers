@@ -114,8 +114,8 @@
                   <div class="pointer-events-none absolute inset-0 z-0 bg-gradient-to-b from-black/45 via-black/25 to-black/35" aria-hidden="true"></div>
 
                   <div
-                    class="hero-slider__stage relative z-10 flex min-h-[100svh] w-full items-center px-6 pb-16 pt-[length:var(--site-header-offset,11.25rem)] sm:px-10 md:px-12 {{ esc_attr($justify) }}">
-                    <div class="hero-slider__copy pointer-events-auto max-w-[40rem] motion-safe:transition-[opacity,transform] motion-safe:duration-300 motion-safe:ease-out {{ esc_attr($textAlign) }}">
+                    class="hero-slider__stage relative z-10 flex min-h-[100svh] w-full items-center px-4 pb-16 pt-[length:var(--site-header-offset,11.25rem)] md:px-5 lg:px-6 {{ esc_attr($justify) }}">
+                    <div class="hero-slider__copy pointer-events-auto max-w-[40rem] motion-safe:transition-opacity motion-safe:duration-300 motion-safe:ease-out {{ esc_attr($textAlign) }}">
                       @if($headline !== '')
                         {{-- Figma homepage hero: Canela 96px / lh 96 (Glowleaf); kicker Commuters 20px / lh 24 / tracking 4px. --}}
                         <{{ $headingTag }} class="font-heading text-7xl leading-none tracking-tight text-brand-500 sm:text-8xl md:text-9xl">
