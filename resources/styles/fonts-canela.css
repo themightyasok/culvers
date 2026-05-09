@@ -1,0 +1,20 @@
+/*
+ * Canela — brand primary for headings (Light + Regular per Society guidelines).
+ * Files live in resources/fonts/canela/ so Vite rewrites urls into dist/assets/.
+ */
+
+@font-face {
+  font-family: 'Canela';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url('../fonts/canela/canela-light.otf') format('opentype');
+}
+
+@font-face {
+  font-family: 'Canela';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../fonts/canela/canela-regular.otf') format('opentype');
+}

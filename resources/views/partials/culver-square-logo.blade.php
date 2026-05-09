@@ -26,15 +26,15 @@
       fill="none"
       stroke="currentColor"
       stroke-width="0.9"
-      font-family="Cormorant Garamond, ui-serif, Georgia, serif"
+      font-family="Canela, Georgia, ui-serif, serif"
       font-size="17"
-      font-weight="600"
+      font-weight="400"
       letter-spacing="0.12em">{{ __('CULVER', 'culvers') }}</text>
     <text
       x="112"
       y="17"
       fill="currentColor"
-      font-family='DM Sans Variable, ui-sans-serif, system-ui, sans-serif'
+      font-family='commuters-sans, ui-sans-serif, system-ui, sans-serif'
       font-size="13"
       font-weight="700"
       letter-spacing="0.06em">{{ __('SQ.', 'culvers') }}</text>

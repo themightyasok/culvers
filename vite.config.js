@@ -4,7 +4,8 @@ import { resolve } from 'path';
 
 export default defineConfig({
   root: resolve(__dirname, 'resources'),
-  base: '/wp-content/themes/culvers/',
+  /* Must include /dist/ so bundled font url() targets dist/assets/ (theme root /assets/ is wrong). */
+  base: '/wp-content/themes/culvers/dist/',
   plugins: [tailwindcss()],
   build: {
     outDir: resolve(__dirname, 'dist'),

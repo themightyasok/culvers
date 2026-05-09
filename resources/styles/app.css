@@ -1,8 +1,7 @@
 @import 'tailwindcss';
 @config '../../tailwind.config.js';
 
-/* Canela fallback until the primary face is added to the Adobe Fonts kit (see ThemeTokens / FrontendAssets). */
-@import '@fontsource-variable/cormorant-garamond/index.css';
+@import './fonts-canela.css';
 
 @import './theme.tokens.css';
 

@@ -29,11 +29,11 @@
 @theme {
   /*
    * Brand fonts (Society brand guidelines + Adobe kit gqo7cfj):
-   *   Titles — Canela Light/Regular only (add Canela to the kit; until then Cormorant approximates).
+   *   Titles — Canela Light/Regular only (self-hosted WOFF/OTF under resources/fonts/canela).
    *   Body — Halyard Display (family name from Typekit: halyard-display-extralight, weights 300–500).
    *   All-caps labels — Commuter Sans (commuters-sans); see --font-label + `.font-sans.uppercase`.
    */
-  --font-heading: 'canela', 'Cormorant Garamond Variable', Georgia, 'Times New Roman', serif;
+  --font-heading: 'Canela', Georgia, 'Times New Roman', serif;
   --font-sans: 'halyard-display-extralight', ui-sans-serif, system-ui, sans-serif;
   --font-label: 'commuters-sans', ui-sans-serif, system-ui, sans-serif;
 

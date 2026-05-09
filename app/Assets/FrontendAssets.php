@@ -15,7 +15,7 @@ use App\Support\ViteDevProbe;
  */
 final class FrontendAssets
 {
-    /** Adobe Fonts (Typekit) — Canela must be added to this kit for heading text per brand guidelines. */
+    /** Adobe Fonts (Typekit) — body (Halyard) + labels (Commuter). Headings use self-hosted Canela. */
     private const ADOBE_TYPEKIT_URL = 'https://use.typekit.net/gqo7cfj.css';
 
     private const ADOBE_TYPEKIT_HANDLE = 'culvers-adobe-typekit';
