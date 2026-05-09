@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 @config '../../tailwind.config.js';
 
-@import '@fontsource-variable/dm-sans/index.css';
+/* Canela fallback until the primary face is added to the Adobe Fonts kit (see ThemeTokens / FrontendAssets). */
 @import '@fontsource-variable/cormorant-garamond/index.css';
 
 @import './theme.tokens.css';
@@ -57,6 +57,14 @@
   h6 {
     @apply font-heading text-balance;
   }
+
+  /*
+   * Brand: Commuter Sans for all-caps UI. Templates pair `font-sans` + `uppercase` for this tier —
+   * remap `font-family` only (keep sizing/weight utilities, which map to commuters-sans weights).
+   */
+  :where(.font-sans.uppercase) {
+    font-family: var(--font-label, ui-sans-serif, system-ui, sans-serif);
+  }
 }
 
 @layer components {
@@ -95,7 +103,7 @@
    * — consult `resources/views/components/button.blade.php` for the API.
    */
   .btn {
-    @apply inline-flex shrink-0 cursor-pointer items-center justify-center rounded-full border border-transparent font-sans text-xs font-semibold leading-[30px] whitespace-nowrap uppercase tracking-wider antialiased transition-[padding,background-color,color,border-color] duration-150 ease-out;
+    @apply inline-flex shrink-0 cursor-pointer items-center justify-center rounded-full border border-transparent font-label text-xs font-semibold leading-[30px] whitespace-nowrap uppercase tracking-wider antialiased transition-[padding,background-color,color,border-color] duration-150 ease-out;
   }
 
   .btn:focus-visible {

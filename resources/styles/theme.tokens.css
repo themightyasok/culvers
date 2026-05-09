@@ -27,27 +27,33 @@
  */
 
 @theme {
-  /* Headings ≈ Canela • body ≈ Halyard — swap for licensed names when you have the files */
-  --font-heading: 'Cormorant Garamond Variable', Georgia, 'Times New Roman', serif;
-  --font-sans: 'DM Sans Variable', ui-sans-serif, system-ui, sans-serif;
+  /*
+   * Brand fonts (Society brand guidelines + Adobe kit gqo7cfj):
+   *   Titles — Canela Light/Regular only (add Canela to the kit; until then Cormorant approximates).
+   *   Body — Halyard Display (family name from Typekit: halyard-display-extralight, weights 300–500).
+   *   All-caps labels — Commuter Sans (commuters-sans); see --font-label + `.font-sans.uppercase`.
+   */
+  --font-heading: 'canela', 'Cormorant Garamond Variable', Georgia, 'Times New Roman', serif;
+  --font-sans: 'halyard-display-extralight', ui-sans-serif, system-ui, sans-serif;
+  --font-label: 'commuters-sans', ui-sans-serif, system-ui, sans-serif;
 
-  /* Culver Square — colours from Figma variables (Developer Release file) */
-  --color-glowleaf: #d4ff50;
-  --color-deep-moss: #2e301e;
+  /* Culver Square — core palette hex from Brand Guidelines (March 26) + Figma */
+  --color-glowleaf: #d4ff4f;
+  --color-deep-moss: #2e301f;
   --color-faded-olive: #4f5438;
   --color-dustleaf: #8b8c67;
   --color-light-brown: #beb6aa;
   --color-light-cream: #fdfcf3;
-  --color-off-white: #ededeb;
+  --color-off-white: #eee9e5;
   --color-lighter-cream: #fffefa;
   /* Pale sage band (Figma "Light Green") — used by `travel_calculator` and any
      future quiet-card surface that needs an olive tint without going to
      `bg-faded-olive/30` (which reads grey on white pages). */
   --color-light-green: #dfe7ba;
   /* Brand scale maps to Glowleaf / Deep Moss (utilities like bg-brand-500) */
-  --color-brand-500: #d4ff50;
-  --color-brand-600: #d4ff50;
-  --color-brand-700: #2e301e;
+  --color-brand-500: #d4ff4f;
+  --color-brand-600: #d4ff4f;
+  --color-brand-700: #2e301f;
 
   /*
    * Type scale — stock Tailwind names, Figma-tuned values + paired line-heights.

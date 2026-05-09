@@ -15,6 +15,11 @@ use App\Support\ViteDevProbe;
  */
 final class FrontendAssets
 {
+    /** Adobe Fonts (Typekit) — Canela must be added to this kit for heading text per brand guidelines. */
+    private const ADOBE_TYPEKIT_URL = 'https://use.typekit.net/gqo7cfj.css';
+
+    private const ADOBE_TYPEKIT_HANDLE = 'culvers-adobe-typekit';
+
     private const SCRIPT_HANDLE = 'culvers-scripts';
 
     private const STYLE_HANDLE = 'culvers-styles';
@@ -36,13 +41,23 @@ final class FrontendAssets
      */
     private static function frontStyleDependencies(): array
     {
-        $deps = [];
+        $deps = [self::ADOBE_TYPEKIT_HANDLE];
 
         if (function_exists('wp_theme_has_theme_json') && wp_theme_has_theme_json() && wp_style_is('global-styles', 'registered')) {
             $deps[] = 'global-styles';
         }
 
         return $deps;
+    }
+
+    private static function enqueueAdobeTypekit(): void
+    {
+        wp_enqueue_style(
+            self::ADOBE_TYPEKIT_HANDLE,
+            self::ADOBE_TYPEKIT_URL,
+            [],
+            null
+        );
     }
 
     public static function register(): void
@@ -84,6 +99,7 @@ final class FrontendAssets
         self::$deferMainScript = ! ($use_vite_hmr && $vite_running);
 
         if ($use_vite_hmr && $vite_running) {
+            self::enqueueAdobeTypekit();
             wp_enqueue_style(
                 self::STYLE_HANDLE,
                 $vite_dev_url . '/wp-content/themes/culvers/resources/styles/app.css',
@@ -117,6 +133,7 @@ final class FrontendAssets
             $css_uri = $theme_uri . '/app.css';
         }
         if ($css_uri !== null) {
+            self::enqueueAdobeTypekit();
             // $css_uri and $css_path are assigned together in each branch above.
             $ver = $is_local_runtime ? (string) time() : (string) filemtime((string) $css_path);
             wp_enqueue_style(self::STYLE_HANDLE, $css_uri, self::frontStyleDependencies(), $ver ?: $version);
@@ -184,7 +201,8 @@ final class FrontendAssets
         $version = (string) wp_get_theme()->get('Version');
 
         if (file_exists($theme_path . '/resources/styles/editor.css')) {
-            wp_enqueue_style('culvers-editor', $theme_uri . '/resources/styles/editor.css', [], $version);
+            self::enqueueAdobeTypekit();
+            wp_enqueue_style('culvers-editor', $theme_uri . '/resources/styles/editor.css', [self::ADOBE_TYPEKIT_HANDLE], $version);
         }
     }
 }

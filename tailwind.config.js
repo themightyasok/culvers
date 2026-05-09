@@ -34,7 +34,7 @@ const culversThemePlugin = plugin(({ addBase, addComponents }) => {
         {},
     },
     '.footer-nav__link--legal': {
-      '@apply font-sans text-xs uppercase tracking-widest text-lighter-cream transition-colors hover:text-glowleaf':
+      '@apply font-label text-xs uppercase tracking-widest text-lighter-cream transition-colors hover:text-glowleaf':
         {},
     },
     '.footer-nav__link-phone': {
@@ -42,7 +42,7 @@ const culversThemePlugin = plugin(({ addBase, addComponents }) => {
         {},
     },
     '.footer-nav__link-social': {
-      '@apply inline-flex items-center gap-2 font-sans text-sm font-semibold uppercase tracking-widest text-light-cream/90 transition-colors hover:text-glowleaf':
+      '@apply inline-flex items-center gap-2 font-label text-sm font-semibold uppercase tracking-widest text-light-cream/90 transition-colors hover:text-glowleaf':
         {},
     },
   });

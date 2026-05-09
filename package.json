@@ -21,7 +21,6 @@
   },
   "dependencies": {
     "@fontsource-variable/cormorant-garamond": "^5.2.6",
-    "@fontsource-variable/dm-sans": "^5.2.8",
     "@splidejs/splide": "^4.1.4",
     "alpinejs": "^3.15.12",
     "gsap": "^3.15.0"
