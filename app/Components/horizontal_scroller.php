@@ -463,10 +463,10 @@ return [
         'scroller_header_text_weight' => [
             'type' => 'radio',
             'options' => [
-                'label' => __('Header weight', 'culvers'),
-                'choices' => Typography::getWeightChoices(),
+                'label' => __('Header weight (Canela)', 'culvers'),
+                'choices' => Typography::getCanelaHeadingWeightChoices(),
                 'layout' => 'horizontal',
-                'default_value' => 'font-medium',
+                'default_value' => 'font-normal',
                 'allow_null' => 0,
                 'wrapper' => ['width' => '50'],
             ],
@@ -593,10 +593,10 @@ return [
         'scroller_item_heading_weight' => [
             'type' => 'radio',
             'options' => [
-                'label' => __('Item heading weight', 'culvers'),
-                'choices' => Typography::getWeightChoices(),
+                'label' => __('Item heading weight (Canela)', 'culvers'),
+                'choices' => Typography::getCanelaHeadingWeightChoices(),
                 'layout' => 'horizontal',
-                'default_value' => 'font-medium',
+                'default_value' => 'font-normal',
                 'allow_null' => 0,
                 'wrapper' => ['width' => '50'],
             ],

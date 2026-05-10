@@ -39,7 +39,9 @@ $header_text_color = $c['scroller_header_text_color'] ?? 'text-white';
 // site. The dropdown still allows opting up to text-8xl/text-9xl when a
 // landing page genuinely wants a hero-scale header strip.
 $header_text_size = $c['scroller_header_text_size'] ?? 'text-7xl';
-$header_text_weight = $c['scroller_header_text_weight'] ?? 'font-medium';
+$header_text_weight = Typography::coerceCanelaHeadingWeight(
+    (string) ($c['scroller_header_text_weight'] ?? 'font-normal')
+);
 $header_alignment = $c['scroller_header_alignment'] ?? 'top';
 $header_text_alignment = $c['scroller_header_text_alignment'] ?? 'left';
 $subheading_text = $c['scroller_subheading_text'] ?? '';
@@ -121,10 +123,7 @@ $header_text_color_class = match ($header_text_color) {
     'text-black', 'text-brand-500', 'text-deep-moss', 'text-faded-olive', 'text-text-muted', 'text-white', 'text-white/80' => $header_text_color,
     default => 'text-white'
 };
-$header_text_weight_class = match($header_text_weight) {
-    'font-light', 'font-normal', 'font-medium', 'font-semibold', 'font-bold' => $header_text_weight,
-    default => 'font-medium',
-};
+$header_text_weight_class = $header_text_weight;
 
 $subheading_size_class = Typography::validateBodySize($subheading_text_size ?? null, 'text-xl');
 $subheading_text_color_class = match ($subheading_text_color) {
@@ -167,7 +166,7 @@ $item_kicker_classes = Typography::classes(
 $item_heading_classes = Typography::classes(
     'heading',
     $c['scroller_item_heading_size'] ?? 'text-2xl',
-    $c['scroller_item_heading_weight'] ?? 'font-medium'
+    $c['scroller_item_heading_weight'] ?? 'font-normal'
 );
 $item_body_classes = Typography::classes(
     'body',

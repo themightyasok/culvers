@@ -1,7 +1,16 @@
+@import './fonts-canela.css';
+
 .editor-styles-wrapper {
-  font-family: var(--font-sans, ui-sans-serif, system-ui, sans-serif);
+  font-family: var(
+    --wp--preset--font-family--sans,
+    'halyard-display-extralight',
+    ui-sans-serif,
+    system-ui,
+    sans-serif
+  );
 }
 
 .editor-styles-wrapper :where(h1, h2, h3, h4, h5, h6) {
-  font-family: var(--font-heading, Georgia, serif);
+  font-family: var(--wp--preset--font-family--heading, 'Canela', Georgia, 'Times New Roman', serif);
+  font-weight: 400;
 }

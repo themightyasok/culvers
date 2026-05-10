@@ -28,10 +28,11 @@
 
 @theme {
   /*
-   * Brand fonts (Society brand guidelines + Adobe kit gqo7cfj):
-   *   Titles — Canela Light/Regular only (self-hosted WOFF/OTF under resources/fonts/canela).
-   *   Body — Halyard Display (family name from Typekit: halyard-display-extralight, weights 300–500).
-   *   All-caps labels — Commuter Sans (commuters-sans); see --font-label + `.font-sans.uppercase`.
+   * Brand fonts — Society Brand Guidelines (March 26):
+   *   • Canela — titles/subtitles only; Light (300) + Regular (400); sentence case.
+   *   • Halyard Display — body (Adobe kit family: halyard-display-extralight, weights 300–500).
+   *   • Commuter Sans — label / small caps only; tracking often ~0.25em (Tailwind tracking-wide).
+   * Self-hosted Canela OTF/WOFF: resources/fonts/canela; Adobe kit: FrontendAssets (Halyard + Commuter).
    */
   --font-heading: 'Canela', Georgia, 'Times New Roman', serif;
   --font-sans: 'halyard-display-extralight', ui-sans-serif, system-ui, sans-serif;

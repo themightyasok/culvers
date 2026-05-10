@@ -30,7 +30,10 @@ final class Typography
     {
         $fontFamily = self::$fontFamilyMap[$elementType] ?? 'font-sans';
         $size = self::sanitizeSize((string) ($size ?? ''));
-        $weight = self::sanitizeWeight((string) ($weight ?? ''));
+        $weightRaw = (string) ($weight ?? '');
+        $weight = $elementType === 'heading'
+            ? self::sanitizeCanelaHeadingWeight($weightRaw)
+            : self::sanitizeWeight($weightRaw);
 
         return trim("{$fontFamily} {$size} {$weight}");
     }
@@ -87,6 +90,19 @@ final class Typography
         ];
     }
 
+    /**
+     * Canela heading weights — brand guidelines: Light or Regular only for titles.
+     *
+     * @return array<string, string>
+     */
+    public static function getCanelaHeadingWeightChoices(): array
+    {
+        return [
+            'font-light' => __('Light', 'culvers'),
+            'font-normal' => __('Regular', 'culvers'),
+        ];
+    }
+
     public static function validateSize(string $size, string $default = 'text-lg'): string
     {
         $valid = array_merge(
@@ -116,6 +132,14 @@ final class Typography
         return in_array($weight, $valid, true) ? $weight : $default;
     }
 
+    /**
+     * Map stored ACF values to allowed Canela weights (Light / Regular only).
+     */
+    public static function coerceCanelaHeadingWeight(string $weight): string
+    {
+        return self::sanitizeCanelaHeadingWeight($weight);
+    }
+
     public static function validateColor(string $color, string $default = 'text-white'): string
     {
         $valid = [
@@ -143,6 +167,14 @@ final class Typography
     private static function sanitizeWeight(string $weight): string
     {
         $valid = array_keys(self::getWeightChoices());
+
+        return in_array($weight, $valid, true) ? $weight : 'font-normal';
+    }
+
+    /** @see getCanelaHeadingWeightChoices() */
+    private static function sanitizeCanelaHeadingWeight(string $weight): string
+    {
+        $valid = array_keys(self::getCanelaHeadingWeightChoices());
 
         return in_array($weight, $valid, true) ? $weight : 'font-normal';
     }

@@ -83,7 +83,7 @@
           {{-- Text eyebrow lockup: events / offers / news / "no-logo" shops. --}}
           <div
             class="directory-shop-card__logo-slot pointer-events-none absolute inset-x-0 top-0 z-30 flex h-[213px] items-center justify-center px-6 {{ $logoFadeClasses }}">
-            <span class="text-center font-heading text-2xl font-medium text-white">{{ esc_html($spec->eyebrowText) }}</span>
+            <span class="text-center font-heading text-2xl font-normal text-white">{{ esc_html($spec->eyebrowText) }}</span>
           </div>
         @endif
 

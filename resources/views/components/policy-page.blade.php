@@ -18,7 +18,7 @@
   aria-labelledby="policy-page-heading">
   <div class="relative z-10 mx-auto w-full max-w-[56rem]">
     @if($hero_title !== '')
-      <h1 id="policy-page-heading" class="m-0 font-heading text-5xl font-medium leading-[1.08] tracking-tight text-brand-500 sm:text-7xl md:text-8xl lg:text-7xl lg:leading-[1.05]">
+      <h1 id="policy-page-heading" class="m-0 font-heading text-5xl font-normal leading-[1.08] tracking-tight text-brand-500 sm:text-7xl md:text-8xl lg:text-7xl lg:leading-[1.05]">
         {{ esc_html($hero_title) }}
       </h1>
     @endif
