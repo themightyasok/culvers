@@ -114,7 +114,7 @@
                                 x-bind:aria-expanded="megaOpenId === {{ $branch['id'] }} ? 'true' : 'false'"
                                 aria-haspopup="true"
                                 aria-controls="mega-panel-{{ $branch['id'] }}">
-                                <span class="font-sans text-base leading-6">{{ $branch['title'] }}</span>
+                                <span class="font-heading font-light text-base leading-6">{{ $branch['title'] }}</span>
                                 <span class="mega-nav__chevron relative ms-0.5 inline-flex size-3 shrink-0 items-center justify-center" aria-hidden="true">
                                   <svg
                                     class="size-3"
@@ -146,7 +146,7 @@
                               </button>
                             @else
                               <a
-                                class="inline-flex items-center gap-2 font-sans text-base capitalize leading-6 text-white transition-colors hover:text-glowleaf focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
+                                class="inline-flex items-center gap-2 font-heading font-light text-base capitalize leading-6 text-white transition-colors hover:text-glowleaf focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
                                 href="{{ esc_url($branch['url']) }}">
                                 {{ $branch['title'] }}
                               </a>

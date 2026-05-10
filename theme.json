@@ -31,12 +31,12 @@
     "typography": {
       "fontFamilies": [
         {
-          "fontFamily": "\"DM Sans Variable\", ui-sans-serif, system-ui, sans-serif",
+          "fontFamily": "\"halyard-display-extralight\", ui-sans-serif, system-ui, sans-serif",
           "slug": "sans",
           "name": "Body"
         },
         {
-          "fontFamily": "\"Cormorant Garamond Variable\", Georgia, serif",
+          "fontFamily": "\"Canela\", Georgia, \"Times New Roman\", serif",
           "slug": "heading",
           "name": "Heading"
         }
