@@ -108,11 +108,6 @@ export default function registerTextImageSliderAlpine(Alpine) {
           return;
         }
         panel.dataset.open = open ? 'true' : 'false';
-        if (open) {
-          panel.removeAttribute('hidden');
-        } else {
-          panel.setAttribute('hidden', '');
-        }
       });
     },
 

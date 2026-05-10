@@ -76,7 +76,7 @@
 
 @if($items !== [])
   <section
-    class="faq {{ esc_attr($root) }} relative bg-off-white text-deep-moss"
+    class="faq {{ esc_attr($root) }} relative bg-lighter-cream text-deep-moss"
     data-component-root
     data-faq
     x-data='faq({{ $alpineConfig }})'>
@@ -131,12 +131,12 @@
                 $panelId = $instanceId . '-p-' . $i;
                 $isOpen = in_array($i, $defaultOpen, true);
             @endphp
-            <div class="faq__item border-b border-deep-moss/20 last:border-b-0">
+            <div class="faq__item border-b border-deep-moss/45">
               <{{ $headingTag === 'h2' ? 'h3' : 'h4' }} class="faq__heading m-0">
                 <button
                   id="{{ esc_attr($questionId) }}"
                   type="button"
-                  class="faq__question group flex w-full cursor-pointer items-center justify-between gap-4 py-5 text-left font-sans text-base text-deep-moss transition-colors hover:text-faded-olive focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf md:text-lg"
+                  class="faq__question group flex w-full cursor-pointer items-center justify-between gap-4 py-5 text-left font-sans text-base text-deep-moss transition-colors culvers-focus-ring md:text-lg"
                   data-faq-question
                   aria-controls="{{ esc_attr($panelId) }}"
                   aria-expanded="{{ $isOpen ? 'true' : 'false' }}"
@@ -161,12 +161,13 @@
                 id="{{ esc_attr($panelId) }}"
                 role="region"
                 aria-labelledby="{{ esc_attr($questionId) }}"
-                class="faq__panel grid transition-[grid-template-rows] duration-300 ease-out data-[open=true]:grid-rows-[1fr] grid-rows-[0fr]"
+                class="faq__panel grid transition-[grid-template-rows] duration-300 ease-out motion-reduce:transition-none data-[open=true]:grid-rows-[1fr] grid-rows-[0fr]"
                 data-open="{{ $isOpen ? 'true' : 'false' }}"
-                @if(! $isOpen) hidden @endif>
+                @if (! $isOpen) inert @endif
+                x-bind:inert="!isOpen({{ $i }})">
                 <div class="faq__panel-inner overflow-hidden">
                   <div
-                    class="faq__answer pb-6 pr-10 font-sans text-sm leading-6 text-deep-moss/80 [&_a]:text-faded-olive [&_a]:underline [&_a]:underline-offset-4 [&_p+p]:mt-3 [&_strong]:font-medium [&_strong]:text-deep-moss [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6">
+                    class="faq__answer pb-6 pr-10 font-sans text-sm leading-6 text-deep-moss/80 rt-link-faded [&_p+p]:mt-3 [&_strong]:font-medium [&_strong]:text-deep-moss [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6">
                     {!! $item['answer_html'] !!}
                   </div>
                 </div>

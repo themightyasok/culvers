@@ -1,6 +1,6 @@
 # FAQ (`faq`)
 
-Centred Canela serif heading + glowleaf keyline + accordion of
+Centred Canela heading + glowleaf keyline + accordion of
 question / answer disclosure rows. Optional decorative line-art SVGs /
 PNGs flank the column on desktop.
 
@@ -24,7 +24,7 @@ H3s, use [`content_section`](CONTENT-SECTION.md) instead.
 
 | Field | Type | Default | Notes |
 | --- | --- | --- | --- |
-| `faq_heading` | text | `Frequently Asked Questions` | Centred Canela serif heading. |
+| `faq_heading` | text | `Frequently Asked Questions` | Centred Canela heading. |
 | `faq_heading_level` | select | `h2` | |
 | `faq_show_keyline` | true_false | on | Glowleaf keyline under the heading. |
 | `faq_open_mode` | select (`single`, `multi`) | `single` | Single — opening one row closes the others. Multi — toggles independently. |

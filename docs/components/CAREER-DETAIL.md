@@ -31,7 +31,7 @@ suggestions, etc. are separate components stacked on the page.
 
 | Field | Type | Default | Notes |
 | --- | --- | --- | --- |
-| `career_job_title` | text | — | Display serif headline shown top-left. |
+| `career_job_title` | text | — | Display Canela headline shown top-left. |
 | `career_job_title_level` | select | `h1` | H1 allowed (and the default — the role title is the page H1). |
 | `career_meta` | repeater (0–6, `table` layout) | — | Stacked label/value rows separated by hairline rules. |
 | `career_apply_label` | text | `Apply Now` | |

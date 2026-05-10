@@ -65,7 +65,7 @@
 <div class="directory-archive__filter-section{{ $group_extra_section_classes !== '' ? ' ' . $group_extra_section_classes : '' }}">
   <button
     type="button"
-    class="flex w-full items-center justify-between gap-3 py-4 text-left font-sans text-xs font-semibold uppercase tracking-widest text-faded-olive transition hover:text-deep-moss focus-visible:rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"
+    class="flex w-full items-center justify-between gap-3 py-4 text-left font-sans text-xs font-semibold uppercase tracking-widest text-faded-olive transition hover:text-deep-moss focus-visible:rounded-md culvers-focus-ring-compact"
     @click="{{ $group_toggle_var }} = ! {{ $group_toggle_var }}"
     :aria-expanded="{{ $group_toggle_var }}.toString()"
     aria-controls="{{ esc_attr($group_panel_id) }}">
@@ -84,7 +84,7 @@
       <button
         type="button"
         role="radio"
-        class="directory-archive__filter-option flex w-full items-center gap-[14px] py-0.5 text-left focus-visible:rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"
+        class="directory-archive__filter-option flex w-full items-center gap-[14px] py-0.5 text-left focus-visible:rounded-md culvers-focus-ring-compact"
         :class="{{ $group_state_var }} === '' ? 'directory-archive__filter-option--on' : 'directory-archive__filter-option--off'"
         :aria-checked="{{ $group_state_var }} === ''"
         @click="{{ $group_setter }}('')">
@@ -105,7 +105,7 @@
         <button
           type="button"
           role="radio"
-          class="directory-archive__filter-option flex w-full items-center gap-[14px] py-0.5 text-left focus-visible:rounded-md focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"
+          class="directory-archive__filter-option flex w-full items-center gap-[14px] py-0.5 text-left focus-visible:rounded-md culvers-focus-ring-compact"
           :class="{{ $group_state_var }} === {!! $slug_json !!} ? 'directory-archive__filter-option--on' : 'directory-archive__filter-option--off'"
           :aria-checked="{{ $group_state_var }} === {!! $slug_json !!}"
           @click="{{ $group_setter }}({!! $slug_json !!})">

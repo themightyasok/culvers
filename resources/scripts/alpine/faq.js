@@ -1,7 +1,9 @@
 /**
  * FAQ accordion: WAI-ARIA disclosure pattern with single/multi open modes.
  * Smooth height animation uses the modern grid-template-rows trick driven by
- * the `data-open` attribute on the panel (no JS height measuring).
+ * the `data-open` attribute on the panel (no JS height measuring). Do not
+ * toggle the `hidden` attribute on panels — it forces `display:none` and
+ * prevents the transition from running.
  *
  * @param {import('alpinejs').Alpine} Alpine
  */
@@ -104,11 +106,6 @@ export default function registerFaqAlpine(Alpine) {
           return;
         }
         panel.dataset.open = open ? 'true' : 'false';
-        if (open) {
-          panel.removeAttribute('hidden');
-        } else {
-          panel.setAttribute('hidden', '');
-        }
       });
     },
   }));

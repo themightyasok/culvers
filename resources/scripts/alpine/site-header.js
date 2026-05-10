@@ -168,18 +168,16 @@ export default function registerSiteHeaderAlpine(Alpine) {
      * Uses mouseover + focusin on the list because `mouseenter` on each <a> can miss moves between
      * inline boxes, and event.target can be a Text node (no dataset).
      */
-    megaListMouseOver(event) {
-      if (!(event instanceof MouseEvent)) {
+    /**
+     * Bound on each mega submenu link. `mouseenter` per link is reliable; delegated
+     * `mouseover` on the list misses moves between inline boxes in some browsers.
+     */
+    megaSublinkEnter(event) {
+      if (!(event.currentTarget instanceof HTMLElement)) {
         return;
       }
       this.cancelCloseMegaHover();
-      const raw = event.target;
-      const node = raw instanceof Element ? raw : raw?.parentElement;
-      const el = node instanceof Element ? node.closest('a.mega-nav__sublink') : null;
-      if (!(el instanceof HTMLElement)) {
-        return;
-      }
-      this.applyMegaPreviewFromLink(el);
+      this.applyMegaPreviewFromLink(event.currentTarget);
     },
 
     megaListFocusIn(event) {
@@ -195,20 +193,8 @@ export default function registerSiteHeaderAlpine(Alpine) {
      */
     applyMegaPreviewFromLink(el) {
       const attr = el.getAttribute('data-preview-url');
-      let url = typeof attr === 'string' ? attr.trim() : '';
+      const url = typeof attr === 'string' ? attr.trim() : '';
       if (url === '') {
-        const list = el.closest('[data-mega-parent-id]');
-        const pid = list?.getAttribute('data-mega-parent-id')?.trim();
-        if (pid) {
-          const row = this.readMegaDefault(pid);
-          url = typeof row.preview === 'string' ? row.preview.trim() : '';
-          this.previewSrc = url;
-          this.previewAlt =
-            url !== '' ? row.alt || el.textContent?.trim() || '' : (el.textContent?.trim() ?? '');
-
-          return;
-        }
-
         return;
       }
       this.previewSrc = url;
@@ -320,7 +306,7 @@ export default function registerSiteHeaderAlpine(Alpine) {
             const title = itemTitle(item);
             const href = typeof item.url === 'string' ? item.url : '#';
 
-            return `<a class="block py-2 font-sans text-xl text-faded-olive hover:text-deep-moss focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-faded-olive" href="${escapeHtml(href)}">${highlightMatch(title, query)}</a>`;
+            return `<a class="block py-2 font-sans text-xl text-faded-olive hover:text-deep-moss focus-visible:rounded-sm culvers-focus-ring-compact-faded-olive" href="${escapeHtml(href)}">${highlightMatch(title, query)}</a>`;
           })
           .join('');
         this.searchResultsVisible = true;

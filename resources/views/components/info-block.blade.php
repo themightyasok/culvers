@@ -71,7 +71,7 @@
           @endif
           @if(trim(strip_tags($body)) !== '')
             <div
-              class="info-block__body prose prose-lg mx-auto mt-6 max-w-[36.75rem] text-left font-light md:text-center text-deep-moss prose-headings:text-deep-moss prose-p:font-sans prose-p:text-xl prose-p:font-light prose-li:text-deep-moss prose-strong:text-deep-moss [&_a]:text-deep-moss [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 hover:[&_a]:decoration-deep-moss {{ esc_attr($tone) }}">
+              class="info-block__body prose prose-lg mx-auto mt-6 max-w-[36.75rem] text-left font-light md:text-center text-deep-moss prose-headings:text-deep-moss prose-p:font-sans prose-p:text-xl prose-p:font-light prose-li:text-deep-moss prose-strong:text-deep-moss rt-link-prose {{ esc_attr($tone) }}">
               {!! $body !!}
             </div>
           @endif

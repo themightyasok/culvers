@@ -484,10 +484,10 @@ Every component must:
   `Component::headingTag()`; never hard-code `<h2>`.
 - Decorate icons with `aria-hidden="true"`. Provide an `aria-label` or
   visually-hidden text for icon-only controls.
-- Carry visible focus states for any interactive element. Use the
-  `focus-visible:outline focus-visible:outline-2
-  focus-visible:outline-offset-2 focus-visible:outline-glowleaf`
-  pattern (or the existing `.btn` family).
+- Carry visible focus states for any interactive element. Prefer
+  `culvers-focus-ring`, `culvers-focus-ring-compact`, or the
+  `culvers-focus-ring-*` variants from `tailwind.config.js` (same values as
+  the long `focus-visible:outline …` chains); or use the `.btn` family for CTAs.
 - Support keyboard interaction for any custom widget (Esc closes
   panels, arrow keys for radio groups, roving `tabindex` for tab
   panels — see `text-image-slider.js`, `faq.js`).
@@ -521,7 +521,7 @@ The `size` token picks geometry; the hover ramp comes for free:
 
 | Size      | Use                                                 | Resting → hover padding |
 | --------- | --------------------------------------------------- | ----------------------- |
-| `default` | Inline CTAs (View all, Apply, Send)                 | 25.773px → 34px         |
+| `default` | Inline CTAs (View all, Apply, Send)                 | `px-6 py-2` → `hover:px-8` (≈24→32px) |
 | `large`   | Hero / banner CTAs (`hero_slider`, `info_block`)    | 40/48px → 56/64px       |
 | `form`    | Form-row submits (`contact`, `travel_calculator`)   | 46px tall, min-w 120px  |
 
@@ -529,9 +529,21 @@ The `size` token picks geometry; the hover ramp comes for free:
 can't model — see `contact`, `travel_calculator`, `event_meta`,
 `career_detail`) MUST keep the same class spine — `btn btn-{variant}
 btn-{size}` — so hover stays in sync. Never add inline `px-*` / `py-*`
-to a CTA: it overrides `.btn-primary`'s `hover:px-[34px]` and silently
+to a CTA: it overrides `.btn-primary`'s `hover:px-8` and silently
 kills the hover-widen. Reach for a size modifier instead, or add a new
 size in `app.css` if your case isn't covered.
+
+## 9b. Rich text (CMS HTML) — link utilities
+
+WYSIWYG / prose blocks should use one wrapper class from `tailwind.config.js`
+instead of repeating `[&_a]:…` chains:
+
+| Class | Use |
+| --- | --- |
+| `rt-link-prose` | Default moss body: glowleaf underline, hover deep moss (policy, content blocks, opening hours non-shop). |
+| `rt-link-faded` | Muted olive links (FAQ answers, text-image slider body, career sections). |
+| `rt-link-brand` | Brand/yellow links on dark olive bands (`shop_split_highlight` body). |
+| `rt-link-olive-surface` | Inherits body colour; glowleaf underline + hover fade (opening hours shop intro). |
 
 ---
 

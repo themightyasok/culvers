@@ -31,7 +31,7 @@
 
   @if(trim(strip_tags($body)) !== '')
     <div
-      class="content-section__body prose prose-lg max-w-none text-deep-moss prose-headings:text-deep-moss prose-p:text-deep-moss prose-li:text-deep-moss prose-strong:text-deep-moss [&_a]:text-deep-moss [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 hover:[&_a]:decoration-deep-moss {{ esc_attr($tone) }}">
+      class="content-section__body prose prose-lg max-w-none text-deep-moss prose-headings:text-deep-moss prose-p:text-deep-moss prose-li:text-deep-moss prose-strong:text-deep-moss rt-link-prose {{ esc_attr($tone) }}">
       {!! $body !!}
     </div>
   @endif

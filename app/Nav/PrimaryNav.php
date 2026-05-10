@@ -52,7 +52,7 @@ final class PrimaryNav
             $tree[] = self::branch($parentPost, $byParent);
         }
 
-        return self::moveShopBranchFirst(self::foldStrayShopCategoriesUnderShopBranch($tree));
+        return self::dedupeMegaChildPreviewsInTree(self::moveShopBranchFirst(self::foldStrayShopCategoriesUnderShopBranch($tree)));
     }
 
     /**
@@ -129,11 +129,14 @@ final class PrimaryNav
                 $url = $branch['url'];
             }
 
-            $preview = '';
-            foreach ($branch['children'] as $sub) {
-                if ($sub['preview'] !== '') {
-                    $preview = $sub['preview'];
-                    break;
+            $menuPost = get_post((int) $branch['id']);
+            $preview = $menuPost instanceof \WP_Post ? self::previewUrl($menuPost) : '';
+            if ($preview === '') {
+                foreach ($branch['children'] as $sub) {
+                    if ($sub['preview'] !== '') {
+                        $preview = $sub['preview'];
+                        break;
+                    }
                 }
             }
 
@@ -165,6 +168,129 @@ final class PrimaryNav
                 continue;
             }
             $out[] = $branch;
+        }
+
+        return $out;
+    }
+
+    /**
+     * When the mega submenu renders synthetic rows (folded Shop categories) or WP assigns the same
+     * attachment to many items, hover previews would all look identical. Fill with distinct media URLs.
+     *
+     * @param  list<NavChild>  $children
+     * @return list<NavChild>
+     */
+    private static function fillDistinctMegaPreviews(array $children): array
+    {
+        $pool = self::megaPreviewImageUrlPool();
+        if ($pool === []) {
+            return $children;
+        }
+
+        /** @var array<string, true> $seen */
+        $seen = [];
+        $cursor = 0;
+        $out = [];
+
+        foreach ($children as $child) {
+            $url = trim($child['preview']);
+            if ($url !== '' && ! isset($seen[$url])) {
+                $seen[$url] = true;
+                $out[] = $child;
+
+                continue;
+            }
+
+            $picked = self::nextDistinctPoolUrl($pool, $seen, $cursor);
+            if ($picked === null) {
+                $out[] = $child;
+
+                continue;
+            }
+
+            $seen[$picked] = true;
+            $out[] = [
+                'title' => $child['title'],
+                'url' => $child['url'],
+                'preview' => $picked,
+            ];
+        }
+
+        return $out;
+    }
+
+    /**
+     * @param  list<string>           $pool
+     * @param  array<string, true>    $seen
+     */
+    private static function nextDistinctPoolUrl(array $pool, array &$seen, int &$cursor): ?string
+    {
+        $n = count($pool);
+        for ($step = 0; $step < $n; $step++) {
+            $idx = ($cursor + $step) % $n;
+            $candidate = $pool[$idx];
+            if (! isset($seen[$candidate])) {
+                $cursor = ($idx + 1) % $n;
+
+                return $candidate;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return list<string>
+     */
+    private static function megaPreviewImageUrlPool(): array
+    {
+        static $cache = null;
+        if (is_array($cache)) {
+            return $cache;
+        }
+
+        $q = new \WP_Query([
+            'post_type' => 'attachment',
+            'post_status' => 'inherit',
+            'post_mime_type' => 'image',
+            'posts_per_page' => 200,
+            'orderby' => 'ID',
+            'order' => 'DESC',
+            'fields' => 'ids',
+            'no_found_rows' => true,
+        ]);
+
+        $urls = [];
+        foreach ($q->posts as $aid) {
+            $u = wp_get_attachment_image_url((int) $aid, 'large');
+            if (is_string($u) && $u !== '') {
+                $urls[] = esc_url($u);
+            }
+        }
+
+        $cache = $urls;
+
+        return $cache;
+    }
+
+    /**
+     * @param  list<NavBranch>  $tree
+     * @return list<NavBranch>
+     */
+    private static function dedupeMegaChildPreviewsInTree(array $tree): array
+    {
+        $out = [];
+        foreach ($tree as $branch) {
+            $kids = $branch['children'];
+            if (count($kids) > 1) {
+                $kids = self::fillDistinctMegaPreviews($kids);
+            }
+            $out[] = [
+                'id' => $branch['id'],
+                'title' => $branch['title'],
+                'url' => $branch['url'],
+                'children' => $kids,
+            ];
         }
 
         return $out;
@@ -319,6 +445,15 @@ final class PrimaryNav
         }
 
         return '';
+    }
+
+    /**
+     * Resolved hover-preview URL for a nav menu item (meta → linked featured image).
+     * Exposed for CLI / maintenance scripts.
+     */
+    public static function previewUrlForMenuItem(\WP_Post $item): string
+    {
+        return self::previewUrl($item);
     }
 
     private static function previewUrl(\WP_Post $item): string

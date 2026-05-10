@@ -42,13 +42,13 @@
           <article
             class="policy-page__row grid grid-cols-1 gap-8 border-b border-deep-moss/[0.12] pb-12 last:border-b-0 last:pb-0 md:gap-10 lg:grid-cols-[minmax(0,22rem)_minmax(0,1fr)] lg:gap-x-16 xl:gap-x-24">
             @if($aside !== '')
-              <aside class="policy-page__aside font-heading text-2xl leading-snug text-deep-moss md:text-3xl lg:max-w-[22rem] lg:pt-1 [&_a]:text-deep-moss [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 hover:[&_a]:decoration-deep-moss">
+              <aside class="policy-page__aside font-heading text-2xl leading-snug text-deep-moss md:text-3xl lg:max-w-[22rem] lg:pt-1 rt-link-prose">
                 {!! $aside !!}
               </aside>
             @endif
             @if($body !== '')
               <div
-                class="policy-page__body prose max-w-none font-sans text-lg leading-relaxed text-deep-moss prose-headings:font-heading prose-headings:text-deep-moss prose-p:text-deep-moss prose-li:text-deep-moss prose-strong:text-deep-moss [&_a]:text-deep-moss [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 hover:[&_a]:decoration-deep-moss md:text-lg">
+                class="policy-page__body prose max-w-none font-sans text-lg leading-relaxed text-deep-moss prose-headings:font-heading prose-headings:text-deep-moss prose-p:text-deep-moss prose-li:text-deep-moss prose-strong:text-deep-moss rt-link-prose md:text-lg">
                 {!! $body !!}
               </div>
             @endif

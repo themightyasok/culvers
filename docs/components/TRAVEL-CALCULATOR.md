@@ -1,6 +1,6 @@
 # Travel Calculator (`travel_calculator`)
 
-Faded-olive band: Canela title + DM Sans subtitle, 3-up
+Faded-olive band: Canela title + Halyard Display subtitle, 3-up
 destination / mode / search controls, inline result strip, and a
 route-preview map below. Backed by the Distance Matrix endpoint
 `wp-json/culvers/v1/travel-calculator` and the Maps Embed API.

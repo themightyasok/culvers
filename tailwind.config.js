@@ -8,6 +8,7 @@ import plugin from 'tailwindcss/plugin';
  * Prose links: `theme.extend.typography`.
  *
  * Persistent underline exceptions stay in app.css (`.footer-link--persistent-underline`).
+ * Rich-text blocks: `rt-link-*` utilities (Figma-aligned link colours / underlines on CMS HTML).
  */
 const culversThemePlugin = plugin(({ addBase, addComponents }) => {
   addBase({
@@ -23,6 +24,54 @@ const culversThemePlugin = plugin(({ addBase, addComponents }) => {
   });
 
   addComponents({
+    /*
+     * Focus rings — one place for WCAG-visible focus styling (avoid pasting 4
+     * `focus-visible:*` utilities on every interactive control). Compose with
+     * `focus-visible:rounded-sm` etc. where a control isn’t already rounded.
+     */
+    '.culvers-focus-ring': {
+      '@apply focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf':
+        {},
+    },
+    '.culvers-focus-ring-compact': {
+      '@apply focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf':
+        {},
+    },
+    '.culvers-focus-ring-compact-white': {
+      '@apply focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white':
+        {},
+    },
+    '.culvers-focus-ring-compact-deep-moss': {
+      '@apply focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-moss':
+        {},
+    },
+    '.culvers-focus-ring-deep-moss': {
+      '@apply focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-deep-moss':
+        {},
+    },
+    '.culvers-focus-ring-compact-faded-olive': {
+      '@apply focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-faded-olive':
+        {},
+    },
+    /*
+     * Rich text (CMS WYSIWYG / prose) — anchor styling inside a block. Parent sets body colour;
+     * these only touch `a` descendants (matches former `[&_a]:…` chains).
+     */
+    '.rt-link-prose': {
+      '@apply [&_a]:text-deep-moss [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 hover:[&_a]:decoration-deep-moss':
+        {},
+    },
+    '.rt-link-faded': {
+      '@apply [&_a]:text-faded-olive [&_a]:underline [&_a]:underline-offset-4': {},
+    },
+    '.rt-link-brand': {
+      '@apply [&_a]:text-brand-500 [&_a]:underline [&_a]:decoration-brand-500 [&_a]:underline-offset-4':
+        {},
+    },
+    '.rt-link-olive-surface': {
+      '@apply [&_a]:text-inherit [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 hover:[&_a]:opacity-90':
+        {},
+    },
     '.footer-nav__link': {
       '@apply font-sans text-sm leading-snug text-light-cream/85 transition-colors hover:text-glowleaf':
         {},

@@ -27,7 +27,7 @@ icon cells, use `info_block`.
 | Field | Type | Default | Notes |
 | --- | --- | --- | --- |
 | `header_eyebrow` | text | — | Small uppercase line in faded olive above the heading. |
-| `header_heading` | text | — | Serif headline. Leave blank for body-only intros. |
+| `header_heading` | text | — | Canela headline. Leave blank for body-only intros. |
 | `header_heading_level` | select | `h2` | Heading level (H1 allowed for top-of-page intros). |
 | `header_body` | textarea (`new_lines: br`) | — | Short paragraph (1–3 lines). |
 | `header_align` | select (`center`, `left`) | `center` | Figma uses centred for most page intros. |

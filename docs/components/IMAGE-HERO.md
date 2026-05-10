@@ -30,9 +30,9 @@ between them; do not invent a third.
 | `hero_image` | image | — | Wide lifestyle / storefront shot. Figma band is 1440×646. |
 | `hero_image_mobile` | image | — | Optional tighter crop for small screens. |
 | `hero_logo` | image | — | Optional centre lockup over the hero (white artwork preferred). When set, the title/subtitle are hidden. |
-| `hero_title_line` | text | — | Large serif headline when no logo is set (96 px on desktop). |
+| `hero_title_line` | text | — | Large Canela headline when no logo is set (96 px on desktop). |
 | `hero_title_tone` | select (`glowleaf`, `white`, `lighter-cream`) | `glowleaf` | Tone for the title — keep glowleaf unless contrast on a busy photo demands white. |
-| `hero_subtitle_line` | textarea (`new_lines: br`) | — | Spaced uppercase sans line under the title (20 px / SemiBold / 4 px tracking). |
+| `hero_subtitle_line` | textarea (`new_lines: br`) | — | Spaced uppercase Commuter Sans line under the title (20 px / SemiBold / 4 px tracking). |
 | `hero_overlay_opacity` | number (0–85, %) | 20 | Solid black overlay on the image. Push higher only when text contrast on a busy photo demands it. |
 | `hero_title_in_image` | true/false | `false` | Set to true **only** when the supplied artwork already contains the page title baked into the image (rare — usually a brand handover). The title and subtitle render `sr-only` so screen readers still announce them, but no visible text is drawn over the image. Always prefer clean photography + the editable text fields. |
 

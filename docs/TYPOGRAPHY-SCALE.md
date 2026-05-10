@@ -1,6 +1,8 @@
 # Culver Square type ramp
 
-Font sizes live in `resources/styles/theme.tokens.css` (`@theme`). The theme uses **only stock Tailwind utility names** (`text-xs`..`text-9xl`). Default Tailwind values for the body tier (`text-xs`..`text-2xl`) are kept so external Tailwind examples behave as expected; only the display tier (`text-3xl`..`text-9xl`) is retuned to Culver Square's Halyard / Canela ladder. Each `--text-*` carries its own `--text-*--line-height`, so the type token already delivers the design line-height — only override `leading-*` when intentionally diverging.
+**Families (Society Brand Guidelines, March 26):** **Canela** — display titles only, **Light (300)** and **Regular (400)** weights, self-hosted from `resources/fonts/canela` via `resources/styles/fonts-canela.css` (bundled by Vite). **Halyard Display** — body/UI sans, loaded from Adobe Fonts (Typekit kit enqueued in `app/Assets/FrontendAssets.php`). **Commuter Sans** — uppercase labels / small-caps lines via `font-label`. Tailwind maps: `font-heading` → Canela, `font-sans` → Halyard stack, `font-label` → Commuter. Editor choices for components go through `App\Helpers\Typography`.
+
+Font **sizes** live in `resources/styles/theme.tokens.css` (`@theme`). The theme uses **only stock Tailwind utility names** (`text-xs`..`text-9xl`). Default Tailwind values for the body tier (`text-xs`..`text-2xl`) are kept so external Tailwind examples behave as expected; only the display tier (`text-3xl`..`text-9xl`) is retuned to the Culver Square display ladder (Canela roles on the front end). Each `--text-*` carries its own `--text-*--line-height`, so the type token already delivers the design line-height — only override `leading-*` when intentionally diverging.
 
 **Rules:**
 
@@ -42,7 +44,7 @@ Body tier keeps Tailwind defaults; display tier (`text-3xl`+) is retuned to Figm
 
 | Utility | Value | Where used |
 |---------|-------|-------------|
-| `tracking-tight` | −0.025em | Display headings (most large serif blocks) |
+| `tracking-tight` | −0.025em | Display headings (most large Canela / `font-heading` blocks) |
 | `tracking-wider` | 0.05em | Pill CTAs (`.btn`, directory filter pill, video outline button) |
 | `tracking-widest` | 0.1em | All uppercase action labels, footer column links / legal row, footer newsletter input, mega CTAs (8 % Figma values snap here) |
 

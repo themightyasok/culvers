@@ -36,7 +36,7 @@ plain Q&A use [`faq`](FAQ.md) instead.
 
 | Sub-field | Type | Default | Notes |
 | --- | --- | --- | --- |
-| `item_label` | text | — | Large Canela serif label. |
+| `item_label` | text | — | Large Canela label. |
 | `item_body` | wysiwyg (`toolbar: basic`, `media_upload: 0`) | — | |
 | `item_image_left` | image | — | Pops in from the left when row opens. |
 | `item_image_right` | image | — | Pops in from the right when row opens. |

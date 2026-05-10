@@ -74,7 +74,7 @@
 
         @if($body !== '')
           <div
-            class="three-card-block__intro prose prose-lg mx-auto mt-6 max-w-[36.75rem] text-left font-light md:text-center text-deep-moss prose-headings:text-deep-moss prose-p:font-sans prose-p:text-xl prose-p:font-light prose-li:text-deep-moss prose-strong:text-deep-moss [&_a]:text-deep-moss [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 hover:[&_a]:decoration-deep-moss">
+            class="three-card-block__intro prose prose-lg mx-auto mt-6 max-w-[36.75rem] text-left font-light md:text-center text-deep-moss prose-headings:text-deep-moss prose-p:font-sans prose-p:text-xl prose-p:font-light prose-li:text-deep-moss prose-strong:text-deep-moss rt-link-prose">
             {!! $body !!}
           </div>
         @endif
@@ -94,7 +94,7 @@
           @php $tid = 'three-card-tab-' . $index; $pid = 'three-card-panel-' . $index; @endphp
           <button
             type="button"
-            class="three-card-block__tab rounded-full border border-deep-moss px-5 py-2 font-sans text-xs font-semibold uppercase tracking-widest text-deep-moss transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-deep-moss md:px-7 md:py-2.5 md:text-xs"
+            class="three-card-block__tab rounded-full border border-deep-moss px-5 py-2 font-sans text-xs font-semibold uppercase tracking-widest text-deep-moss transition-colors duration-150 culvers-focus-ring-deep-moss md:px-7 md:py-2.5 md:text-xs"
             id="{{ esc_attr($tid) }}"
             role="tab"
             aria-controls="{{ esc_attr($pid) }}"

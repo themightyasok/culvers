@@ -34,14 +34,11 @@
 
           {{--
             Footer-overlap spacer.
-            `.footer-newsletter-band` lives inside the olive footer with `-mt-32 md:-mt-44 lg:-mt-52`
-            (pulls the newsletter image up into the white area above). Without a buffer between
-            `<main>` and `<footer>`, that pull-up overlays the last flexible component on the page.
-            The spacer matches the negative-margin amount per breakpoint so the newsletter pulls
-            into safe whitespace instead of real content. Every page benefits — no per-component
-            padding needed.
+            `.footer-newsletter-band` is vertically centred on the footer top with `-translate-y-1/2`
+            (half of the newsletter sits in the white band, half on olive). Reserve **half** of the
+            newsletter min-heights so that overlap lands in whitespace, not on the last main component.
           --}}
-          <div aria-hidden="true" class="site-footer-spacer h-32 w-full bg-white md:h-44 lg:h-52"></div>
+          <div aria-hidden="true" class="site-footer-spacer h-[150px] w-full bg-white md:h-[190px] lg:h-[210px]"></div>
 
           @include('sections.footer')
         </div>

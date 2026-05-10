@@ -171,7 +171,7 @@
           @endif
           <button
             type="button"
-            class="centre-map__filter-toggle inline-flex items-center justify-center rounded-full bg-glowleaf px-5 py-2 font-sans text-xs font-semibold uppercase tracking-widest text-deep-moss transition hover:bg-lighter-cream focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"
+            class="centre-map__filter-toggle inline-flex items-center justify-center rounded-full bg-glowleaf px-5 py-2 font-sans text-xs font-semibold uppercase tracking-widest text-deep-moss transition hover:bg-lighter-cream culvers-focus-ring-compact"
             :aria-expanded="panelOpen.toString()"
             aria-controls="centre-map-panel-groups"
             @click="panelOpen = !panelOpen"
@@ -193,7 +193,7 @@
                 <h3 class="m-0">
                   <button
                     type="button"
-                    class="centre-map__group-toggle flex w-full items-center justify-between gap-4 py-4 text-left font-sans text-sm font-semibold uppercase tracking-widest text-glowleaf transition hover:text-lighter-cream focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"
+                    class="centre-map__group-toggle flex w-full items-center justify-between gap-4 py-4 text-left font-sans text-sm font-semibold uppercase tracking-widest text-glowleaf transition hover:text-lighter-cream culvers-focus-ring-compact"
                     aria-expanded="false"
                     :aria-expanded="(openGroup === {{ $groupSlugJson }}).toString()"
                     aria-controls="centre-map-group-{{ $groupSlugAttr }}"
@@ -218,7 +218,7 @@
                         @if($cat['url'] !== '')
                           <a
                             href="{{ esc_url($cat['url']) }}"
-                            class="centre-map__category group flex items-center gap-3 rounded-md px-1 py-1.5 font-sans text-sm font-medium uppercase tracking-[0.18em] text-lighter-cream transition hover:text-glowleaf focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"
+                            class="centre-map__category group flex items-center gap-3 rounded-md px-1 py-1.5 font-sans text-sm font-medium uppercase tracking-[0.18em] text-lighter-cream transition hover:text-glowleaf culvers-focus-ring-compact"
                             @click="activeCategorySlug = {{ $catSlugJson }}">
                             <span
                               class="centre-map__category-bullet inline-flex size-3 shrink-0 items-center justify-center rounded-full border border-lighter-cream/60 transition"
@@ -230,7 +230,7 @@
                         @else
                           <button
                             type="button"
-                            class="centre-map__category group flex w-full items-center gap-3 rounded-md px-1 py-1.5 text-left font-sans text-sm font-medium uppercase tracking-[0.18em] text-lighter-cream transition hover:text-glowleaf focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"
+                            class="centre-map__category group flex w-full items-center gap-3 rounded-md px-1 py-1.5 text-left font-sans text-sm font-medium uppercase tracking-[0.18em] text-lighter-cream transition hover:text-glowleaf culvers-focus-ring-compact"
                             @click="activeCategorySlug = activeCategorySlug === {{ $catSlugJson }} ? '' : {{ $catSlugJson }}">
                             <span
                               class="centre-map__category-bullet inline-flex size-3 shrink-0 items-center justify-center rounded-full border border-lighter-cream/60 transition"
@@ -275,7 +275,7 @@
               class="centre-map__zoom-controls absolute bottom-4 right-4 flex flex-col gap-2 md:bottom-6 md:right-6">
               <button
                 type="button"
-                class="centre-map__zoom-button inline-flex size-10 items-center justify-center rounded-full bg-glowleaf text-deep-moss transition hover:bg-lighter-cream focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf disabled:cursor-not-allowed disabled:opacity-40 md:size-11"
+                class="centre-map__zoom-button inline-flex size-10 items-center justify-center rounded-full bg-glowleaf text-deep-moss transition hover:bg-lighter-cream culvers-focus-ring-compact disabled:cursor-not-allowed disabled:opacity-40 md:size-11"
                 aria-label="{{ esc_attr__('Zoom in', 'culvers') }}"
                 :disabled="zoom >= 2.5"
                 @click="zoom = Math.min(2.5, Math.round((zoom + 0.25) * 100) / 100)">
@@ -285,7 +285,7 @@
               </button>
               <button
                 type="button"
-                class="centre-map__zoom-button inline-flex size-10 items-center justify-center rounded-full bg-glowleaf text-deep-moss transition hover:bg-lighter-cream focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf disabled:cursor-not-allowed disabled:opacity-40 md:size-11"
+                class="centre-map__zoom-button inline-flex size-10 items-center justify-center rounded-full bg-glowleaf text-deep-moss transition hover:bg-lighter-cream culvers-focus-ring-compact disabled:cursor-not-allowed disabled:opacity-40 md:size-11"
                 aria-label="{{ esc_attr__('Zoom out', 'culvers') }}"
                 :disabled="zoom <= 1"
                 @click="zoom = Math.max(1, Math.round((zoom - 0.25) * 100) / 100)">

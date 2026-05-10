@@ -67,7 +67,7 @@
 
 @if($items !== [])
   <section
-    class="text-image-slider {{ esc_attr($root) }} relative bg-off-white text-deep-moss"
+    class="text-image-slider {{ esc_attr($root) }} relative bg-lighter-cream text-deep-moss"
     data-component-root
     data-text-image-slider
     x-data='textImageSlider({{ $alpineConfig }})'>
@@ -96,7 +96,7 @@
             <button
               id="{{ esc_attr($labelId) }}"
               type="button"
-              class="text-image-slider__label group block w-full cursor-pointer py-3 text-center font-heading text-5xl leading-[1.1] tracking-tight transition-colors duration-300 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf md:text-6xl lg:text-7xl"
+              class="text-image-slider__label group block w-full cursor-pointer py-3 text-center font-heading text-5xl leading-[1.1] tracking-tight transition-colors duration-300 ease-out culvers-focus-ring md:text-6xl lg:text-7xl"
               data-tis-label
               aria-controls="{{ esc_attr($panelId) }}"
               aria-expanded="{{ $isOpen ? 'true' : 'false' }}"
@@ -112,12 +112,13 @@
               id="{{ esc_attr($panelId) }}"
               role="region"
               aria-labelledby="{{ esc_attr($labelId) }}"
-              class="text-image-slider__panel grid transition-[grid-template-rows] duration-300 ease-out data-[open=true]:grid-rows-[1fr] grid-rows-[0fr]"
+              class="text-image-slider__panel grid transition-[grid-template-rows] duration-300 ease-out motion-reduce:transition-none data-[open=true]:grid-rows-[1fr] grid-rows-[0fr]"
               data-open="{{ $isOpen ? 'true' : 'false' }}"
-              @if(! $isOpen) hidden @endif>
+              @if (! $isOpen) inert @endif
+              x-bind:inert="!isOpen({{ $i }})">
               <div class="text-image-slider__panel-inner overflow-hidden">
                 <div
-                  class="text-image-slider__body mx-auto max-w-[44rem] px-2 py-6 text-center font-sans text-base font-light leading-7 text-deep-moss/90 opacity-0 lg:py-10 lg:text-lg [&_a]:text-faded-olive [&_a]:underline [&_a]:underline-offset-4 [&_p+p]:mt-3 [&_strong]:font-medium"
+                  class="text-image-slider__body mx-auto max-w-[44rem] px-2 py-6 text-center font-sans text-base font-light leading-7 text-deep-moss/90 opacity-0 lg:py-10 lg:text-lg rt-link-faded [&_p+p]:mt-3 [&_strong]:font-medium"
                   data-tis-body>
                   {!! $item['body_html'] !!}
                 </div>

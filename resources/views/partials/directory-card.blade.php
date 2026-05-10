@@ -52,7 +52,7 @@
     class="directory-shop-card min-w-0 w-full">
     <a
       href="{{ esc_url($spec->permalink) }}"
-      class="group directory-shop-card__link relative block w-full max-w-none overflow-hidden rounded-[11px] outline-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf">
+      class="group directory-shop-card__link relative block w-full max-w-none overflow-hidden rounded-[11px] outline-none culvers-focus-ring">
       <div class="relative h-[294px] w-full bg-dustleaf">
         @if ($spec->hasHoverPhoto())
           <img

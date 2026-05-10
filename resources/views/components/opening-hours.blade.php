@@ -76,8 +76,8 @@ $hoursHeadingClass = $isShopSingle
       ? 'mt-4 font-sans text-xl font-light text-faded-olive'
       : 'mt-4 font-sans text-base leading-relaxed text-deep-moss/85 md:text-lg';
   $hoursIntroBodyBase = $isShopSingle
-      ? 'opening-hours__body mt-6 max-w-none text-center font-sans text-xl font-light text-faded-olive [&_p+p]:mt-4 [&_strong]:font-medium [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 hover:[&_a]:opacity-90'
-      : 'opening-hours__body prose prose-lg mt-6 max-w-none text-left md:text-center text-deep-moss prose-headings:text-deep-moss prose-p:text-deep-moss prose-li:text-deep-moss prose-strong:text-deep-moss [&_a]:text-deep-moss [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 hover:[&_a]:decoration-deep-moss';
+      ? 'opening-hours__body mt-6 max-w-none text-center font-sans text-xl font-light text-faded-olive [&_p+p]:mt-4 [&_strong]:font-medium rt-link-olive-surface'
+      : 'opening-hours__body prose prose-lg mt-6 max-w-none text-left md:text-center text-deep-moss prose-headings:text-deep-moss prose-p:text-deep-moss prose-li:text-deep-moss prose-strong:text-deep-moss rt-link-prose';
   $hoursListTopBorder = $isShopSingle ? 'border-faded-olive/45' : 'border-deep-moss/20';
   /** Row shell — bottom divider applied per row so “today” can sit flush under previous row (Figma: no line above pill). */
   $hoursRowShellShop = 'flex items-center justify-between gap-6 px-1 py-3.5 font-sans text-xl font-light text-faded-olive sm:px-2';

@@ -14,8 +14,6 @@
   $root = Component::rootClasses($c);
 
   $ratio = ($c['split_ratio'] ?? '60-40') === '50-50' ? '50-50' : '60-40';
-  $copyColWidth = $ratio === '50-50' ? 'lg:w-1/2' : 'lg:w-3/5';
-  $imageColWidth = $ratio === '50-50' ? 'lg:w-1/2' : 'lg:w-2/5';
 
   $useTabs = ! empty($c['split_use_tabs']);
 
@@ -95,8 +93,7 @@
   $hasStaticCopy = $hasStaticSerifLines || $bodyPlain !== '';
   $hasCopy = $hasTabs || $hasStaticCopy;
 
-  $bodyClasses = 'shop-split-highlight__body max-w-[34.625rem] font-sans text-xl font-light text-white'
-      . ' [&_a]:text-brand-500 [&_a]:underline [&_a]:decoration-brand-500 [&_a]:underline-offset-4'
+  $bodyClasses = 'shop-split-highlight__body max-w-[34.625rem] font-sans text-xl font-light text-white rt-link-brand'
       . ' [&_li]:marker:text-brand-500 [&_p+p]:mt-4 [&_strong]:font-medium [&_strong]:text-white'
       . ' [&_ul]:my-4 [&_ul]:inline-block [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:text-left';
 
@@ -110,11 +107,13 @@
     data-shop-split-highlight
     @if($hasTabs) x-data="splitHighlight" @endif>
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
+      {{-- Grid (not flex row) so the image column matches the copy column height even when the
+           <img> is absolutely positioned (out of flow). Flex would leave the media cell at min-height only. --}}
       <div
-        class="overflow-hidden rounded-[10px] bg-faded-olive shadow-sm flex flex-col lg:flex-row lg:min-h-[597px]">
+        class="grid overflow-hidden rounded-[10px] bg-faded-olive shadow-sm lg:min-h-[597px] lg:grid-cols-12 lg:items-stretch">
         {{-- Copy column --}}
         <div
-          class="flex flex-col gap-6 px-8 py-12 lg:flex-none lg:gap-8 lg:px-10 xl:px-14 xl:py-12 {{ $copyColWidth }} {{ $hasTabs ? 'items-stretch text-left' : 'items-center justify-center text-center' }}">
+          class="flex flex-col gap-6 px-8 py-12 max-lg:order-1 lg:order-none lg:gap-8 lg:px-10 xl:px-14 xl:py-12 {{ $ratio === '50-50' ? 'lg:col-span-6' : 'lg:col-span-7' }} {{ $hasTabs ? 'items-stretch text-left' : 'items-center justify-center text-center' }}">
           @if($hasTabs)
             {{-- Tab list (Figma parity: thin divider rule beneath the pill row). --}}
             <div
@@ -134,7 +133,7 @@
                   aria-controls="{{ esc_attr($panelId) }}"
                   aria-selected="{{ $i === 0 ? 'true' : 'false' }}"
                   tabindex="{{ $i === 0 ? '0' : '-1' }}"
-                  class="shop-split-highlight__tab cursor-pointer rounded-full px-5 py-2 font-sans text-xs font-semibold uppercase tracking-wider transition-colors duration-150 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
+                  class="shop-split-highlight__tab cursor-pointer rounded-full px-5 py-2 font-sans text-xs font-semibold uppercase tracking-wider transition-colors duration-150 culvers-focus-ring"
                   x-on:click="selectTab({{ $i }})"
                   x-on:keydown.right.prevent="selectTab(({{ $i }} + 1) % {{ count($tabs) }}, true)"
                   x-on:keydown.left.prevent="selectTab(({{ $i }} - 1 + {{ count($tabs) }}) % {{ count($tabs) }}, true)"
@@ -224,8 +223,9 @@
           @endif
         </div>
 
-        {{-- Image column: single asset (static) or stacked layers cross-faded with `activeTab` (tabbed). --}}
-        <div class="shop-split-highlight__media relative min-h-[280px] w-full flex-none overflow-hidden self-stretch lg:h-full {{ $imageColWidth }}">
+        {{-- Image column: fills grid row height; inner layers are absolute + object-cover. --}}
+        <div
+          class="shop-split-highlight__media relative min-h-[280px] w-full overflow-hidden max-lg:order-2 {{ $ratio === '50-50' ? 'lg:col-span-6' : 'lg:col-span-5' }} lg:min-h-0">
           @if($hasTabs && ! $tabsMediaUniform)
             @foreach($tabs as $i => $tab)
               @php $mUrl = $tab['media_url']; @endphp

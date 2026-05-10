@@ -69,7 +69,7 @@
                 class="mega-nav__bar-row relative flex h-[75px] min-h-[75px] w-full items-center gap-3 px-4 max-lg:gap-2 lg:h-auto lg:min-h-[80px] lg:gap-6 lg:px-5 xl:px-6">
                 <button
                   type="button"
-                  class="mega-nav__burger relative z-20 inline-flex size-11 shrink-0 items-center justify-center text-glowleaf lg:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
+                  class="mega-nav__burger relative z-20 inline-flex size-11 shrink-0 items-center justify-center text-glowleaf lg:hidden culvers-focus-ring"
                   aria-controls="mega-mobile-drawer"
                   x-bind:aria-expanded="mobileOpen ? 'true' : 'false'"
                   x-on:click="mobileOpen = !mobileOpen">
@@ -108,7 +108,7 @@
                             @if($hasMega)
                               <button
                                 type="button"
-                                class="mega-nav__trigger inline-flex items-center gap-2 capitalize transition-colors hover:text-glowleaf focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
+                                class="mega-nav__trigger inline-flex items-center gap-2 capitalize transition-colors hover:text-glowleaf culvers-focus-ring"
                                 x-bind:class="megaOpenId === {{ $branch['id'] }} ? 'text-glowleaf' : 'text-white'"
                                 x-on:click.prevent="toggleMega({{ $branch['id'] }})"
                                 x-bind:aria-expanded="megaOpenId === {{ $branch['id'] }} ? 'true' : 'false'"
@@ -146,7 +146,7 @@
                               </button>
                             @else
                               <a
-                                class="inline-flex items-center gap-2 font-heading font-light text-base capitalize leading-6 text-white transition-colors hover:text-glowleaf focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
+                                class="inline-flex items-center gap-2 font-heading font-light text-base capitalize leading-6 text-white transition-colors hover:text-glowleaf culvers-focus-ring"
                                 href="{{ esc_url($branch['url']) }}">
                                 {{ $branch['title'] }}
                               </a>
@@ -161,7 +161,7 @@
                 <div class="mega-nav__bar-end relative z-20 flex shrink-0 items-center gap-2 lg:gap-[18px]">
                   <button
                     type="button"
-                    class="relative flex size-[43px] shrink-0 items-center justify-center rounded-full bg-brand-500 text-faded-olive transition-transform hover:scale-[1.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf lg:hidden"
+                    class="relative flex size-[43px] shrink-0 items-center justify-center rounded-full bg-brand-500 text-faded-olive transition-transform hover:scale-[1.03] culvers-focus-ring-compact lg:hidden"
                     x-bind:aria-expanded="searchOpen ? 'true' : 'false'"
                     aria-controls="site-header-search"
                     x-on:click="openSearch()">
@@ -174,7 +174,7 @@
 
                   <div class="mega-nav__utilities hidden shrink-0 items-center lg:flex lg:gap-[18px]">
                   <a
-                    class="inline-flex items-center gap-2 text-white transition-opacity hover:opacity-90 focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
+                    class="inline-flex items-center gap-2 text-white transition-opacity hover:opacity-90 focus-visible:rounded-sm culvers-focus-ring"
                     href="{{ esc_url($mapUrl) }}">
                     <svg class="shrink-0" width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                       <path
@@ -187,7 +187,7 @@
                     <span class="font-sans text-base font-normal leading-snug text-white">{{ __('Centre Map', 'culvers') }}</span>
                   </a>
                   <a
-                    class="inline-flex items-center gap-2 text-white transition-opacity hover:opacity-90 focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
+                    class="inline-flex items-center gap-2 text-white transition-opacity hover:opacity-90 focus-visible:rounded-sm culvers-focus-ring"
                     href="{{ esc_url($hereUrl) }}">
                     <svg class="shrink-0" width="13" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                       <path
@@ -201,7 +201,7 @@
                   </a>
                   <button
                     type="button"
-                    class="relative flex size-[43px] shrink-0 items-center justify-center rounded-full bg-brand-500 text-deep-moss transition-transform hover:scale-[1.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                    class="relative flex size-[43px] shrink-0 items-center justify-center rounded-full bg-brand-500 text-deep-moss transition-transform hover:scale-[1.03] culvers-focus-ring-compact-white"
                     x-bind:aria-expanded="searchOpen ? 'true' : 'false'"
                     aria-controls="site-header-search"
                     x-on:click="openSearch()">
@@ -243,15 +243,17 @@
                   aria-label="{{ esc_attr($branch['title']) }}">
                   <div
                     class="mega-nav__panel-inner mx-auto max-h-[min(85vh,560px)] w-full max-w-8xl overflow-y-auto rounded-2xl border border-light-brown/25 bg-lighter-cream px-5 py-8 shadow-lg md:px-8 lg:px-10 lg:pb-10 lg:pt-10">
-                    <div class="flex flex-col gap-10 lg:flex-row lg:items-start lg:gap-12 xl:gap-16">
-                      <div class="flex min-w-0 flex-1 flex-col">
-                        <div class="flex flex-wrap items-start gap-4 lg:gap-6">
-                          <h2 class="font-heading text-4xl text-faded-olive">
+                    {{-- Figma mega panel: ~40% text / ~60% preview; heading row is title + arrow flush right in the text column. --}}
+                    <div
+                      class="flex flex-col gap-10 lg:grid lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-start lg:gap-x-12 lg:gap-y-0 xl:gap-x-16">
+                      <div class="flex min-w-0 flex-col">
+                        <div class="flex w-full items-center justify-between gap-4 lg:gap-6">
+                          <h2 class="min-w-0 flex-1 font-heading text-4xl text-faded-olive">
                             {{ $branch['title'] }}
                           </h2>
                           @if($branch['url'] !== '' && $branch['url'] !== '#')
                             <a
-                              class="flex size-[43px] shrink-0 items-center justify-center rounded-full bg-brand-500 text-deep-moss transition-transform hover:scale-[1.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-faded-olive"
+                              class="flex size-[43px] shrink-0 items-center justify-center rounded-full bg-brand-500 text-deep-moss transition-transform hover:scale-[1.03] culvers-focus-ring-compact-faded-olive"
                               href="{{ esc_url($branch['url']) }}"
                               aria-label="{{ esc_attr(sprintf(/* translators: %s nav section title */ __('Explore %s', 'culvers'), $branch['title'])) }}">
                               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -265,11 +267,10 @@
                             </a>
                           @endif
                         </div>
-                        <hr class="mt-5 max-w-[525px] border-light-brown/35" />
+                        <hr class="mt-5 w-full border-0 border-t border-faded-olive/55" />
                         <ul
                           class="mt-[26px] flex max-w-[525px] flex-col gap-[18px]"
                           data-mega-parent-id="{{ $branch['id'] }}"
-                          x-on:mouseover="megaListMouseOver($event)"
                           x-on:focusin="megaListFocusIn($event)">
                           @foreach($branch['children'] as $child)
                             @php
@@ -277,9 +278,11 @@
                             @endphp
                             <li class="list-none">
                               <a
-                                class="mega-nav__sublink inline-block font-sans text-2xl leading-6 text-faded-olive transition-colors hover:text-deep-moss focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-faded-olive"
+                                class="mega-nav__sublink inline-block font-sans text-2xl leading-6 text-faded-olive transition-colors hover:text-glowleaf focus-visible:rounded-sm culvers-focus-ring"
                                 href="{{ esc_url($child['url']) }}"
-                                data-preview-url="{{ $childPv !== '' ? esc_url($childPv) : '' }}">
+                                data-preview-url="{{ $childPv !== '' ? esc_url($childPv) : '' }}"
+                                x-on:mouseenter="megaSublinkEnter($event)"
+                                x-on:focus="megaSublinkEnter($event)">
                                 {{ $child['title'] }}
                               </a>
                             </li>
@@ -287,7 +290,7 @@
                         </ul>
                         <div class="mt-10 flex flex-wrap gap-[34px]">
                           <a
-                            class="inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-widest text-faded-olive hover:text-deep-moss focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-faded-olive"
+                            class="inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-widest text-faded-olive transition-colors hover:text-glowleaf focus-visible:rounded-sm culvers-focus-ring"
                             href="{{ esc_url($instagramUrl) }}"
                             rel="noopener noreferrer">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -298,7 +301,7 @@
                             {{ __('Instagram', 'culvers') }}
                           </a>
                           <a
-                            class="inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-widest text-faded-olive hover:text-deep-moss focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-faded-olive"
+                            class="inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-widest text-faded-olive transition-colors hover:text-glowleaf focus-visible:rounded-sm culvers-focus-ring"
                             href="{{ esc_url($facebookUrl) }}"
                             rel="noopener noreferrer">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -309,8 +312,8 @@
                           </a>
                         </div>
                       </div>
-                      <div class="mega-nav__preview-col w-full shrink-0 lg:w-[48%] lg:max-w-[734px]">
-                        <div class="relative aspect-[734/458] w-full overflow-hidden rounded-md bg-dustleaf/25">
+                      <div class="mega-nav__preview-col min-w-0 w-full">
+                        <div class="relative aspect-[8/5] w-full overflow-hidden rounded-md bg-dustleaf/25">
                           <img
                             alt=""
                             class="absolute inset-0 size-full object-cover"
@@ -365,7 +368,7 @@
                   x-model="searchQuery" />
                 <button
                   type="button"
-                  class="flex size-10 shrink-0 items-center justify-center rounded-full text-faded-olive hover:bg-faded-olive/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-faded-olive"
+                  class="flex size-10 shrink-0 items-center justify-center rounded-full text-faded-olive hover:bg-faded-olive/10 culvers-focus-ring-compact-faded-olive"
                   x-on:click="closeSearch()"
                   aria-label="{{ esc_attr__('Close search', 'culvers') }}">
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -393,7 +396,7 @@
   </div>
   {{-- /site-header__chrome --}}
 
-  {{-- Mobile menu — Figma: white full-screen, wordmark + lime close, drill-down panels, useful links grid. --}}
+  {{-- Mobile menu — Figma: white full-screen, wordmark + lime close, drill-down panels, useful-link + social pill rows. --}}
   <div
     id="mega-mobile-drawer"
     class="mega-nav__drawer fixed inset-0 z-[100] flex max-h-[100dvh] flex-col bg-white text-deep-moss lg:hidden"
@@ -413,7 +416,7 @@
     <div
       class="flex shrink-0 items-center justify-between gap-4 border-b border-deep-moss/10 px-5 pb-4 pt-[max(0.5rem,env(safe-area-inset-top))] sm:px-6">
       <a
-        class="shrink-0 focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
+        class="shrink-0 focus-visible:rounded-sm culvers-focus-ring"
         href="{{ esc_url(home_url('/')) }}"
         rel="home"
         aria-label="{{ esc_attr(get_bloginfo('name')) }}">
@@ -427,7 +430,7 @@
       </a>
       <button
         type="button"
-        class="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-glowleaf text-deep-moss transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
+        class="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-glowleaf text-deep-moss transition-opacity hover:opacity-90 culvers-focus-ring"
         x-on:click="mobileOpen = false"
         aria-label="{{ esc_attr__('Close menu', 'culvers') }}">
         <svg class="size-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -457,7 +460,7 @@
                     @if($branch['children'] !== [])
                       <button
                         type="button"
-                        class="flex w-full items-center justify-between gap-4 py-5 text-left font-heading text-3xl leading-none text-deep-moss focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf sm:text-4xl"
+                        class="flex w-full items-center justify-between gap-4 py-5 text-left font-heading text-3xl leading-none text-deep-moss focus-visible:rounded-sm culvers-focus-ring-compact sm:text-4xl"
                         x-on:click="openMobileSubmenuByIndex({{ (int) $idx }})">
                         <span>{{ $branch['title'] }}</span>
                         <span class="inline-flex size-9 shrink-0 items-center justify-center text-deep-moss/50" aria-hidden="true">
@@ -473,7 +476,7 @@
                       </button>
                     @else
                       <a
-                        class="flex w-full items-center justify-between gap-4 py-5 font-heading text-3xl leading-none text-deep-moss focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf sm:text-4xl"
+                        class="flex w-full items-center justify-between gap-4 py-5 font-heading text-3xl leading-none text-deep-moss focus-visible:rounded-sm culvers-focus-ring-compact sm:text-4xl"
                         href="{{ esc_url($branch['url']) }}">
                         <span>{{ $branch['title'] }}</span>
                         <span class="inline-flex size-9 shrink-0 items-center justify-center text-deep-moss/35" aria-hidden="true">
@@ -498,72 +501,91 @@
             <p class="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-deep-moss/55">
               {{ __('Useful links', 'culvers') }}
             </p>
-            <div class="mt-5 grid grid-cols-2 gap-3">
-              <a
-                class="flex flex-col items-center gap-2 rounded-2xl bg-lighter-cream px-3 py-5 text-center text-deep-moss shadow-sm transition-colors hover:bg-light-cream focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"
-                href="{{ esc_url($mapUrl) }}">
-                <svg class="size-6 text-deep-moss" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path
-                    d="M4 6.75 12 3l8 3.75v8.5L12 21l-8-5.75v-8.5Z"
-                    stroke="currentColor"
-                    stroke-width="1.4"
-                    stroke-linejoin="round" />
-                  <path d="m9 9 2.25 2.25L15 7.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
-                </svg>
-                <span class="font-sans text-[11px] font-semibold uppercase tracking-wider">{{ __('Centre Map', 'culvers') }}</span>
-              </a>
-              <a
-                class="flex flex-col items-center gap-2 rounded-2xl bg-lighter-cream px-3 py-5 text-center text-deep-moss shadow-sm transition-colors hover:bg-light-cream focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"
-                href="{{ esc_url($hereUrl) }}">
-                <svg class="size-6 text-deep-moss" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path
-                    d="M12 20s7-4.35 7-11a7 7 0 1 0-14 0c0 6.65 7 11 7 11Z"
-                    stroke="currentColor"
-                    stroke-width="1.4"
-                    stroke-linejoin="round" />
-                  <circle cx="12" cy="9" r="2.25" stroke="currentColor" stroke-width="1.4" />
-                </svg>
-                <span class="font-sans text-[11px] font-semibold uppercase tracking-wider">{{ __('Getting Here', 'culvers') }}</span>
-              </a>
-              @if($instagramUrl !== '' && $instagramUrl !== '#')
+            {{-- Figma mobile nav: one pale-sage pill with two inline links, then one glowleaf pill for social (not four separate tiles). --}}
+            <div class="mt-5 flex flex-col gap-3">
+              <div
+                class="flex min-h-12 divide-x divide-deep-moss/15 overflow-hidden rounded-full bg-light-green text-deep-moss">
                 <a
-                  class="flex flex-col items-center gap-2 rounded-2xl bg-glowleaf px-3 py-5 text-center text-deep-moss transition-opacity hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-moss"
-                  href="{{ esc_url($instagramUrl) }}"
-                  target="_blank"
-                  rel="noopener noreferrer">
-                  <svg class="size-6" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.3" />
-                    <circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="1.3" />
-                    <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" />
-                  </svg>
-                  <span class="font-sans text-[11px] font-bold uppercase tracking-wider">{{ __('Instagram', 'culvers') }}</span>
-                </a>
-              @else
-                <span class="flex flex-col items-center gap-2 rounded-2xl bg-glowleaf/50 px-3 py-5 text-center opacity-50">
-                  <span class="font-sans text-[11px] font-bold uppercase tracking-wider text-deep-moss/50">{{ __('Instagram', 'culvers') }}</span>
-                </span>
-              @endif
-              @if($facebookUrl !== '' && $facebookUrl !== '#')
-                <a
-                  class="flex flex-col items-center gap-2 rounded-2xl bg-glowleaf px-3 py-5 text-center text-deep-moss transition-opacity hover:opacity-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-moss"
-                  href="{{ esc_url($facebookUrl) }}"
-                  target="_blank"
-                  rel="noopener noreferrer">
-                  <svg class="size-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  class="flex flex-1 items-center gap-2.5 px-4 py-3.5 text-left font-sans text-sm font-medium leading-snug transition-colors hover:bg-deep-moss/[0.06] culvers-focus-ring-compact min-[360px]:gap-3 min-[360px]:px-5"
+                  href="{{ esc_url($mapUrl) }}">
+                  <svg class="size-5 shrink-0 text-deep-moss" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <path
-                      d="M14 8h3V5h-3c-2.2 0-4 1.8-4 4v2H7v3h3v8h3v-8h3.2l.8-3H13v-2c0-.6.4-1 1-1Z" />
+                      d="M4 6.75 12 3l8 3.75v8.5L12 21l-8-5.75v-8.5Z"
+                      stroke="currentColor"
+                      stroke-width="1.35"
+                      stroke-linejoin="round" />
+                    <path d="m9 9 2.25 2.25L15 7.5" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" />
                   </svg>
-                  <span class="font-sans text-[11px] font-bold uppercase tracking-wider">{{ __('Facebook', 'culvers') }}</span>
+                  <span class="min-w-0">{{ __('Centre Map', 'culvers') }}</span>
                 </a>
-              @else
-                <span class="flex flex-col items-center gap-2 rounded-2xl bg-glowleaf/50 px-3 py-5 text-center opacity-50">
-                  <span class="font-sans text-[11px] font-bold uppercase tracking-wider text-deep-moss/50">{{ __('Facebook', 'culvers') }}</span>
-                </span>
-              @endif
+                <a
+                  class="flex flex-1 items-center gap-2.5 px-4 py-3.5 text-left font-sans text-sm font-medium leading-snug transition-colors hover:bg-deep-moss/[0.06] culvers-focus-ring-compact min-[360px]:gap-3 min-[360px]:px-5"
+                  href="{{ esc_url($hereUrl) }}">
+                  <svg class="size-5 shrink-0 text-deep-moss" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path
+                      d="M12 20s7-4.35 7-11a7 7 0 1 0-14 0c0 6.65 7 11 7 11Z"
+                      stroke="currentColor"
+                      stroke-width="1.35"
+                      stroke-linejoin="round" />
+                    <circle cx="12" cy="9" r="2.25" stroke="currentColor" stroke-width="1.35" />
+                  </svg>
+                  <span class="min-w-0">{{ __('Getting Here', 'culvers') }}</span>
+                </a>
+              </div>
+
+              <div
+                class="flex min-h-12 divide-x divide-deep-moss/20 overflow-hidden rounded-full bg-glowleaf text-deep-moss">
+                @if($instagramUrl !== '' && $instagramUrl !== '#')
+                  <a
+                    class="flex flex-1 items-center gap-2.5 px-4 py-3.5 text-left font-sans text-sm font-semibold uppercase leading-snug tracking-wide transition-colors hover:bg-deep-moss/[0.07] culvers-focus-ring-compact-deep-moss min-[360px]:gap-3 min-[360px]:px-5"
+                    href="{{ esc_url($instagramUrl) }}"
+                    target="_blank"
+                    rel="noopener noreferrer">
+                    <svg class="size-5 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.25" />
+                      <circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="1.25" />
+                      <circle cx="17.5" cy="6.5" r="1.1" fill="currentColor" />
+                    </svg>
+                    <span class="min-w-0">{{ __('Instagram', 'culvers') }}</span>
+                  </a>
+                @else
+                  <span
+                    class="flex flex-1 cursor-not-allowed items-center gap-2.5 px-4 py-3.5 text-left font-sans text-sm font-semibold uppercase leading-snug tracking-wide text-deep-moss/45 min-[360px]:gap-3 min-[360px]:px-5">
+                    <svg class="size-5 shrink-0 opacity-50" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.25" />
+                      <circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="1.25" />
+                      <circle cx="17.5" cy="6.5" r="1.1" fill="currentColor" />
+                    </svg>
+                    <span class="min-w-0">{{ __('Instagram', 'culvers') }}</span>
+                  </span>
+                @endif
+                @if($facebookUrl !== '' && $facebookUrl !== '#')
+                  <a
+                    class="flex flex-1 items-center gap-2.5 px-4 py-3.5 text-left font-sans text-sm font-semibold uppercase leading-snug tracking-wide transition-colors hover:bg-deep-moss/[0.07] culvers-focus-ring-compact-deep-moss min-[360px]:gap-3 min-[360px]:px-5"
+                    href="{{ esc_url($facebookUrl) }}"
+                    target="_blank"
+                    rel="noopener noreferrer">
+                    <svg class="size-5 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path
+                        d="M14 8h3V5h-3c-2.2 0-4 1.8-4 4v2H7v3h3v8h3v-8h3.2l.8-3H13v-2c0-.6.4-1 1-1Z" />
+                    </svg>
+                    <span class="min-w-0">{{ __('Facebook', 'culvers') }}</span>
+                  </a>
+                @else
+                  <span
+                    class="flex flex-1 cursor-not-allowed items-center gap-2.5 px-4 py-3.5 text-left font-sans text-sm font-semibold uppercase leading-snug tracking-wide text-deep-moss/45 min-[360px]:gap-3 min-[360px]:px-5">
+                    <svg class="size-5 shrink-0 opacity-50" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                      <path
+                        d="M14 8h3V5h-3c-2.2 0-4 1.8-4 4v2H7v3h3v8h3v-8h3.2l.8-3H13v-2c0-.6.4-1 1-1Z" />
+                    </svg>
+                    <span class="min-w-0">{{ __('Facebook', 'culvers') }}</span>
+                  </span>
+                @endif
+              </div>
             </div>
             <button
               type="button"
-              class="mt-6 font-sans text-sm font-semibold uppercase tracking-widest text-deep-moss/70 underline decoration-glowleaf decoration-2 underline-offset-4 hover:text-deep-moss focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
+              class="mt-6 font-sans text-sm font-semibold uppercase tracking-widest text-deep-moss/70 underline decoration-glowleaf decoration-2 underline-offset-4 hover:text-deep-moss focus-visible:rounded-sm culvers-focus-ring"
               x-on:click="openSearchFromMobile()">
               {{ __('Search', 'culvers') }}
             </button>
@@ -577,7 +599,7 @@
           :aria-hidden="mobileNavDepth === 0">
           <button
             type="button"
-            class="mb-4 flex items-center gap-3 py-2 text-left focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"
+            class="mb-4 flex items-center gap-3 py-2 text-left focus-visible:rounded-sm culvers-focus-ring-compact"
             x-on:click="resetMobileSubmenu()">
             <span
               class="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-glowleaf text-deep-moss"
@@ -599,7 +621,7 @@
               <div class="flex items-start justify-between gap-3 border-b border-deep-moss/10 pb-5">
                 <h3 class="font-heading text-3xl leading-none text-deep-moss sm:text-4xl" x-text="mobileActiveBranch.title"></h3>
                 <a
-                  class="mt-1 inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-glowleaf text-deep-moss focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-moss"
+                  class="mt-1 inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-glowleaf text-deep-moss culvers-focus-ring-compact-deep-moss"
                   x-bind:href="mobileActiveBranch.url || '#'"
                   x-on:click="mobileOpen = false">
                   <span class="sr-only">{{ __('Open section', 'culvers') }}</span>
@@ -617,7 +639,7 @@
                 <template x-for="(child, cIdx) in mobileActiveBranch.children" :key="(child.url || '') + '-' + cIdx">
                   <li class="list-none">
                     <a
-                      class="block py-4 font-sans text-base font-normal leading-snug text-deep-moss focus-visible:rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-glowleaf"
+                      class="block py-4 font-sans text-base font-normal leading-snug text-deep-moss focus-visible:rounded-sm culvers-focus-ring-compact"
                       x-bind:href="child.url"
                       x-on:click="mobileOpen = false"
                       x-text="child.title"></a>

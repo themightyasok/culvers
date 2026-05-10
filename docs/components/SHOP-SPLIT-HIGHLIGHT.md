@@ -35,9 +35,9 @@ component.
 
 | Field | Type | Notes |
 | --- | --- | --- |
-| `split_kicker` | text | Glowleaf serif first line. |
-| `split_headline` | text | Second serif line. |
-| `split_body` | wysiwyg (`toolbar: basic`, `media_upload: 0`) | White sans body copy. |
+| `split_kicker` | text | Glowleaf Canela first line. |
+| `split_headline` | text | Second Canela line. |
+| `split_body` | wysiwyg (`toolbar: basic`, `media_upload: 0`) | Halyard (body) copy. |
 | `split_cta_label` | text | Leave blank to hide. |
 | `split_cta_url` | url | |
 
@@ -48,7 +48,7 @@ component.
 | Sub-field | Type | Notes |
 | --- | --- | --- |
 | `tab_label` | text | Pill label (uppercase). |
-| `tab_headline` | text | Glowleaf serif headline shown in the panel. |
+| `tab_headline` | text | Glowleaf Canela headline shown in the panel. |
 | `tab_kicker` | text | Optional kicker above the headline. |
 | `tab_body` | wysiwyg (`toolbar: basic`, `media_upload: 0`) | |
 | `tab_cta_label` | text | |

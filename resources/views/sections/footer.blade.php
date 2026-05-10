@@ -55,13 +55,14 @@
 --}}
 <footer class="site-footer">
   <div
-    class="site-footer__columns relative overflow-visible bg-faded-olive px-4 pb-4 pt-8 text-light-cream md:px-12 md:pb-5 md:pt-10 lg:pb-5 lg:pt-12">
+    class="site-footer__columns relative overflow-visible bg-faded-olive px-4 pb-4 pt-0 text-light-cream md:px-12 md:pb-5 lg:pb-5">
     <div class="relative z-10 mx-auto w-full max-w-8xl">
-      {{-- Newsletter image straddles the white-content/olive-footer boundary ~50/50 (Figma reference is
-           a 374px image with ~46% above the olive band, ~54% inside). Negative `mt` is the only
-           overlap mechanic — the columns sit naturally below the image with `pt-*` for breathing room. --}}
+      {{-- Newsletter: vertical centre sits on the white/olive boundary (50% above / 50% on olive).
+           `-translate-y-1/2` centres on the footer top edge; `-mb-[half min-heights]` collapses the
+           phantom layout gap (transform does not affect flow). Spacer in `layouts/app.blade.php`
+           matches these halves so main content is not overlapped. --}}
       <section
-        class="footer-newsletter-band relative z-20 -mt-32 md:-mt-44 lg:-mt-52"
+        class="footer-newsletter-band relative z-20 -mb-[150px] -translate-y-1/2 md:-mb-[190px] lg:-mb-[210px]"
         aria-labelledby="footer-newsletter-heading">
         <div
           class="footer-newsletter relative min-h-[300px] overflow-hidden rounded-lg md:min-h-[380px] md:rounded-[10px] lg:min-h-[420px]"
@@ -93,18 +94,18 @@
             @endif
           </div>
 
-          {{-- Mobile: headline above field. Desktop: right column — headline then field. --}}
+          {{-- Mobile: headline above field. Desktop: right column — headline centred above pill field (Figma). --}}
           <div class="relative z-10 grid grid-cols-1 gap-8 px-6 py-11 md:grid-cols-2 md:items-center md:gap-10 md:px-12 md:py-14 lg:gap-14 lg:px-14 lg:py-16">
             <div class="hidden min-h-[80px] md:block" aria-hidden="true"></div>
             <div class="flex max-w-full flex-col gap-6 md:max-w-[26rem] md:justify-self-end lg:max-w-[30rem]">
-              <div class="flex flex-col gap-4">
+              <div class="flex flex-col gap-4 text-center">
                 @php $headingParts = FooterCustomizer::newsletterHeadingParts(); @endphp
                 {{-- Two-tone headline (Figma): accent words in glowleaf, remainder in white. The
                      split is data-driven via Customizer (`MOD_NEWSLETTER_HEADING_ACCENT`) so editors
                      can re-pick which words pop without touching markup. --}}
                 <h2
                   id="footer-newsletter-heading"
-                  class="font-heading text-3xl leading-[1.1] md:text-right md:text-4xl">
+                  class="font-heading text-3xl leading-[1.1] md:text-4xl">
                   @if($headingParts['accent'] !== '')
                     <span class="text-glowleaf">{{ esc_html($headingParts['accent']) }}</span><span class="text-lighter-cream">{{ esc_html($headingParts['rest']) }}</span>
                   @else
@@ -113,7 +114,7 @@
                 </h2>
                 @php $newsBody = FooterCustomizer::newsletterBody(); @endphp
                 @if($newsBody !== '')
-                  <p class="font-sans text-lg leading-relaxed text-light-cream/88 md:text-right">
+                  <p class="font-sans text-lg leading-relaxed text-light-cream/88">
                     {{ esc_html($newsBody) }}
                   </p>
                 @endif
@@ -126,17 +127,17 @@
                 @if($newsletterAction === null) onsubmit="event.preventDefault(); return false;" @endif>
                 <label class="sr-only" for="footer-newsletter-email">{{ __('Email address', 'culvers') }}</label>
                 <div
-                  class="flex items-center gap-2 rounded-full border border-white/35 bg-deep-moss/80 px-5 py-2.5 md:px-6 md:py-3">
+                  class="flex items-center gap-2 rounded-full border-2 border-glowleaf bg-transparent px-5 py-2.5 md:px-6 md:py-3">
                   <input
                     id="footer-newsletter-email"
                     name="EMAIL"
                     type="email"
                     autocomplete="email"
                     placeholder="{{ esc_attr(FooterCustomizer::newsletterPlaceholder()) }}"
-                    class="min-h-[44px] flex-1 border-0 bg-transparent font-sans text-xs font-semibold uppercase tracking-widest text-lighter-cream placeholder:text-light-cream/50 placeholder:uppercase focus:ring-0 focus:outline-none md:text-base" />
+                    class="min-h-[44px] flex-1 border-0 bg-transparent font-sans text-xs font-semibold uppercase tracking-widest text-lighter-cream placeholder:text-lighter-cream/75 placeholder:uppercase focus:ring-0 focus:outline-none md:text-base" />
                   <button
                     type="submit"
-                    class="inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full text-white transition-colors hover:bg-white/10"
+                    class="inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full text-lighter-cream transition-colors hover:bg-white/10 culvers-focus-ring"
                     aria-label="{{ esc_attr__('Subscribe', 'culvers') }}">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                       <path
@@ -149,7 +150,7 @@
                   </button>
                 </div>
                 @if($newsletterAction === null && current_user_can('customize'))
-                  <p class="mt-3 font-sans text-xs text-light-cream/55 md:text-right">
+                  <p class="mt-3 text-center font-sans text-xs text-light-cream/55">
                     {{ __('Connect your ESP URL under Appearance → Customize → Culver Square footer.', 'culvers') }}
                   </p>
                 @endif
@@ -160,9 +161,8 @@
       </section>
 
       {{-- Column menus (What’s Here / Useful Links + address blocks). Tight 16-unit padding-top
-           on lg — the newsletter image straddles above via `.footer-newsletter-band`, but the
-           layout spacer in `layouts/app.blade.php` already provides the buffer above the footer,
-           so we don’t need extra breathing room here. --}}
+           on lg — overlaps beneath the newsletter are handled by `.footer-newsletter-band` + spacer
+           in `layouts/app.blade.php` (centred straddle), not extra padding here. --}}
       <div class="relative z-10 grid grid-cols-1 gap-12 pt-20 sm:grid-cols-2 sm:pt-24 lg:grid-cols-4 lg:gap-10 lg:pt-16 xl:gap-14">
         <div class="flex flex-col">
           <h2 class="font-heading text-3xl text-lighter-cream">
@@ -245,7 +245,7 @@
             </h2>
             <button
               type="button"
-              class="flex w-full items-start justify-between gap-4 border-0 bg-transparent p-0 text-left lg:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
+              class="flex w-full items-start justify-between gap-4 border-0 bg-transparent p-0 text-left lg:hidden culvers-focus-ring"
               x-bind:aria-expanded="isDesktop || openWhatsHere ? 'true' : 'false'"
               aria-controls="footer-nav-whats-here"
               id="footer-acc-whats-here-trigger"
@@ -285,7 +285,7 @@
             </h2>
             <button
               type="button"
-              class="flex w-full items-start justify-between gap-4 border-0 bg-transparent p-0 text-left lg:hidden focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-glowleaf"
+              class="flex w-full items-start justify-between gap-4 border-0 bg-transparent p-0 text-left lg:hidden culvers-focus-ring"
               x-bind:aria-expanded="isDesktop || openUsefulLinks ? 'true' : 'false'"
               aria-controls="footer-nav-useful-links"
               id="footer-acc-useful-links-trigger"

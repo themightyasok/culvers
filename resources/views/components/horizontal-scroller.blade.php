@@ -60,7 +60,7 @@ $button_size = match($c['scroller_button_size'] ?? 'md') {
 };
 $button_show_arrow = $c['scroller_button_show_arrow'] ?? true;
 $body_text = $c['scroller_body_text'] ?? '';
-$body_text_color = $c['scroller_body_text_color'] ?? 'text-white';
+$body_text_color_raw = $c['scroller_body_text_color'] ?? '';
 $scroll_cards = is_array($c['scroller_items'] ?? null) ? $c['scroller_items'] : [];
 $scroll_speed = $c['scroller_speed'] ?? 'medium';
 $disable_scroll = !empty($c['scroller_disabled']);
@@ -151,10 +151,19 @@ $body_classes = Typography::classes(
     $c['scroller_body_text_size'] ?? 'text-xl',
     $c['scroller_body_text_weight'] ?? 'font-medium'
 );
-$body_text_color_class = match ($body_text_color) {
-    'text-black', 'text-brand-500', 'text-deep-moss', 'text-faded-olive', 'text-text-muted', 'text-white', 'text-white/80' => $body_text_color,
-    default => 'text-white'
-};
+$allowed_scroller_body_colors = [
+    'text-black',
+    'text-brand-500',
+    'text-deep-moss',
+    'text-faded-olive',
+    'text-text-muted',
+    'text-white',
+    'text-white/80',
+];
+$scroller_body_color = is_string($body_text_color_raw) ? trim($body_text_color_raw) : '';
+$intro_body_color_class = ($scroller_body_color !== '' && in_array($scroller_body_color, $allowed_scroller_body_colors, true))
+    ? $scroller_body_color
+    : Component::bodyTextTone($c, 'light-band');
 
 $intro_flush_to_content = !empty($c['scroller_intro_flush']);
 
@@ -339,7 +348,7 @@ $root = $gridClasses;
                         @endif
 
                         @if($hasBodyText)
-                            <div class="{{ $body_classes }} {{ $body_text_tone }} prose prose-neutral max-w-none {{ $body_padding_class }}">
+                            <div class="{{ $body_classes }} {{ $intro_body_color_class }} prose prose-neutral max-w-none {{ $body_padding_class }}">
                                 {!! TextFormatter::rich((string) $body_text) !!}
                             </div>
                         @endif

@@ -38,7 +38,7 @@
   }
 
   /*
-   * Allow the footer newsletter strip (negative margin “pull-up”) to paint into the white band above.
+   * Allow the footer newsletter strip (`-translate-y-1/2` overlap) to paint into the white band above.
    * Avoid stacking z-index on the whole `.flexible-components` grid — it sits above the newsletter and
    * visually traps the image inside the olive footer.
    */
@@ -95,7 +95,7 @@
    *                            primary; used on light-green surfaces like the
    *                            travel calculator where glowleaf-on-pale-sage
    *                            wouldn't carry enough contrast)
-   *   size:    (omitted)    → Figma default (25.773px → 34px on hover)
+   *   size:    (omitted)    → default pill padding `px-6 py-2` (~26×8px, snapped from Figma) + `hover:px-8` (~32px)
    *            btn-large    → hero / banner CTA padding (40px → 56px)
    *            btn-form     → fixed 46px height + min-width for form rows
    *
@@ -103,7 +103,7 @@
    * — consult `resources/views/components/button.blade.php` for the API.
    */
   .btn {
-    @apply inline-flex shrink-0 cursor-pointer items-center justify-center rounded-full border border-transparent font-label text-xs font-semibold leading-[30px] whitespace-nowrap uppercase tracking-wider antialiased transition-[padding,background-color,color,border-color] duration-150 ease-out;
+    @apply inline-flex shrink-0 cursor-pointer items-center justify-center rounded-full border border-transparent font-label text-xs font-semibold leading-8 whitespace-nowrap uppercase tracking-wider antialiased transition-[padding,background-color,color,border-color] duration-150 ease-out;
   }
 
   .btn:focus-visible {
@@ -116,14 +116,14 @@
   }
 
   .btn-primary {
-    @apply bg-brand-500 px-[25.773px] py-[7.732px] text-deep-moss hover:px-[34px];
+    @apply bg-brand-500 px-6 py-2 text-deep-moss hover:px-8;
   }
 
   /*
    * Outline — same geometry as primary; use on busy imagery (design file shows filled pill only).
    */
   .btn-outline {
-    @apply border-glowleaf bg-transparent px-[25.773px] py-[7.732px] text-glowleaf hover:bg-brand-500 hover:px-[34px] hover:text-deep-moss;
+    @apply border-glowleaf bg-transparent px-6 py-2 text-glowleaf hover:bg-brand-500 hover:px-8 hover:text-deep-moss;
   }
 
   /*
@@ -133,7 +133,7 @@
    * still uses the canonical CTA hover language.
    */
   .btn-dark {
-    @apply bg-deep-moss px-[25.773px] py-[7.732px] text-glowleaf hover:px-[34px];
+    @apply bg-deep-moss px-6 py-2 text-glowleaf hover:px-8;
   }
   .btn-dark:focus-visible {
     @apply outline-glowleaf;
@@ -141,7 +141,7 @@
 
   /*
    * Size modifiers — composed alongside a `.btn-{variant}`. They override
-   * the default 25.773px → 34px padding ramp with size-appropriate values
+   * the default `px-6` → `hover:px-8` padding ramp with size-appropriate values
    * but keep the canonical "padding widens on hover" Figma behaviour, so
    * a hero CTA, a form CTA, and an inline CTA all hover the same way.
    */

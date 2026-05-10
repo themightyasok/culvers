@@ -33,7 +33,7 @@ a static single image at the top of an interior page use `image_hero`.
 | --- | --- | --- |
 | `slide_image` | image (required) | Desktop image. |
 | `slide_image_mobile` | image | Optional tighter crop. Falls back to desktop image. |
-| `slide_headline` | textarea (`new_lines: br`) | Large serif headline (Cormorant). |
+| `slide_headline` | textarea (`new_lines: br`) | Large Canela headline (`font-heading`). |
 | `slide_kicker` | text | Short uppercase line under the headline. |
 | `slide_body` | textarea (`new_lines: br`) | Body copy under the headline. |
 | `slide_cta_label` | text | Hide button by leaving blank. |

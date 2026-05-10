@@ -100,6 +100,14 @@ succeeds on a later request. Disable auto-install: theme mod
   `--color-*` hex values for ACF colour pickers. `App\Helpers\TailwindColors`
   builds text/bg utility dropdown choices from the same definitions.
   **Typography mapping:** [TYPOGRAPHY-SCALE.md](TYPOGRAPHY-SCALE.md).
+- **Fonts:** **Canela** (headings — Light + Regular only) is self-hosted
+  (`resources/styles/fonts-canela.css`, files under `resources/fonts/canela/`);
+  Vite `base` includes `/dist/` so `@font-face` URLs resolve in production.
+  **Halyard Display** and **Commuter Sans** come from **Adobe Fonts** /
+  Typekit (`https://use.typekit.net/gqo7cfj.css`, enqueued in
+  `app/Assets/FrontendAssets.php`). `theme.tokens.css` defines `--font-heading`,
+  `--font-sans`, and `--font-label`; the block editor loads the same faces via
+  `resources/styles/editor.css` and `theme.json`.
 - **Spacing:** layout helpers (`Padding`, `Grid`) and Blade markup use
   Tailwind's default spacing scale (`pt-16`, `gap-x-6`, `px-5`, …).
   You can still tune the global scale by defining `--spacing-*` in
@@ -117,9 +125,9 @@ succeeds on a later request. Disable auto-install: theme mod
 - **Enqueue:** `app/setup.php` prefers `dist/`, then `css/app.css`,
   then root `app.css`; scripts mirror that pattern for `dist/js`
   vs `js/`.
-- **Site Editor:** `theme.json` registers semantic colours and the
-  sans font family for WordPress (alongside Tailwind-driven front-end
-  styles).
+- **Site Editor:** `theme.json` registers semantic colours and font
+  presets (Canela heading stack, Halyard body, Commuter-style labels)
+  for the block editor — alongside Tailwind-driven front-end utilities.
 
 ## Tailwind config vs tokens
 
