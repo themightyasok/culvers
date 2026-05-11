@@ -21,7 +21,7 @@ class FieldValidator
     {
         $this->validTypes = [
             'text', 'textarea', 'wysiwyg', 'image', 'file', 'gallery',
-            'select', 'radio', 'checkbox', 'true_false', 'link',
+            'select', 'radio', 'checkbox', 'button_group', 'true_false', 'link',
             'post_object', 'page_link', 'relationship', 'taxonomy', 'user',
             'date_picker', 'date_time_picker', 'time_picker', 'color_picker',
             'google_map', 'repeater', 'group', 'flexible_content', 'clone',

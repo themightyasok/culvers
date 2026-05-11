@@ -14,9 +14,11 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\Assets\AcfFlexibleAdmin;
 use App\Assets\FrontendAssets;
 
 FrontendAssets::register();
+AcfFlexibleAdmin::register();
 
 add_action('init', static function (): void {
     Directory\DirectoryPostTypes::register();

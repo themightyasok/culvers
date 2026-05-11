@@ -9,19 +9,16 @@ use App\Helpers\Component;
 return [
     'label' => __('Content section', 'culvers'),
     'display' => 'block',
-    'fields' => [
-        'tab_general' => [
-            'type' => 'tab',
-            'options' => ['label' => __('Content', 'culvers')],
-        ],
+    'main' => [
         'content_heading' => [
             'type' => 'text',
             'options' => [
                 'label' => __('Heading', 'culvers'),
                 'required' => 0,
+                'wrapper' => ['width' => '70'],
             ],
         ],
-        'content_heading_level' => Component::headingLevelField(allowH1: true),
+        'content_heading_level' => Component::headingLevelField(allowH1: true, width: '30'),
         'content_body' => [
             'type' => 'wysiwyg',
             'options' => [

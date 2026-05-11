@@ -5,8 +5,10 @@ namespace App\Services;
 /**
  * Template Resolver Service
  *
- * Resolves component template paths with fallback support.
- * Uses singleton pattern for shared instance and caching.
+ * Resolves flexible layout keys to on-disk Blade partial paths under
+ * `resources/views/components/`. The singleton is used from
+ * `resources/views/partials/flexible-components.blade.php` only — not from
+ * {@see ComponentRegistry} (registry caches ACF layout definitions only).
  *
  * @package App\Services
  */
@@ -81,49 +83,5 @@ class TemplateResolver
 
         $this->resolvedCache[$componentName] = null;
         return null;
-    }
-
-    /**
-     * Get template name for Blade @include directive
-     *
-     * @param string $componentName Component name/key
-     * @return string Blade template name (e.g., "components.header-text")
-     */
-    public function getTemplateName(string $componentName): string
-    {
-        $templatePath = $this->resolve($componentName);
-
-        if ($templatePath) {
-            $templateName = str_replace('_', '-', $componentName);
-            return 'components.' . $templateName;
-        }
-
-        // Fallback
-        return 'components.' . str_replace('_', '-', $componentName);
-    }
-
-    /**
-     * Add custom template search path
-     *
-     * @param string $path Absolute path to template directory
-     * @return void
-     */
-    public function addPath(string $path): void
-    {
-        if (! in_array($path, $this->paths)) {
-            array_unshift($this->paths, $path);
-            // Clear cache when paths change
-            $this->resolvedCache = [];
-        }
-    }
-
-    /**
-     * Clear template path resolution cache
-     *
-     * @return void
-     */
-    public function clearCache(): void
-    {
-        $this->resolvedCache = [];
     }
 }

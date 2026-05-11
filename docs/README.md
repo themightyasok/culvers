@@ -10,6 +10,7 @@ the theme architecture and component contract.
 | If you want to… | Read |
 | --- | --- |
 | **Build, modify, or review a component** | [COMPONENT-AUTHORING.md](COMPONENT-AUTHORING.md) — the canonical contract every flexible-content component follows. |
+| **Author Page Components in the CMS** | [EDITOR-FLEXIBLE-CONTENT.md](EDITOR-FLEXIBLE-CONTENT.md) — flexible layouts, visibility, ACF 6.5 editor tips. |
 | **Look up how an existing component works** | [components/](components/) — one document per layout key. The catalogue lives in [components/README.md](components/README.md). |
 | **Add a new directory CPT (post type + archive + single)** | [DIRECTORY-POST-TYPES.md](DIRECTORY-POST-TYPES.md) |
 | **Pick the right Tailwind size for a Figma value** | [TYPOGRAPHY-SCALE.md](TYPOGRAPHY-SCALE.md) |
@@ -18,7 +19,7 @@ the theme architecture and component contract.
 
 | Doc                                             | Purpose                                                                  |
 | ----------------------------------------------- | ------------------------------------------------------------------------ |
-| [Component authoring](COMPONENT-AUTHORING.md)   | The build contract every flexible component must follow.                 |
+| [Flexible content — editors](EDITOR-FLEXIBLE-CONTENT.md) | Short guide for authors working in **Page Components**. |
 | [Component catalogue](components/README.md)     | Index of every layout key with a one-liner.                              |
 | [Directory post types](DIRECTORY-POST-TYPES.md) | Recipe for adding a new CPT (post type + taxonomies + archive + single). |
 | [Typography scale](TYPOGRAPHY-SCALE.md)         | Figma → `text-xs` … `text-9xl` (single ramp).                            |
@@ -80,6 +81,15 @@ source → attachment mapping in
 downloads, items keep `_culvers_mega_preview_url` until hydration
 succeeds on a later request. Disable auto-install: theme mod
 `culvers_disable_figma_primary_menu_install` = true.
+
+**Mega-menu hover preview CLIs (pick one job):**
+
+| Script | When to use |
+|--------|-------------|
+| `scripts/mega-menu-sync-previews.php` | After **Figma bootstrap** installs: re-applies preview URLs from `CulverSquareFigmaPrimaryMenu` config / attachment map (`cliSyncDistinctChildPreviews`). |
+| `scripts/mega-menu-distinct-previews.php` | **Generic installs:** siblings share the same preview URL or lack meta — assigns distinct **attachment IDs** from the media library (`MegaMenuDistinctPreviews`). |
+
+Run both only when both problems apply; they solve overlapping but not identical cases.
 
 ## Assets and Tailwind CSS v4
 

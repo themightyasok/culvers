@@ -2,23 +2,16 @@
 
 /**
  * Event meta — compact "When / Where / Tickets" panel for single event pages
- * (date(s), start/end time, venue, accessible-info note, primary CTA). Sits
- * directly below the event hero so visitors can scan the practical details
- * before the long-form description. Date / time fields are plain text so
- * editors can write "Thu 12 Jun 2026" / "10:00–16:00" without fighting a
- * picker — for ranges and multi-day events this is the simplest source of
- * truth. Single CTA covers the typical "Book tickets" / "Reserve a spot"
- * flow.
+ * (date(s), start/end time, venue, accessible-info note, primary CTA).
  */
+
+use App\Helpers\Component;
 
 return [
     'label' => __('Event meta', 'culvers'),
     'display' => 'block',
-    'fields' => [
-        'tab_general' => [
-            'type' => 'tab',
-            'options' => ['label' => __('Content', 'culvers')],
-        ],
+    'main' => [
+        'msg_when' => Component::sectionDivider(__('When', 'culvers')),
         'event_meta_date_label' => [
             'type' => 'text',
             'options' => [
@@ -51,6 +44,7 @@ return [
                 'wrapper' => ['width' => '50'],
             ],
         ],
+        'msg_where' => Component::sectionDivider(__('Where', 'culvers')),
         'event_meta_location_label' => [
             'type' => 'text',
             'options' => [
@@ -72,13 +66,15 @@ return [
             'options' => [
                 'label' => __('Accessibility note (optional)', 'culvers'),
                 'instructions' => __(
-                    'Short note about accessibility (e.g. "Sensory-friendly hour 10:00–11:00. BSL interpreter available."). Renders below the meta rows.',
+                    'Short note about accessibility (e.g. "Sensory-friendly hour 10:00–11:00. BSL interpreter '
+                    . 'available."). Renders below the meta rows.',
                     'culvers'
                 ),
                 'rows' => 2,
                 'new_lines' => 'br',
             ],
         ],
+        'msg_cta' => Component::sectionDivider(__('Call to action', 'culvers')),
         'event_meta_cta_label' => [
             'type' => 'text',
             'options' => [

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Opening hours list with optional side illustrations, intro copy, and “today” highlight (site timezone).
+ * Opening hours list with optional side illustrations, intro copy, and "today" highlight (site timezone).
  */
 
 use App\Helpers\Component;
@@ -9,18 +9,16 @@ use App\Helpers\Component;
 return [
     'label' => __('Opening hours', 'culvers'),
     'display' => 'block',
-    'fields' => [
-        'tab_general' => [
-            'type' => 'tab',
-            'options' => ['label' => __('Content', 'culvers')],
-        ],
+    'main' => [
+        'msg_intro' => Component::sectionDivider(__('Intro copy', 'culvers')),
         'hours_heading' => [
             'type' => 'text',
             'options' => [
                 'label' => __('Heading', 'culvers'),
+                'wrapper' => ['width' => '70'],
             ],
         ],
-        'hours_heading_level' => Component::headingLevelField(),
+        'hours_heading_level' => Component::headingLevelField(width: '30'),
         'hours_subheading' => [
             'type' => 'textarea',
             'options' => [
@@ -38,32 +36,47 @@ return [
                 'media_upload' => 0,
             ],
         ],
+        'hours_footnote' => [
+            'type' => 'textarea',
+            'options' => [
+                'label' => __('Footnote', 'culvers'),
+                'instructions' => __('Small note below the list (e.g. holiday hours).', 'culvers'),
+                'rows' => 2,
+                'new_lines' => 'br',
+            ],
+        ],
+        'msg_decorations' => Component::sectionDivider(__('Side decorations (large screens)', 'culvers')),
         'hours_graphic_left' => [
             'type' => 'image',
             'options' => [
                 'label' => __('Graphic — left', 'culvers'),
-                'instructions' => __('Optional line art or illustration (SVG/PNG). Shown beside the hours on large screens.', 'culvers'),
+                'instructions' => __('Optional line art / illustration shown beside the hours on large screens.', 'culvers'),
                 'return_format' => 'array',
                 'preview_size' => 'medium',
                 'library' => 'all',
+                'wrapper' => ['width' => '50'],
             ],
         ],
         'hours_graphic_right' => [
             'type' => 'image',
             'options' => [
                 'label' => __('Graphic — right', 'culvers'),
-                'instructions' => __('Optional line art or illustration (SVG/PNG).', 'culvers'),
+                'instructions' => __('Optional line art / illustration.', 'culvers'),
                 'return_format' => 'array',
                 'preview_size' => 'medium',
                 'library' => 'all',
+                'wrapper' => ['width' => '50'],
             ],
         ],
+    ],
+    'items' => [
         'hours_rows' => [
             'type' => 'repeater',
             'options' => [
                 'label' => __('Hours', 'culvers'),
                 'instructions' => __(
-                    'Add rows in any order. Set “Match weekday for highlight” so the correct row is highlighted on that day (e.g. label “Easter Sunday” can still match Sunday).',
+                    'Add rows in any order. Set "Match weekday for highlight" so the correct row is highlighted on '
+                        . 'that day (e.g. label "Easter Sunday" can still match Sunday).',
                     'culvers'
                 ),
                 'min' => 0,
@@ -94,7 +107,7 @@ return [
                         'options' => [
                             'label' => __('Match weekday for highlight', 'culvers'),
                             'instructions' => __(
-                                'Uses the site timezone. Choose “None” for special rows that should never highlight.',
+                                'Uses the site timezone. Choose "None" for special rows that should never highlight.',
                                 'culvers'
                             ),
                             'choices' => [
@@ -114,15 +127,6 @@ return [
                         ],
                     ],
                 ],
-            ],
-        ],
-        'hours_footnote' => [
-            'type' => 'textarea',
-            'options' => [
-                'label' => __('Footnote', 'culvers'),
-                'instructions' => __('Small note below the list (e.g. holiday hours).', 'culvers'),
-                'rows' => 2,
-                'new_lines' => 'br',
             ],
         ],
     ],

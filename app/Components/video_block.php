@@ -7,19 +7,17 @@
 return [
     'label' => __('Video block', 'culvers'),
     'display' => 'block',
-    'fields' => [
-        'tab_general' => [
-            'type' => 'tab',
-            'options' => ['label' => __('Content', 'culvers')],
-        ],
+    'main' => [
         'video_instructions' => [
             'type' => 'message',
             'options' => [
                 'message' => __(
-                    'Upload an MP4 or WebM. Optional poster image; without one, the theme primes the first decoded frame when supported.',
+                    'Upload an MP4 or WebM. An optional poster image is shown until play; without one, '
+                    . 'the theme primes the first decoded frame when supported.',
                     'culvers'
                 ),
                 'new_lines' => 'wpautop',
+                'wrapper' => ['class' => 'culvers-acf-help'],
             ],
         ],
         'video_file' => [
@@ -35,7 +33,7 @@ return [
         'video_poster' => [
             'type' => 'image',
             'options' => [
-                'label' => __('Poster image', 'culvers'),
+                'label' => __('Poster image (optional)', 'culvers'),
                 'instructions' => __('Shown until play. Leave empty to use the first frame of the video.', 'culvers'),
                 'required' => 0,
                 'return_format' => 'array',

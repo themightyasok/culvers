@@ -1,0 +1,111 @@
+/*
+ * ACF Flexible Content — admin chrome polish for `page_components`.
+ *
+ * Strengthens the visual hierarchy of layout tabs, draws clear section
+ * dividers inside each tab, and gives the help-message rows a calmer
+ * presentation so tabs do not read as a wall of equal-weight inputs.
+ *
+ * Scoped to `.acf-flexible-content.-block` so we only affect the page builder.
+ */
+
+/* ------- Layout tabs (chrome): bold, prominent ------- */
+
+.acf-flexible-content.-block .layout > .acf-fields > .acf-tab-wrap .acf-tab-group ul li a {
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  line-height: 1.25 !important;
+  padding: 8px 14px !important;
+  letter-spacing: 0.01em !important;
+}
+
+.acf-flexible-content.-block .layout > .acf-fields > .acf-tab-wrap .acf-tab-group ul li.active a {
+  font-weight: 700 !important;
+  color: #1d2327 !important;
+}
+
+.acf-flexible-content.-block .layout .acf-fc-layout-handle {
+  font-weight: 700 !important;
+  font-size: 15px !important;
+}
+
+/* ------- Section dividers inside a tab -------
+   Renders as a tracked uppercase pill heading with a hairline above so the
+   four standard chrome sections (Layout / Background / Content / Visibility)
+   inside the Main tab and any per-component sub-sections inside Typography /
+   Items / Mobile read as section breaks, not as field labels. */
+
+.acf-flexible-content.-block .layout .acf-field-message.culvers-acf-section-head {
+  background: transparent !important;
+  border-top: 1px solid #d2d4d6 !important;
+  border-bottom: none !important;
+  margin-top: 18px !important;
+  margin-bottom: 6px !important;
+  padding: 16px 12px 8px !important;
+}
+
+.acf-flexible-content.-block .layout .acf-field-message.culvers-acf-section-head .acf-label {
+  display: none !important;
+}
+
+.acf-flexible-content.-block .layout .acf-field-message.culvers-acf-section-head .acf-input {
+  padding: 0 !important;
+}
+
+.acf-flexible-content.-block .layout .acf-field-message.culvers-acf-section-head .acf-input p {
+  margin: 0 !important;
+  font-size: 13px !important;
+  line-height: 1 !important;
+}
+
+.acf-flexible-content.-block
+  .layout
+  .acf-field-message.culvers-acf-section-head
+  .culvers-acf-section-head__label {
+  display: inline-block !important;
+  color: #1d2327 !important;
+  font-weight: 700 !important;
+  font-size: 13px !important;
+  line-height: 1 !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+}
+
+/* ------- Inline help / explanatory rows ------- */
+
+.acf-flexible-content.-block .layout .acf-field-message.culvers-acf-help {
+  background: #f6f7f7 !important;
+  border-left: 3px solid #2271b1 !important;
+  margin: 8px 0 12px !important;
+  padding: 10px 14px !important;
+}
+
+.acf-flexible-content.-block .layout .acf-field-message.culvers-acf-help .acf-label {
+  display: none !important;
+}
+
+.acf-flexible-content.-block .layout .acf-field-message.culvers-acf-help .acf-input p {
+  margin: 0 !important;
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+  color: #2c3338 !important;
+}
+
+.acf-flexible-content.-block .layout .acf-field-message.culvers-acf-help code {
+  background: rgba(34, 113, 177, 0.12);
+  color: #1d4f78;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 12px;
+}
+
+/* ------- General field hygiene inside a layout ------- */
+
+.acf-flexible-content.-block .layout .acf-fields > .acf-field > .acf-label > label {
+  font-weight: 600 !important;
+}
+
+.acf-flexible-content.-block .layout .acf-fields .description {
+  color: #50575e;
+  font-size: 12px;
+  line-height: 1.5;
+}

@@ -11,37 +11,26 @@
 return [
     'label' => __('Hero — image', 'culvers'),
     'display' => 'block',
-    'fields' => [
-        'tab_general' => [
-            'type' => 'tab',
-            'options' => ['label' => __('Content', 'culvers')],
-        ],
+    'main' => [
         'hero_image' => [
             'type' => 'image',
             'options' => [
                 'label' => __('Hero image', 'culvers'),
-                'instructions' => __('Wide lifestyle / storefront shot. Figma band is 1440×646.', 'culvers'),
+                'instructions' => __(
+                    'Wide lifestyle / storefront shot from md upward (tablet + desktop). Figma band is 1440×646.',
+                    'culvers'
+                ),
                 'return_format' => 'array',
                 'preview_size' => 'large',
-                'library' => 'all',
-            ],
-        ],
-        'hero_image_mobile' => [
-            'type' => 'image',
-            'options' => [
-                'label' => __('Hero image (mobile)', 'culvers'),
-                'instructions' => __('Optional tighter crop for small screens.', 'culvers'),
-                'return_format' => 'array',
-                'preview_size' => 'medium',
                 'library' => 'all',
             ],
         ],
         'hero_logo' => [
             'type' => 'image',
             'options' => [
-                'label' => __('Logo', 'culvers'),
+                'label' => __('Logo (optional)', 'culvers'),
                 'instructions' => __(
-                    'Optional center lockup over the hero (white artwork preferred), e.g. for brand pages. ' .
+                    'Center lockup over the hero (white artwork preferred), e.g. for brand pages. ' .
                     'When set, the title/subtitle below are hidden — leave empty to use them.',
                     'culvers'
                 ),
@@ -59,25 +48,6 @@ return [
                     'Renders at 96px on desktop in the brand glowleaf colour to match Figma.',
                     'culvers'
                 ),
-                'wrapper' => ['width' => '50'],
-            ],
-        ],
-        'hero_title_tone' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Title colour', 'culvers'),
-                'instructions' => __(
-                    'Defaults to glowleaf (Figma standard). Use white only when the photo behind ' .
-                    'pushes glowleaf out of contrast.',
-                    'culvers'
-                ),
-                'choices' => [
-                    'glowleaf' => __('Glowleaf (default)', 'culvers'),
-                    'white' => __('White', 'culvers'),
-                    'lighter-cream' => __('Lighter cream', 'culvers'),
-                ],
-                'default_value' => 'glowleaf',
-                'allow_null' => 0,
                 'wrapper' => ['width' => '50'],
             ],
         ],
@@ -109,6 +79,7 @@ return [
                 'max' => 85,
                 'step' => 1,
                 'append' => '%',
+                'wrapper' => ['width' => '50'],
             ],
         ],
         'hero_title_in_image' => [
@@ -126,6 +97,45 @@ return [
                 'ui_on_text' => __('Yes, baked in', 'culvers'),
                 'ui_off_text' => __('Render via component', 'culvers'),
                 'default_value' => 0,
+                'wrapper' => ['width' => '50'],
+            ],
+        ],
+    ],
+    'typography' => [
+        'hero_title_tone' => [
+            'type' => 'button_group',
+            'options' => [
+                'label' => __('Title colour', 'culvers'),
+                'instructions' => __(
+                    'Defaults to glowleaf (Figma standard). Use white only when the photo behind ' .
+                    'pushes glowleaf out of contrast.',
+                    'culvers'
+                ),
+                'choices' => [
+                    'glowleaf' => __('Glowleaf', 'culvers'),
+                    'white' => __('White', 'culvers'),
+                    'lighter-cream' => __('Lighter cream', 'culvers'),
+                ],
+                'default_value' => 'glowleaf',
+                'allow_null' => 0,
+                'return_format' => 'value',
+                'layout' => 'horizontal',
+            ],
+        ],
+    ],
+    'mobile' => [
+        'hero_image_mobile' => [
+            'type' => 'image',
+            'options' => [
+                'label' => __('Hero image (mobile)', 'culvers'),
+                'instructions' => __(
+                    'Optional tighter crop shown only below the md breakpoint (768px). ' .
+                    'Leave blank to reuse the desktop image.',
+                    'culvers'
+                ),
+                'return_format' => 'array',
+                'preview_size' => 'medium',
+                'library' => 'all',
             ],
         ],
     ],

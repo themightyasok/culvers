@@ -9,18 +9,16 @@ use App\Helpers\Component;
 return [
     'label' => __('Info block', 'culvers'),
     'display' => 'block',
-    'fields' => [
-        'tab_general' => [
-            'type' => 'tab',
-            'options' => ['label' => __('Content', 'culvers')],
-        ],
+    'main' => [
+        'msg_intro' => Component::sectionDivider(__('Intro copy', 'culvers')),
         'info_heading' => [
             'type' => 'text',
             'options' => [
                 'label' => __('Heading', 'culvers'),
+                'wrapper' => ['width' => '70'],
             ],
         ],
-        'info_heading_level' => Component::headingLevelField(),
+        'info_heading_level' => Component::headingLevelField(width: '30'),
         'info_subheading' => [
             'type' => 'textarea',
             'options' => [
@@ -38,11 +36,13 @@ return [
                 'media_upload' => 0,
             ],
         ],
+        'msg_cta' => Component::sectionDivider(__('Call to action', 'culvers')),
         'info_cta_label' => [
             'type' => 'text',
             'options' => [
                 'label' => __('CTA label', 'culvers'),
                 'instructions' => __('Leave blank to hide the button.', 'culvers'),
+                'wrapper' => ['width' => '50'],
             ],
         ],
         'info_cta_url' => [
@@ -50,17 +50,24 @@ return [
             'options' => [
                 'label' => __('CTA URL', 'culvers'),
                 'instructions' => __('Required if a label is set.', 'culvers'),
+                'wrapper' => ['width' => '50'],
             ],
         ],
+    ],
+    'items' => [
         'info_items' => [
             'type' => 'repeater',
             'options' => [
                 'label' => __('Info cells', 'culvers'),
-                'instructions' => __('Square tiles in a 4-column grid on large screens; one column on mobile.', 'culvers'),
+                'instructions' => __(
+                    'Square tiles in a 4-column grid on large screens; one column on mobile.',
+                    'culvers'
+                ),
                 'min' => 0,
                 'max' => 16,
                 'layout' => 'block',
                 'button_label' => __('Add cell', 'culvers'),
+                'collapsed' => 'item_heading',
                 'sub_fields' => [
                     'item_image' => [
                         'type' => 'image',

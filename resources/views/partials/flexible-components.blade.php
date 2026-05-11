@@ -1,7 +1,10 @@
-{{-- Flexible rows renderer — mirrors PHP flexible layout keys to Blade components. --}}
+{{-- Flexible rows renderer — mirrors PHP flexible layout keys to Blade components.
+     Template paths: App\Services\TemplateResolver::getInstance() (single entry; ComponentRegistry
+     does not expose this). --}}
 
 @php
 use App\Helpers\ComponentDefaults;
+use App\Helpers\ComponentVisibility;
 use App\Helpers\Grid;
 use App\Helpers\Background;
 use App\Helpers\LayoutShell;
@@ -14,6 +17,11 @@ $fieldName = $field_name ?? 'components';
 $rawComponents = isset($raw_components_override) && is_array($raw_components_override)
     ? $raw_components_override
     : (get_field($fieldName) ?: []);
+if (is_array($rawComponents)) {
+    $rawComponents = array_values(array_filter($rawComponents, static function ($row): bool {
+        return is_array($row) && empty($row['acf_fc_layout_disabled']);
+    }));
+}
 $isFullScreenScrolling = ! empty(get_field('full_screen_scrolling'));
 
 $components = array_map(static fn ($row) => Sanitizer::component($row), is_array($rawComponents) ? $rawComponents : []);
@@ -45,8 +53,7 @@ $templateResolver = TemplateResolver::getInstance();
             ? trim($gridClasses['column'] . ' ' . $gridClasses['padding'])
             : $gridClasses['column'];
 
-        $hideOnMobile = ($component['visibility_mobile'] ?? 'visible') === 'hidden';
-        $visibilityClass = $hideOnMobile ? 'culvers-hide-below-md' : '';
+        $visibilityClass = ComponentVisibility::gridUtilityClasses($component);
         if ($visibilityClass !== '') {
             $component['_grid_classes'] = trim($visibilityClass . ' ' . $component['_grid_classes']);
         }

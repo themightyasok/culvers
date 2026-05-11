@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App;
 
 use App\Services\ComponentCache;
-use App\Services\TemplateResolver;
 use App\Validators\FieldValidator;
 use App\Exceptions\ComponentException;
 use App\Exceptions\FieldException;
@@ -15,24 +14,40 @@ use StoutLogic\AcfBuilder\FieldsBuilder;
 use StoutLogic\AcfBuilder\FlexibleContentBuilder;
 
 /**
- * Discovers `app/Components/*.php` flexible-content layout config files, validates them, and
- * registers each as an ACF Flexible Content layout (with shared General + Padding tabs).
+ * Registers `app/Components/*.php` flexible-content layout configs as ACF Flexible
+ * Content layouts. Every layout is rendered with the same chrome:
  *
- * Component files return an associative array (`label`, `display`, `fields`) — they are not
- * autoloaded classes. Path casing follows the on-disk + PSR-4 form (`app/Components/`).
+ * - **Main** — Layout (column span), Background (type + conditional fields),
+ *             Content (component-specific fields), Visibility (hide on phones / desktop).
+ * - **Typography** — body text tone + component-specific typography fields
+ *                    (colour, size, weight, intra-element padding).
+ * - **Items** — only rendered when the component declares a top-level repeater.
+ * - **Mobile** — overrides that apply below `md` (768px) only. Always present so
+ *                authors know where to look; shows an explanatory message when
+ *                a component has no block-level mobile overrides.
+ *
+ * Components express this via four optional keys on the returned array:
+ * `main`, `typography`, `items`, `mobile`. Each is a flat field map of the same
+ * shape consumed by {@see self::addField()}. The component file no longer declares
+ * its own ACF tabs.
  */
 class ComponentRegistry
 {
     private const COMPONENTS_PATH = '/app/Components/';
 
+    private const SECTION_KEYS = ['main', 'typography', 'items', 'mobile'];
+
+    /** wp_options key where component load/register errors are persisted for the admin notice. */
+    private const LOAD_ERRORS_OPTION = 'culvers_component_load_errors';
+
     /** @var array<string, array<string, mixed>> Registered components */
     private array $components = [];
 
+    /** @var list<string> Errors captured during the current request to be persisted for the admin notice. */
+    private array $loadErrors = [];
+
     /** @var ComponentCache Component cache service */
     private ComponentCache $cache;
-
-    /** @var TemplateResolver Template resolver service */
-    private TemplateResolver $templateResolver;
 
     /** @var FieldValidator Field validator service */
     private FieldValidator $validator;
@@ -40,16 +55,11 @@ class ComponentRegistry
     public function __construct()
     {
         $this->cache = new ComponentCache();
-        $this->templateResolver = TemplateResolver::getInstance();
         $this->validator = new FieldValidator();
         $this->loadComponents();
+        self::registerAdminNoticeOnce();
     }
 
-    /**
-     * Load component definitions from cache or filesystem
-     *
-     * @return void
-     */
     private function loadComponents(): void
     {
         $cached = $this->cache->get();
@@ -60,16 +70,15 @@ class ComponentRegistry
 
         $this->loadFromFiles();
 
-        // Never cache an empty result — would hide every component if discovery briefly failed.
         if (! empty($this->components)) {
             $this->cache->set($this->components);
         }
+
+        $this->flushLoadErrors();
     }
 
     /**
-     * Discover and validate `app/Components/*.php` array configs.
-     *
-     * @throws ComponentException If a component config fails validation.
+     * @throws ComponentException
      */
     private function loadFromFiles(): void
     {
@@ -99,11 +108,19 @@ class ComponentRegistry
                 $componentName = basename($file, '.php');
                 $config = include $file;
 
-                if (! is_array($config) || ! isset($config['fields'])) {
+                if (! is_array($config)) {
+                    throw ComponentException::invalid(
+                        $componentName,
+                        ['component file must return an array, got ' . get_debug_type($config)]
+                    );
+                }
+
+                $merged = $this->collectFields($config);
+                if ($merged === []) {
                     continue;
                 }
 
-                $errors = $this->validator->validateComponent($config['fields']);
+                $errors = $this->validator->validateComponent($merged);
                 if (! empty($errors)) {
                     throw ComponentException::invalid($componentName, $errors);
                 }
@@ -124,7 +141,7 @@ class ComponentRegistry
     }
 
     /**
-     * @return array<string, mixed>|null Component configuration, or null when unknown.
+     * @return array<string, mixed>|null
      */
     public function getComponent(string $key): ?array
     {
@@ -132,10 +149,7 @@ class ComponentRegistry
     }
 
     /**
-     * Register all discovered components as ACF Flexible Content layouts
-     *
-     * @return FieldsBuilder ACF FieldsBuilder instance with flexible content configured
-     * @throws ComponentException If registration fails
+     * @throws ComponentException
      */
     public function registerFlexibleContent(): FieldsBuilder
     {
@@ -162,13 +176,11 @@ class ComponentRegistry
             try {
                 $this->addComponentLayout($flexibleContent, $componentName, $config);
             } catch (\Throwable $e) {
-                // Skip the offending component; never let a single bad config break registration.
                 $this->logError("Error registering component '{$componentName}': " . $e->getMessage());
             }
         }
 
-        // Note: Verification happens after field group is built in Fields.php
-        // Both layouts are confirmed to be registered correctly
+        $this->flushLoadErrors();
 
         $components
             ->setLocation('post_type', '==', 'page')
@@ -181,46 +193,92 @@ class ComponentRegistry
     }
 
     /**
-     * Add a single component layout to the flexible content field group.
-     *
-     * @param array<string, mixed> $config Component configuration array
-     * @throws ComponentException If layout addition fails
+     * @param array<string, mixed> $config
      */
     private function addComponentLayout(FlexibleContentBuilder $flexibleContent, string $componentName, array $config): void
     {
         $layout = $flexibleContent->addLayout($componentName, [
             'label' => $config['label'] ?? ucwords(str_replace('_', ' ', $componentName)),
-            'display' => $config['display'] ?? ComponentTypes::DISPLAY_BLOCK
+            'display' => $config['display'] ?? ComponentTypes::DISPLAY_BLOCK,
+            'collapsed' => $config['collapsed'] ?? '',
         ]);
 
-        // 1. TABS AT TOP (General, Padding, Paper Tear) – Padding/Paper Tear added inside addGeneralTab
-        $this->addGeneralTab($layout, $componentName, $config);
+        $this->addMainTab($layout, $componentName, $config);
+        $this->addTypographyTab($layout, $componentName, $config);
+        $this->addItemsTab($layout, $componentName, $config);
+        $this->addMobileTab($layout, $componentName, $config);
     }
 
     /**
-     * General tab: component_width, background, visibility, component content.
-     * Does NOT contain: padding, font, tear (those have their own tabs).
-     *
      * @param array<string, mixed> $config
      */
-    private function addGeneralTab(FieldsBuilder $layout, string $componentName, array $config): void
+    private function addMainTab(FieldsBuilder $layout, string $componentName, array $config): void
     {
-        $layout->addTab(__('General', 'culvers'))
-        ->addSelect('component_width', [
-            'label' => __('Component Grid', 'culvers'),
+        $layout->addTab(__('Main', 'culvers'));
+
+        $this->addSectionHeading($layout, $componentName, 'main_layout', __('Layout', 'culvers'));
+        $layout->addSelect('component_width', [
+            'label' => __('Component grid', 'culvers'),
             'instructions' => __(
-                'Choose how many columns this component should span (6-12). ' .
-                'Grid gaps handle spacing between components, padding handles outer edges.',
+                'How many columns this block spans (6–12). Grid gaps separate blocks; inner padding follows design defaults.',
                 'culvers'
             ),
+            'instructions_placement' => 'field',
             'choices' => \App\Helpers\Grid::getColumnChoices(),
             'default_value' => 12,
             'allow_null' => 0,
             'required' => 0,
+        ]);
+
+        $this->addSectionHeading($layout, $componentName, 'main_background', __('Background', 'culvers'));
+        $this->addBackgroundFields($layout);
+
+        $mainFields = $this->fieldsForSection($config, 'main');
+        if ($mainFields !== []) {
+            $contentLabel = isset($config['main_label']) && is_string($config['main_label']) && $config['main_label'] !== ''
+                ? $config['main_label']
+                : __('Content', 'culvers');
+            $this->addSectionHeading($layout, $componentName, 'main_content', $contentLabel);
+            $this->emitFields($layout, $componentName, $mainFields);
+        }
+
+        $this->addSectionHeading($layout, $componentName, 'main_visibility', __('Visibility', 'culvers'));
+        $layout->addField(sprintf('chrome_%s_visibility_help', $componentName), 'message', [
+            'label' => '',
+            'message' => __(
+                '<strong>Phones</strong>: below the <code>md</code> breakpoint (&lt;768px). '
+                . '<strong>Tablet + desktop</strong>: from <code>md</code> upward share one band. '
+                . 'Mobile content overrides live on the <em>Mobile</em> tab.',
+                'culvers'
+            ),
+            'esc_html' => 0,
+            'wrapper' => ['class' => 'culvers-acf-help'],
+        ]);
+        $layout->addTrueFalse('visibility_hide_phone', [
+            'label' => __('Hide on phones', 'culvers'),
+            'instructions' => __('Below the md breakpoint (&lt;768px). Block stays visible from md upward.', 'culvers'),
+            'default_value' => 0,
+            'ui' => 1,
             'wrapper' => ['width' => '50'],
-        ])
-        ->addSelect('background_type', [
-            'label' => __('Background Type', 'culvers'),
+        ]);
+        $layout->addTrueFalse('visibility_hide_desktop', [
+            'label' => __('Hide from tablet / desktop up', 'culvers'),
+            'instructions' => __('From md breakpoint upward (768px+). Phones still see the block.', 'culvers'),
+            'default_value' => 0,
+            'ui' => 1,
+            'wrapper' => ['width' => '50'],
+        ]);
+    }
+
+    private function addBackgroundFields(FieldsBuilder $layout): void
+    {
+        $layout->addSelect('background_type', [
+            'label' => __('Background type', 'culvers'),
+            'instructions' => __(
+                'Surface behind this block. Related fields appear below when you pick something other than None.',
+                'culvers'
+            ),
+            'instructions_placement' => 'field',
             'choices' => [
                 ComponentTypes::BACKGROUND_NONE => __('None', 'culvers'),
                 ComponentTypes::BACKGROUND_COLOR => __('Color', 'culvers'),
@@ -231,48 +289,26 @@ class ComponentRegistry
             ],
             'default_value' => ComponentTypes::BACKGROUND_NONE,
             'return_format' => 'value',
-        ])
-        ->addColorPicker('background_color', $this->getColorPickerOptions([
-            'label' => __('Background Color', 'culvers'),
-            'conditional_logic' => [
-                [
-                    [
-                        'field' => 'background_type',
-                        'operator' => '==',
-                        'value' => ComponentTypes::BACKGROUND_COLOR,
-                    ]
-                ]
-            ]
-        ]))
-        ->addColorPicker('background_gradient_color_from', $this->getColorPickerOptions([
-            'label' => __('Gradient Start Color', 'culvers'),
-            'conditional_logic' => [
-                [
-                    [
-                        'field' => 'background_type',
-                        'operator' => '==',
-                        'value' => ComponentTypes::BACKGROUND_GRADIENT,
-                    ]
-                ]
-            ],
-            'wrapper' => ['width' => '50'],
-        ]))
-        ->addColorPicker('background_gradient_color_to', $this->getColorPickerOptions([
-            'label' => __('Gradient End Color', 'culvers'),
-            'conditional_logic' => [
-                [
-                    [
-                        'field' => 'background_type',
-                        'operator' => '==',
-                        'value' => ComponentTypes::BACKGROUND_GRADIENT,
-                    ]
-                ]
-            ],
-            'wrapper' => ['width' => '50'],
-        ]))
-        ->addSelect('background_gradient_angle', [
-            'label' => __('Gradient Direction', 'culvers'),
-            'instructions' => __('Angle of the gradient (0° = left to right, 90° = bottom to top).', 'culvers'),
+        ]);
+
+        $layout->addColorPicker('background_color', $this->getColorPickerOptions([
+            'label' => __('Background colour', 'culvers'),
+            'conditional_logic' => $this->bgWhen([ComponentTypes::BACKGROUND_COLOR]),
+        ]));
+
+        $layout->addColorPicker('background_gradient_color_from', $this->getColorPickerOptions([
+            'label' => __('Gradient start colour', 'culvers'),
+            'conditional_logic' => $this->bgWhen([ComponentTypes::BACKGROUND_GRADIENT]),
+            'wrapper' => ['width' => '33'],
+        ]));
+        $layout->addColorPicker('background_gradient_color_to', $this->getColorPickerOptions([
+            'label' => __('Gradient end colour', 'culvers'),
+            'conditional_logic' => $this->bgWhen([ComponentTypes::BACKGROUND_GRADIENT]),
+            'wrapper' => ['width' => '33'],
+        ]));
+        $layout->addSelect('background_gradient_angle', [
+            'label' => __('Gradient direction', 'culvers'),
+            'instructions' => __('0° = left to right; 90° = bottom to top.', 'culvers'),
             'choices' => [
                 '0' => __('0° (left → right)', 'culvers'),
                 '45' => __('45° (bottom-left → top-right)', 'culvers'),
@@ -285,234 +321,269 @@ class ComponentRegistry
             ],
             'default_value' => '90',
             'allow_null' => 0,
-            'conditional_logic' => [
-                [
-                    [
-                        'field' => 'background_type',
-                        'operator' => '==',
-                        'value' => ComponentTypes::BACKGROUND_GRADIENT,
-                    ]
-                ]
-            ],
-            'wrapper' => ['width' => '50'],
-        ])
-        ->addImage('background_image', [
-            'label' => __('Background Image', 'culvers'),
+            'conditional_logic' => $this->bgWhen([ComponentTypes::BACKGROUND_GRADIENT]),
+            'wrapper' => ['width' => '34'],
+        ]);
+
+        $layout->addImage('background_image', [
+            'label' => __('Background image', 'culvers'),
             'return_format' => 'array',
-            'conditional_logic' => [
-                [
-                    [
-                        'field' => 'background_type',
-                        'operator' => '==',
-                        'value' => ComponentTypes::BACKGROUND_IMAGE,
-                    ]
-                ],
-                [
-                    [
-                        'field' => 'background_type',
-                        'operator' => '==',
-                        'value' => ComponentTypes::BACKGROUND_IMAGE_CENTERED,
-                    ]
-                ]
-            ]
-        ])
-        ->addColorPicker('background_image_color', $this->getColorPickerOptions([
-            'label' => __('Card Color', 'culvers'),
-            'instructions' => __(
-                'Background color of the centered image card.',
-                'culvers'
-            ),
-            'conditional_logic' => [
-                [
-                    [
-                        'field' => 'background_type',
-                        'operator' => '==',
-                        'value' => ComponentTypes::BACKGROUND_IMAGE_CENTERED,
-                    ]
-                ]
-            ]
-        ]))
-        ->addTrueFalse('background_parallax', [
-            'label' => __('Background Parallax', 'culvers'),
-            'instructions' => __(
-                'Enable subtle scroll-based parallax on the background image (desktop only).',
-                'culvers'
-            ),
+            'conditional_logic' => $this->bgWhen([
+                ComponentTypes::BACKGROUND_IMAGE,
+                ComponentTypes::BACKGROUND_IMAGE_CENTERED,
+            ]),
+        ]);
+        $layout->addColorPicker('background_image_color', $this->getColorPickerOptions([
+            'label' => __('Card colour', 'culvers'),
+            'instructions' => __('Background behind the centred image card.', 'culvers'),
+            'conditional_logic' => $this->bgWhen([ComponentTypes::BACKGROUND_IMAGE_CENTERED]),
+        ]));
+        $layout->addTrueFalse('background_parallax', [
+            'label' => __('Background parallax', 'culvers'),
+            'instructions' => __('Subtle scroll parallax on the background image (desktop only).', 'culvers'),
             'default_value' => 1,
             'ui' => 1,
-            'conditional_logic' => [
-                [
-                    [
-                        'field' => 'background_type',
-                        'operator' => '==',
-                        'value' => ComponentTypes::BACKGROUND_IMAGE,
-                    ]
-                ]
-            ]
-        ])
-        ->addFile('background_video', [
-            'label' => __('Background Video', 'culvers'),
-            'instructions' => __('Upload an mp4/webm file or use the YouTube URL field below.', 'culvers'),
+            'conditional_logic' => $this->bgWhen([ComponentTypes::BACKGROUND_IMAGE]),
+        ]);
+
+        $layout->addFile('background_video', [
+            'label' => __('Background video file', 'culvers'),
+            'instructions' => __('MP4 or WebM; or use YouTube below.', 'culvers'),
             'return_format' => 'array',
             'mime_types' => 'mp4,webm',
-            'conditional_logic' => [
-                [
-                    [
-                        'field' => 'background_type',
-                        'operator' => '==',
-                        'value' => ComponentTypes::BACKGROUND_VIDEO,
-                    ]
-                ]
-            ]
-        ])
-        ->addText('background_video_youtube_url', [
-            'label' => __('Background YouTube URL / Embed', 'culvers'),
-            'instructions' => __(
-                'Paste a YouTube URL or iframe embed code. Used when no file is selected.',
-                'culvers'
-            ),
+            'conditional_logic' => $this->bgWhen([ComponentTypes::BACKGROUND_VIDEO]),
+        ]);
+        $layout->addText('background_video_youtube_url', [
+            'label' => __('Background YouTube URL / embed', 'culvers'),
+            'instructions' => __('Used when no file is selected.', 'culvers'),
             'placeholder' => 'https://www.youtube.com/watch?v=...',
             'required' => 0,
-            'conditional_logic' => [
-                [
-                    [
-                        'field' => 'background_type',
-                        'operator' => '==',
-                        'value' => ComponentTypes::BACKGROUND_VIDEO,
-                    ]
-                ]
-            ]
-        ])
-        ->addColorPicker('background_overlay', $this->getColorPickerOptions([
-            'label' => __('Background Overlay', 'culvers'),
-            'instructions' => __(
-                'Flat overlay color for image/video backgrounds. Opacity is editable; defaults to 30%.',
-                'culvers'
-            ),
+            'conditional_logic' => $this->bgWhen([ComponentTypes::BACKGROUND_VIDEO]),
+        ]);
+
+        $layout->addColorPicker('background_overlay', $this->getColorPickerOptions([
+            'label' => __('Background overlay', 'culvers'),
+            'instructions' => __('Flat overlay on image/video; opacity defaults to 30%.', 'culvers'),
             'enable_opacity' => true,
             'default_value' => '',
-            'conditional_logic' => [
-                [
-                    [
-                        'field' => 'background_type',
-                        'operator' => '==',
-                        'value' => ComponentTypes::BACKGROUND_IMAGE,
-                    ]
-                ],
-                [
-                    [
-                        'field' => 'background_type',
-                        'operator' => '==',
-                        'value' => ComponentTypes::BACKGROUND_IMAGE_CENTERED,
-                    ]
-                ],
-                [
-                    [
-                        'field' => 'background_type',
-                        'operator' => '==',
-                        'value' => ComponentTypes::BACKGROUND_VIDEO,
-                    ]
-                ]
-            ]
-        ]))
-        ->addNumber('background_overlay_opacity', [
-            'label' => __('Background Overlay Opacity (%)', 'culvers'),
-            'instructions' => __(
-                'Used when overlay color is saved without alpha. Set 0-100 (default 30).',
-                'culvers'
-            ),
+            'conditional_logic' => $this->bgWhen([
+                ComponentTypes::BACKGROUND_IMAGE,
+                ComponentTypes::BACKGROUND_IMAGE_CENTERED,
+                ComponentTypes::BACKGROUND_VIDEO,
+            ]),
+        ]));
+        $layout->addNumber('background_overlay_opacity', [
+            'label' => __('Overlay opacity (%)', 'culvers'),
+            'instructions' => __('When the overlay colour has no alpha, use 0–100 (default 30).', 'culvers'),
             'default_value' => 30,
             'min' => 0,
             'max' => 100,
             'step' => 1,
             'append' => '%',
-            'conditional_logic' => [
-                [
-                    [
-                        'field' => 'background_type',
-                        'operator' => '==',
-                        'value' => ComponentTypes::BACKGROUND_IMAGE,
-                    ]
-                ],
-                [
-                    [
-                        'field' => 'background_type',
-                        'operator' => '==',
-                        'value' => ComponentTypes::BACKGROUND_IMAGE_CENTERED,
-                    ]
-                ],
-                [
-                    [
-                        'field' => 'background_type',
-                        'operator' => '==',
-                        'value' => ComponentTypes::BACKGROUND_VIDEO,
-                    ]
-                ]
-            ]
+            'conditional_logic' => $this->bgWhen([
+                ComponentTypes::BACKGROUND_IMAGE,
+                ComponentTypes::BACKGROUND_IMAGE_CENTERED,
+                ComponentTypes::BACKGROUND_VIDEO,
+            ]),
         ]);
+    }
+
+    /**
+     * Build ACF conditional_logic groups (OR list) so a field appears for any of the listed background types.
+     *
+     * @param list<string> $values
+     * @return list<list<array{field: string, operator: string, value: string}>>
+     */
+    private function bgWhen(array $values): array
+    {
+        $groups = [];
+        foreach ($values as $value) {
+            $groups[] = [[
+                'field' => 'background_type',
+                'operator' => '==',
+                'value' => $value,
+            ]];
+        }
+
+        return $groups;
+    }
+
+    /**
+     * @param array<string, mixed> $config
+     */
+    private function addTypographyTab(FieldsBuilder $layout, string $componentName, array $config): void
+    {
+        $layout->addTab(__('Typography', 'culvers'));
 
         $bodyTextToneDefault = match ($componentName) {
             'info_block' => TailwindColors::DEFAULT_LIGHT_BAND_BODY_TEXT_TONE,
             default => TailwindColors::DEFAULT_BODY_TEXT_TONE,
         };
 
+        $this->addSectionHeading($layout, $componentName, 'typography_block', __('Block defaults', 'culvers'));
         $layout->addSelect('body_text_tone', [
             'label' => __('Body text colour', 'culvers'),
             'instructions' => __(
-                'Default paragraph / prose colour for this component. Headings use their own colour fields where set.',
+                'Default paragraph / prose colour for this block. Component-specific text styles override this below.',
                 'culvers'
             ),
+            'instructions_placement' => 'field',
             'choices' => TailwindColors::bodyTextToneChoices(),
             'default_value' => $bodyTextToneDefault,
             'return_format' => 'value',
-            'wrapper' => ['width' => '50'],
-        ])
-        ->addSelect('visibility_mobile', [
-            'label' => __('Visibility on Mobile', 'culvers'),
-            'instructions' => __(
-                'Hide this component on phones (below 768px)? Tablets and larger show the component.',
-                'culvers'
-            ),
-            'choices' => [
-                'visible' => __('Visible on all devices', 'culvers'),
-                'hidden' => __('Hidden on mobile (phones only)', 'culvers'),
-            ],
-            'default_value' => 'visible',
-            'wrapper' => ['width' => '50'],
         ]);
 
-        $fields = isset($config['fields']) && is_array($config['fields']) ? $config['fields'] : [];
+        $typographyFields = $this->fieldsForSection($config, 'typography');
+        if ($typographyFields !== []) {
+            $this->emitFields($layout, $componentName, $typographyFields);
+        }
+    }
 
-        // Tab order: General (grid + background + visibility), then component fields.
-        // The legacy "Padding" tab was removed — vertical rhythm between flexible
-        // components is owned by the parent grid container's `gap-y-32` (see
-        // App\Helpers\Grid::getMainGridContainerClasses) so editors no longer
-        // need (or have) a per-component override.
+    /**
+     * @param array<string, mixed> $config
+     */
+    private function addItemsTab(FieldsBuilder $layout, string $componentName, array $config): void
+    {
+        $itemsFields = $this->fieldsForSection($config, 'items');
+        if ($itemsFields === []) {
+            return;
+        }
+
+        $layout->addTab(__('Items', 'culvers'));
+        $this->emitFields($layout, $componentName, $itemsFields);
+    }
+
+    /**
+     * @param array<string, mixed> $config
+     */
+    private function addMobileTab(FieldsBuilder $layout, string $componentName, array $config): void
+    {
+        $layout->addTab(__('Mobile', 'culvers'));
+
+        $mobileFields = $this->fieldsForSection($config, 'mobile');
+
+        if ($mobileFields !== []) {
+            $layout->addField(sprintf('chrome_%s_mobile_help', $componentName), 'message', [
+                'label' => '',
+                'message' => __(
+                    '<strong>Mobile overrides apply only below the <code>md</code> breakpoint (768px).</strong> '
+                    . 'Leave any field blank to inherit the desktop value.',
+                    'culvers'
+                ),
+                'esc_html' => 0,
+                'wrapper' => ['class' => 'culvers-acf-help'],
+            ]);
+            $this->emitFields($layout, $componentName, $mobileFields);
+
+            return;
+        }
+
+        $emptyMessage = isset($config['mobile_empty_message']) && is_string($config['mobile_empty_message'])
+            ? $config['mobile_empty_message']
+            : __(
+                'This block renders the same content on mobile and desktop — there are no block-level mobile overrides. '
+                . 'If individual rows on the <em>Items</em> tab expose a per-row mobile asset, set those there.',
+                'culvers'
+            );
+
+        $layout->addField(sprintf('chrome_%s_mobile_empty', $componentName), 'message', [
+            'label' => '',
+            'message' => $emptyMessage,
+            'esc_html' => 0,
+            'wrapper' => ['class' => 'culvers-acf-help'],
+        ]);
+    }
+
+    /**
+     * @param FieldsBuilder|\StoutLogic\AcfBuilder\GroupBuilder $layout
+     * @param array<string, array<string, mixed>> $fields
+     */
+    private function emitFields($layout, string $componentName, array $fields): void
+    {
         foreach ($fields as $fieldName => $fieldConfig) {
             $fieldName = (string) $fieldName;
-            if ($fieldName === 'tab_general' || $fieldName === 'tab_padding') {
-                continue;
-            }
             try {
-                $this->addField($layout, $fieldName, is_array($fieldConfig) ? $fieldConfig : []);
+                $this->addField($layout, $fieldName, $fieldConfig);
             } catch (FieldException $e) {
                 $this->logError(
                     "Error adding field '{$fieldName}' to component '{$componentName}': " . $e->getMessage()
-                );
-            } catch (\Exception $e) {
-                $this->logError(
-                    "Unexpected error adding field '{$fieldName}' to component '{$componentName}': " .
-                    $e->getMessage()
                 );
             }
         }
     }
 
     /**
-     * Get color picker options with Tailwind palette pre-configured
+     * Render a section divider as a `message` field with a stable wrapper class for CSS.
      *
-     * @param array<string, mixed> $options Additional options to merge
-     * @return array<string, mixed> Color picker options array
+     * Each section heading gets a unique field name (`{component}_chrome_{key}`) so
+     * AcfBuilder's FieldManager doesn't reject them as collisions. The label is
+     * upper-cased at the PHP level so the divider reads as a section break even
+     * when admin CSS overrides interfere with `text-transform`.
+     */
+    private function addSectionHeading(FieldsBuilder $layout, string $componentName, string $key, string $label): void
+    {
+        $name = sprintf('chrome_%s_%s', $componentName, $key);
+        $layout->addField($name, 'message', [
+            'label' => '',
+            'message' => '<span class="culvers-acf-section-head__label">'
+                . esc_html(mb_strtoupper($label))
+                . '</span>',
+            'esc_html' => 0,
+            'wrapper' => ['class' => 'culvers-acf-section-head'],
+        ]);
+    }
+
+    /**
+     * Pull a section's flat field map out of the component config, supporting
+     * the new section schema and the legacy single `fields` key for any not-yet-migrated layout.
+     *
+     * @param array<string, mixed> $config
+     * @return array<string, array<string, mixed>>
+     */
+    private function fieldsForSection(array $config, string $section): array
+    {
+        if (isset($config[$section]) && is_array($config[$section])) {
+            return $config[$section];
+        }
+
+        return [];
+    }
+
+    /**
+     * Flatten a component config to all field configs for validation purposes.
+     * Supports both the new section schema and the legacy `fields` key.
+     *
+     * @param array<string, mixed> $config
+     * @return array<string, array<string, mixed>>
+     */
+    private function collectFields(array $config): array
+    {
+        $merged = [];
+
+        foreach (self::SECTION_KEYS as $section) {
+            if (isset($config[$section]) && is_array($config[$section])) {
+                foreach ($config[$section] as $name => $field) {
+                    if (is_array($field)) {
+                        $merged[(string) $name] = $field;
+                    }
+                }
+            }
+        }
+
+        if (isset($config['fields']) && is_array($config['fields'])) {
+            foreach ($config['fields'] as $name => $field) {
+                if (is_array($field)) {
+                    $merged[(string) $name] = $field;
+                }
+            }
+        }
+
+        return $merged;
+    }
+
+    /**
+     * @param array<string, mixed> $options
+     * @return array<string, mixed>
      */
     private function getColorPickerOptions(array $options = []): array
     {
@@ -523,20 +594,15 @@ class ComponentRegistry
     }
 
     /**
-     * Add a field to a layout based on configuration.
-     *
-     * @param FieldsBuilder|\StoutLogic\AcfBuilder\GroupBuilder $layout ACF Layout builder
-     *        (top-level FieldsBuilder, or a GroupBuilder/RepeaterBuilder for nested calls —
-     *        both forward `add*` to an internal FieldsBuilder).
-     * @param array<string, mixed> $config Field configuration array
-     * @throws FieldException If field type is invalid or configuration is missing
+     * @param FieldsBuilder|\StoutLogic\AcfBuilder\GroupBuilder $layout
+     * @param array<string, mixed> $config
+     * @throws FieldException
      */
     private function addField($layout, string $fieldName, array $config): void
     {
         $type = $config['type'] ?? 'text';
         $options = $config['options'] ?? [];
 
-        // Use match expression for cleaner code (PHP 8.0+)
         match ($type) {
             'text' => $layout->addText($fieldName, $options),
             'textarea' => $layout->addTextarea($fieldName, $options),
@@ -552,6 +618,8 @@ class ComponentRegistry
             ], $options)),
             'select' => $layout->addSelect($fieldName, $options),
             'radio' => $layout->addRadio($fieldName, $options),
+            'checkbox' => $layout->addCheckbox($fieldName, $options),
+            'button_group' => $layout->addButtonGroup($fieldName, $options),
             'true_false' => $layout->addTrueFalse($fieldName, $options),
             'link' => $layout->addLink($fieldName, array_merge([
                 'return_format' => 'array'
@@ -570,16 +638,15 @@ class ComponentRegistry
             'repeater' => $this->addRepeaterFields($layout, $fieldName, $options),
             'group' => $this->addGroupFields($layout, $fieldName, $options),
             'tab' => $layout->addTab($options['label'] ?? ucwords(str_replace('_', ' ', $fieldName)), $options),
+            'accordion' => $this->addAccordionField($layout, $options['label'] ?? ucwords(str_replace('_', ' ', $fieldName)), $options),
             'message' => $layout->addField($fieldName, 'message', array_merge(['label' => ''], $options)),
             default => throw FieldException::invalidType($fieldName, $type),
         };
     }
 
     /**
-     * Add repeater field with sub-fields.
-     *
-     * @param FieldsBuilder|\StoutLogic\AcfBuilder\GroupBuilder $layout ACF Layout builder
-     * @param array<string, mixed> $options Field options
+     * @param FieldsBuilder|\StoutLogic\AcfBuilder\GroupBuilder $layout
+     * @param array<string, mixed> $options
      */
     private function addRepeaterFields($layout, string $fieldName, array $options): void
     {
@@ -595,10 +662,8 @@ class ComponentRegistry
     }
 
     /**
-     * Add group field with sub-fields.
-     *
-     * @param FieldsBuilder|\StoutLogic\AcfBuilder\GroupBuilder $layout ACF Layout builder
-     * @param array<string, mixed> $options Field options
+     * @param FieldsBuilder|\StoutLogic\AcfBuilder\GroupBuilder $layout
+     * @param array<string, mixed> $options
      */
     private function addGroupFields($layout, string $fieldName, array $options): void
     {
@@ -614,47 +679,89 @@ class ComponentRegistry
     }
 
     /**
-     * Clear component cache
-     *
-     * @return void
+     * @param FieldsBuilder|\StoutLogic\AcfBuilder\GroupBuilder $layout
+     * @param array<string, mixed> $options
      */
-    public function clearCache(): void
+    private function addAccordionField($layout, string $label, array $options): mixed
     {
-        $this->cache->clear();
+        $endpoint = ! empty($options['endpoint']);
+        $payload = array_diff_key($options, ['label' => true, 'endpoint' => true]);
+        $accordion = $layout->addAccordion($label, $payload);
+        if ($endpoint) {
+            $accordion->endpoint();
+        }
+
+        return $layout;
     }
 
-    /**
-     * Get template resolver service instance
-     *
-     * @return TemplateResolver Template resolver singleton
-     */
-    public function getTemplateResolver(): TemplateResolver
-    {
-        return $this->templateResolver;
-    }
-
-    /**
-     * Log error with throttled admin notices
-     *
-     * @param string $message Error message to log
-     * @return void
-     */
     private function logError(string $message): void
     {
         if (function_exists('error_log')) {
             error_log('[ComponentRegistry] ' . $message);
         }
 
-        // Only show admin notice once per error type (using transient)
-        if (defined('WP_DEBUG') && WP_DEBUG && is_admin()) {
-            $transientKey = 'culvers_theme_error_' . md5($message);
-            if (! get_transient($transientKey)) {
-                set_transient($transientKey, true, 300); // 5 minutes
-                add_action('admin_notices', function () use ($message) {
-                    echo '<div class="notice notice-error is-dismissible">' .
-                        '<p><strong>Component Registry:</strong> ' . esc_html($message) . '</p></div>';
-                });
-            }
+        $this->loadErrors[] = $message;
+    }
+
+    /**
+     * Persist this request's collected errors (or clear the option if none). Called at the end of
+     * each phase (file load, layout register) so a re-run that succeeds removes the admin notice.
+     */
+    private function flushLoadErrors(): void
+    {
+        if (! function_exists('update_option')) {
+            return;
         }
+
+        if ($this->loadErrors === []) {
+            if (function_exists('get_option') && get_option(self::LOAD_ERRORS_OPTION) !== false) {
+                delete_option(self::LOAD_ERRORS_OPTION);
+            }
+
+            return;
+        }
+
+        $existing = function_exists('get_option') ? get_option(self::LOAD_ERRORS_OPTION, []) : [];
+        if (! is_array($existing)) {
+            $existing = [];
+        }
+        $merged = array_values(array_unique(array_merge($existing, $this->loadErrors)));
+        update_option(self::LOAD_ERRORS_OPTION, $merged, false);
+
+        $this->loadErrors = [];
+    }
+
+    /**
+     * Hook the admin notice exactly once per request. Gated on `manage_options` so the warning
+     * always reaches site admins — not just when WP_DEBUG happens to be on in production.
+     */
+    private static function registerAdminNoticeOnce(): void
+    {
+        static $registered = false;
+        if ($registered) {
+            return;
+        }
+        $registered = true;
+
+        if (! function_exists('add_action')) {
+            return;
+        }
+
+        add_action('admin_notices', static function (): void {
+            if (! function_exists('current_user_can') || ! current_user_can('manage_options')) {
+                return;
+            }
+            $errors = function_exists('get_option') ? get_option(self::LOAD_ERRORS_OPTION, []) : [];
+            if (! is_array($errors) || $errors === []) {
+                return;
+            }
+            echo '<div class="notice notice-error"><p><strong>'
+                . esc_html__('Culvers component registry — load errors', 'culvers')
+                . '</strong></p><ul style="margin-left:1.25em;list-style:disc;">';
+            foreach ($errors as $msg) {
+                echo '<li>' . esc_html((string) $msg) . '</li>';
+            }
+            echo '</ul></div>';
+        });
     }
 }

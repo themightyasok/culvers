@@ -12,6 +12,7 @@ can read, build, modify, or replace any component without surprises.
 > Source of truth (code):
 > [`app/ComponentRegistry.php`](../app/ComponentRegistry.php),
 > [`app/Helpers/Component.php`](../app/Helpers/Component.php),
+> [`app/Helpers/ResponsiveFields.php`](../app/Helpers/ResponsiveFields.php),
 > [`app/Components/`](../app/Components),
 > [`resources/views/components/`](../resources/views/components).
 >
@@ -39,13 +40,33 @@ flush the WordPress cache, and the layout appears in the Page Components
 flexible content field.
 
 The Blade is wired by `partials/flexible-components.blade.php` via
-`TemplateResolver` — again no manual mapping. The kebab-case filename **must
-match the layout key** exactly: `shop_split_highlight` →
+`TemplateResolver::getInstance()->resolve()` — **`ComponentRegistry` does not
+expose the resolver**; it only builds the ACF flexible layouts. The kebab-case
+filename **must match the layout key** exactly: `shop_split_highlight` →
 `shop-split-highlight.blade.php`.
 
 ---
 
 ## 2. ACF field model — `app/Components/<layout>.php`
+
+### Canonical tabs (every layout)
+
+After shared chrome (**Layout & background**, **Typography**, **Visibility**), component fields use **these tab keys and labels** consistently:
+
+| Tab key | Label | Purpose |
+| ------- | ----- | ------- |
+| `tab_general` | General | Primary headings, intro copy, default body. |
+| `tab_media` | Media | Images, video posters, SVG/map assets (omit the tab only when there is truly nothing media-shaped). |
+| `tab_structure` | Structure | Alignment, splits, panel position (omit when none). |
+| `tab_items` | Items | Repeaters, slides, FAQ rows, pins, cards (omit when none). |
+| `tab_breakpoints` | Breakpoints | Injected by `ResponsiveFields::breakpointTabFields()` — explains md vs phones. The **Mobile overrides** accordion appears **only** when this layout has layout-level optional **`_*_mobile`** fields; repeaters may still host `_mobile` sub-fields under **Items** (`ResponsiveFields::breakpointTabFields([…])`). |
+| `tab_section_typography` | Section typography | Per-component heading/body/strip typography when registry **Typography** (shared prose tone) is not enough. Colours, sizes, weights belong **together** here — not under Settings. |
+| `tab_motion_spacing` | Motion & spacing | Scroll speed, gaps, motion toggles, and related spacing-only controls (example: horizontal scroller). |
+| `tab_settings` | Settings | Timing, booleans, integrations — omit typography/colour tuning unless nothing else fits (prefer **Typography** / **Section typography**). |
+
+When a layout defines **`tab_settings`** or **`tab_motion_spacing`**, keep **Breakpoints immediately before** that trailing tab in the PHP field order (for example `array_merge([…], […optional typography chunk…], ResponsiveFields::breakpointTabFields(), ['tab_motion_spacing' => …, …])`). Layouts without a trailing Settings-style tab usually append `ResponsiveFields::breakpointTabFields()` at the end of `array_merge`.
+
+**Responsive cascade:** base fields apply from **`md` upward** (tablet + desktop share the same values). Optional sibling keys named **`{base}_mobile`** override **only below `md`**. No tablet-only siblings.
 
 ### Required scaffold
 
@@ -53,43 +74,55 @@ match the layout key** exactly: `shop_split_highlight` →
 <?php
 
 /**
- * <One-paragraph summary: what this component renders, when to reach for
- * it, what it does NOT do (so future authors don't reinvent a sibling).>
- *
- * Figma ref: <node id> when applicable.
+ * <One-paragraph summary…>
  */
 
 use App\Helpers\Component;
+use App\Helpers\ResponsiveFields;
 
 return [
     'label' => __('<Editor-facing label>', 'culvers'),
     'display' => 'block',
-    'fields' => [
+    'fields' => array_merge([
         'tab_general' => [
             'type' => 'tab',
-            'options' => ['label' => __('Content', 'culvers')],
+            'options' => ['label' => __('General', 'culvers')],
         ],
 
-        // Component-specific fields go here. Always prefix with the
-        // layout subject (see "Naming rules" below).
-    ],
+        // Component-specific fields… then tabs media / structure / items / settings as needed.
+    ], ResponsiveFields::breakpointTabFields([
+        // Optional *_mobile fields only — omit second argument when none.
+    ])),
 ];
 ```
 
 ### What the registry adds for you (do NOT redefine these)
 
-`ComponentRegistry::addGeneralTab()` injects these on **every** layout
-under the General tab — re-defining them in your component file just
-duplicates the field and breaks ACF:
+`ComponentRegistry::registerSharedLayoutChrome()` injects shared tabs **before** your component fields:
 
-| Field key                       | What it controls                                                                                  |
-| ------------------------------- | ------------------------------------------------------------------------------------------------- |
-| `component_width`               | 6–12 column span (`Grid::getColumnChoices()`).                                                    |
-| `background_type` + descendants | None / colour / gradient / image / image-centred / video. Read via `Background::process($c)`.     |
-| `background_overlay_*`          | Overlay colour & opacity for image/video backgrounds.                                             |
-| `background_parallax`           | Subtle scroll parallax (desktop only).                                                            |
-| `body_text_tone`                | Default body copy colour. Read via `Component::bodyTextTone($c[, 'light-band'])`.                 |
-| `visibility_mobile`             | `visible` / `hidden`. Hides at <768px via `culvers-hide-below-md`.                                |
+1. **Layout & background** — `component_width` plus `background_type` with conditional colour / gradient / image / video / overlay fields (**flat**, no accordion sections — accordions broke nested UX around conditional backgrounds).
+2. **Typography** — `body_text_tone` (default prose tone for the block).
+3. **Visibility** — row visibility toggles (phones vs tablet/desktop-up band).
+
+Re-defining any of these keys in `app/Components/<layout>.php` duplicates the field and breaks ACF.
+
+| Field key | What it controls |
+| --------- | ---------------- |
+| `component_width` | 6–12 column span (`Grid::getColumnChoices()`). |
+| `background_type` + descendants | None / colour / gradient / image / image-centred / video. Read via `Background::process($c)`. |
+| `background_overlay_*` | Overlay colour & opacity for image/video backgrounds. |
+| `background_parallax` | Subtle scroll parallax on background image (desktop only). |
+| `body_text_tone` | Default body copy colour. Read via `Component::bodyTextTone($c[, 'light-band'])`. |
+| `visibility_hide_phone` | Hide the entire row **below `md`** (&lt;768px). |
+| `visibility_hide_desktop` | Hide the entire row **from `md` upward** (tablet + desktop). Phones still see the row. |
+
+There is **no** separate tablet-only hide — tablet shares the same band as desktop.
+
+The renderer applies Tailwind bundles via `ComponentVisibility::gridUtilityClasses($c)` (legacy postmeta `visibility_mobile === 'hidden'` still maps to hide-on-phone until migrated).
+
+### Responsive imagery preset
+
+Use `Component::responsiveImagePair('your_prefix')` to emit `{prefix}_image` (md+) and `{prefix}_image_mobile` with consistent labels. Prefer resolving values with `ResponsiveFields::imageArray()`, `::value()`, `::valueForMdUp()`, `::valueForPhone()`, or `<picture>` in Blade. `Component::responsiveImageTriplet()` is deprecated and now delegates to the pair (tablet imagery was removed from the authoring model).
 
 ### Vertical rhythm — three-level model declared in code, not in the editor
 
@@ -151,10 +184,11 @@ That is intra-component padding and is not editor-tunable.
 
 - All editor-facing strings go through `__('…', 'culvers')`.
 
-- The **first** tab key is always `tab_general` (defined by the registry,
-  surfaces the General tab on every layout). For multi-section layouts add
-  intermediate tabs after your main fields (`tab_role`, `tab_fonts`, …) —
-  see `career_detail` and `horizontal_scroller`.
+- The **first component tab** in `fields` is usually `tab_general`: it defines the **first content tab label**
+  (“General”, “Slides”, “Job header”, …). Registry chrome tabs (**Layout & background** / **Typography** / **Visibility**)
+  render **before** this tab.
+  For multi-section layouts add more tabs after your fields (`tab_items`, `tab_motion_spacing`, …) — keep labels aligned with the canonical ladder above.
+  see `career_detail`, `hero_slider`, and `horizontal_scroller`.
 
 - Field width hints use the standard `'wrapper' => ['width' => '50']`
   (or `'33'` / `'40'` / `'60'`) to lay out paired inputs side-by-side in
@@ -425,16 +459,19 @@ If the component needs interactivity, add an Alpine factory.
 | `Component::headingLevelField($instr, $allowH1, $default)` | Drop-in ACF field config for a heading-level select.                  |
 | `Component::bodyTextTone($c, $variant)`      | Sanitise body-text tone; `'light-band'` defends white/cream bands.       |
 | `Grid::stripHorizontalInsetPadding($s)`     | Remove inherited inset padding when the component renders its own shell. |
-| `Background::process($c)`                    | Resolve the General-tab background fields into classes/styles/media.     |
+| `Background::process($c)`                    | Resolve the Background-tab fields into classes/styles/media.     |
 | `LayoutShell::INNER_MAX_GUTTERED`            | Site-shell inner width (`mx-auto w-full max-w-8xl px-4 md:px-12`). Aligns with header + footer. |
 | `LayoutShell::INNER_MAX_FLUSH_X`             | Same width with no horizontal padding (grids that own their own inset). |
 | `LayoutShell::INNER_READABLE_960`            | Narrow readable column (~960 px) for hours / store details. |
 | `TailwindColors::sanitizeBodyTextTone($v)`   | Allowed body-text tones (called by `Component::bodyTextTone`).           |
 | `Image::render($image, $args)`               | Canonical `<img>` renderer. Components MUST go through this helper rather than hand-writing `<img>` tags. |
 | `Cast::toString($mixed)` / `Cast::toInt($mixed)` | Type-safe coercion of `mixed` (WP / ACF / customizer) to scalars before further processing. Use at the WordPress boundary so the rest of the codebase can rely on narrow types. |
+| `Component::responsiveImagePair($prefix[, $labels])` | Drop-in `{prefix}_image`, `{prefix}_image_mobile` field definitions (md+ base + optional mobile override). |
+| `ResponsiveFields::breakpointTabFields([…])` | Mandatory Breakpoints tab + intro message; **Mobile overrides** accordion only when non-empty array passed. |
+| `ResponsiveFields::value()` / `::valueForMdUp()` / `::valueForPhone()` / `::imageArray()` / `::string()` | Resolve md+ base vs optional `{base}_mobile` cascade in PHP / Blade. |
+| `Component::responsiveImageTriplet(...)` | **Deprecated** — forwards to `responsiveImagePair()`. |
+| `ComponentVisibility::gridUtilityClasses($c)` | Visibility utilities merged into the flexible grid row (`flexible-components.blade.php`). |
 | `Sanitizer::component($row)`                 | Normalises one flexible row before `flexible-components.blade.php` renders it; runs automatically — components don't call this. |
-
----
 
 ## 8. Components with external configuration / services
 
@@ -576,7 +613,7 @@ For an AI agent (or human) creating a brand-new component, in order:
                                     (e.g. event_meta, centre_map).
 [ ] 2. Create app/Components/<layout>.php using the scaffold in §2.
        - Top docblock (what / when / Figma ref).
-       - tab_general → component-specific fields.
+       - `tab_general` → component-specific fields (registry chrome tabs precede this tab).
          (No Padding tab — vertical rhythm is owned by the parent grid.)
        - Subject-prefix every field.
        - Use Component::headingLevelField() for any heading select.
@@ -637,7 +674,7 @@ logged-in.
 
 | Anti-pattern | What to do instead |
 | ------------ | ------------------ |
-| Re-defining `component_width`, `background_*`, `body_text_tone`, `visibility_mobile` in your component file. | They're added by `ComponentRegistry` to every layout. Just `tab_general` → component-specific fields. |
+| Re-defining `component_width`, `background_*`, `body_text_tone`, or visibility toggles in your component file. | They're added by `ComponentRegistry` on every layout. Start from `tab_general` → component-specific fields only. |
 | Adding outer `pt-*` / `pb-*` / `mt-*` / `mb-*` to a component's section element. | Inter-section rhythm is owned by `App\Helpers\Rhythm` (Standard 96 / Hugged 60 / Flush 0) and applied by `partials/flexible-components.blade.php`. Components may only add *internal* `py-*` when they paint their own background. |
 | Hand-writing `<img>` tags. | `Image::render($acfImage, [...])`. |
 | `<h2>` hard-coded in markup. | `Component::headingTag($c['<prefix>_heading_level'] ?? null)`. |

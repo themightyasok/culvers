@@ -37,6 +37,26 @@ const MEGA_HOVER_CLOSE_DELAY_MS = 90;
 const SEARCH_DEBOUNCE_MS = 220;
 const SEARCH_MIN_QUERY_LENGTH = 2;
 
+/**
+ * Defensive shape coercion for mobile nav branches. Server-side PrimaryNav should always emit
+ * well-formed entries, but a stale cache, a broken menu item or an empty taxonomy can produce
+ * `null`/missing fields — without this, Alpine's `x-for` over `branch.children` throws and the
+ * drawer renders empty.
+ *
+ * @param {unknown} raw
+ */
+function normalizeBranch(raw) {
+  const b = raw && typeof raw === 'object' ? raw : {};
+  const children = Array.isArray(b.children) ? b.children.map(normalizeBranch) : [];
+
+  return {
+    id: typeof b.id === 'number' ? b.id : 0,
+    title: typeof b.title === 'string' ? b.title : '',
+    url: typeof b.url === 'string' ? b.url : '',
+    children,
+  };
+}
+
 export default function registerSiteHeaderAlpine(Alpine) {
   Alpine.data('siteHeader', () => ({
     megaOpenId: null,
@@ -212,7 +232,7 @@ export default function registerSiteHeaderAlpine(Alpine) {
       }
       try {
         const parsed = JSON.parse(el.textContent.trim());
-        this.mobileNavTree = Array.isArray(parsed) ? parsed : [];
+        this.mobileNavTree = Array.isArray(parsed) ? parsed.map(normalizeBranch) : [];
       } catch {
         this.mobileNavTree = [];
       }

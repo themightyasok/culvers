@@ -1,14 +1,16 @@
 <?php
 
 /**
- * Assign distinct mega-menu hover preview images per sibling submenu row (primary_navigation).
+ * Mega menu previews — **generic media-library path**
+ *
+ * When sibling submenu rows share the same resolved preview URL (or lack meta),
+ * writes distinct `_culvers_mega_preview_attachment_id` values using images from
+ * the library ({@see MegaMenuDistinctPreviews}). For Figma-bootstrap URL sync,
+ * use `mega-menu-sync-previews.php` instead (see `docs/README.md`).
  *
  * Run from WordPress root with Local:
  *
  *   wp-content/themes/culvers/scripts/with-local-env.sh wp eval-file wp-content/themes/culvers/scripts/mega-menu-distinct-previews.php
- *
- * Leaves already-unique preview URLs untouched; writes attachment IDs from the media library
- * when siblings share the same resolved image URL or a row has no preview.
  *
  * @noinspection PhpUndefinedConstantInspection WP_CLI defined by WP-CLI
  */

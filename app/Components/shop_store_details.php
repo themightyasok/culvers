@@ -9,23 +9,22 @@ use App\Helpers\Component;
 return [
     'label' => __('Shop — store details', 'culvers'),
     'display' => 'block',
-    'fields' => [
-        'tab_general' => [
-            'type' => 'tab',
-            'options' => ['label' => __('Content', 'culvers')],
-        ],
+    'main' => [
+        'msg_intro' => Component::sectionDivider(__('Section heading', 'culvers')),
         'details_heading' => [
             'type' => 'text',
             'options' => [
                 'label' => __('Section heading', 'culvers'),
                 'default_value' => __('Store Details', 'culvers'),
+                'wrapper' => ['width' => '70'],
             ],
         ],
-        'details_heading_level' => Component::headingLevelField(),
+        'details_heading_level' => Component::headingLevelField(width: '30'),
+        'msg_contact' => Component::sectionDivider(__('Contact column', 'culvers')),
         'details_contact_label' => [
             'type' => 'text',
             'options' => [
-                'label' => __('Contact column label', 'culvers'),
+                'label' => __('Column label', 'culvers'),
                 'default_value' => __('Contact Number', 'culvers'),
                 'wrapper' => ['width' => '50'],
             ],
@@ -37,10 +36,11 @@ return [
                 'wrapper' => ['width' => '50'],
             ],
         ],
+        'msg_address' => Component::sectionDivider(__('Address column', 'culvers')),
         'details_address_label' => [
             'type' => 'text',
             'options' => [
-                'label' => __('Address column label', 'culvers'),
+                'label' => __('Column label', 'culvers'),
                 'default_value' => __('Address', 'culvers'),
                 'wrapper' => ['width' => '50'],
             ],
@@ -54,10 +54,11 @@ return [
                 'wrapper' => ['width' => '50'],
             ],
         ],
+        'msg_social' => Component::sectionDivider(__('Social column (optional)', 'culvers')),
         'details_social_label' => [
             'type' => 'text',
             'options' => [
-                'label' => __('Social column label', 'culvers'),
+                'label' => __('Column label', 'culvers'),
                 'instructions' => __('Leave Instagram fields blank to switch to a two-column layout.', 'culvers'),
                 'default_value' => __('Social Media', 'culvers'),
             ],

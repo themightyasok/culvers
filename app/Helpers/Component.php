@@ -64,27 +64,48 @@ final class Component
      * Drop-in ACF field config for a heading-level select.
      *
      * Used by every component PHP file so the editor surface for picking a
-     * heading tag is identical across the CMS.
+     * heading tag is identical across the CMS. Pair every visible heading text
+     * field with one of these so editors always know the resulting HTML tag.
+     *
+     * @param ?string $instructions Optional override for the helper text.
+     * @param bool $allowH1 Whether H1 is selectable (only true for components
+     *                      that may host the page H1, e.g. content-section on
+     *                      a long-form policy page; the hero takes the H1 on
+     *                      every other page).
+     * @param int $default Default ordinal (2–6, or 1 when allowH1).
+     * @param string|null $width Optional ACF wrapper width (e.g. `'30'`, `'50'`).
+     *                           Pair with the matching heading text field's width
+     *                           so both sit on one row (typical 70 / 30 pair).
      *
      * @return array<string, mixed>
      */
-    public static function headingLevelField(?string $instructions = null, bool $allowH1 = false, int $default = 2): array
-    {
+    public static function headingLevelField(
+        ?string $instructions = null,
+        bool $allowH1 = false,
+        int $default = 2,
+        ?string $width = null,
+    ): array {
         $instructions ??= __(
             'Use one H1 per page (typically the hero). Other sections should stay H2–H6 for a logical outline.',
             'culvers'
         );
 
+        $options = [
+            'label' => __('Heading level', 'culvers'),
+            'instructions' => $instructions,
+            'choices' => self::headingLevelChoices($allowH1),
+            'default_value' => $default,
+            'allow_null' => 0,
+            'return_format' => 'value',
+        ];
+
+        if ($width !== null && $width !== '') {
+            $options['wrapper'] = ['width' => $width];
+        }
+
         return [
             'type' => 'select',
-            'options' => [
-                'label' => __('Heading level', 'culvers'),
-                'instructions' => $instructions,
-                'choices' => self::headingLevelChoices($allowH1),
-                'default_value' => $default,
-                'allow_null' => 0,
-                'return_format' => 'value',
-            ],
+            'options' => $options,
         ];
     }
 
@@ -170,5 +191,88 @@ final class Component
         }
 
         return trim($grid);
+    }
+
+    /**
+     * Drop-in ACF field map for md+ default imagery + optional mobile crop (`_*_image_mobile`).
+     *
+     * @param non-empty-string $prefix Subject prefix (e.g. `promo` → `promo_image`, `promo_image_mobile`).
+     * @param array{desktop?: string, mobile?: string} $labels
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    public static function responsiveImagePair(string $prefix, array $labels = []): array
+    {
+        $dLabel = $labels['desktop'] ?? __('Image (tablet / desktop)', 'culvers');
+        $mLabel = $labels['mobile'] ?? __('Image (mobile override)', 'culvers');
+
+        return [
+            "{$prefix}_image" => [
+                'type' => 'image',
+                'options' => [
+                    'label' => $dLabel,
+                    'instructions' => __('Default from the md breakpoint upward (tablet + desktop).', 'culvers'),
+                    'return_format' => 'array',
+                    'preview_size' => 'large',
+                    'library' => 'all',
+                ],
+            ],
+            "{$prefix}_image_mobile" => [
+                'type' => 'image',
+                'options' => [
+                    'label' => $mLabel,
+                    'instructions' => __('Optional; shown only below md when set.', 'culvers'),
+                    'return_format' => 'array',
+                    'preview_size' => 'medium',
+                    'library' => 'all',
+                    'wrapper' => ['width' => '50'],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @deprecated Use {@see self::responsiveImagePair()} — tablet-specific imagery was removed from the authoring model.
+     *
+     * @param array{desktop?: string, mobile?: string} $labels
+     *
+     * @return array<string, array<string, mixed>>
+     */
+    public static function responsiveImageTriplet(string $prefix, array $labels = []): array
+    {
+        $pairLabels = [];
+        if (array_key_exists('desktop', $labels)) {
+            $pairLabels['desktop'] = $labels['desktop'];
+        }
+        if (array_key_exists('mobile', $labels)) {
+            $pairLabels['mobile'] = $labels['mobile'];
+        }
+
+        return self::responsiveImagePair($prefix, $pairLabels);
+    }
+
+    /**
+     * In-tab sub-section divider (a `message` field with a stable wrapper class
+     * so {@see resources/styles/acf-flexible-admin.css} can style it as a pill
+     * heading). Use inside a component's own `main` / `typography` / `mobile`
+     * field map — the registry already emits a divider before each chrome block.
+     *
+     * The label is upper-cased here so the divider always reads as a section
+     * break, even if admin CSS for `text-transform` is overridden elsewhere.
+     *
+     * @return array<string, mixed>
+     */
+    public static function sectionDivider(string $label): array
+    {
+        return [
+            'type' => 'message',
+            'options' => [
+                'message' => '<span class="culvers-acf-section-head__label">'
+                    . esc_html(mb_strtoupper($label))
+                    . '</span>',
+                'esc_html' => 0,
+                'wrapper' => ['class' => 'culvers-acf-section-head'],
+            ],
+        ];
     }
 }

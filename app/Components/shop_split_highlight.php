@@ -6,14 +6,16 @@
  * inside the olive column.
  */
 
+use App\Helpers\Component;
+
+$staticOnly = [[['field' => 'split_use_tabs', 'operator' => '!=', 'value' => '1']]];
+$tabsOnly = [[['field' => 'split_use_tabs', 'operator' => '==', 'value' => '1']]];
+
 return [
     'label' => __('Shop — split highlight', 'culvers'),
     'display' => 'block',
-    'fields' => [
-        'tab_general' => [
-            'type' => 'tab',
-            'options' => ['label' => __('Content', 'culvers')],
-        ],
+    'main' => [
+        'msg_layout' => Component::sectionDivider(__('Layout', 'culvers')),
         'split_ratio' => [
             'type' => 'select',
             'options' => [
@@ -44,17 +46,14 @@ return [
                 'wrapper' => ['width' => '50'],
             ],
         ],
+        'msg_static' => Component::sectionDivider(__('Static copy (when tabs are off)', 'culvers')),
         'split_kicker' => [
             'type' => 'text',
             'options' => [
                 'label' => __('Kicker line', 'culvers'),
                 'instructions' => __('First line in Glowleaf serif (e.g. Piercing Parlour).', 'culvers'),
                 'wrapper' => ['width' => '50'],
-                'conditional_logic' => [
-                    [
-                        ['field' => 'split_use_tabs', 'operator' => '!=', 'value' => '1'],
-                    ],
-                ],
+                'conditional_logic' => $staticOnly,
             ],
         ],
         'split_headline' => [
@@ -63,11 +62,7 @@ return [
                 'label' => __('Headline line', 'culvers'),
                 'instructions' => __('Second serif line (e.g. Now Open).', 'culvers'),
                 'wrapper' => ['width' => '50'],
-                'conditional_logic' => [
-                    [
-                        ['field' => 'split_use_tabs', 'operator' => '!=', 'value' => '1'],
-                    ],
-                ],
+                'conditional_logic' => $staticOnly,
             ],
         ],
         'split_body' => [
@@ -78,11 +73,7 @@ return [
                 'tabs' => 'all',
                 'toolbar' => 'basic',
                 'media_upload' => 0,
-                'conditional_logic' => [
-                    [
-                        ['field' => 'split_use_tabs', 'operator' => '!=', 'value' => '1'],
-                    ],
-                ],
+                'conditional_logic' => $staticOnly,
             ],
         ],
         'split_cta_label' => [
@@ -91,11 +82,7 @@ return [
                 'label' => __('CTA label', 'culvers'),
                 'instructions' => __('Leave blank to hide.', 'culvers'),
                 'wrapper' => ['width' => '50'],
-                'conditional_logic' => [
-                    [
-                        ['field' => 'split_use_tabs', 'operator' => '!=', 'value' => '1'],
-                    ],
-                ],
+                'conditional_logic' => $staticOnly,
             ],
         ],
         'split_cta_url' => [
@@ -103,39 +90,60 @@ return [
             'options' => [
                 'label' => __('CTA URL', 'culvers'),
                 'wrapper' => ['width' => '50'],
-                'conditional_logic' => [
-                    [
-                        ['field' => 'split_use_tabs', 'operator' => '!=', 'value' => '1'],
-                    ],
-                ],
+                'conditional_logic' => $staticOnly,
+            ],
+        ],
+        'msg_image' => Component::sectionDivider(__('Image column', 'culvers')),
+        'split_image' => [
+            'type' => 'image',
+            'options' => [
+                'label' => __('Right column image', 'culvers'),
+                'instructions' => __(
+                    'Lifestyle crop; fills the image column. With tabs, used as the default '
+                    . 'right-hand image; override per tab with "Panel image" on each tab row.',
+                    'culvers'
+                ),
+                'return_format' => 'array',
+                'preview_size' => 'medium',
+                'library' => 'all',
+            ],
+        ],
+    ],
+    'items' => [
+        'split_tabs_help' => [
+            'type' => 'message',
+            'options' => [
+                'message' => __(
+                    'These tab rows are only rendered when <strong>Use tabs in the copy column</strong> '
+                    . 'on the <em>Main</em> tab is on. Otherwise the static copy block on the Main tab '
+                    . 'is used and this list is ignored.',
+                    'culvers'
+                ),
+                'esc_html' => 0,
+                'wrapper' => ['class' => 'culvers-acf-help'],
             ],
         ],
         'split_tabs' => [
             'type' => 'repeater',
             'options' => [
-                'label' => __('Tabs', 'culvers'),
+                'label' => __('Tabs (when tabs are on)', 'culvers'),
                 'instructions' => __(
-                    'Each row renders as a pill button above the copy and a cross-faded panel below.',
+                    'Each row renders as a pill button above the copy and a cross-faded panel below. '
+                        . 'Only used when "Use tabs in the copy column" is enabled.',
                     'culvers'
                 ),
                 'min' => 0,
                 'max' => 8,
                 'layout' => 'block',
                 'button_label' => __('Add tab', 'culvers'),
-                'conditional_logic' => [
-                    [
-                        ['field' => 'split_use_tabs', 'operator' => '==', 'value' => '1'],
-                    ],
-                ],
+                'collapsed' => 'tab_label',
+                'conditional_logic' => $tabsOnly,
                 'sub_fields' => [
                     'tab_label' => [
                         'type' => 'text',
                         'options' => [
                             'label' => __('Pill label', 'culvers'),
-                            'instructions' => __(
-                                'Short uppercase label shown in the pill (e.g. History).',
-                                'culvers'
-                            ),
+                            'instructions' => __('Short uppercase label shown in the pill (e.g. History).', 'culvers'),
                             'wrapper' => ['width' => '50'],
                         ],
                     ],
@@ -185,7 +193,7 @@ return [
                             'label' => __('Panel image', 'culvers'),
                             'instructions' => __(
                                 'Optional. Right-column image while this tab is active. ' .
-                                'If empty, the component’s main right column image (below) is used.',
+                                'If empty, the component\'s main right column image is used.',
                                 'culvers'
                             ),
                             'return_format' => 'array',
@@ -194,20 +202,6 @@ return [
                         ],
                     ],
                 ],
-            ],
-        ],
-        'split_image' => [
-            'type' => 'image',
-            'options' => [
-                'label' => __('Right column image', 'culvers'),
-                'instructions' => __(
-                    'Lifestyle crop; fills the image column. With tabs, use this as the default ' .
-                    'right-hand image; override per tab with “Panel image” on each tab row.',
-                    'culvers'
-                ),
-                'return_format' => 'array',
-                'preview_size' => 'medium',
-                'library' => 'all',
             ],
         ],
     ],

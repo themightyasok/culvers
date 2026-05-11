@@ -2,14 +2,8 @@
 
 /**
  * Centre map — interactive "find your way around" panel: a centre-floor map
- * (image / SVG) on the left and a category sidebar on the right that lights
- * up matching pins when hovered or focussed.
- *
- * Pins are an ACF repeater of (x%, y%, label, category, link) so layout
- * stays declarative — no per-page bespoke SVG editing required. x/y are
- * percentages of the map image so pins reposition correctly across all
- * breakpoints. Categories are a separate repeater so the sidebar order +
- * colour stay independent of pin order.
+ * (image / SVG) with a category sidebar. Pins are an ACF repeater of (x%, y%,
+ * label, category, link) so layout stays declarative.
  */
 
 use App\Helpers\Component;
@@ -17,16 +11,13 @@ use App\Helpers\Component;
 return [
     'label' => __('Centre map', 'culvers'),
     'display' => 'block',
-    'fields' => [
-        'tab_general' => [
-            'type' => 'tab',
-            'options' => ['label' => __('Content', 'culvers')],
-        ],
+    'main' => [
+        'msg_intro' => Component::sectionDivider(__('Intro copy', 'culvers')),
         'centre_map_eyebrow' => [
             'type' => 'text',
             'options' => [
                 'label' => __('Eyebrow (optional)', 'culvers'),
-                'wrapper' => ['width' => '50'],
+                'wrapper' => ['width' => '100'],
             ],
         ],
         'centre_map_heading' => [
@@ -34,10 +25,10 @@ return [
             'options' => [
                 'label' => __('Heading', 'culvers'),
                 'default_value' => __('Find your way around', 'culvers'),
-                'wrapper' => ['width' => '50'],
+                'wrapper' => ['width' => '70'],
             ],
         ],
-        'centre_map_heading_level' => Component::headingLevelField(allowH1: false),
+        'centre_map_heading_level' => Component::headingLevelField(width: '30'),
         'centre_map_body' => [
             'type' => 'textarea',
             'options' => [
@@ -46,6 +37,7 @@ return [
                 'new_lines' => 'br',
             ],
         ],
+        'msg_map' => Component::sectionDivider(__('Map asset', 'culvers')),
         'centre_map_image' => [
             'type' => 'image',
             'options' => [
@@ -59,13 +51,14 @@ return [
                 'mime_types' => 'svg,png,jpg,jpeg,webp',
             ],
         ],
+        'msg_panel' => Component::sectionDivider(__('Filter panel', 'culvers')),
         'centre_map_panel_position' => [
             'type' => 'select',
             'options' => [
-                'label' => __('Filter panel position', 'culvers'),
+                'label' => __('Position', 'culvers'),
                 'instructions' => __(
-                    'Figma developer release puts the filter panel on the left with the map on the right. ' .
-                    'Flip to "Right" only if the surrounding page rhythm calls for it.',
+                    'Figma developer release puts the filter panel on the left with the map on the right. '
+                    . 'Flip to "Right" only if the surrounding page rhythm calls for it.',
                     'culvers'
                 ),
                 'choices' => [
@@ -89,20 +82,38 @@ return [
                 'wrapper' => ['width' => '50'],
             ],
         ],
+        'centre_map_show_zoom_controls' => [
+            'type' => 'true_false',
+            'options' => [
+                'label' => __('Show zoom controls', 'culvers'),
+                'instructions' => __(
+                    'Renders the +/− pill stack in the bottom-right corner of the map.',
+                    'culvers'
+                ),
+                'ui' => 1,
+                'ui_on_text' => __('Show', 'culvers'),
+                'ui_off_text' => __('Hide', 'culvers'),
+                'default_value' => 1,
+            ],
+        ],
+    ],
+    'items' => [
+        'msg_categories' => Component::sectionDivider(__('Categories (filter panel)', 'culvers')),
         'centre_map_categories' => [
             'type' => 'repeater',
             'options' => [
-                'label' => __('Categories (filter panel)', 'culvers'),
+                'label' => __('Categories', 'culvers'),
                 'instructions' => __(
-                    'Categories shown in the filter panel. Group sibling categories together by giving them ' .
-                    'the same "Group" label (e.g. "Shop"); the panel renders one accordion per unique group. ' .
-                    'Pins linked to a category light up on hover / focus.',
+                    'Categories shown in the filter panel. Group sibling categories together by giving them '
+                    . 'the same "Group" label (e.g. "Shop"); the panel renders one accordion per unique group. '
+                    . 'Pins linked to a category light up on hover / focus.',
                     'culvers'
                 ),
                 'min' => 0,
                 'max' => 48,
                 'layout' => 'block',
                 'button_label' => __('Add category', 'culvers'),
+                'collapsed' => 'category_label',
                 'sub_fields' => [
                     'category_group' => [
                         'type' => 'text',
@@ -148,20 +159,7 @@ return [
                 ],
             ],
         ],
-        'centre_map_show_zoom_controls' => [
-            'type' => 'true_false',
-            'options' => [
-                'label' => __('Show zoom controls', 'culvers'),
-                'instructions' => __(
-                    'Renders the +/− pill stack in the bottom-right corner of the map (visual parity with Figma).',
-                    'culvers'
-                ),
-                'ui' => 1,
-                'ui_on_text' => __('Show', 'culvers'),
-                'ui_off_text' => __('Hide', 'culvers'),
-                'default_value' => 1,
-            ],
-        ],
+        'msg_pins' => Component::sectionDivider(__('Pins', 'culvers')),
         'centre_map_pins' => [
             'type' => 'repeater',
             'options' => [
@@ -174,6 +172,7 @@ return [
                 'max' => 200,
                 'layout' => 'table',
                 'button_label' => __('Add pin', 'culvers'),
+                'collapsed' => 'pin_label',
                 'sub_fields' => [
                     'pin_x' => [
                         'type' => 'number',
@@ -197,13 +196,16 @@ return [
                     ],
                     'pin_label' => [
                         'type' => 'text',
-                        'options' => ['label' => __('Label', 'culvers')],
+                        'options' => [
+                            'label' => __('Label', 'culvers'),
+                            'required' => 0,
+                        ],
                     ],
                     'pin_category_slug' => [
                         'type' => 'text',
                         'options' => [
                             'label' => __('Category slug', 'culvers'),
-                            'instructions' => __('Match a slug from Categories above.', 'culvers'),
+                            'instructions' => __('Match a slug from the Categories repeater above.', 'culvers'),
                         ],
                     ],
                 ],

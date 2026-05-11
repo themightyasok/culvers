@@ -399,7 +399,7 @@
   {{-- Mobile menu — Figma: white full-screen, wordmark + lime close, drill-down panels, useful-link + social pill rows. --}}
   <div
     id="mega-mobile-drawer"
-    class="mega-nav__drawer fixed inset-0 z-[100] flex max-h-[100dvh] flex-col bg-white text-deep-moss lg:hidden"
+    class="mega-nav__drawer fixed inset-0 z-[100] flex h-[100svh] flex-col bg-white text-deep-moss lg:hidden"
     x-show="mobileOpen"
     x-cloak
     x-transition:enter="transition ease-out duration-300 motion-reduce:transition-none"

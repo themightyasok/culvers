@@ -3,9 +3,7 @@
 /**
  * Text-image slider — vertical stack of large Canela headlines that expand
  * in place to reveal a body paragraph plus two polaroid-style images that
- * pop in (left + right) with a staggered scale/rotate animation. Inactive
- * headlines fade to a muted tone while one is open. Figma ref: 51:8074
- * (closed) / 51:8114 (open with images).
+ * pop in (left + right) with a staggered scale/rotate animation.
  */
 
 use App\Helpers\Component;
@@ -13,19 +11,16 @@ use App\Helpers\Component;
 return [
     'label' => __('Text-image slider', 'culvers'),
     'display' => 'block',
-    'fields' => [
-        'tab_general' => [
-            'type' => 'tab',
-            'options' => ['label' => __('Content', 'culvers')],
-        ],
+    'main' => [
         'tis_heading' => [
             'type' => 'text',
             'options' => [
                 'label' => __('Optional section heading', 'culvers'),
                 'instructions' => __('Leave blank to render the headline stack only.', 'culvers'),
+                'wrapper' => ['width' => '70'],
             ],
         ],
-        'tis_heading_level' => Component::headingLevelField(),
+        'tis_heading_level' => Component::headingLevelField(width: '30'),
         'tis_open_mode' => [
             'type' => 'select',
             'options' => [
@@ -55,6 +50,8 @@ return [
                 'wrapper' => ['width' => '50'],
             ],
         ],
+    ],
+    'items' => [
         'tis_items' => [
             'type' => 'repeater',
             'options' => [
@@ -67,6 +64,7 @@ return [
                 'max' => 12,
                 'layout' => 'block',
                 'button_label' => __('Add row', 'culvers'),
+                'collapsed' => 'item_label',
                 'sub_fields' => [
                     'item_label' => [
                         'type' => 'text',

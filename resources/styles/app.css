@@ -69,11 +69,25 @@
 
 @layer components {
   /*
-   * Flexible component setting “Hidden on mobile” — registry field `visibility_mobile`.
-   * Defined here so `hidden` + `md:block` always ship (avoid JIT missing PHP-built class strings).
+   * Flexible component visibility — registry fields visibility_hide_* (+ legacy visibility_mobile).
+   * Explicit bundles so arbitrary Tailwind strings built in PHP are not purged by the JIT compiler.
+   *
+   * Two-band model: phones (< md) vs md+ (tablet + desktop). No tablet-only axis.
    */
   .culvers-hide-below-md {
     @apply hidden md:block;
+  }
+
+  .culvers-vis--hide-phone {
+    @apply hidden md:block;
+  }
+
+  .culvers-vis--hide-md-up {
+    @apply block md:hidden;
+  }
+
+  .culvers-vis--hide-all {
+    @apply hidden;
   }
 
   .prose :where(h1, h2, h3, h4, h5, h6) {

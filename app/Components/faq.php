@@ -11,20 +11,18 @@ use App\Helpers\Component;
 return [
     'label' => __('FAQ', 'culvers'),
     'display' => 'block',
-    'fields' => [
-        'tab_general' => [
-            'type' => 'tab',
-            'options' => ['label' => __('Content', 'culvers')],
-        ],
+    'main' => [
+        'msg_intro' => Component::sectionDivider(__('Heading', 'culvers')),
         'faq_heading' => [
             'type' => 'text',
             'options' => [
                 'label' => __('Heading', 'culvers'),
                 'instructions' => __('Centred Canela serif heading above the rows.', 'culvers'),
                 'default_value' => __('Frequently Asked Questions', 'culvers'),
+                'wrapper' => ['width' => '70'],
             ],
         ],
-        'faq_heading_level' => Component::headingLevelField(),
+        'faq_heading_level' => Component::headingLevelField(width: '30'),
         'faq_show_keyline' => [
             'type' => 'true_false',
             'options' => [
@@ -51,47 +49,7 @@ return [
                 'wrapper' => ['width' => '50'],
             ],
         ],
-        'faq_items' => [
-            'type' => 'repeater',
-            'options' => [
-                'label' => __('FAQ rows', 'culvers'),
-                'instructions' => __('Each row renders as an expandable disclosure.', 'culvers'),
-                'min' => 1,
-                'max' => 30,
-                'layout' => 'block',
-                'button_label' => __('Add FAQ row', 'culvers'),
-                'sub_fields' => [
-                    'item_question' => [
-                        'type' => 'text',
-                        'options' => [
-                            'label' => __('Question', 'culvers'),
-                        ],
-                    ],
-                    'item_answer' => [
-                        'type' => 'wysiwyg',
-                        'options' => [
-                            'label' => __('Answer', 'culvers'),
-                            'tabs' => 'all',
-                            'toolbar' => 'basic',
-                            'media_upload' => 0,
-                        ],
-                    ],
-                    'item_open_default' => [
-                        'type' => 'true_false',
-                        'options' => [
-                            'label' => __('Open by default', 'culvers'),
-                            'instructions' => __(
-                                'Pre-expand this row on first render. In single-open mode only the first ' .
-                                'pre-expanded row wins.',
-                                'culvers'
-                            ),
-                            'default_value' => 0,
-                            'ui' => 1,
-                        ],
-                    ],
-                ],
-            ],
-        ],
+        'msg_decorations' => Component::sectionDivider(__('Side decorations (large screens)', 'culvers')),
         'faq_decorations_left' => [
             'type' => 'repeater',
             'options' => [
@@ -135,6 +93,50 @@ return [
                             'label' => __('Image', 'culvers'),
                             'return_format' => 'array',
                             'preview_size' => 'medium',
+                        ],
+                    ],
+                ],
+            ],
+        ],
+    ],
+    'items' => [
+        'faq_items' => [
+            'type' => 'repeater',
+            'options' => [
+                'label' => __('FAQ rows', 'culvers'),
+                'instructions' => __('Each row renders as an expandable disclosure.', 'culvers'),
+                'min' => 1,
+                'max' => 30,
+                'layout' => 'block',
+                'button_label' => __('Add FAQ row', 'culvers'),
+                'collapsed' => 'item_question',
+                'sub_fields' => [
+                    'item_question' => [
+                        'type' => 'text',
+                        'options' => [
+                            'label' => __('Question', 'culvers'),
+                        ],
+                    ],
+                    'item_answer' => [
+                        'type' => 'wysiwyg',
+                        'options' => [
+                            'label' => __('Answer', 'culvers'),
+                            'tabs' => 'all',
+                            'toolbar' => 'basic',
+                            'media_upload' => 0,
+                        ],
+                    ],
+                    'item_open_default' => [
+                        'type' => 'true_false',
+                        'options' => [
+                            'label' => __('Open by default', 'culvers'),
+                            'instructions' => __(
+                                'Pre-expand this row on first render. In single-open mode only the first ' .
+                                'pre-expanded row wins.',
+                                'culvers'
+                            ),
+                            'default_value' => 0,
+                            'ui' => 1,
                         ],
                     ],
                 ],

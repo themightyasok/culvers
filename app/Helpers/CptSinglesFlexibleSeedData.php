@@ -53,7 +53,6 @@ final class CptSinglesFlexibleSeedData
             'component_width' => 12,
             'background_type' => ComponentTypes::BACKGROUND_NONE,
             'body_text_tone' => TailwindColors::DEFAULT_BODY_TEXT_TONE,
-            'visibility_mobile' => 'visible',
         ];
     }
 

@@ -1,7 +1,12 @@
 <?php
 
 /**
- * Assign distinct mega-menu hover preview images to each primary submenu item (matches CulverSquareFigmaPrimaryMenu config).
+ * Mega menu previews — **Figma-bootstrap path**
+ *
+ * Re-applies hover preview URLs from {@see CulverSquareFigmaPrimaryMenu}
+ * (`cliSyncDistinctChildPreviews`). Use after the Figma-seeded primary menu
+ * exists. For generic duplicate-URL fixes via the media library, use
+ * `mega-menu-distinct-previews.php` instead (see `docs/README.md`).
  *
  * Run from the WordPress root with Local’s environment (same pattern as homepage-populate-flexible.php):
  *

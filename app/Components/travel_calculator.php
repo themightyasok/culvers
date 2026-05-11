@@ -4,19 +4,16 @@
  * Travel Calculator — faded-olive band (Canela title + Halyard subtitle, 3-up
  * destination/mode/search controls), inline result strip, and a route-preview
  * map below. Backed by the Distance Matrix endpoint
- * `wp-json/culvers/v1/travel-calculator` and the Maps Embed API. Configure the
- * API key + destination at Appearance → Customize → Google Maps. Figma ref:
- * 51:7970, 51:5929 (band) + 51:5952 (map context).
+ * `wp-json/culvers/v1/travel-calculator` and the Maps Embed API.
  */
+
+use App\Helpers\Component;
 
 return [
     'label' => __('Travel Calculator', 'culvers'),
     'display' => 'block',
-    'fields' => [
-        'tab_general' => [
-            'type' => 'tab',
-            'options' => ['label' => __('Content', 'culvers')],
-        ],
+    'main' => [
+        'msg_intro' => Component::sectionDivider(__('Heading', 'culvers')),
         'tc_heading' => [
             'type' => 'text',
             'options' => [
@@ -35,10 +32,11 @@ return [
                 ),
             ],
         ],
+        'msg_form' => Component::sectionDivider(__('Form labels', 'culvers')),
         'tc_destination_label' => [
             'type' => 'text',
             'options' => [
-                'label' => __('“Your destination” field label', 'culvers'),
+                'label' => __('"Your destination" field label', 'culvers'),
                 'default_value' => __('Your destination', 'culvers'),
                 'wrapper' => ['width' => '50'],
             ],
@@ -46,7 +44,7 @@ return [
         'tc_destination_placeholder' => [
             'type' => 'text',
             'options' => [
-                'label' => __('“Your destination” placeholder', 'culvers'),
+                'label' => __('"Your destination" placeholder', 'culvers'),
                 'default_value' => __('Type your destination here', 'culvers'),
                 'wrapper' => ['width' => '50'],
             ],
@@ -54,7 +52,7 @@ return [
         'tc_mode_label' => [
             'type' => 'text',
             'options' => [
-                'label' => __('“Travel by” field label', 'culvers'),
+                'label' => __('"Travel by" field label', 'culvers'),
                 'default_value' => __('Travel by', 'culvers'),
                 'wrapper' => ['width' => '50'],
             ],
@@ -62,18 +60,55 @@ return [
         'tc_mode_placeholder' => [
             'type' => 'text',
             'options' => [
-                'label' => __('“Travel by” placeholder', 'culvers'),
+                'label' => __('"Travel by" placeholder', 'culvers'),
                 'default_value' => __('Select', 'culvers'),
                 'wrapper' => ['width' => '50'],
             ],
         ],
+        'tc_button_label' => [
+            'type' => 'text',
+            'options' => [
+                'label' => __('Search button label', 'culvers'),
+                'default_value' => __('Search', 'culvers'),
+                'wrapper' => ['width' => '50'],
+            ],
+        ],
+        'tc_show_map' => [
+            'type' => 'true_false',
+            'options' => [
+                'label' => __('Show route map', 'culvers'),
+                'instructions' => __(
+                    'Render the Google Maps Embed below the form. Disable to render only the form + result strip.',
+                    'culvers'
+                ),
+                'default_value' => 1,
+                'ui' => 1,
+                'wrapper' => ['width' => '50'],
+            ],
+        ],
+        'msg_map' => Component::sectionDivider(__('Map placeholder', 'culvers')),
+        'tc_map_initial_image' => [
+            'type' => 'image',
+            'options' => [
+                'label' => __('Map placeholder image', 'culvers'),
+                'instructions' => __(
+                    'Optional static image shown before the user runs a search '
+                    . '(or as a fallback if the API key is missing).',
+                    'culvers'
+                ),
+                'return_format' => 'array',
+                'preview_size' => 'medium',
+            ],
+        ],
+    ],
+    'items' => [
         'tc_modes' => [
             'type' => 'repeater',
             'options' => [
                 'label' => __('Available travel modes', 'culvers'),
                 'instructions' => __(
-                    'Order matches the order shown in the “travel by” select. ' .
-                    'At least one mode is required.',
+                    'Order matches the order shown in the "travel by" select. '
+                        . 'At least one mode is required.',
                     'culvers'
                 ),
                 'min' => 1,
@@ -103,40 +138,6 @@ return [
                         ],
                     ],
                 ],
-            ],
-        ],
-        'tc_button_label' => [
-            'type' => 'text',
-            'options' => [
-                'label' => __('Search button label', 'culvers'),
-                'default_value' => __('Search', 'culvers'),
-                'wrapper' => ['width' => '50'],
-            ],
-        ],
-        'tc_show_map' => [
-            'type' => 'true_false',
-            'options' => [
-                'label' => __('Show route map', 'culvers'),
-                'instructions' => __(
-                    'Render the Google Maps Embed below the form. Disable to render only the form + result strip.',
-                    'culvers'
-                ),
-                'default_value' => 1,
-                'ui' => 1,
-                'wrapper' => ['width' => '50'],
-            ],
-        ],
-        'tc_map_initial_image' => [
-            'type' => 'image',
-            'options' => [
-                'label' => __('Map placeholder image', 'culvers'),
-                'instructions' => __(
-                    'Optional static image shown before the user runs a search ' .
-                    '(or as a fallback if the API key is missing).',
-                    'culvers'
-                ),
-                'return_format' => 'array',
-                'preview_size' => 'medium',
             ],
         ],
     ],

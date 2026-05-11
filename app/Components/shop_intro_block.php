@@ -7,11 +7,7 @@
 return [
     'label' => __('Shop — intro block', 'culvers'),
     'display' => 'block',
-    'fields' => [
-        'tab_general' => [
-            'type' => 'tab',
-            'options' => ['label' => __('Content', 'culvers')],
-        ],
+    'main' => [
         'intro_body' => [
             'type' => 'wysiwyg',
             'options' => [

@@ -14,11 +14,7 @@ use App\Helpers\Component;
 return [
     'label' => __('Section header', 'culvers'),
     'display' => 'block',
-    'fields' => [
-        'tab_general' => [
-            'type' => 'tab',
-            'options' => ['label' => __('Content', 'culvers')],
-        ],
+    'main' => [
         'header_eyebrow' => [
             'type' => 'text',
             'options' => [
@@ -27,23 +23,20 @@ return [
                     'Small uppercase line above the heading (e.g. "Visit", "About"). Renders in faded olive.',
                     'culvers'
                 ),
-                'wrapper' => ['width' => '50'],
             ],
         ],
         'header_heading' => [
             'type' => 'text',
             'options' => [
                 'label' => __('Heading (optional)', 'culvers'),
-                'instructions' => __(
-                    'Serif headline. Leave blank for body-only intros.',
-                    'culvers'
-                ),
-                'wrapper' => ['width' => '50'],
+                'instructions' => __('Serif headline. Leave blank for body-only intros.', 'culvers'),
+                'wrapper' => ['width' => '70'],
             ],
         ],
         'header_heading_level' => Component::headingLevelField(
             __('Default H2 — use H1 only when the page above does not already host one.', 'culvers'),
             allowH1: true,
+            width: '30',
         ),
         'header_body' => [
             'type' => 'textarea',
