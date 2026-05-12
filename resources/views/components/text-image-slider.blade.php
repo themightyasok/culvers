@@ -107,67 +107,72 @@
               {{ esc_html($item['label']) }}
             </button>
 
-            {{-- Height-animated panel. On lg+ the panel is `position:relative` and the
-                 side images are absolutely positioned INSIDE it, so they stay vertically
-                 aligned with the body text (matches Figma 51:8114 — images flank the
-                 body, not the title). On mobile the images render in normal flow under
-                 the body via the dedicated mobile stack below. --}}
-            <div
-              id="{{ esc_attr($panelId) }}"
-              role="region"
-              aria-labelledby="{{ esc_attr($labelId) }}"
-              class="text-image-slider__panel grid transition-[grid-template-rows] duration-300 ease-out motion-reduce:transition-none data-[open=true]:grid-rows-[1fr] grid-rows-[0fr]"
-              data-open="{{ $isOpen ? 'true' : 'false' }}"
-              @if (! $isOpen) inert @endif
-              x-bind:inert="!isOpen({{ $i }})">
-              <div class="text-image-slider__panel-inner overflow-hidden lg:relative">
-                <div
-                  class="text-image-slider__body mx-auto max-w-[44rem] px-2 py-6 text-center font-sans text-base font-light leading-7 text-deep-moss/90 opacity-0 lg:py-10 lg:text-lg rt-link-faded [&_p+p]:mt-3 [&_strong]:font-medium"
-                  data-tis-body>
-                  {!! $item['body_html'] !!}
-                </div>
-
-                @if($hasLeftImage || $hasRightImage)
-                  {{-- Desktop-only positioned images. Stays inside the panel so vertical
-                       alignment is anchored to the body, and overflows the central column
-                       via negative left/right offsets onto the gutters. --}}
-                  <div class="hidden lg:contents" x-show="isOpen({{ $i }})" x-cloak>
-                    @if($hasLeftImage)
-                      {{-- Vertical centering is handled by GSAP via `yPercent: -50`
-                           (see text-image-slider.js) so we don't apply -translate-y-1/2
-                           here — combining a CSS translate with GSAP's inline transform
-                           leaves the image stuck at the top of the panel. --}}
-                      <div
-                        class="text-image-slider__media text-image-slider__media--left pointer-events-none absolute left-[-22rem] top-1/2 w-[18rem] opacity-0 xl:left-[-24rem] xl:w-[20rem]"
-                        data-tis-media="left"
-                        data-tilt="{{ esc_attr((string) $item['tilt_left']) }}">
-                        <div class="text-image-slider__polaroid relative aspect-[4/5] w-full overflow-hidden rounded-[6px] shadow-2xl shadow-deep-moss/30 ring-1 ring-deep-moss/10">
-                          {!! Image::render($item['image_left'], [
-                              'class' => 'absolute inset-0 size-full object-cover',
-                              'alt' => '',
-                              'role' => 'presentation',
-                          ]) !!}
-                        </div>
-                      </div>
-                    @endif
-
-                    @if($hasRightImage)
-                      <div
-                        class="text-image-slider__media text-image-slider__media--right pointer-events-none absolute right-[-22rem] top-1/2 w-[16rem] opacity-0 xl:right-[-24rem] xl:w-[18rem]"
-                        data-tis-media="right"
-                        data-tilt="{{ esc_attr((string) $item['tilt_right']) }}">
-                        <div class="text-image-slider__polaroid relative aspect-[4/5] w-full overflow-hidden rounded-[6px] shadow-2xl shadow-deep-moss/30 ring-1 ring-deep-moss/10">
-                          {!! Image::render($item['image_right'], [
-                              'class' => 'absolute inset-0 size-full object-cover',
-                              'alt' => '',
-                              'role' => 'presentation',
-                          ]) !!}
-                        </div>
-                      </div>
-                    @endif
+            {{-- Wrapper that owns the vertical anchor for the desktop side images.
+                 The grid-rows height animation lives on `.text-image-slider__panel`
+                 and its `panel-inner` overflow-hidden child clips the body when
+                 collapsed. The desktop images sit OUTSIDE that clipping shell —
+                 as siblings of the panel inside this `lg:relative` wrapper — so
+                 their negative `left`/`right` offsets can overflow the central
+                 column without being clipped. Vertical centering is anchored to
+                 this wrapper, which matches the panel's height while open. --}}
+            <div class="text-image-slider__anchor lg:relative">
+              <div
+                id="{{ esc_attr($panelId) }}"
+                role="region"
+                aria-labelledby="{{ esc_attr($labelId) }}"
+                class="text-image-slider__panel grid transition-[grid-template-rows] duration-300 ease-out motion-reduce:transition-none data-[open=true]:grid-rows-[1fr] grid-rows-[0fr]"
+                data-open="{{ $isOpen ? 'true' : 'false' }}"
+                @if (! $isOpen) inert @endif
+                x-bind:inert="!isOpen({{ $i }})">
+                <div class="text-image-slider__panel-inner overflow-hidden">
+                  <div
+                    class="text-image-slider__body mx-auto max-w-[44rem] px-2 py-6 text-center font-sans text-base font-light leading-7 text-deep-moss/90 opacity-0 lg:py-10 lg:text-lg rt-link-faded [&_p+p]:mt-3 [&_strong]:font-medium"
+                    data-tis-body>
+                    {!! $item['body_html'] !!}
                   </div>
-                @endif
+                </div>
               </div>
+
+              @if($hasLeftImage || $hasRightImage)
+                {{-- Desktop-only positioned images. `lg:contents` collapses the
+                     wrapper so each absolute child anchors directly to the
+                     `lg:relative` parent above (the anchor) — no clipping. --}}
+                <div class="hidden lg:contents" x-show="isOpen({{ $i }})" x-cloak>
+                  @if($hasLeftImage)
+                    {{-- Vertical centering is handled by GSAP via `yPercent: -50`
+                         (see text-image-slider.js) so we don't apply -translate-y-1/2
+                         here — combining a CSS translate with GSAP's inline transform
+                         leaves the image stuck at the top of the anchor. --}}
+                    <div
+                      class="text-image-slider__media text-image-slider__media--left pointer-events-none absolute left-[-22rem] top-1/2 w-[18rem] opacity-0 xl:left-[-24rem] xl:w-[20rem]"
+                      data-tis-media="left"
+                      data-tilt="{{ esc_attr((string) $item['tilt_left']) }}">
+                      <div class="text-image-slider__polaroid relative aspect-[4/5] w-full overflow-hidden rounded-[6px] shadow-2xl shadow-deep-moss/30 ring-1 ring-deep-moss/10">
+                        {!! Image::render($item['image_left'], [
+                            'class' => 'absolute inset-0 size-full object-cover',
+                            'alt' => '',
+                            'role' => 'presentation',
+                        ]) !!}
+                      </div>
+                    </div>
+                  @endif
+
+                  @if($hasRightImage)
+                    <div
+                      class="text-image-slider__media text-image-slider__media--right pointer-events-none absolute right-[-22rem] top-1/2 w-[16rem] opacity-0 xl:right-[-24rem] xl:w-[18rem]"
+                      data-tis-media="right"
+                      data-tilt="{{ esc_attr((string) $item['tilt_right']) }}">
+                      <div class="text-image-slider__polaroid relative aspect-[4/5] w-full overflow-hidden rounded-[6px] shadow-2xl shadow-deep-moss/30 ring-1 ring-deep-moss/10">
+                        {!! Image::render($item['image_right'], [
+                            'class' => 'absolute inset-0 size-full object-cover',
+                            'alt' => '',
+                            'role' => 'presentation',
+                        ]) !!}
+                      </div>
+                    </div>
+                  @endif
+                </div>
+              @endif
             </div>
 
             @if($hasLeftImage || $hasRightImage)

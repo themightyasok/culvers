@@ -166,6 +166,33 @@
       </div>
     @endif
 
+    {{-- Heading + filter-toggle bar. Lives ABOVE the two-column band so the
+         "Show filter" pill stays visible after the panel is closed — otherwise
+         the button hides with the panel it lives in and users have no way to
+         bring the filter back (sheet feedback: matches the persistent filter
+         toolbar pattern used on the Shop / Eat & Drink archives). --}}
+    @if(! $isMapOnly && ($heading !== '' || $groups !== []))
+      <div class="{{ LayoutShell::INNER_MAX_GUTTERED }} centre-map__toolbar flex flex-wrap items-center justify-between gap-4 pt-12 md:pt-16 lg:pt-20">
+        @if($heading !== '')
+          {{-- Section H2 (64px desktop / 48px mobile) — see Component::sectionHeadingClasses(). --}}
+          <{{ $headingTag }} class="centre-map__heading {{ Component::sectionHeadingClasses('text-lighter-cream', 'm-0') }}">
+            {{ esc_html($heading) }}
+          </{{ $headingTag }}>
+        @endif
+        @if($groups !== [])
+          <button
+            type="button"
+            class="centre-map__filter-toggle inline-flex items-center justify-center rounded-full bg-glowleaf px-5 py-2 font-sans text-xs font-semibold uppercase tracking-widest text-deep-moss transition hover:bg-lighter-cream culvers-focus-ring-compact"
+            :aria-expanded="panelOpen.toString()"
+            aria-controls="centre-map-panel-groups"
+            @click="panelOpen = !panelOpen"
+            x-text="panelOpen ? {{ $hideLabelJson }} : {{ $showLabelJson }}">
+            {{ esc_html($filterButtonLabel) }}
+          </button>
+        @endif
+      </div>
+    @endif
+
     {{-- Two-column band. When the filter panel is closed (`panelOpen === false`) the grid collapses
          to a single column so the map fills the band — handled by `:class` switching the lg grid.
          Map-only mode (no heading / categories) skips the band markup entirely below. --}}
@@ -203,7 +230,7 @@
       </div>
     @else
     <div
-      class="{{ LayoutShell::INNER_MAX_GUTTERED }} centre-map__band relative grid grid-cols-1 gap-y-10 py-12 md:py-16 lg:gap-x-12"
+      class="{{ LayoutShell::INNER_MAX_GUTTERED }} centre-map__band relative grid grid-cols-1 gap-y-10 pb-12 pt-8 md:pb-16 md:pt-10 lg:gap-x-12"
       :class="panelOpen
         ? '{{ $panelPosition === 'right' ? 'lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]' : 'lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]' }}'
         : 'lg:grid-cols-1'">
@@ -212,28 +239,10 @@
         :class="panelOpen
           ? '{{ $panelPosition === 'right' ? 'lg:order-2' : 'lg:order-1' }}'
           : 'lg:hidden'">
-        <div class="flex flex-wrap items-center justify-between gap-4">
-          @if($heading !== '')
-            {{-- Section H2 (64px desktop / 48px mobile) — see Component::sectionHeadingClasses(). --}}
-            <{{ $headingTag }} class="centre-map__heading {{ Component::sectionHeadingClasses('text-lighter-cream') }}">
-              {{ esc_html($heading) }}
-            </{{ $headingTag }}>
-          @endif
-          <button
-            type="button"
-            class="centre-map__filter-toggle inline-flex items-center justify-center rounded-full bg-glowleaf px-5 py-2 font-sans text-xs font-semibold uppercase tracking-widest text-deep-moss transition hover:bg-lighter-cream culvers-focus-ring-compact"
-            :aria-expanded="panelOpen.toString()"
-            aria-controls="centre-map-panel-groups"
-            @click="panelOpen = !panelOpen"
-            x-text="panelOpen ? {{ $hideLabelJson }} : {{ $showLabelJson }}">
-            {{ esc_html($filterButtonLabel) }}
-          </button>
-        </div>
-
         @if($groups !== [])
           <ul
             id="centre-map-panel-groups"
-            class="centre-map__groups mt-8 divide-y divide-lighter-cream/15 border-y border-lighter-cream/15"
+            class="centre-map__groups divide-y divide-lighter-cream/15 border-y border-lighter-cream/15"
             x-show="panelOpen"
             x-transition.opacity.duration.150ms>
             @foreach($groups as $group)
