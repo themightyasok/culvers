@@ -122,15 +122,20 @@ export default function registerTextImageSliderAlpine(Alpine) {
         return;
       }
       const body = item.querySelector('[data-tis-body]');
-      const leftMedia = item.querySelector('[data-tis-media="left"]');
-      const rightMedia = item.querySelector('[data-tis-media="right"]');
+      /* Desktop wrappers live inside the panel; mobile wrappers live outside as
+         siblings. The two sets are size-class gated (hidden lg:contents / lg:hidden)
+         so we animate BOTH — only the visible set actually paints. */
+      const lefts = item.querySelectorAll(
+        '[data-tis-media="left"], [data-tis-media="left-mobile"]'
+      );
+      const rights = item.querySelectorAll(
+        '[data-tis-media="right"], [data-tis-media="right-mobile"]'
+      );
 
       if (this.reducedMotion) {
-        [body, leftMedia, rightMedia].forEach((el) => {
-          if (el instanceof HTMLElement) {
-            gsap.set(el, { clearProps: 'all', opacity: 1 });
-          }
-        });
+        if (body instanceof HTMLElement) {
+          gsap.set(body, { clearProps: 'all', opacity: 1 });
+        }
         this.applyTilts(item);
         return;
       }
@@ -146,66 +151,73 @@ export default function registerTextImageSliderAlpine(Alpine) {
         );
       }
 
-      const leftTilt = leftMedia instanceof HTMLElement ? Number(leftMedia.dataset.tilt || 0) : 0;
-      const rightTilt =
-        rightMedia instanceof HTMLElement ? Number(rightMedia.dataset.tilt || 0) : 0;
+      /* Desktop wrappers are absolutely positioned at top:50% and need to be
+         offset up by 50% of their own height to be visually centered against
+         the body. Mobile wrappers live in normal flow and only need 0. */
+      const baselineY = (el) =>
+        el.dataset.tisMedia === 'left' || el.dataset.tisMedia === 'right' ? -50 : 0;
 
-      if (leftMedia instanceof HTMLElement) {
+      lefts.forEach((el) => {
+        if (!(el instanceof HTMLElement)) {
+          return;
+        }
+        const tilt = Number(el.dataset.tilt || 0);
+        const base = baselineY(el);
         tl.fromTo(
-          leftMedia,
-          { opacity: 0, scale: 0.6, rotate: 0, x: -60, y: 20 },
+          el,
+          { opacity: 0, scale: 0.6, rotate: 0, xPercent: -20, yPercent: base + 4 },
           {
             opacity: 1,
             scale: 1,
-            rotate: leftTilt,
-            x: 0,
-            y: 0,
+            rotate: tilt,
+            xPercent: 0,
+            yPercent: base,
             duration: 0.7,
             ease: 'back.out(1.6)',
           },
           0.2
         );
-      }
-      if (rightMedia instanceof HTMLElement) {
+      });
+
+      rights.forEach((el) => {
+        if (!(el instanceof HTMLElement)) {
+          return;
+        }
+        const tilt = Number(el.dataset.tilt || 0);
+        const base = baselineY(el);
         tl.fromTo(
-          rightMedia,
-          { opacity: 0, scale: 0.6, rotate: 0, x: 60, y: 20 },
+          el,
+          { opacity: 0, scale: 0.6, rotate: 0, xPercent: 20, yPercent: base + 4 },
           {
             opacity: 1,
             scale: 1,
-            rotate: rightTilt,
-            x: 0,
-            y: 0,
+            rotate: tilt,
+            xPercent: 0,
+            yPercent: base,
             duration: 0.7,
             ease: 'back.out(1.6)',
           },
           0.32
         );
-      }
+      });
     },
 
     /** @param {HTMLElement} item */
     applyTilts(item) {
-      const left = item.querySelector('[data-tis-media="left"]');
-      const right = item.querySelector('[data-tis-media="right"]');
-      if (left instanceof HTMLElement) {
-        gsap.set(left, {
-          rotate: Number(left.dataset.tilt || 0),
+      const tiles = item.querySelectorAll('[data-tis-media]');
+      tiles.forEach((el) => {
+        if (!(el instanceof HTMLElement)) {
+          return;
+        }
+        const isDesktop = el.dataset.tisMedia === 'left' || el.dataset.tisMedia === 'right';
+        gsap.set(el, {
+          rotate: Number(el.dataset.tilt || 0),
           opacity: 1,
           scale: 1,
-          x: 0,
-          y: 0,
+          xPercent: 0,
+          yPercent: isDesktop ? -50 : 0,
         });
-      }
-      if (right instanceof HTMLElement) {
-        gsap.set(right, {
-          rotate: Number(right.dataset.tilt || 0),
-          opacity: 1,
-          scale: 1,
-          x: 0,
-          y: 0,
-        });
-      }
+      });
     },
   }));
 }
