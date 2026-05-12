@@ -31,7 +31,8 @@
       {{-- Clips stage scale so hover growth stays inside rounded chrome (no viewport bleed). --}}
       <div class="overflow-hidden rounded-3xl">
         <div
-          class="video-block__stage group relative rounded-3xl border-4 border-brand-500 bg-deep-moss motion-safe:transition-transform motion-safe:duration-700 motion-safe:ease-out motion-safe:hover:scale-[1.02] motion-safe:focus-within:scale-[1.02] motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:focus-within:scale-100"
+          {{-- Sheet feedback row 13: drop the hover scale ramp on the homepage video tile. --}}
+          class="video-block__stage group relative rounded-3xl border-4 border-brand-500 bg-deep-moss"
           x-data="videoBlock()"
           role="region"
           aria-label="{{ esc_attr__('Video', 'culvers') }}">
@@ -41,7 +42,7 @@
           <div class="absolute inset-0 z-0 size-full" data-background-parallax-image="1">
             <video
               x-ref="video"
-              class="video-block__video absolute inset-0 z-0 size-full object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:ease-out motion-safe:group-hover:scale-[1.06] motion-safe:group-focus-within:scale-[1.06] motion-reduce:group-hover:scale-100 motion-reduce:group-focus-within:scale-100"
+              class="video-block__video absolute inset-0 z-0 size-full object-cover"
               data-gsap-autoplay="off"
               data-video-manual-start="1"
               preload="{{ $posterUrl !== '' ? 'none' : 'metadata' }}"

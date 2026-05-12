@@ -116,8 +116,14 @@
    * Always use the partial when you can: `@include('components.button', […])`
    * — consult `resources/views/components/button.blade.php` for the API.
    */
+  /*
+   * Sheet feedback row 8: "reduce the size of the button and bump up the font size slightly".
+   * Figma button (51:9351 / 51:7993) is 12.887 px Commuters SemiBold / lh 30.928 / 0.6443 px
+   * tracking on a 46 px pill — so we bump font from 12 → 13 (text-[13px]) and tighten the
+   * line-height from 32 → 28 (leading-[28px]) which shrinks the resting pill height by ~4 px.
+   */
   .btn {
-    @apply inline-flex shrink-0 cursor-pointer items-center justify-center rounded-full border border-transparent font-label text-xs font-semibold leading-8 whitespace-nowrap uppercase tracking-wider antialiased transition-[padding,background-color,color,border-color] duration-150 ease-out;
+    @apply inline-flex shrink-0 cursor-pointer items-center justify-center rounded-full border border-transparent font-label text-[13px] font-semibold leading-[28px] whitespace-nowrap uppercase tracking-[0.05em] antialiased transition-[padding,background-color,color,border-color] duration-150 ease-out;
   }
 
   .btn:focus-visible {
@@ -160,10 +166,9 @@
    * a hero CTA, a form CTA, and an inline CTA all hover the same way.
    */
   .btn-large {
-    /* Hero / info-block banner CTA: chunkier resting padding, hover delta
-       proportional to the default ramp (~+33%). Stays within tracked
-       `.btn` transition list so the widen stays animated. */
-    @apply px-10 py-3 hover:px-14 md:px-12 md:hover:px-16;
+    /* Hero / info-block banner CTA — slimmer than v1 per sheet feedback, but still
+       proportionally chunkier than the default `.btn`. Hover-widen ramp preserved. */
+    @apply px-8 py-2.5 hover:px-11 md:px-10 md:hover:px-14;
   }
 
   .btn-form {

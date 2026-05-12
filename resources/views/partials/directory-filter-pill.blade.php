@@ -31,7 +31,11 @@
 <button
   id="{{ esc_attr($pill_toggle_id) }}"
   type="button"
-  class="directory-archive__filter-pill inline-flex w-max max-w-full items-center gap-3 rounded-full bg-brand-500 py-2 pl-6 pr-5 font-sans text-xs font-semibold uppercase leading-8 tracking-wider text-deep-moss transition hover:brightness-95 culvers-focus-ring-deep-moss"
+  {{-- Sheet feedback row 18: filter pill should read in Halyard Display (not the all-caps Commuters
+       look) and the icon should be slightly larger. Dropped uppercase / tracking, bumped weight
+       from semibold (which reads SemiBold) to medium and pad slightly larger so the label sits
+       comfortably on a single line. --}}
+  class="directory-archive__filter-pill inline-flex w-max max-w-full items-center gap-3 rounded-full bg-brand-500 py-2 pl-6 pr-5 font-sans text-base font-medium normal-case leading-8 tracking-normal text-deep-moss transition hover:brightness-95 culvers-focus-ring-deep-moss"
   @click="toggleFilters()"
   :aria-expanded="filtersVisible ? 'true' : 'false'"
   aria-controls="{{ esc_attr($pill_controls_id) }}">
@@ -39,7 +43,7 @@
   {{-- Icons: detailed close glyph when filters are visible, compact slider
        glyph when they're hidden — matches Figma toolbar states. --}}
   <svg
-    class="size-5 shrink-0"
+    class="size-6 shrink-0"
     x-show="filtersVisible"
     x-cloak
     viewBox="0 0 24 24"
@@ -52,7 +56,11 @@
       stroke-linecap="round"
       stroke-linejoin="round" />
   </svg>
-  <svg class="h-3 w-[18px] shrink-0" x-show="!filtersVisible" x-cloak viewBox="0 0 24 24" fill="none" aria-hidden="true">
-    <path d="M4 6h16M8 12h8M10 18h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+  {{-- Figma toolbar sliders glyph: horizontal rails with adjustable dot handles. --}}
+  <svg class="h-5 w-[22px] shrink-0" x-show="!filtersVisible" x-cloak viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path d="M4 6h6m4 0h6M4 12h2m4 0h10M4 18h12m4 0h0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+    <circle cx="12" cy="6" r="1.8" fill="currentColor" />
+    <circle cx="8" cy="12" r="1.8" fill="currentColor" />
+    <circle cx="18" cy="18" r="1.8" fill="currentColor" />
   </svg>
 </button>

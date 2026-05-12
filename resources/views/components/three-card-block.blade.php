@@ -184,11 +184,21 @@
                       class="pointer-events-none absolute inset-0 z-10 bg-black/25"></span>
                   </span>
 
-                  {{-- Figma: title is Canela 45.7px regardless of media type. --}}
+                  {{-- Sheet feedback row 11: hover state. Title turns Glowleaf and an "Explore"
+                       pill button reveals below it (motion-safe only — reduced-motion users see
+                       the resting state). Stack lives in a flex column so the centred resting
+                       title and the post-hover button form one centred block. --}}
                   <span
-                    {{-- Card title — Figma mobile 36 px (H2 Mobile token), desktop 46 px. --}}
-                    class="relative z-10 flex w-full flex-1 items-center justify-center px-6 py-10 text-center font-heading text-[36px] leading-[1.1] text-white md:text-[46px] md:leading-none">
-                    {{ esc_html($title) }}
+                    class="relative z-10 flex w-full flex-1 flex-col items-center justify-center gap-5 px-6 py-10 text-center">
+                    <span
+                      class="font-heading text-[36px] leading-[1.1] text-white transition-colors duration-300 ease-out motion-safe:group-hover/card:text-glowleaf motion-safe:group-focus-within/card:text-glowleaf md:text-[46px] md:leading-none">
+                      {{ esc_html($title) }}
+                    </span>
+                    <span
+                      aria-hidden="true"
+                      class="inline-flex items-center justify-center rounded-full border border-glowleaf bg-transparent px-7 py-2 font-label text-[13px] font-semibold uppercase leading-[28px] tracking-[0.05em] text-glowleaf opacity-0 transition-opacity duration-300 ease-out motion-safe:group-hover/card:opacity-100 motion-safe:group-focus-within/card:opacity-100 motion-reduce:hidden">
+                      {{ __('Explore', 'culvers') }}
+                    </span>
                   </span>
                 </a>
               @endif

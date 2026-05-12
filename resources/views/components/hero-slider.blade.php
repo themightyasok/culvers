@@ -127,14 +127,14 @@
                     class="hero-slider__stage relative z-10 flex min-h-[100svh] w-full items-center px-4 pb-16 pt-[length:var(--site-header-offset,11.25rem)] md:px-5 lg:px-6 {{ esc_attr($justify) }}">
                     <div class="hero-slider__copy pointer-events-auto max-w-[40rem] motion-safe:transition-opacity motion-safe:duration-300 motion-safe:ease-out {{ esc_attr($textAlign) }}">
                       @if($headline !== '')
-                        {{-- Figma homepage hero: Canela 96px / lh 96 / tracking 0 (Glowleaf);
-                             kicker Commuters 20px / lh 24 / tracking 4px (uppercase). --}}
-                        {{-- Hero H1 — Figma desktop 96 px (Hero token), Figma mobile 46 px (H1 Mobile token).
-                             Tailwind ramp 46 / 64 / 84 / 96 ≈ text-5xl / text-7xl / text-8xl / text-9xl;
-                             leading 1 on display sizes, 1.1 on the mobile step to match the Mobile/Titles
-                             token. --}}
+                        @php
+                          /* Sheet feedback row 5: hero title needs to break to two lines. Editors author
+                             either real newlines OR `<br />` literals in the ACF Headline; normalise both
+                             to a newline before escaping so the rendered output is a single safe `<br>`. */
+                          $headlineSafe = preg_replace('#<br\s*/?>#i', "\n", $headline);
+                        @endphp
                         <{{ $headingTag }} class="font-heading text-5xl leading-[1.1] text-brand-500 sm:text-7xl sm:leading-none md:text-8xl lg:text-9xl">
-                          {!! nl2br(e($headline)) !!}
+                          {!! nl2br(e($headlineSafe)) !!}
                         </{{ $headingTag }}>
                       @endif
 

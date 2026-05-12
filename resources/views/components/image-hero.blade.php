@@ -125,7 +125,8 @@
         @endif
 
         @if(! $titleInImage && ! empty($subParts))
-          <p class="image-hero__subtitle mt-6 max-w-2xl font-sans text-base font-semibold uppercase leading-tight tracking-[0.2em] text-white md:text-lg lg:text-xl">
+          {{-- Sheet feedback row 21: page-hero secondary line should be Commuter Sans (Figma 51:9080 etc). --}}
+          <p class="image-hero__subtitle mt-6 max-w-2xl font-label text-base font-semibold uppercase leading-[1.4] tracking-[0.2em] text-white md:text-lg lg:text-xl">
             @foreach($subParts as $i => $line)
               @if($i > 0)
                 <br />

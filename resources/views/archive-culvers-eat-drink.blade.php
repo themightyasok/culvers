@@ -67,7 +67,8 @@
   @include('components.image-hero', ['component' => $eatDrinkArchiveHero])
 
   {{-- Match header/footer: gutter padding outside, `max-w-8xl` inner only. --}}
-  <section class="directory-archive bg-lighter-cream pb-16 pt-10 md:pb-28 md:pt-12" x-data="directoryArchive">
+  {{-- Sheet feedback row 21: same intro-padding trim as shop archive. --}}
+  <section class="directory-archive bg-lighter-cream pb-16 pt-6 md:pb-28 md:pt-8" x-data="directoryArchive">
     <div class="px-4 md:px-12">
       <div class="mx-auto w-full max-w-8xl">
         {{-- `wpautop()` wraps the intro in its own <p>, so we use a <div> here.
@@ -138,4 +139,14 @@
       </div>
     </div>
   </section>
+
+  {{-- Sheet feedback row 21: Eat & Drink archive needs the same "what next?" strip as Shops.
+       Re-use the shared `ShopArchiveThreeCard` payload (heading + view-all + recent feature posts);
+       the editor controls all three cards centrally via the Site Options page. --}}
+  @php $eatDrinkArchiveStories = \App\Directory\ShopArchiveThreeCard::componentOrNull(); @endphp
+  @if ($eatDrinkArchiveStories !== null)
+    <div class="bg-lighter-cream px-4 md:px-12">
+      @include('components.three-card-block', ['component' => $eatDrinkArchiveStories])
+    </div>
+  @endif
 @endsection

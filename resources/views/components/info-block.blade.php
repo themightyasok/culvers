@@ -52,7 +52,7 @@
 
 @if($hasIntro || $hasGrid)
   <section
-    class="info-block {{ esc_attr($root) }} relative bg-white py-12 text-deep-moss lg:py-16"
+    class="info-block {{ esc_attr($root) }} relative bg-lighter-cream py-12 text-deep-moss lg:py-16"
     data-component-root
     data-info-block>
     <div class="relative z-10 {{ LayoutShell::INNER_MAX_GUTTERED }}">
@@ -94,25 +94,28 @@
       @endif
 
       @if($hasGrid)
+        {{-- Sheet feedback row 14: homepage icon section needs tighter spacing in the cells +
+             the descriptive (secondary) text in Commuter Sans on visibly separated lines.
+             Lines stack vertically with explicit gap so the uppercase chips read as a list. --}}
         <div
-          class="{{ $hasIntro ? 'mt-12 md:mt-16' : '' }} mx-auto grid w-full max-w-7xl grid-cols-1 gap-px bg-deep-moss/15 md:grid-cols-2 lg:grid-cols-4">
+          class="{{ $hasIntro ? 'mt-12 md:mt-16' : '' }} mx-auto grid w-full max-w-7xl grid-cols-1 gap-px bg-faded-olive/15 md:grid-cols-2 lg:grid-cols-4">
           @foreach($cells as $cell)
             <article
-              class="flex aspect-square flex-col items-center justify-center gap-4 bg-white px-5 py-8 text-center sm:px-8 sm:py-10 lg:px-10">
+              class="flex aspect-square flex-col items-center justify-center gap-3 bg-lighter-cream px-4 py-6 text-center sm:px-6 sm:py-7 lg:px-7">
               @if($cell['image'] !== null)
-                <div class="flex h-[7rem] w-full shrink-0 items-center justify-center sm:h-[8rem]">
+                <div class="flex h-[6rem] w-full shrink-0 items-center justify-center sm:h-[7rem]">
                   {!! Image::render($cell['image'], [
-                      'class' => 'max-h-full max-w-[min(100%,12rem)] object-contain text-deep-moss sm:max-w-[min(100%,13rem)]',
+                      'class' => 'max-h-full max-w-[min(100%,11rem)] object-contain text-deep-moss sm:max-w-[min(100%,12rem)]',
                   ]) !!}
                 </div>
               @endif
-              {{-- Figma cells: Canela ~42px → text-3xl; label Commuters 12px / lh 24 / tracking 1px. --}}
+              {{-- Figma cells: Canela ~42px → text-4xl; label Commuters 12px / lh 24 / tracking 1px. --}}
               <h3 class="font-heading text-4xl text-faded-olive">
                 {{ esc_html($cell['title']) }}
               </h3>
               @if($cell['description'] !== '')
                 <p
-                  class="mt-2 max-w-[min(100%,18rem)] font-sans text-xs font-semibold uppercase leading-6 tracking-widest text-faded-olive md:max-w-[min(100%,22rem)]">
+                  class="max-w-[min(100%,18rem)] font-label text-[12px] font-semibold uppercase leading-7 tracking-[0.08em] text-faded-olive md:max-w-[min(100%,22rem)] [&_br]:block">
                   {!! nl2br(e($cell['description'])) !!}
                 </p>
               @endif

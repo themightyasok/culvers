@@ -118,7 +118,9 @@
                                 x-bind:aria-expanded="megaOpenId === {{ $branch['id'] }} ? 'true' : 'false'"
                                 aria-haspopup="true"
                                 aria-controls="mega-panel-{{ $branch['id'] }}">
-                                <span class="font-heading font-light text-base leading-6">{{ $branch['title'] }}</span>
+                                {{-- Sheet feedback row 4: primary nav font should be Halyard Display, not Canela.
+                                     Figma menu spec: Halyard Display Book 16 / lh 1.4 / White on the olive band. --}}
+                                <span class="font-sans font-medium text-base leading-6">{{ $branch['title'] }}</span>
                                 <span class="mega-nav__chevron relative ms-0.5 inline-flex size-3 shrink-0 items-center justify-center" aria-hidden="true">
                                   <svg
                                     class="size-3"
@@ -150,7 +152,7 @@
                               </button>
                             @else
                               <a
-                                class="inline-flex items-center gap-2 font-heading font-light text-base capitalize leading-6 text-white transition-colors hover:text-glowleaf culvers-focus-ring"
+                                class="inline-flex items-center gap-2 font-sans font-medium text-base capitalize leading-6 text-white transition-colors hover:text-glowleaf culvers-focus-ring"
                                 href="{{ esc_url($branch['url']) }}">
                                 {{ $branch['title'] }}
                               </a>
@@ -170,17 +172,20 @@
                     aria-controls="site-header-search"
                     x-on:click="openSearch()">
                     <span class="sr-only">{{ __('Open search', 'culvers') }}</span>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    {{-- Sheet feedback row 6: bigger search icon. --}}
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                       <circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="1.6" />
                       <path d="m16.5 16.5 4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
                     </svg>
                   </button>
 
                   <div class="mega-nav__utilities hidden shrink-0 items-center lg:flex lg:gap-[18px]">
+                  {{-- Sheet feedback rows 4 + 6: utility icons should be bigger per Figma
+                       (Centre Map / Getting Here pictograms read at ~20 px on the desktop band). --}}
                   <a
                     class="inline-flex items-center gap-2 text-white transition-opacity hover:opacity-90 focus-visible:rounded-sm culvers-focus-ring"
                     href="{{ esc_url($mapUrl) }}">
-                    <svg class="shrink-0" width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <svg class="shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                       <path
                         d="M9 3 3 8v12h6V3Zm6 0 6 5v12h-6V3Z"
                         stroke="currentColor"
@@ -188,14 +193,12 @@
                         stroke-linejoin="round" />
                       <circle cx="12" cy="10" r="2.25" stroke="currentColor" stroke-width="1.4" />
                     </svg>
-                    {{-- Figma: Halyard Display Book 14px / lh 22.5 — `font-medium` (500) is the
-                         closest Adobe Typekit weight we ship for the Book cut. --}}
                     <span class="font-sans text-sm font-medium leading-[22px] text-white">{{ __('Centre Map', 'culvers') }}</span>
                   </a>
                   <a
                     class="inline-flex items-center gap-2 text-white transition-opacity hover:opacity-90 focus-visible:rounded-sm culvers-focus-ring"
                     href="{{ esc_url($hereUrl) }}">
-                    <svg class="shrink-0" width="13" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <svg class="shrink-0" width="18" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                       <path
                         d="M12 21s7-4.35 7-11a7 7 0 1 0-14 0c0 6.65 7 11 7 11Z"
                         stroke="currentColor"
@@ -212,7 +215,8 @@
                     aria-controls="site-header-search"
                     x-on:click="openSearch()">
                     <span class="sr-only">{{ __('Open search', 'culvers') }}</span>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    {{-- Sheet feedback row 6: bigger search icon, tighter spacing inside pill. --}}
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                       <circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="1.6" />
                       <path d="m16.5 16.5 4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
                     </svg>
@@ -455,9 +459,10 @@
       <div
         class="flex h-full min-h-0 w-[200%] transition-transform duration-300 ease-[cubic-bezier(0.33,1,0.68,1)] motion-reduce:transition-none"
         :class="mobileNavDepth === 0 ? 'translate-x-0' : '-translate-x-1/2'">
-        {{-- Root panel --}}
+        {{-- Root panel — sheet feedback row 5: tighter horizontal padding (text closer to edges)
+             + bottom block pinned to bottom of the panel (Useful Links + socials). --}}
         <div
-          class="flex h-full w-1/2 min-w-[50%] flex-col overflow-y-auto overscroll-contain px-5 pb-10 pt-2 sm:px-6"
+          class="flex h-full w-1/2 min-w-[50%] flex-col overflow-y-auto overscroll-contain px-4 pb-6 pt-2 sm:px-5"
           id="mega-mobile-panel-root"
           :aria-hidden="mobileNavDepth === 1">
           <nav aria-label="{{ esc_attr__('Primary navigation', 'culvers') }}">
@@ -507,19 +512,23 @@
             @endif
           </nav>
 
-          <div class="mt-10 pt-8">
+          {{-- Useful Links + socials block pinned to bottom of the drawer panel (sheet feedback row 5:
+               "They also need to always remain at the bottom of the menu"). `mt-auto` shoves the
+               whole footer block down when the nav list is shorter than the viewport. --}}
+          <div class="mt-auto pt-8">
             {{-- Figma `51:9059`: Commuters SemiBold 16 / lh 24 / 1 px tracking / Faded Olive / centred. --}}
             <p class="text-center font-label text-base font-semibold uppercase leading-6 tracking-[0.0625em] text-faded-olive">
               {{ __('Useful links', 'culvers') }}
             </p>
-            {{-- Figma mobile nav: one pale-sage pill with two inline links, then one glowleaf pill for social (not four separate tiles). --}}
             <div class="mt-5 flex flex-col gap-3">
+              {{-- Figma `51:9087` Centre Map / Getting Here pill — Light Green at 60 %, Halyard
+                   Display Book 20 / lh 1.3 / Faded Olive, 24 px icon. --}}
               <div
-                class="flex min-h-12 divide-x divide-deep-moss/15 overflow-hidden rounded-full bg-light-green text-deep-moss">
+                class="flex min-h-[61px] divide-x divide-faded-olive/15 overflow-hidden rounded-[12px] bg-light-green/60 text-faded-olive">
                 <a
-                  class="flex flex-1 items-center gap-2.5 px-4 py-3.5 text-left font-sans text-sm font-medium leading-snug transition-colors hover:bg-deep-moss/[0.06] culvers-focus-ring-compact min-[360px]:gap-3 min-[360px]:px-5"
+                  class="flex flex-1 items-center gap-3 px-5 py-3 text-left font-sans text-xl font-light leading-[1.3] transition-colors hover:bg-faded-olive/[0.06] culvers-focus-ring-compact-faded-olive"
                   href="{{ esc_url($mapUrl) }}">
-                  <svg class="size-5 shrink-0 text-deep-moss" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <svg class="size-6 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <path
                       d="M4 6.75 12 3l8 3.75v8.5L12 21l-8-5.75v-8.5Z"
                       stroke="currentColor"
@@ -530,9 +539,9 @@
                   <span class="min-w-0">{{ __('Centre Map', 'culvers') }}</span>
                 </a>
                 <a
-                  class="flex flex-1 items-center gap-2.5 px-4 py-3.5 text-left font-sans text-sm font-medium leading-snug transition-colors hover:bg-deep-moss/[0.06] culvers-focus-ring-compact min-[360px]:gap-3 min-[360px]:px-5"
+                  class="flex flex-1 items-center gap-3 px-5 py-3 text-left font-sans text-xl font-light leading-[1.3] transition-colors hover:bg-faded-olive/[0.06] culvers-focus-ring-compact-faded-olive"
                   href="{{ esc_url($hereUrl) }}">
-                  <svg class="size-5 shrink-0 text-deep-moss" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <svg class="size-6 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <path
                       d="M12 20s7-4.35 7-11a7 7 0 1 0-14 0c0 6.65 7 11 7 11Z"
                       stroke="currentColor"
@@ -544,39 +553,41 @@
                 </a>
               </div>
 
+              {{-- Figma `51:9095` socials pill — Glowleaf at 60 %, Commuters SemiBold 14.5 /
+                   lh 29 / 1.2 px tracking / uppercase / 24 px icon. --}}
               <div
-                class="flex min-h-12 divide-x divide-deep-moss/20 overflow-hidden rounded-full bg-glowleaf text-deep-moss">
+                class="flex min-h-[57px] divide-x divide-faded-olive/20 overflow-hidden rounded-[12px] bg-glowleaf/60 text-faded-olive">
                 @if($instagramUrl !== '' && $instagramUrl !== '#')
                   <a
-                    class="flex flex-1 items-center gap-2.5 px-4 py-3.5 text-left font-sans text-sm font-semibold uppercase leading-snug tracking-wide transition-colors hover:bg-deep-moss/[0.07] culvers-focus-ring-compact-deep-moss min-[360px]:gap-3 min-[360px]:px-5"
+                    class="flex flex-1 items-center justify-center gap-3 px-4 py-3 text-center font-label text-[14.5px] font-semibold uppercase leading-[29px] tracking-[0.08em] transition-colors hover:bg-faded-olive/[0.07] culvers-focus-ring-compact-faded-olive"
                     href="{{ esc_url($instagramUrl) }}"
                     target="_blank"
                     rel="noopener noreferrer">
-                    <svg class="size-5 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.25" />
-                      <circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="1.25" />
-                      <circle cx="17.5" cy="6.5" r="1.1" fill="currentColor" />
+                    <svg class="size-6 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.4" />
+                      <circle cx="12" cy="12" r="3.6" stroke="currentColor" stroke-width="1.4" />
+                      <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" />
                     </svg>
                     <span class="min-w-0">{{ __('Instagram', 'culvers') }}</span>
                   </a>
                 @else
                   <span
-                    class="flex flex-1 cursor-not-allowed items-center gap-2.5 px-4 py-3.5 text-left font-sans text-sm font-semibold uppercase leading-snug tracking-wide text-deep-moss/45 min-[360px]:gap-3 min-[360px]:px-5">
-                    <svg class="size-5 shrink-0 opacity-50" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.25" />
-                      <circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="1.25" />
-                      <circle cx="17.5" cy="6.5" r="1.1" fill="currentColor" />
+                    class="flex flex-1 cursor-not-allowed items-center justify-center gap-3 px-4 py-3 text-center font-label text-[14.5px] font-semibold uppercase leading-[29px] tracking-[0.08em] text-faded-olive/45">
+                    <svg class="size-6 shrink-0 opacity-50" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.4" />
+                      <circle cx="12" cy="12" r="3.6" stroke="currentColor" stroke-width="1.4" />
+                      <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" />
                     </svg>
                     <span class="min-w-0">{{ __('Instagram', 'culvers') }}</span>
                   </span>
                 @endif
                 @if($facebookUrl !== '' && $facebookUrl !== '#')
                   <a
-                    class="flex flex-1 items-center gap-2.5 px-4 py-3.5 text-left font-sans text-sm font-semibold uppercase leading-snug tracking-wide transition-colors hover:bg-deep-moss/[0.07] culvers-focus-ring-compact-deep-moss min-[360px]:gap-3 min-[360px]:px-5"
+                    class="flex flex-1 items-center justify-center gap-3 px-4 py-3 text-center font-label text-[14.5px] font-semibold uppercase leading-[29px] tracking-[0.08em] transition-colors hover:bg-faded-olive/[0.07] culvers-focus-ring-compact-faded-olive"
                     href="{{ esc_url($facebookUrl) }}"
                     target="_blank"
                     rel="noopener noreferrer">
-                    <svg class="size-5 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <svg class="size-6 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                       <path
                         d="M14 8h3V5h-3c-2.2 0-4 1.8-4 4v2H7v3h3v8h3v-8h3.2l.8-3H13v-2c0-.6.4-1 1-1Z" />
                     </svg>
@@ -584,8 +595,8 @@
                   </a>
                 @else
                   <span
-                    class="flex flex-1 cursor-not-allowed items-center gap-2.5 px-4 py-3.5 text-left font-sans text-sm font-semibold uppercase leading-snug tracking-wide text-deep-moss/45 min-[360px]:gap-3 min-[360px]:px-5">
-                    <svg class="size-5 shrink-0 opacity-50" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    class="flex flex-1 cursor-not-allowed items-center justify-center gap-3 px-4 py-3 text-center font-label text-[14.5px] font-semibold uppercase leading-[29px] tracking-[0.08em] text-faded-olive/45">
+                    <svg class="size-6 shrink-0 opacity-50" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                       <path
                         d="M14 8h3V5h-3c-2.2 0-4 1.8-4 4v2H7v3h3v8h3v-8h3.2l.8-3H13v-2c0-.6.4-1 1-1Z" />
                     </svg>
@@ -596,7 +607,7 @@
             </div>
             <button
               type="button"
-              class="mt-6 font-sans text-sm font-semibold uppercase tracking-widest text-deep-moss/70 underline decoration-glowleaf decoration-2 underline-offset-4 hover:text-deep-moss focus-visible:rounded-sm culvers-focus-ring"
+              class="mt-6 font-sans text-sm font-semibold uppercase tracking-widest text-faded-olive/70 underline decoration-glowleaf decoration-2 underline-offset-4 hover:text-faded-olive focus-visible:rounded-sm culvers-focus-ring"
               x-on:click="openSearchFromMobile()">
               {{ __('Search', 'culvers') }}
             </button>

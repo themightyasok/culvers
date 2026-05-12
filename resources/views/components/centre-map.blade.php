@@ -97,9 +97,6 @@
       $groups[] = $groupBuckets[$key];
   }
 
-  $hasContent = $heading !== '' || $eyebrow !== '' || $bodyLines !== []
-      || $imageUrl !== '' || $groups !== [];
-
   /*
    * Map-only mode: when the author has supplied only an image (no heading,
    * no categories), render a single full-width map and skip the filter
@@ -108,6 +105,12 @@
    * block — no sidebar.
    */
   $isMapOnly = $heading === '' && $eyebrow === '' && $bodyLines === [] && $groups === [];
+
+  /* With the Google Maps embed fallback in place, an empty centre_map block
+     still renders a functional map — so always consider this component as
+     having content unless we're explicitly suppressed. */
+  $hasContent = $heading !== '' || $eyebrow !== '' || $bodyLines !== []
+      || $imageUrl !== '' || $groups !== [] || $isMapOnly;
 
   $expandedGroupSlug = $groups !== [] ? $groups[0]['slug'] : '';
   /**
@@ -137,7 +140,10 @@
   @endif
 @else
   <section
-    class="centre-map {{ esc_attr($root) }} bg-deep-moss text-lighter-cream"
+    {{-- Stable anchor for header nav deep-link (sheet feedback row 4: "Centre Map menu item
+         should take you to the map section on the page, not the top"). --}}
+    id="centre-map"
+    class="centre-map {{ esc_attr($root) }} bg-deep-moss text-lighter-cream scroll-mt-32"
     data-component-root
     data-centre-map
     data-panel-position="{{ esc_attr($panelPosition) }}"
@@ -178,6 +184,21 @@
               'loading' => 'lazy',
               'decoding' => 'async',
           ]) !!}
+        </div>
+      </div>
+    @elseif($isMapOnly)
+      {{-- Sheet feedback row 23: when no centre-map artwork is uploaded, fall back to a
+           functional Google Maps embed for Culver Square so the band stays useful. The
+           free Embed iframe needs no API key, so this works on any environment. --}}
+      <div class="{{ LayoutShell::INNER_MAX_GUTTERED }} centre-map__band centre-map__band--map-only relative py-12 md:py-16">
+        <div class="centre-map__map-only relative aspect-[1401/570] w-full overflow-hidden rounded-[12px]">
+          <iframe
+            class="absolute inset-0 size-full border-0"
+            src="https://www.google.com/maps?q=Culver%20Square%20Colchester%20CO1%201JN&output=embed"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            title="{{ esc_attr__('Culver Square on Google Maps', 'culvers') }}"
+            aria-label="{{ esc_attr__('Culver Square on Google Maps', 'culvers') }}"></iframe>
         </div>
       </div>
     @else

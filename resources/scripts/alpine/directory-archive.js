@@ -16,13 +16,30 @@ export default function registerDirectoryArchiveAlpine(Alpine) {
       const params = new URLSearchParams(window.location.search);
       const cat = params.get('category');
       const typ = params.get('type');
+      const hasUrlFilter =
+        (typeof cat === 'string' && cat !== '') || (typeof typ === 'string' && typ !== '');
       if (typeof cat === 'string' && cat !== '') {
         this.categorySlug = cat;
       }
       if (typeof typ === 'string' && typ !== '') {
         this.typeSlug = typ;
       }
-      this.$nextTick(() => this.applyFilter());
+      this.$nextTick(() => {
+        this.applyFilter();
+        // Sheet feedback row 18: when a directory is deep-linked from the mega menu
+        // (`/shops/?category=fashion`), scroll the filtered grid into view instead of
+        // landing on the hero. Smooth-scroll runs after the grid layout settles so
+        // the filtered cards are what the user actually sees.
+        if (hasUrlFilter) {
+          requestAnimationFrame(() => {
+            const grid = this.$refs.grid;
+            if (grid instanceof HTMLElement) {
+              const top = grid.getBoundingClientRect().top + window.scrollY - 96;
+              window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+            }
+          });
+        }
+      });
     },
 
     toggleFilters() {
@@ -33,11 +50,30 @@ export default function registerDirectoryArchiveAlpine(Alpine) {
     setCategory(slug) {
       this.categorySlug = typeof slug === 'string' ? slug : '';
       this.applyFilter();
+      this.syncUrl();
     },
 
     setType(slug) {
       this.typeSlug = typeof slug === 'string' ? slug : '';
       this.applyFilter();
+      this.syncUrl();
+    },
+
+    syncUrl() {
+      const params = new URLSearchParams(window.location.search);
+      if (this.categorySlug) {
+        params.set('category', this.categorySlug);
+      } else {
+        params.delete('category');
+      }
+      if (this.typeSlug) {
+        params.set('type', this.typeSlug);
+      } else {
+        params.delete('type');
+      }
+      const qs = params.toString();
+      const next = `${window.location.pathname}${qs ? `?${qs}` : ''}${window.location.hash}`;
+      window.history.replaceState({}, '', next);
     },
 
     applyFilter() {

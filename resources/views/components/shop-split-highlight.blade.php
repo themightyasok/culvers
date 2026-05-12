@@ -223,9 +223,10 @@
           @endif
         </div>
 
-        {{-- Image column: fills grid row height; inner layers are absolute + object-cover. --}}
+        {{-- Image column: fills grid row height; inner layers are absolute + object-cover.
+             Sheet feedback row 24: taller box on lg so History/About sits with more breathing room. --}}
         <div
-          class="shop-split-highlight__media relative min-h-[280px] w-full overflow-hidden max-lg:order-2 {{ $ratio === '50-50' ? 'lg:col-span-6' : 'lg:col-span-5' }} lg:min-h-0">
+          class="shop-split-highlight__media relative min-h-[280px] w-full overflow-hidden max-lg:order-2 {{ $ratio === '50-50' ? 'lg:col-span-6' : 'lg:col-span-5' }} lg:min-h-[520px]">
           @if($hasTabs && ! $tabsMediaUniform)
             @foreach($tabs as $i => $tab)
               @php $mUrl = $tab['media_url']; @endphp

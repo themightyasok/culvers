@@ -57,7 +57,9 @@
   @include('components.image-hero', ['component' => $shopsArchiveHero])
 
   {{-- Match header/footer: gutter padding outside, `max-w-8xl` inner only (see `site-footer__columns`, header shell). --}}
-  <section class="directory-archive bg-lighter-cream pb-16 pt-10 md:pb-28 md:pt-12" x-data="directoryArchive">
+  {{-- Sheet feedback row 18: trim the gap above the intro paragraph so the hero and intro read as
+       one band instead of leaving a chunky empty stripe. --}}
+  <section class="directory-archive bg-lighter-cream pb-16 pt-6 md:pb-28 md:pt-8" x-data="directoryArchive">
     <div class="px-4 md:px-12">
       <div class="mx-auto w-full max-w-8xl">
         {{-- <div> wrapper (not <p>) so cascading text-center / typography

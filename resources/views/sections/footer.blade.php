@@ -132,8 +132,10 @@
                 action="{{ esc_url($newsletterAction ?? '#') }}"
                 @if($newsletterAction === null) onsubmit="event.preventDefault(); return false;" @endif>
                 <label class="sr-only" for="footer-newsletter-email">{{ __('Email address', 'culvers') }}</label>
+                {{-- Sheet feedback row 11: reduce size of the email pill (Figma 2:1118 is 46 px tall).
+                     Tightened padding to py-1 + input min-h-[38px] + size-9 button → ~46 px overall. --}}
                 <div
-                  class="flex items-center gap-2 rounded-full border-2 border-glowleaf bg-transparent px-5 py-2.5 md:px-6 md:py-3">
+                  class="flex items-center gap-2 rounded-full border-[1.5px] border-glowleaf bg-transparent px-4 py-1 md:px-5">
                   <input
                     id="footer-newsletter-email"
                     name="EMAIL"
@@ -141,10 +143,10 @@
                     autocomplete="email"
                     placeholder="{{ esc_attr(FooterCustomizer::newsletterPlaceholder()) }}"
                     {{-- Figma `2:1118` placeholder: Commuters SemiBold 12.887 / lh 30.928 / 0.6443 px tracking / uppercase. --}}
-                    class="min-h-[44px] flex-1 border-0 bg-transparent font-label text-[13px] font-semibold uppercase leading-[30px] tracking-[0.05em] text-lighter-cream placeholder:text-lighter-cream/75 placeholder:uppercase focus:ring-0 focus:outline-none md:text-sm" />
+                    class="min-h-[38px] flex-1 border-0 bg-transparent font-label text-[13px] font-semibold uppercase leading-[30px] tracking-[0.05em] text-lighter-cream placeholder:text-lighter-cream/75 placeholder:uppercase focus:ring-0 focus:outline-none md:text-sm" />
                   <button
                     type="submit"
-                    class="inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full text-lighter-cream transition-colors hover:bg-white/10 culvers-focus-ring"
+                    class="inline-flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-lighter-cream transition-colors hover:bg-white/10 culvers-focus-ring"
                     aria-label="{{ esc_attr__('Subscribe', 'culvers') }}">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                       <path
@@ -177,7 +179,9 @@
           </h2>
           @php $addr = FooterCustomizer::gettingHereAddress(); @endphp
           @if($addr !== '')
-            <div class="mt-6 font-sans text-base leading-relaxed text-light-cream/85">
+            {{-- Sheet feedback row 9: address bumped to text-xl (20 px Halyard Book) for parity with
+                 Figma footer column copy. --}}
+            <div class="mt-6 font-sans text-xl font-light leading-[1.4] text-light-cream">
               {!! nl2br(esc_html($addr)) !!}
             </div>
           @endif
@@ -217,14 +221,17 @@
           @endif
           @if(($instagramUrl !== '' && $instagramUrl !== '#') || ($facebookUrl !== '' && $facebookUrl !== '#'))
             <div class="mt-8 flex flex-wrap gap-x-8 gap-y-3">
+              {{-- Sheet feedback row 9: footer socials need to be visible (URLs now seeded via
+                   Customizer mods) + slightly bigger icons (16 → 22). --}}
               @if($instagramUrl !== '' && $instagramUrl !== '#')
                 <a
                   class="footer-nav__link-social"
                   href="{{ esc_url($instagramUrl) }}"
+                  target="_blank"
                   rel="noopener noreferrer">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.3" />
-                    <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.3" />
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.4" />
+                    <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.4" />
                     <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" />
                   </svg>
                   {{ __('Instagram', 'culvers') }}
@@ -234,8 +241,9 @@
                 <a
                   class="footer-nav__link-social"
                   href="{{ esc_url($facebookUrl) }}"
+                  target="_blank"
                   rel="noopener noreferrer">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                     <path
                       d="M14 8h3V5h-3c-2.2 0-4 1.8-4 4v2H7v3h3v8h3v-8h3.2l.8-3H13v-2c0-.6.4-1 1-1Z" />
                   </svg>
@@ -330,8 +338,10 @@
       </div>
 
       {{-- Wordmark — clip SVG/logo bleed so nothing paints over the legal band below (desktop outline marks can extend past the box). --}}
+      {{-- Sheet feedback row 9: footer wordmark should read lighter — apply 70 % opacity so the
+           filled Glowleaf wordmark reads as a thinner accent rather than a heavy banner. --}}
       <div
-        class="relative z-10 mt-14 w-full overflow-hidden md:mt-16 lg:mt-20 [&_img]:mx-auto [&_img]:block [&_img]:h-auto [&_img]:w-full [&_img]:max-h-[min(30vw,220px)] [&_img]:max-w-none [&_img]:object-contain [&_svg]:block [&_svg]:h-auto [&_svg]:w-full [&_svg]:max-h-[min(30vw,220px)] [&_svg]:max-w-none">
+        class="relative z-10 mt-14 w-full overflow-hidden opacity-70 md:mt-16 lg:mt-20 [&_img]:mx-auto [&_img]:block [&_img]:h-auto [&_img]:w-full [&_img]:max-h-[min(30vw,220px)] [&_img]:max-w-none [&_img]:object-contain [&_svg]:block [&_svg]:h-auto [&_svg]:w-full [&_svg]:max-h-[min(30vw,220px)] [&_svg]:max-w-none">
         <a
           class="site-footer__logo flex w-full justify-center text-glowleaf"
           href="{{ esc_url(home_url('/')) }}"

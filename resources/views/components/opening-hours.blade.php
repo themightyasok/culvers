@@ -93,8 +93,10 @@ $hoursHeadingClass = $isShopSingle
 @endphp
 
 @if($hasIntro || $hasRows || $footnote !== '' || $leftUrl !== '' || $rightUrl !== '')
+  {{-- Sheet feedback row 16: "the box needs to be a tad wider" — go from a 960 readable shell to
+       the wider 1120 shell so the table breathes without losing the centred read. --}}
   <section class="opening-hours {{ esc_attr($root) }} text-deep-moss" id="opening-hours" data-component-root data-opening-hours>
-    <div class="{{ LayoutShell::INNER_READABLE_960 }}">
+    <div class="mx-auto w-full max-w-[1120px] px-4 sm:px-6 lg:px-8">
       @if($hasIntro)
         <header class="mx-auto mb-10 max-w-[40rem] text-center md:mb-12">
           @if($heading !== '')
@@ -117,11 +119,14 @@ $hoursHeadingClass = $isShopSingle
       @endif
 
       @if($hasRows)
-        <div class="flex flex-col items-stretch gap-10 lg:flex-row lg:items-center lg:gap-8 xl:gap-12">
+        {{-- Sheet feedback row 16: wider gap so illustrations sit clear of the table, and bumped
+             illustration container width so the assets keep their aspect ratio (previously squashed
+             into a 9rem column on lg). Items vertically centred on the table block. --}}
+        <div class="flex flex-col items-stretch gap-10 lg:flex-row lg:items-center lg:gap-14 xl:gap-20">
           @if($leftUrl !== '')
-            <div class="order-2 hidden shrink-0 justify-center lg:order-1 lg:flex lg:w-[min(28vw,9rem)] xl:w-[min(28vw,10.5rem)]">
+            <div class="order-2 hidden shrink-0 items-center justify-center lg:order-1 lg:flex lg:w-[min(28vw,11.5rem)] xl:w-[min(28vw,13rem)]">
               {!! Image::render($graphicLeft, [
-                  'class' => 'max-h-[200px] w-auto max-w-full object-contain opacity-95 lg:max-h-[260px]',
+                  'class' => 'h-auto max-h-[240px] w-full max-w-full object-contain opacity-95 lg:max-h-[300px]',
                   'alt' => $leftAlt,
               ]) !!}
             </div>
@@ -169,9 +174,9 @@ $hoursHeadingClass = $isShopSingle
           </div>
 
           @if($rightUrl !== '')
-            <div class="order-3 hidden shrink-0 justify-center lg:flex lg:w-[min(28vw,9rem)] xl:w-[min(28vw,10.5rem)]">
+            <div class="order-3 hidden shrink-0 items-center justify-center lg:flex lg:w-[min(28vw,11.5rem)] xl:w-[min(28vw,13rem)]">
               {!! Image::render($graphicRight, [
-                  'class' => 'max-h-[200px] w-auto max-w-full object-contain opacity-95 lg:max-h-[260px]',
+                  'class' => 'h-auto max-h-[240px] w-full max-w-full object-contain opacity-95 lg:max-h-[300px]',
                   'alt' => $rightAlt,
               ]) !!}
             </div>

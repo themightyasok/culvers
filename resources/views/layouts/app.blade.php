@@ -9,7 +9,8 @@
     @endphp
   </head>
 
-  <body @php body_class('bg-white text-deep-moss font-sans antialiased'); @endphp>
+  {{-- Figma site surface: Lighter Cream (#FFFEFA) — sheet feedback row 7. --}}
+  <body @php body_class('bg-lighter-cream text-deep-moss font-sans antialiased'); @endphp>
     @php wp_body_open(); @endphp
 
     <a class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-80 focus:rounded-md focus:bg-brand-500 focus:px-4 focus:py-2 focus:text-deep-moss focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-deep-moss"
@@ -27,7 +28,7 @@
           min-height would extend #app below the footer and show empty bg-white — misread as a “footer gap”.
           Homepage flexible rows are tall enough that this rarely appears.
         --}}
-        <div id="app" class="bg-white">
+        <div id="app" class="bg-lighter-cream">
           <main id="main" tabindex="-1">
             @yield('content')
           </main>
@@ -41,7 +42,7 @@
             300 / 380 / 420 → halves 150 / 190 / 210. We add ~90 / 130 / 150 px of clean whitespace
             on top so the rhythm matches the rest of the page-to-section spacing.
           --}}
-          <div aria-hidden="true" class="site-footer-spacer h-[240px] w-full bg-white md:h-[320px] lg:h-[360px]"></div>
+          <div aria-hidden="true" class="site-footer-spacer h-[240px] w-full bg-lighter-cream md:h-[320px] lg:h-[360px]"></div>
 
           @include('sections.footer')
         </div>
