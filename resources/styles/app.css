@@ -290,33 +290,79 @@
    * `gap-[22px]` lands at 31 px which reads visually identical to the 34 px
    * Figma centre-to-centre at this scale.
    */
-  .hero-slider__pagination.splide__pagination {
-    @apply pointer-events-auto absolute top-1/2 left-auto z-30 m-0 flex w-auto -translate-y-1/2 flex-col items-center justify-center p-0;
-    right: 2.875rem; /* 46 px — matches Figma 50 px from viewport, minus header padding */
-    gap: 22px;
-  }
-
-  @supports (padding: max(0px)) {
-    .hero-slider__pagination.splide__pagination {
-      right: max(2.875rem, env(safe-area-inset-right, 0px));
-    }
-  }
-
-  .hero-slider__page.splide__pagination__page {
-    @apply m-0 h-[9px] w-[9px] shrink-0 rotate-45 rounded-none border border-brand-500 bg-transparent opacity-100 transition-colors duration-200 ease-out;
-  }
-
-  .hero-slider__page.splide__pagination__page:hover {
-    @apply border-white;
-  }
-
-  .hero-slider__page.splide__pagination__page.is-active {
-    @apply border-white bg-white;
-  }
-
   @media (prefers-reduced-motion: no-preference) {
     .hero-slider--bp-shift .hero-slider__copy {
       opacity: 0.25;
     }
   }
+}
+
+/*
+ * Hero pagination overrides — Figma `51:4993` (homepage hero `Frame 21`):
+ *   • vertical stack on the right edge, 22 px centre-to-centre gap
+ *   • inactive: 9 × 9 px square rotated −45° with 1 px Glowleaf border
+ *   • active: solid white (Purelinen) fill, no border, no scale
+ *   • right inset: ~46 px from the viewport edge on desktop
+ *
+ * These rules MUST live outside `@layer components` because `@splidejs/splide/css`
+ * is imported unlayered, and Tailwind v4 ranks unlayered CSS above any @layer
+ * regardless of specificity. Keeping our overrides unlayered (and later in
+ * source order) puts them at the same cascade level as Splide's defaults, where
+ * our two-class selectors then win on specificity.
+ *
+ * Splide also applies `transform: scale(1.4)` to `.is-active` to enlarge the
+ * dot; we explicitly reset `transform` so the 9 px square stays 9 px.
+ */
+.hero-slider__pagination.splide__pagination {
+  pointer-events: auto;
+  position: absolute;
+  top: 50%;
+  left: auto;
+  right: 2.875rem;
+  bottom: auto;
+  z-index: 30;
+  display: flex;
+  width: auto;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  margin: 0;
+  padding: 0;
+  translate: 0 -50%;
+}
+
+@supports (padding: max(0px)) {
+  .hero-slider__pagination.splide__pagination {
+    right: max(2.875rem, env(safe-area-inset-right, 0px));
+  }
+}
+
+.hero-slider__page.splide__pagination__page {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--color-brand-500);
+  border-radius: 0;
+  background: transparent;
+  opacity: 1;
+  rotate: 45deg;
+  transform: none;
+  transition:
+    background-color 0.2s ease-out,
+    border-color 0.2s ease-out;
+}
+
+.hero-slider__page.splide__pagination__page:hover {
+  border-color: var(--color-white);
+  opacity: 1;
+}
+
+.hero-slider__page.splide__pagination__page.is-active {
+  border-color: var(--color-white);
+  background: var(--color-white);
+  transform: none;
 }
