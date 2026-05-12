@@ -75,7 +75,7 @@ final class FrontendAssets
 
         /** @var array<string, mixed> $theme_script_extra */
         $theme_script_extra = [
-            'restSearchUrl' => rest_url('wp/v2/search'),
+            'restSearchUrl' => rest_url('culvers/v1/search'),
             'megaDefaults' => PrimaryNav::megaPreviewDefaults('primary_navigation'),
         ];
 

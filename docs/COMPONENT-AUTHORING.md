@@ -316,9 +316,9 @@ before touching font sizes.
   sits between defaults (`tracking-[0.22em]`, `leading-[26px]`).
 - **Section H2s use the canonical spine** — call
   `Component::sectionHeadingClasses($toneClass, $extraClasses)` for every
-  page-level section heading. The spine renders **64 px Canela at desktop
-  / 48 px at mobile** (`text-5xl md:text-7xl` paired with the
-  token-calibrated 1.1 / 1.2 line-heights). The site H1 (image-hero / hero-slider
+  page-level section heading. The spine renders **58 px Canela at desktop
+  / 48 px at mobile** (`text-5xl md:text-6xl` paired with the
+  token-calibrated 1.1 / 1.15 line-heights). The site H1 (image-hero / hero-slider
   / policy-page / single-page title) is the only heading allowed to go
   larger. See "Heading typography" below.
 - Use the design tokens defined in `resources/styles/theme.tokens.css`:

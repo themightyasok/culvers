@@ -67,21 +67,21 @@
   $hasRows = $normalizedRows !== [];
 
   $isShopSingle = get_post_type() === 'culvers_shop';
-/** Default: canonical section H2 (Component::sectionHeadingClasses → 64px desktop / 48px mobile). */
+/** Default: canonical section H2 (Component::sectionHeadingClasses → 58px desktop / 48px mobile). */
 /** Shop-single: deliberately a touch smaller — sub-section heading inside the single page layout. */
 $hoursHeadingClass = $isShopSingle
-    ? 'font-heading text-6xl tracking-tight text-faded-olive'
+    ? 'font-heading text-5xl text-faded-olive'
     : Component::sectionHeadingClasses('text-faded-olive');
   $hoursSubClass = $isShopSingle
       ? 'mt-4 font-sans text-xl font-light text-faded-olive'
-      : 'mt-4 font-sans text-base leading-relaxed text-deep-moss/85 md:text-lg';
+      : 'mt-4 font-sans text-base leading-relaxed text-deep-moss/85 md:text-xl';
   $hoursIntroBodyBase = $isShopSingle
       ? 'opening-hours__body mt-6 max-w-none text-center font-sans text-xl font-light text-faded-olive [&_p+p]:mt-4 [&_strong]:font-medium rt-link-olive-surface'
       : 'opening-hours__body prose prose-lg mt-6 max-w-none text-left md:text-center text-deep-moss prose-headings:text-deep-moss prose-p:text-deep-moss prose-li:text-deep-moss prose-strong:text-deep-moss rt-link-prose';
   $hoursListTopBorder = $isShopSingle ? 'border-faded-olive/45' : 'border-deep-moss/20';
   /** Row shell — bottom divider applied per row so “today” can sit flush under previous row (Figma: no line above pill). */
   $hoursRowShellShop = 'flex items-center justify-between gap-6 px-1 py-3.5 font-sans text-xl font-light text-faded-olive sm:px-2';
-  $hoursRowShellDefault = 'flex items-center justify-between gap-6 px-1 py-3.5 font-sans text-base text-deep-moss sm:px-2 sm:text-lg';
+  $hoursRowShellDefault = 'flex items-center justify-between gap-6 px-1 py-3.5 font-sans text-base text-deep-moss sm:px-2 sm:text-xl';
   /** Pill highlight: no top/side borders; keep bottom rule below pill unless last row. */
   $hoursRowTodayShop = '!mx-0 !rounded-full bg-brand-500 !border-t-0 !border-x-0 border-b border-faded-olive/40 !px-4 !py-3 text-faded-olive last:border-b-0 sm:!py-3.5';
   $hoursRowTodayDefault = '!mx-0 !rounded-full bg-brand-500 !border-t-0 !border-x-0 border-b border-deep-moss/15 !px-4 !py-3 last:border-b-0 sm:!py-3.5';

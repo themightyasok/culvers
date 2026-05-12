@@ -1,5 +1,6 @@
 @php
   use App\Helpers\Component;
+  use App\Helpers\Image;
   use App\Helpers\LayoutShell;
 
   /**
@@ -99,6 +100,15 @@
   $hasContent = $heading !== '' || $eyebrow !== '' || $bodyLines !== []
       || $imageUrl !== '' || $groups !== [];
 
+  /*
+   * Map-only mode: when the author has supplied only an image (no heading,
+   * no categories), render a single full-width map and skip the filter
+   * panel entirely. Mirrors the Figma Contact page where the centre map
+   * sits as a 1401×570 graphic between the form and the opening-hours
+   * block — no sidebar.
+   */
+  $isMapOnly = $heading === '' && $eyebrow === '' && $bodyLines === [] && $groups === [];
+
   $expandedGroupSlug = $groups !== [] ? $groups[0]['slug'] : '';
   /**
    * Pre-compute Alpine init state once so we don't re-encode JSON inline.
@@ -151,7 +161,26 @@
     @endif
 
     {{-- Two-column band. When the filter panel is closed (`panelOpen === false`) the grid collapses
-         to a single column so the map fills the band — handled by `:class` switching the lg grid. --}}
+         to a single column so the map fills the band — handled by `:class` switching the lg grid.
+         Map-only mode (no heading / categories) skips the band markup entirely below. --}}
+    @if($isMapOnly && $imageUrl !== '' && is_array($image))
+      {{-- Figma contact page (frame `51:9436`): the map is a fixed 1401×570
+           graphic in a wider band. We crop the supplied asset to that aspect
+           with `object-cover` so authors can re-use any map artwork without
+           a custom export. --}}
+      <div class="{{ LayoutShell::INNER_MAX_GUTTERED }} centre-map__band centre-map__band--map-only relative py-12 md:py-16">
+        <div class="centre-map__map-only relative aspect-[1401/570] w-full overflow-hidden rounded-[12px]">
+          {!! Image::render($image, [
+              'class' => 'absolute inset-0 size-full object-cover',
+              'alt' => isset($image['alt']) && is_string($image['alt']) ? $image['alt'] : '',
+              'width' => isset($image['width']) ? (int) $image['width'] : 1401,
+              'height' => isset($image['height']) ? (int) $image['height'] : 570,
+              'loading' => 'lazy',
+              'decoding' => 'async',
+          ]) !!}
+        </div>
+      </div>
+    @else
     <div
       class="{{ LayoutShell::INNER_MAX_GUTTERED }} centre-map__band relative grid grid-cols-1 gap-y-10 py-12 md:py-16 lg:gap-x-12"
       :class="panelOpen
@@ -302,5 +331,6 @@
         @endif
       </div>
     </div>
+    @endif
   </section>
 @endif

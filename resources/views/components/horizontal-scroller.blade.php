@@ -35,10 +35,11 @@ $backgroundStyles = $backgroundData['styles'] ?? '';
 
 $header_text = $c['scroller_header_text'] ?? '';
 $header_text_color = $c['scroller_header_text_color'] ?? 'text-white';
-// Section H2 default — 64px Canela (text-7xl), matching the rest of the
-// site. The dropdown still allows opting up to text-8xl/text-9xl when a
-// landing page genuinely wants a hero-scale header strip.
-$header_text_size = $c['scroller_header_text_size'] ?? 'text-7xl';
+// Section H2 default — 58 px Canela (text-6xl), matching
+// Component::sectionHeadingClasses(). The dropdown still allows opting up
+// to text-7xl/text-8xl/text-9xl when a landing page genuinely wants a
+// hero-scale header strip.
+$header_text_size = $c['scroller_header_text_size'] ?? 'text-6xl';
 $header_text_weight = Typography::coerceCanelaHeadingWeight(
     (string) ($c['scroller_header_text_weight'] ?? 'font-normal')
 );
@@ -98,13 +99,20 @@ $scroll_speed_class = $disable_scroll
     };
 
 // Keep heading sizes constrained to the Typography header dropdown choices.
-// Default is text-7xl (64px) so the strip header sits on the canonical
+// Default is text-6xl (58 px) so the strip header sits on the canonical
 // section H2 ramp; editors can opt into larger sizes per layout.
+//
+// Historical posts saved `text-7xl` (the old 64 px default before the spec
+// was lowered to 58 px). Coerce that legacy value here so we don't have to
+// migrate every existing horizontal_scroller row.
 $header_desktop_size = in_array(
     $header_text_size,
     array_keys(Typography::getHeaderSizeChoices()),
     true
-) ? $header_text_size : 'text-7xl';
+) ? $header_text_size : 'text-6xl';
+if ($header_desktop_size === 'text-7xl') {
+    $header_desktop_size = 'text-6xl';
+}
 // Pair every editor-chosen desktop size with a mobile fallback so the
 // header always steps down on phones (matches the canonical section H2
 // ramp documented in Component::sectionHeadingClasses()).

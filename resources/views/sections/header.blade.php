@@ -46,8 +46,10 @@
     <div
       class="site-header__reveal transition-all duration-700 ease-out"
       x-bind:class="headerRevealed ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'">
+      {{-- Figma: pill sits inside `pt-[46px] px-[46px] pb-[10px]` from the frame edge.
+           `lg:px-12` (48px) is +2px, kept stock; the top is the visible spec. --}}
       <div
-        class="site-header__padding relative transition-[padding] duration-300 ease-in-out max-lg:px-0 max-lg:py-0 lg:px-12 lg:pb-2.5 lg:pt-8">
+        class="site-header__padding relative transition-[padding] duration-300 ease-in-out max-lg:px-0 max-lg:py-0 lg:px-12 lg:pb-2.5 lg:pt-[46px]">
 
         <div class="mx-auto w-full max-w-8xl">
 
@@ -64,7 +66,9 @@
           {{-- Mobile / tablet (<lg, 1024px): Figma "Mobile — Nav" 75px flat bar; burger | centred wordmark | search. Desktop: pill bar. --}}
           <div
             class="mega-nav__bar relative z-50 w-full bg-faded-olive max-lg:rounded-none max-lg:border-b max-lg:border-glowleaf lg:rounded-full">
-            <div class="mega-nav__bar-gutter w-full max-lg:py-0 py-2">
+            {{-- No vertical padding on the gutter — Figma pill is exactly 80px tall (matches the
+                 inner row's `lg:min-h-[80px]`). Previous `py-2` inflated the pill to 96px. --}}
+            <div class="mega-nav__bar-gutter w-full max-lg:py-0">
               <div
                 class="mega-nav__bar-row relative flex h-[75px] min-h-[75px] w-full items-center gap-3 px-4 max-lg:gap-2 lg:h-auto lg:min-h-[80px] lg:gap-6 lg:px-5 xl:px-6">
                 <button
@@ -184,7 +188,9 @@
                         stroke-linejoin="round" />
                       <circle cx="12" cy="10" r="2.25" stroke="currentColor" stroke-width="1.4" />
                     </svg>
-                    <span class="font-sans text-base font-normal leading-snug text-white">{{ __('Centre Map', 'culvers') }}</span>
+                    {{-- Figma: Halyard Display Book 14px / lh 22.5 — `font-medium` (500) is the
+                         closest Adobe Typekit weight we ship for the Book cut. --}}
+                    <span class="font-sans text-sm font-medium leading-[22px] text-white">{{ __('Centre Map', 'culvers') }}</span>
                   </a>
                   <a
                     class="inline-flex items-center gap-2 text-white transition-opacity hover:opacity-90 focus-visible:rounded-sm culvers-focus-ring"
@@ -197,7 +203,7 @@
                         stroke-linejoin="round" />
                       <circle cx="12" cy="10" r="2.25" stroke="currentColor" stroke-width="1.4" />
                     </svg>
-                    <span class="font-sans text-base font-normal leading-snug text-white">{{ __('Getting Here', 'culvers') }}</span>
+                    <span class="font-sans text-sm font-medium leading-[22px] text-white">{{ __('Getting Here', 'culvers') }}</span>
                   </a>
                   <button
                     type="button"
@@ -358,9 +364,10 @@
                   <path d="m16.5 16.5 4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
                 </svg>
                 <label class="sr-only" for="site-search-input">{{ __('Search', 'culvers') }}</label>
+                {{-- Figma `51:7110`: Halyard Display Book 20 / lh 1.3 / Faded Olive (#4F5438). --}}
                 <input
                   id="site-search-input"
-                  class="site-header__search-input min-w-0 flex-1 border-0 bg-transparent font-sans text-xl leading-snug text-faded-olive placeholder:text-faded-olive/55 focus:outline-none focus:ring-0 lg:text-2xl"
+                  class="site-header__search-input min-w-0 flex-1 border-0 bg-transparent font-sans text-xl font-light leading-[1.3] text-faded-olive placeholder:text-faded-olive/55 focus:outline-none focus:ring-0"
                   type="search"
                   name="s"
                   autocomplete="off"

@@ -20,13 +20,17 @@
       : '';
 
   /* Assigned location but empty menu yields `<ul></ul>` — center column vanished in flex; grid + fallback fixes it. */
+  /* Figma legal-band typography: Commuter Sans Bold 10px / lh 13 / uppercase,
+     0.5px tracking (≈ `tracking-[0.05em]`). Halyard `text-xs` was the legacy
+     value and renders 1px larger with looser leading; switching to `font-label`
+     keeps it crisp without bumping site-wide tracking utilities. */
   $footerLegalNavHtml = '';
   if (has_nav_menu('footer_brand_subnav')) {
       $footerLegalNavHtml = (string) wp_nav_menu([
           'theme_location' => 'footer_brand_subnav',
           'container' => false,
           'menu_class' =>
-              'footer-nav__list footer-nav__list--legal flex flex-wrap items-center justify-center gap-x-4 gap-y-2 whitespace-normal font-sans text-xs uppercase leading-snug tracking-widest text-lighter-cream md:gap-x-8 [&>li]:flex [&>li]:shrink-0 [&>li]:items-center [&>li>a]:inline-flex [&>li>a]:min-h-[2rem] [&>li>a]:items-center [&>li>a]:px-3 [&>li>a]:py-1 md:[&>li>a]:px-5',
+              'footer-nav__list footer-nav__list--legal flex flex-wrap items-center justify-center gap-x-4 gap-y-2 whitespace-normal font-label text-[10px] font-bold uppercase leading-[1.3] tracking-[0.05em] text-lighter-cream md:gap-x-8 [&>li]:flex [&>li]:shrink-0 [&>li]:items-center [&>li>a]:inline-flex [&>li>a]:min-h-[2rem] [&>li>a]:items-center [&>li>a]:px-3 [&>li>a]:py-1 md:[&>li>a]:px-5',
           'fallback_cb' => false,
           'depth' => 1,
           'echo' => false,
@@ -35,7 +39,7 @@
   $footerLegalNavHasItems = str_contains($footerLegalNavHtml, '<li');
 
   $footerLegalFallbackUlClass =
-      'footer-nav__list footer-nav__list--legal flex flex-wrap items-center justify-center gap-x-4 gap-y-2 whitespace-normal font-sans text-xs uppercase leading-snug tracking-widest text-lighter-cream md:gap-x-8 [&>li]:flex [&>li]:shrink-0 [&>li]:items-center [&>li>a]:inline-flex [&>li>a]:min-h-[2rem] [&>li>a]:items-center [&>li>a]:px-3 [&>li>a]:py-1 md:[&>li>a]:px-5';
+      'footer-nav__list footer-nav__list--legal flex flex-wrap items-center justify-center gap-x-4 gap-y-2 whitespace-normal font-label text-[10px] font-bold uppercase leading-[1.3] tracking-[0.05em] text-lighter-cream md:gap-x-8 [&>li]:flex [&>li]:shrink-0 [&>li]:items-center [&>li>a]:inline-flex [&>li>a]:min-h-[2rem] [&>li>a]:items-center [&>li>a]:px-3 [&>li>a]:py-1 md:[&>li>a]:px-5';
 @endphp
 
 {{--
@@ -175,8 +179,9 @@
             </div>
           @endif
           @if($mapUrl !== '')
+            {{-- Figma: Commuter Sans Bold 14px / lh 1.3 / 1px tracking. --}}
             <a
-              class="footer-link--persistent-underline mt-6 inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-widest text-glowleaf transition-colors hover:text-lighter-cream"
+              class="footer-link--persistent-underline mt-6 inline-flex items-center gap-2 font-label text-sm font-bold uppercase leading-[1.3] tracking-[0.07em] text-glowleaf transition-colors hover:text-lighter-cream"
               href="{{ esc_url($mapUrl) }}"
               @if(str_starts_with($mapUrl, 'http')) target="_blank" rel="noopener noreferrer" @endif>
               {{ esc_html(FooterCustomizer::gettingHereMapLabel()) }}
@@ -347,7 +352,7 @@
         <div
           class="site-footer__legal-band grid w-full grid-cols-1 gap-y-4 py-6 text-center md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:items-center md:gap-x-6 md:gap-y-0 md:py-7">
           <p
-            class="font-sans text-xs uppercase leading-snug tracking-widest text-lighter-cream md:justify-self-start md:text-left">
+            class="font-label text-[10px] font-bold uppercase leading-[1.3] tracking-[0.05em] text-lighter-cream md:justify-self-start md:text-left">
             &copy;
             {{ esc_html(strtoupper((string) get_bloginfo('name'))) }}
             {{ wp_date('Y') }}
@@ -376,7 +381,7 @@
           @php $credit = FooterCustomizer::siteCredit(); @endphp
           @if($credit !== '')
             <p
-              class="font-sans text-xs uppercase leading-snug tracking-widest text-lighter-cream md:justify-self-end md:text-right">
+              class="font-label text-[10px] font-bold uppercase leading-[1.3] tracking-[0.05em] text-lighter-cream md:justify-self-end md:text-right">
               {{ esc_html(strtoupper($credit)) }}
             </p>
           @else

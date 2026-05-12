@@ -308,6 +308,12 @@ export default function registerSiteHeaderAlpine(Alpine) {
 
       try {
         const url = new URL(restUrl, window.location.origin);
+        /*
+         * Our custom `culvers/v1/search` endpoint accepts `q=…`. The legacy
+         * core fallback `/wp/v2/search` uses `search=…`. Send both so the
+         * client tolerates a deploy out-of-sync with the JS bundle.
+         */
+        url.searchParams.set('q', query);
         url.searchParams.set('search', query);
         url.searchParams.set('per_page', '8');
         const res = await fetch(url.toString(), { credentials: 'same-origin' });
@@ -316,7 +322,7 @@ export default function registerSiteHeaderAlpine(Alpine) {
         }
         const data = await res.json();
         if (!Array.isArray(data) || data.length === 0) {
-          this.searchHtml = `<p class="font-sans text-faded-olive/80">${escapeHtml('No results.')}</p>`;
+          this.searchHtml = `<p class="font-sans text-xl leading-[1.3] text-faded-olive/80">${escapeHtml('No results.')}</p>`;
           this.searchResultsVisible = true;
 
           return;
@@ -324,14 +330,29 @@ export default function registerSiteHeaderAlpine(Alpine) {
         this.searchHtml = data
           .map((item) => {
             const title = itemTitle(item);
+            const excerpt = itemExcerpt(item);
             const href = typeof item.url === 'string' ? item.url : '#';
 
-            return `<a class="block py-2 font-sans text-xl text-faded-olive hover:text-deep-moss focus-visible:rounded-sm culvers-focus-ring-compact-faded-olive" href="${escapeHtml(href)}">${highlightMatch(title, query)}</a>`;
+            /*
+             * Figma `51:8146` row: two stacked lines, both Halyard Display
+             * Book 20 / lh 1.3 / Faded Olive. The matched term is the only
+             * thing re-weighted to Halyard Medium — no colour change. Row
+             * padding mirrors the 14 px / 10 px Figma row inset.
+             */
+            return (
+              '<a class="search-result-row block px-2.5 py-3.5 font-sans text-xl font-light leading-[1.3] text-faded-olive transition-colors hover:bg-faded-olive/[0.06] focus-visible:rounded-sm culvers-focus-ring-compact-faded-olive"' +
+              ` href="${escapeHtml(href)}">` +
+              `<span class="block">${highlightMatch(title, query)}</span>` +
+              (excerpt !== ''
+                ? `<span class="search-result-row__excerpt mt-1 block text-faded-olive/80">${highlightMatch(excerpt, query)}</span>`
+                : '') +
+              '</a>'
+            );
           })
           .join('');
         this.searchResultsVisible = true;
       } catch {
-        this.searchHtml = `<p class="font-sans text-red-800">${escapeHtml('Search unavailable.')}</p>`;
+        this.searchHtml = `<p class="font-sans text-xl leading-[1.3] text-red-800">${escapeHtml('Search unavailable.')}</p>`;
         this.searchResultsVisible = true;
       }
     },
@@ -569,7 +590,27 @@ function highlightMatch(title, query) {
   const match = escapeHtml(title.slice(idx, idx + q.length));
   const after = escapeHtml(title.slice(idx + q.length));
 
-  return `${before}<strong class="font-semibold text-deep-moss">${match}</strong>${after}`;
+  /*
+   * Figma re-weights the matched run to Halyard Medium (font-weight 500)
+   * but keeps the colour identical — no contrast bump, no semibold.
+   */
+  return `${before}<strong class="font-medium">${match}</strong>${after}`;
+}
+
+/** @param {{ excerpt?: string | { rendered?: string } }} item */
+function itemExcerpt(item) {
+  const e = item?.excerpt;
+  if (typeof e === 'string') {
+    return e;
+  }
+  if (e && typeof e.rendered === 'string') {
+    const el = document.createElement('div');
+    el.innerHTML = e.rendered;
+
+    return (el.textContent || '').trim();
+  }
+
+  return '';
 }
 
 /** @param {{ title?: string | { rendered?: string }; url?: string }} item */

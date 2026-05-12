@@ -65,6 +65,19 @@ final class Rhythm
             return '';
         }
 
+        /*
+         * A `section_header` is a short intro band whose role is to label
+         * what immediately follows. Figma cluster pages (Leasing, Guest
+         * Services, Plan-My-Visit) draw the heading directly atop its
+         * subject component — no 96 px rhythm gap. Flushing here keeps the
+         * intent legible in the editor (author drops a section-header
+         * before the thing it introduces) without inventing a per-component
+         * spacing knob.
+         */
+        if ($previousLayout === 'section_header') {
+            return self::SPACE_FLUSH;
+        }
+
         return self::SPACE_STANDARD;
     }
 }

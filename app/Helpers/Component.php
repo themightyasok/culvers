@@ -137,11 +137,11 @@ final class Component
      *
      * The Culver Square design system treats every section title as **64px
      * Canela at desktop, 48px at mobile** — Figma "Desktop/Titles/H2 Title"
-     * (Canela 64 / lh 1.2 / tracking 0). The site H1 (page hero, used once)
+     * (Canela 58 / lh 1.15 / tracking 0). The site H1 (page hero, used once)
      * is the only heading allowed to go larger.
      *
      * Notes:
-     *   • `text-5xl` and `text-7xl` ship paired line-heights (1.1 and 1.2) in
+     *   • `text-5xl` and `text-6xl` ship paired line-heights (1.1 and 1.15) in
      *     {@see resources/styles/theme.tokens.css} that already match Figma.
      *     Do **not** add `leading-tight` / `leading-none` / `leading-[1.1]`
      *     on top — those override the calibrated token line-height.
@@ -155,7 +155,7 @@ final class Component
         string $toneClass = 'text-deep-moss',
         string $extra = ''
     ): string {
-        $base = 'font-heading text-5xl md:text-7xl ' . $toneClass;
+        $base = 'font-heading text-5xl md:text-6xl ' . $toneClass;
 
         return trim($extra !== '' ? $base . ' ' . $extra : $base);
     }

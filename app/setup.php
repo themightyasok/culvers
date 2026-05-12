@@ -75,6 +75,7 @@ add_action('customize_register', static function (\WP_Customize_Manager $wp_cust
 add_action('rest_api_init', static function (): void {
     Travel\TravelCalculatorEndpoint::register();
     Contact\ContactFormEndpoint::register();
+    Search\SearchEndpoint::register();
 });
 
 add_filter('culvers_default_full_width_components', static function (array $layouts): array {
