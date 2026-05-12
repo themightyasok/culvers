@@ -112,12 +112,14 @@
                 'decoding' => 'async',
             ]) !!}
           </div>
+        {{-- Image-hero H1 — Figma desktop 96 px (text-9xl), mobile 46 px (H1 Mobile token).
+             Tailwind v4 ramp: text-5xl (48) ≈ 46 mobile / text-8xl (84) tablet / text-9xl (96) desktop. --}}
         @elseif($titleLine !== '')
-          <h1 class="image-hero__title font-heading text-6xl leading-[1] md:text-8xl lg:text-9xl {{ $titleToneClass }}">
+          <h1 class="image-hero__title font-heading text-5xl leading-[1.1] md:text-8xl md:leading-[1] lg:text-9xl {{ $titleToneClass }}">
             {{ esc_html($titleLine) }}
           </h1>
         @else
-          <h1 class="image-hero__title font-heading text-6xl leading-[1] md:text-8xl lg:text-9xl {{ $titleToneClass }}">
+          <h1 class="image-hero__title font-heading text-5xl leading-[1.1] md:text-8xl md:leading-[1] lg:text-9xl {{ $titleToneClass }}">
             {{ esc_html(get_the_title()) }}
           </h1>
         @endif

@@ -186,7 +186,8 @@
 
                   {{-- Figma: title is Canela 45.7px regardless of media type. --}}
                   <span
-                    class="relative z-10 flex w-full flex-1 items-center justify-center px-6 py-10 text-center font-heading text-[46px] leading-none text-white">
+                    {{-- Card title — Figma mobile 36 px (H2 Mobile token), desktop 46 px. --}}
+                    class="relative z-10 flex w-full flex-1 items-center justify-center px-6 py-10 text-center font-heading text-[36px] leading-[1.1] text-white md:text-[46px] md:leading-none">
                     {{ esc_html($title) }}
                   </span>
                 </a>

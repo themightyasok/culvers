@@ -129,7 +129,11 @@
                       @if($headline !== '')
                         {{-- Figma homepage hero: Canela 96px / lh 96 / tracking 0 (Glowleaf);
                              kicker Commuters 20px / lh 24 / tracking 4px (uppercase). --}}
-                        <{{ $headingTag }} class="font-heading text-7xl leading-none text-brand-500 sm:text-8xl md:text-9xl">
+                        {{-- Hero H1 — Figma desktop 96 px (Hero token), Figma mobile 46 px (H1 Mobile token).
+                             Tailwind ramp 46 / 64 / 84 / 96 ≈ text-5xl / text-7xl / text-8xl / text-9xl;
+                             leading 1 on display sizes, 1.1 on the mobile step to match the Mobile/Titles
+                             token. --}}
+                        <{{ $headingTag }} class="font-heading text-5xl leading-[1.1] text-brand-500 sm:text-7xl sm:leading-none md:text-8xl lg:text-9xl">
                           {!! nl2br(e($headline)) !!}
                         </{{ $headingTag }}>
                       @endif
