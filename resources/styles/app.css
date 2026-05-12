@@ -184,17 +184,9 @@
     @apply overflow-hidden lg:overflow-auto;
   }
 
-  /* Always-on underline — footer map link + email only (see tailwind.config.js base plugin).
-     `decoration-2` and `underline-offset-2` keep the line readable at footer sizes (text-xs / text-base
-     in glowleaf on faded-olive); the default 1px / 4px-offset underline is too faint to register. */
-  .footer-link--persistent-underline {
-    @apply underline decoration-glowleaf decoration-2 underline-offset-2;
-  }
-
-  .footer-link--persistent-underline:hover,
-  .footer-link--persistent-underline:focus-visible {
-    @apply decoration-lighter-cream;
-  }
+  /* The footer underline rule lives outside @layer (see end of file) so it can
+     beat WordPress's inline `:root :where(a:where(:not(.wp-element-button)):link)`
+     reset, which is unlayered and would otherwise win regardless of specificity. */
 
   /*
    * Legal band under wordmark — keep its copy readable when WP global / inherited
@@ -377,4 +369,39 @@
   background: var(--color-white);
   /* Re-state rotate so we replace Splide's scale(1.4) without losing the diamond. */
   transform: rotate(45deg);
+}
+
+/*
+ * Footer persistent underline — UNLAYERED (deliberately outside @layer).
+ *
+ * Cascade trap we hit (CDP-probed; see tools/visual-audit/probe-footer-underline.mjs):
+ * WordPress 6 emits its global block styles in an inline `<style>` block AFTER our
+ * theme CSS:
+ *
+ *   :root :where(a:where(:not(.wp-element-button)):link) { text-decoration: none; ... }
+ *
+ * That inline block is NOT wrapped in any `@layer`. In the CSS Cascade Layers spec,
+ * **unlayered** declarations beat **any** layered declaration regardless of selector
+ * specificity. So our `@layer components { .class { underline } }` lost even though
+ * `.class` is more specific than `:root :where(...)` — components-layer normal-priority
+ * cannot win against unlayered normal-priority.
+ *
+ * Fix: keep this rule outside `@layer` so it lives in the same (unlayered) bucket as
+ * the WP reset, then beat it with specificity (`a.<class>` → (0,1,1) > WP's (0,1,0))
+ * and source order (this file ships before WP's inline styles, but unlayered cascade
+ * is now equal so specificity wins).
+ *
+ * Footer-only — `.footer-link--persistent-underline` is the agreed opt-in class
+ * (see addBase in tailwind.config.js which strips underlines from every other anchor).
+ */
+a.footer-link--persistent-underline {
+  text-decoration-line: underline;
+  text-decoration-color: var(--color-glowleaf);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 2px;
+}
+
+a.footer-link--persistent-underline:hover,
+a.footer-link--persistent-underline:focus-visible {
+  text-decoration-color: var(--color-lighter-cream);
 }

@@ -42,8 +42,11 @@ final class Rhythm
     /** Standard inter-section gap between flexible components (96 px). */
     public const SPACE_STANDARD = 'mt-24';
 
-    /** Reserved: intro band hugs its immediate next sibling. */
+    /** Reserved: intro band hugs its immediate next sibling (60 px). */
     public const SPACE_HUGGED = 'mt-15';
+
+    /** Section-header-with-body → next component (48 px) — see {@see self::spaceAboveClass()}. */
+    public const SPACE_BREATHED = 'mt-12';
 
     /** Reserved: cluster join — the next component butts directly against this one. */
     public const SPACE_FLUSH = 'mt-0';
@@ -66,16 +69,25 @@ final class Rhythm
         }
 
         /*
-         * A `section_header` is a short intro band whose role is to label
-         * what immediately follows. Figma cluster pages (Leasing, Guest
-         * Services, Plan-My-Visit) draw the heading directly atop its
-         * subject component — no 96 px rhythm gap. Flushing here keeps the
-         * intent legible in the editor (author drops a section-header
-         * before the thing it introduces) without inventing a per-component
-         * spacing knob.
+         * A `section_header` is an intro band whose role is to label what
+         * immediately follows. There are two shapes:
+         *
+         *  • Slim label: eyebrow + heading only (no body) — the heading should
+         *    sit directly atop its subject component (Figma cluster pages:
+         *    Leasing, Plan-My-Visit). FLUSH.
+         *  • Content band: eyebrow + heading + body paragraph — the body needs
+         *    breathing room or the paragraph crashes into the next component.
+         *    BREATHED (48 px).
+         *
+         * Sheet feedback (May): Guest Services "About Colchester" section_header
+         * has a body paragraph and was flushing into the History 2-col below —
+         * the body line read as if it were part of the History block. Branching
+         * on body presence fixes both the slim label pattern and the heavier
+         * intro pattern without forcing editors to pick a spacing knob.
          */
         if ($previousLayout === 'section_header') {
-            return self::SPACE_FLUSH;
+            $hasBody = trim(strip_tags((string) ($previousComponent['header_body'] ?? ''))) !== '';
+            return $hasBody ? self::SPACE_BREATHED : self::SPACE_FLUSH;
         }
 
         return self::SPACE_STANDARD;
