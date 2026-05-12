@@ -136,7 +136,8 @@
                 <button
                   id="{{ esc_attr($questionId) }}"
                   type="button"
-                  class="faq__question group flex w-full cursor-pointer items-center justify-between gap-4 py-5 text-left font-sans text-base text-deep-moss transition-colors culvers-focus-ring md:text-lg"
+                  {{-- Figma `51:8007` desktop FAQ question: Halyard Book 20 / lh 1.3 / Faded Olive. --}}
+                  class="faq__question group flex w-full cursor-pointer items-center justify-between gap-4 py-5 text-left font-sans text-lg leading-[1.3] text-faded-olive transition-colors culvers-focus-ring md:text-xl"
                   data-faq-question
                   aria-controls="{{ esc_attr($panelId) }}"
                   aria-expanded="{{ $isOpen ? 'true' : 'false' }}"
@@ -167,7 +168,8 @@
                 x-bind:inert="!isOpen({{ $i }})">
                 <div class="faq__panel-inner overflow-hidden">
                   <div
-                    class="faq__answer pb-6 pr-10 font-sans text-sm leading-6 text-deep-moss/80 rt-link-faded [&_p+p]:mt-3 [&_strong]:font-medium [&_strong]:text-deep-moss [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6">
+                    {{-- Figma `51:8027` desktop FAQ answer: Halyard Book 15 / lh 1.32 / Faded Olive. --}}
+                    class="faq__answer pb-6 pr-10 font-sans text-[15px] leading-[1.32] text-faded-olive [&_p+p]:mt-3 [&_strong]:font-medium [&_strong]:text-faded-olive [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6">
                     {!! $item['answer_html'] !!}
                   </div>
                 </div>

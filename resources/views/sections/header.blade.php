@@ -406,7 +406,8 @@
   {{-- Mobile menu — Figma: white full-screen, wordmark + lime close, drill-down panels, useful-link + social pill rows. --}}
   <div
     id="mega-mobile-drawer"
-    class="mega-nav__drawer fixed inset-0 z-[100] flex h-[100svh] flex-col bg-white text-deep-moss lg:hidden"
+    {{-- Figma `51:9052` (mobile drawer): Lighter Cream surface (#FFFEFA), Faded Olive text. --}}
+    class="mega-nav__drawer fixed inset-0 z-[100] flex h-[100svh] flex-col bg-lighter-cream text-faded-olive lg:hidden"
     x-show="mobileOpen"
     x-cloak
     x-transition:enter="transition ease-out duration-300 motion-reduce:transition-none"
@@ -421,7 +422,7 @@
     <h2 id="mega-mobile-drawer-title" class="sr-only">{{ __('Site menu', 'culvers') }}</h2>
 
     <div
-      class="flex shrink-0 items-center justify-between gap-4 border-b border-deep-moss/10 px-5 pb-4 pt-[max(0.5rem,env(safe-area-inset-top))] sm:px-6">
+      class="flex shrink-0 items-center justify-between gap-4 border-b border-faded-olive/15 px-5 pb-4 pt-[max(0.5rem,env(safe-area-inset-top))] sm:px-6">
       <a
         class="shrink-0 focus-visible:rounded-sm culvers-focus-ring"
         href="{{ esc_url(home_url('/')) }}"
@@ -461,21 +462,23 @@
           :aria-hidden="mobileNavDepth === 1">
           <nav aria-label="{{ esc_attr__('Primary navigation', 'culvers') }}">
             @if($navTree !== [])
-              <ul class="divide-y divide-deep-moss/10">
+              <ul class="divide-y divide-faded-olive/15">
                 @foreach($navTree as $idx => $branch)
                   <li class="list-none">
+                    {{-- Figma `51:9052`: Canela Regular 36 / lh 1.1 / Faded Olive (H2 Mobile token);
+                         rows separated by 1 px Faded Olive 15% dividers (matches `divide-y` above). --}}
                     @if($branch['children'] !== [])
                       <button
                         type="button"
-                        class="flex w-full items-center justify-between gap-4 py-5 text-left font-heading text-3xl leading-none text-deep-moss focus-visible:rounded-sm culvers-focus-ring-compact sm:text-4xl"
+                        class="flex w-full items-center justify-between gap-4 py-[26px] text-left font-heading text-[36px] leading-[1.1] text-faded-olive focus-visible:rounded-sm culvers-focus-ring-compact"
                         x-on:click="openMobileSubmenuByIndex({{ (int) $idx }})">
                         <span>{{ $branch['title'] }}</span>
-                        <span class="inline-flex size-9 shrink-0 items-center justify-center text-deep-moss/50" aria-hidden="true">
-                          <svg class="size-4" viewBox="0 0 24 24" fill="none">
+                        <span class="inline-flex size-6 shrink-0 items-center justify-center text-faded-olive" aria-hidden="true">
+                          <svg class="h-[14px] w-2" viewBox="0 0 8 14" fill="none">
                             <path
-                              d="m9 6 6 6-6 6"
+                              d="m1 1 6 6-6 6"
                               stroke="currentColor"
-                              stroke-width="1.8"
+                              stroke-width="1.5"
                               stroke-linecap="round"
                               stroke-linejoin="round" />
                           </svg>
@@ -483,15 +486,15 @@
                       </button>
                     @else
                       <a
-                        class="flex w-full items-center justify-between gap-4 py-5 font-heading text-3xl leading-none text-deep-moss focus-visible:rounded-sm culvers-focus-ring-compact sm:text-4xl"
+                        class="flex w-full items-center justify-between gap-4 py-[26px] font-heading text-[36px] leading-[1.1] text-faded-olive focus-visible:rounded-sm culvers-focus-ring-compact"
                         href="{{ esc_url($branch['url']) }}">
                         <span>{{ $branch['title'] }}</span>
-                        <span class="inline-flex size-9 shrink-0 items-center justify-center text-deep-moss/35" aria-hidden="true">
-                          <svg class="size-4" viewBox="0 0 24 24" fill="none">
+                        <span class="inline-flex size-6 shrink-0 items-center justify-center text-faded-olive" aria-hidden="true">
+                          <svg class="h-[14px] w-2" viewBox="0 0 8 14" fill="none">
                             <path
-                              d="m9 6 6 6-6 6"
+                              d="m1 1 6 6-6 6"
                               stroke="currentColor"
-                              stroke-width="1.8"
+                              stroke-width="1.5"
                               stroke-linecap="round"
                               stroke-linejoin="round" />
                           </svg>
@@ -504,8 +507,9 @@
             @endif
           </nav>
 
-          <div class="mt-10 border-t border-deep-moss/10 pt-8">
-            <p class="font-sans text-xs font-semibold uppercase tracking-[0.2em] text-deep-moss/55">
+          <div class="mt-10 pt-8">
+            {{-- Figma `51:9059`: Commuters SemiBold 16 / lh 24 / 1 px tracking / Faded Olive / centred. --}}
+            <p class="text-center font-label text-base font-semibold uppercase leading-6 tracking-[0.0625em] text-faded-olive">
               {{ __('Useful links', 'culvers') }}
             </p>
             {{-- Figma mobile nav: one pale-sage pill with two inline links, then one glowleaf pill for social (not four separate tiles). --}}

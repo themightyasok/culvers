@@ -107,9 +107,11 @@
                 {{-- Two-tone headline (Figma): accent words in glowleaf, remainder in white. The
                      split is data-driven via Customizer (`MOD_NEWSLETTER_HEADING_ACCENT`) so editors
                      can re-pick which words pop without touching markup. --}}
+                {{-- Figma `2:1113` mobile = 36 px, Figma desktop newsletter heading = ~34 (snapped
+                     to text-4xl = 40 in the type ramp). Mobile bumped from text-3xl (32) → text-[36px]. --}}
                 <h2
                   id="footer-newsletter-heading"
-                  class="font-heading text-3xl leading-[1.1] md:text-4xl">
+                  class="font-heading text-[36px] leading-[1.1] md:text-4xl">
                   @if($headingParts['accent'] !== '')
                     <span class="text-glowleaf">{{ esc_html($headingParts['accent']) }}</span><span class="text-lighter-cream">{{ esc_html($headingParts['rest']) }}</span>
                   @else
@@ -138,7 +140,8 @@
                     type="email"
                     autocomplete="email"
                     placeholder="{{ esc_attr(FooterCustomizer::newsletterPlaceholder()) }}"
-                    class="min-h-[44px] flex-1 border-0 bg-transparent font-sans text-xs font-semibold uppercase tracking-widest text-lighter-cream placeholder:text-lighter-cream/75 placeholder:uppercase focus:ring-0 focus:outline-none md:text-base" />
+                    {{-- Figma `2:1118` placeholder: Commuters SemiBold 12.887 / lh 30.928 / 0.6443 px tracking / uppercase. --}}
+                    class="min-h-[44px] flex-1 border-0 bg-transparent font-label text-[13px] font-semibold uppercase leading-[30px] tracking-[0.05em] text-lighter-cream placeholder:text-lighter-cream/75 placeholder:uppercase focus:ring-0 focus:outline-none md:text-sm" />
                   <button
                     type="submit"
                     class="inline-flex size-10 shrink-0 cursor-pointer items-center justify-center rounded-full text-lighter-cream transition-colors hover:bg-white/10 culvers-focus-ring"
