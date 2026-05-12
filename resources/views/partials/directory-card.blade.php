@@ -89,7 +89,10 @@
 
         <div class="pointer-events-none absolute left-0 right-0 top-[213px] z-40 h-px bg-white" aria-hidden="true"></div>
 
-        <h2 class="absolute left-[23px] top-[233px] z-40 max-w-[calc(100%-46px)] font-sans text-2xl font-medium text-white">
+        {{-- Figma directory card title: 22 px Halyard Display Medium, snapped to text-2xl (24 px).
+             `!font-sans` is important because the base layer `h1–h6 { font-heading }` rule
+             otherwise wins over a plain `font-sans` utility in Tailwind v4. --}}
+        <h2 class="absolute left-[23px] top-[233px] z-40 max-w-[calc(100%-46px)] !font-sans text-2xl font-medium leading-tight text-white">
           {{ $spec->title }}
         </h2>
         @if ($spec->hasSubtitle())

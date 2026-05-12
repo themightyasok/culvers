@@ -122,14 +122,19 @@
         @if($hasIntro)
           <header class="text-center">
             @if($heading !== '')
-              {{-- Section H2: 64px desktop / 48px mobile (Component::sectionHeadingClasses). --}}
-              <h2 class="travel-calculator__heading {{ Component::sectionHeadingClasses('text-deep-moss') }}">
+              {{-- Figma `51:9035` Travel Calc Mobile: Canela 36 / lh 1.1 / Deep Moss (H2 Mobile);
+                   Figma `51:7978` Travel Calc Desktop: Canela 64 / lh 1.2 / Deep Moss (H2 Title).
+                   This is the one Section H2 in the design system that uses the larger 64 px
+                   token rather than the generic 58 px, so we override `sectionHeadingClasses`
+                   inline rather than route through it. --}}
+              <h2 class="travel-calculator__heading font-heading text-[36px] leading-[1.1] text-deep-moss md:text-[64px] md:leading-[1.2]">
                 {{ esc_html($heading) }}
               </h2>
             @endif
             @if($intro !== '')
-              {{-- Figma Desktop/Body Copy/Large body copy: Halyard Book 20px → text-xl. --}}
-              <p class="travel-calculator__intro mt-6 font-sans text-base font-light text-deep-moss md:text-xl">
+              {{-- Figma `51:9036` Mobile: Halyard Book 16 / lh 1.32 (Small Body Mobile);
+                   Figma `51:7979` Desktop: Halyard Book 20 / lh 1.3 (Large body copy). --}}
+              <p class="travel-calculator__intro mt-6 font-sans text-base font-light leading-[1.32] text-deep-moss md:text-xl md:leading-[1.3]">
                 {{ esc_html($intro) }}
               </p>
             @endif
@@ -150,9 +155,10 @@
           x-on:submit.prevent="submit()"
           novalidate>
           <div class="travel-calculator__field flex flex-col gap-[14px]">
+            {{-- Figma `51:7982` field label: Commuters SemiBold 12 / lh 24 / 1 px tracking / uppercase. --}}
             <label
               for="{{ esc_attr($instanceId) }}-origin"
-              class="font-sans text-xs font-semibold uppercase leading-6 tracking-[1px] text-deep-moss">
+              class="font-label text-xs font-semibold uppercase leading-6 tracking-[0.0833em] text-deep-moss">
               {{ esc_html($destLabel) }}
             </label>
             <input
@@ -169,9 +175,10 @@
           </div>
 
           <div class="travel-calculator__field flex flex-col gap-[14px]">
+            {{-- Figma `51:7988` field label: Commuters SemiBold 12 / lh 24 / 1 px tracking / uppercase. --}}
             <label
               for="{{ esc_attr($instanceId) }}-mode"
-              class="font-sans text-xs font-semibold uppercase leading-6 tracking-[1px] text-deep-moss">
+              class="font-label text-xs font-semibold uppercase leading-6 tracking-[0.0833em] text-deep-moss">
               {{ esc_html($modeLabel) }}
             </label>
             <div class="relative">

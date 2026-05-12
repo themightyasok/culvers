@@ -48,8 +48,12 @@
     ])
   @endif
 @else
+  {{-- Default tone is Faded Olive (#4F5438) — Figma's section H2 token across the
+       site (Home / Plan My Visit / Leasing / Guest Services / Contact). Deep Moss
+       is reserved for callout bands (Travel Calculator) which set their own
+       heading colour inline. --}}
   <section
-    class="section-header {{ esc_attr($root) }} text-deep-moss"
+    class="section-header {{ esc_attr($root) }} text-faded-olive"
     data-component-root
     data-section-header>
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
@@ -61,10 +65,10 @@
         @endif
 
         @if($heading !== '')
-          {{-- Section H2 (64px desktop / 48px mobile). Tone defaults to text-deep-moss; --}}
-          {{-- the section-header component otherwise inherits page text colour. --}}
+          {{-- Section H2 (58 px desktop / 48 px mobile) in Faded Olive — matches Figma section
+               H2 token; body retains Deep Moss for readability against the cream surface. --}}
           <{{ $headingTag }}
-            class="section-header__heading {{ Component::sectionHeadingClasses('text-deep-moss', $eyebrow !== '' ? 'mt-3' : '') }}">
+            class="section-header__heading {{ Component::sectionHeadingClasses('text-faded-olive', $eyebrow !== '' ? 'mt-3' : '') }}">
             {{ esc_html($heading) }}
           </{{ $headingTag }}>
         @endif
