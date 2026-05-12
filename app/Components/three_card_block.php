@@ -97,19 +97,29 @@ return [
             ],
         ],
         'cards_cpt_post_type' => [
+            /* Multi-select so a single block can power a "What are you looking for today?"
+               toggle that flips between News / Events / Offers cards. One tab per selected
+               CPT (tab label = the human label below). Order of selection = tab order. */
             'type' => 'select',
             'options' => [
-                'label' => __('Directory CPT', 'culvers'),
-                'instructions' => __('Pick which directory the cards are pulled from.', 'culvers'),
+                'label' => __('Directory CPTs', 'culvers'),
+                'instructions' => __(
+                    'Pick one or more directories. Each becomes a toggle tab above the cards; '
+                        . 'switching tabs fades the row to the latest items from that directory.',
+                    'culvers'
+                ),
                 'choices' => [
-                    'culvers_event' => __('Latest Events', 'culvers'),
-                    'culvers_offer' => __('Latest Offers', 'culvers'),
-                    'culvers_news' => __('Latest News', 'culvers'),
+                    'culvers_event' => __('Events', 'culvers'),
+                    'culvers_offer' => __('Offers', 'culvers'),
+                    'culvers_news' => __('News', 'culvers'),
                     'culvers_shop' => __('Shops', 'culvers'),
                     'culvers_eat_drink' => __('Eat & Drink', 'culvers'),
                     'culvers_career' => __('Careers', 'culvers'),
                 ],
-                'default_value' => 'culvers_event',
+                'multiple' => 1,
+                'ui' => 1,
+                'ajax' => 0,
+                'default_value' => ['culvers_event'],
                 'allow_null' => 0,
                 'return_format' => 'value',
                 'conditional_logic' => $onlyWhen('cpt'),

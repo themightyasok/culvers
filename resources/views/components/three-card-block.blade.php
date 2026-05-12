@@ -111,10 +111,23 @@
       </div>
     @endif
 
+    {{-- Shared `relative` parent so the leaving panel's `absolute` leave-transition
+         layer anchors to this stack (and not the viewport), letting the entering
+         panel claim the same row of space without a layout jump. --}}
+    <div class="three-card-block__panels relative">
     @foreach($tabs as $index => $tab)
+      {{-- Fade swap between tab panels (250ms ease-out). Cards fade out, the new
+           CPT's row fades in. Reduced-motion users get an instant swap because
+           `x-transition` honours `prefers-reduced-motion: reduce`. --}}
       <div
         class="mt-10 md:mt-14"
         x-show="activeTab === {{ $index }}"
+        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-200 absolute inset-x-0 top-0"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
         x-cloak
         id="three-card-panel-{{ $index }}"
         role="tabpanel"
@@ -207,6 +220,7 @@
         @endif
       </div>
     @endforeach
+    </div>
 
     @if($viewAllUrl !== '')
       <div class="mt-12 flex justify-center md:mt-14">

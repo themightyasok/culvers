@@ -20,6 +20,50 @@ final class ThreeCardBlock
     ];
 
     /**
+     * Human-readable tab labels for each supported CPT. Kept inline (rather than reading
+     * `WP_Post_Type::labels->name`) so the toggle pills stay short ("News" not "Latest News").
+     *
+     * @var array<string, string>
+     */
+    private const CPT_TAB_LABELS = [
+        'culvers_event' => 'Events',
+        'culvers_offer' => 'Offers',
+        'culvers_news' => 'News',
+        'culvers_shop' => 'Shops',
+        'culvers_eat_drink' => 'Eat & Drink',
+        'culvers_career' => 'Careers',
+    ];
+
+    /**
+     * Normalize the CPT picker payload (legacy single-string OR new array). Order is preserved.
+     *
+     * @return list<string>
+     */
+    private static function normalizeCptList(mixed $raw): array
+    {
+        if (is_string($raw)) {
+            $raw = $raw === '' ? [] : [$raw];
+        }
+        if (! is_array($raw)) {
+            return [];
+        }
+        $out = [];
+        foreach ($raw as $value) {
+            if (! is_string($value) || $value === '') {
+                continue;
+            }
+            if (! in_array($value, self::SUPPORTED_CPTS, true)) {
+                continue;
+            }
+            if (in_array($value, $out, true)) {
+                continue;
+            }
+            $out[] = $value;
+        }
+        return $out;
+    }
+
+    /**
      * Structural normalization only — no demo copy or placeholder media is injected here.
      *
      * @param  array<string, mixed>  $component
@@ -55,12 +99,19 @@ final class ThreeCardBlock
             return '';
         }
 
-        $postType = (string) ($component['cards_cpt_post_type'] ?? '');
-        if ($postType === '' || ! in_array($postType, self::SUPPORTED_CPTS, true)) {
+        $list = self::normalizeCptList($component['cards_cpt_post_type'] ?? null);
+        if ($list === []) {
             return '';
         }
 
-        $url = get_post_type_archive_link($postType);
+        /* Multi-CPT toggle (e.g. News / Events / Offers) has no single "View all" — each
+           tab already deep-links its own archive via card permalinks, and a single button
+           below would be ambiguous. Suppress unless the editor supplied an explicit URL. */
+        if (count($list) > 1) {
+            return '';
+        }
+
+        $url = get_post_type_archive_link($list[0]);
 
         return is_string($url) ? $url : '';
     }
@@ -80,7 +131,7 @@ final class ThreeCardBlock
         }
 
         if ($source === 'cpt') {
-            return self::cptTabPanel($component);
+            return self::cptTabPanels($component);
         }
 
         return [
@@ -177,20 +228,24 @@ final class ThreeCardBlock
     }
 
     /**
-     * Single-tab panel sourced from a directory CPT (events / offers /
-     * news / shops / eat-drink / careers). Title + post thumbnail render
-     * inside the existing big-card layout (`three-card-block.blade.php`),
-     * so the landing-page strips visually match Figma — overlay style on
-     * a tall image — without forcing every CPT row to use the moss-tile
+     * One tab panel per selected directory CPT (events / offers / news / shops /
+     * eat-drink / careers). Title + post thumbnail render inside the existing
+     * big-card layout, so the landing-page strips visually match Figma — overlay
+     * style on a tall image — without forcing every CPT row to use the moss-tile
      * directory card pattern (which is reserved for the archive grids).
+     *
+     * Single-CPT selection still produces a single un-labelled panel (tabs hide
+     * when there's only one). Multi-CPT selection produces a labelled tab per
+     * CPT, e.g. the homepage "What are you looking for today?" News/Events/Offers
+     * toggle.
      *
      * @param  array<string, mixed>  $component
      * @return list<array{label: string, slug: string, cards: list<array<string, mixed>>}>
      */
-    private static function cptTabPanel(array $component): array
+    private static function cptTabPanels(array $component): array
     {
-        $postType = (string) ($component['cards_cpt_post_type'] ?? '');
-        if ($postType === '' || ! in_array($postType, self::SUPPORTED_CPTS, true)) {
+        $list = self::normalizeCptList($component['cards_cpt_post_type'] ?? null);
+        if ($list === []) {
             return [];
         }
 
@@ -202,63 +257,68 @@ final class ThreeCardBlock
             $perPage = 12;
         }
 
-        /* CPTs sort newest-first by default (matches the archive query
-           hooks in DirectoryPostTypes::adjustArchiveQueries) so a "Latest
-           X" strip surfaces the freshest items without extra config. */
-        $orderby = 'date';
-        $order = 'DESC';
-        if ($postType === 'culvers_shop' || $postType === 'culvers_eat_drink' || $postType === 'culvers_career') {
-            $orderby = 'title';
-            $order = 'ASC';
-        }
+        $isMulti = count($list) > 1;
+        $panels = [];
 
-        $query = new \WP_Query([
-            'post_type' => $postType,
-            'post_status' => 'publish',
-            'posts_per_page' => $perPage,
-            'orderby' => $orderby,
-            'order' => $order,
-            'ignore_sticky_posts' => true,
-            'no_found_rows' => true,
-        ]);
-
-        $cards = [];
-        while ($query->have_posts()) {
-            $query->the_post();
-            $postId = (int) get_the_ID();
-            $titleDecoded = html_entity_decode((string) get_the_title(), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-            $thumbId = (int) get_post_thumbnail_id($postId);
-            /** @var array<string, mixed>|null $img */
-            $img = null;
-            $altText = $titleDecoded;
-            if ($thumbId > 0) {
-                $url = wp_get_attachment_image_url($thumbId, 'large');
-                if (is_string($url) && $url !== '') {
-                    $thumbAlt = trim((string) get_post_meta($thumbId, '_wp_attachment_image_alt', true));
-                    $altText = $thumbAlt !== '' ? $thumbAlt : $titleDecoded;
-                    $img = ['url' => $url, 'alt' => $altText];
-                }
+        foreach ($list as $postType) {
+            /* CPTs sort newest-first by default (matches the archive query
+               hooks in DirectoryPostTypes::adjustArchiveQueries) so a "Latest
+               X" strip surfaces the freshest items without extra config. */
+            $orderby = 'date';
+            $order = 'DESC';
+            if ($postType === 'culvers_shop' || $postType === 'culvers_eat_drink' || $postType === 'culvers_career') {
+                $orderby = 'title';
+                $order = 'ASC';
             }
 
-            $cards[] = [
-                'title' => $titleDecoded,
-                'url' => get_permalink($postId) ?: '',
-                'media_type' => 'image',
-                'image' => $img,
-                'video' => null,
-                'poster' => null,
-                'alt' => $altText,
-            ];
-        }
-        wp_reset_postdata();
+            $query = new \WP_Query([
+                'post_type' => $postType,
+                'post_status' => 'publish',
+                'posts_per_page' => $perPage,
+                'orderby' => $orderby,
+                'order' => $order,
+                'ignore_sticky_posts' => true,
+                'no_found_rows' => true,
+            ]);
 
-        return [
-            [
-                'label' => '',
+            $cards = [];
+            while ($query->have_posts()) {
+                $query->the_post();
+                $postId = (int) get_the_ID();
+                $titleDecoded = html_entity_decode((string) get_the_title(), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                $thumbId = (int) get_post_thumbnail_id($postId);
+                /** @var array<string, mixed>|null $img */
+                $img = null;
+                $altText = $titleDecoded;
+                if ($thumbId > 0) {
+                    $url = wp_get_attachment_image_url($thumbId, 'large');
+                    if (is_string($url) && $url !== '') {
+                        $thumbAlt = trim((string) get_post_meta($thumbId, '_wp_attachment_image_alt', true));
+                        $altText = $thumbAlt !== '' ? $thumbAlt : $titleDecoded;
+                        $img = ['url' => $url, 'alt' => $altText];
+                    }
+                }
+
+                $cards[] = [
+                    'title' => $titleDecoded,
+                    'url' => get_permalink($postId) ?: '',
+                    'media_type' => 'image',
+                    'image' => $img,
+                    'video' => null,
+                    'poster' => null,
+                    'alt' => $altText,
+                ];
+            }
+            wp_reset_postdata();
+
+            $panels[] = [
+                'label' => $isMulti ? (self::CPT_TAB_LABELS[$postType] ?? $postType) : '',
                 'slug' => $postType,
                 'cards' => $cards,
-            ],
-        ];
+            ];
+        }
+
+        return $panels;
     }
 
     /**
