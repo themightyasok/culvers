@@ -115,8 +115,8 @@
 
       <div class="relative z-10 mx-auto flex w-full max-w-[774px] flex-col items-center">
         @if($heading !== '')
-          {{-- Section H2: 64px desktop / 48px mobile (Component::sectionHeadingClasses). --}}
-          <{{ $headingTag }} class="{{ Component::sectionHeadingClasses('text-deep-moss', 'text-center') }}">
+          {{-- Figma `51:8003` FAQ section heading: Canela 58 / lh 1.15 / Faded Olive. --}}
+          <{{ $headingTag }} class="{{ Component::sectionHeadingClasses('text-faded-olive', 'text-center') }}">
             {{ esc_html($heading) }}
           </{{ $headingTag }}>
           @if($showKeyline)
