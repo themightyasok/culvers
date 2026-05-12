@@ -349,8 +349,14 @@
   border-radius: 0;
   background: transparent;
   opacity: 1;
-  rotate: 45deg;
-  transform: none;
+  /*
+   * `transform: rotate(45deg)` (not the standalone `rotate:` property) —
+   * Lightning CSS (Vite) strips the standalone `rotate:` declaration in
+   * production builds. Wrapping it inside `transform` survives minification
+   * and also lets us drop Splide's default `transform: scale(1.4)` on the
+   * active dot by overriding `transform` outright.
+   */
+  transform: rotate(45deg);
   transition:
     background-color 0.2s ease-out,
     border-color 0.2s ease-out;
@@ -364,5 +370,6 @@
 .hero-slider__page.splide__pagination__page.is-active {
   border-color: var(--color-white);
   background: var(--color-white);
-  transform: none;
+  /* Re-state rotate so we replace Splide's scale(1.4) without losing the diamond. */
+  transform: rotate(45deg);
 }
