@@ -127,7 +127,8 @@
       @if($showPanel)
         <aside class="contact__panel flex flex-col text-deep-moss" aria-label="{{ esc_attr__('Getting here and contact details', 'culvers') }}">
           <div class="contact__panel-block">
-            <h3 class="contact__panel-heading font-heading text-2xl leading-tight md:text-[26px]">
+            {{-- Figma `2:1034` / `2:1043` Contact panel sub-heading: Canela Regular 32 / lh 1.1. --}}
+            <h3 class="contact__panel-heading font-heading text-[32px] leading-[1.1]">
               {{ esc_html(FooterCustomizer::gettingHereTitle()) }}
             </h3>
             @if($address !== '')
@@ -151,7 +152,8 @@
 
           @if($phone !== '' || $contactEmail !== '' || $hasSocial)
             <div class="contact__panel-block mt-12">
-              <h3 class="contact__panel-heading font-heading text-2xl leading-tight md:text-[26px]">
+              {{-- Figma `2:1034` / `2:1043` Contact panel sub-heading: Canela Regular 32 / lh 1.1. --}}
+            <h3 class="contact__panel-heading font-heading text-[32px] leading-[1.1]">
                 {{ esc_html(FooterCustomizer::contactTitle()) }}
               </h3>
               @if($phone !== '')
