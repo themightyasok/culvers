@@ -31,6 +31,9 @@ final class CptSinglesFlexibleSeedData
     /** Senior Supervisor (Figma 51:6450) — Subway team photo, group-hug split image. */
     private const CAREER_HERO_FILE = 'career-hero.jpg';
 
+    /** Subway wordmark (Figma 51:6460 hero vector), committed SVG in seeds for sideload. */
+    private const CAREER_SUBWAY_LOGO_FILE = 'subway-logo-hero.svg';
+
     private const CAREER_PERKS_FILE = 'career-perks.jpg';
 
     /** Hotel Chocolat Valentine's offer (Figma 51:6386) — heart-box hero + offer image. */
@@ -76,7 +79,10 @@ final class CptSinglesFlexibleSeedData
                     'alt' => __('Subway team at the Culver Square store', 'culvers'),
                 ],
                 'hero_image_mobile' => null,
-                'hero_logo' => null,
+                'hero_logo' => [
+                    'url' => PagesFlexibleSeedData::seedAssetUrl(self::CAREER_SUBWAY_LOGO_FILE),
+                    'alt' => __('Subway', 'culvers'),
+                ],
                 'hero_title_line' => __('Subway', 'culvers'),
                 'hero_title_tone' => 'white',
                 'hero_subtitle_line' => __('Now hiring at Culver Square', 'culvers'),
@@ -84,14 +90,18 @@ final class CptSinglesFlexibleSeedData
                 'hero_title_in_image' => false,
             ]),
             array_merge(self::base('career_detail'), [
+                        'career_sidebar_brand_logo' => [
+                            'url' => PagesFlexibleSeedData::seedAssetUrl(self::CAREER_SUBWAY_LOGO_FILE),
+                            'alt' => __('Subway', 'culvers'),
+                        ],
                         'career_job_title' => __('Senior Supervisor', 'culvers'),
                         // Image hero above already supplies the page H1 (the brand name);
                         // demote the job title to H2 so we don't ship two H1s.
                         'career_job_title_level' => '2',
-                'career_meta' => [
-                    ['item_label' => __('Contract Type', 'culvers'), 'item_value' => __('Full-Time', 'culvers')],
-                    ['item_label' => __('Location', 'culvers'), 'item_value' => __('Culver Square Shopping Centre', 'culvers')],
-                    ['item_label' => __('Pay', 'culvers'), 'item_value' => __('£12.40 per hour', 'culvers')],
+                        'career_meta' => [
+                        ['item_label' => __('Contract Type', 'culvers'), 'item_value' => __('Full-Time', 'culvers')],
+                        ['item_label' => __('Location', 'culvers'), 'item_value' => __('Culver Square Shopping Centre', 'culvers')],
+                        ['item_label' => __('Pay', 'culvers'), 'item_value' => __('£12.40 per hour', 'culvers')],
                         ],
                         'career_apply_label' => __('Apply Now', 'culvers'),
                         'career_apply_url' => $applyUrl,

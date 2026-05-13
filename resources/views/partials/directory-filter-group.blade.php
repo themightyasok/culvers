@@ -58,8 +58,9 @@
   $group_extra_section_classes = (string) ($extra_section_classes ?? '');
   $group_all_label = (string) ($all_label ?? __('All', 'culvers'));
 
-  /* JSON_HEX_* keeps the slug safe inside Alpine's `:class="…"` and
-     `@click="…"` evaluators no matter what punctuation it contains. */
+  /* JSON_HEX_* keeps JSON safe; slugs are then HTML-escaped for double-quoted
+     attributes so inner `"` from json_encode does not terminate the attribute
+     (which broke Alpine for slugs like centre-management). */
   $json_flags = JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES;
 @endphp
 <div class="directory-archive__filter-section{{ $group_extra_section_classes !== '' ? ' ' . $group_extra_section_classes : '' }}">
@@ -106,10 +107,10 @@
           type="button"
           role="radio"
           class="directory-archive__filter-option flex w-full items-center gap-[14px] py-0.5 text-left focus-visible:rounded-md culvers-focus-ring-compact"
-          :class="{{ $group_state_var }} === {!! $slug_json !!} ? 'directory-archive__filter-option--on' : 'directory-archive__filter-option--off'"
-          :aria-checked="{{ $group_state_var }} === {!! $slug_json !!}"
-          @click="{{ $group_setter }}({!! $slug_json !!})">
-          <span class="directory-archive__radio" :class="{{ $group_state_var }} === {!! $slug_json !!} ? 'directory-archive__radio--checked' : ''" aria-hidden="true"></span>
+          :class="{{ $group_state_var }} === {{ e($slug_json) }} ? 'directory-archive__filter-option--on' : 'directory-archive__filter-option--off'"
+          :aria-checked="{{ $group_state_var }} === {{ e($slug_json) }}"
+          @click="{{ $group_setter }}({{ e($slug_json) }})">
+          <span class="directory-archive__radio" :class="{{ $group_state_var }} === {{ e($slug_json) }} ? 'directory-archive__radio--checked' : ''" aria-hidden="true"></span>
           <span class="leading-snug">{{ esc_html($opt_name) }}</span>
         </button>
       </li>

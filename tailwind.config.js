@@ -86,7 +86,7 @@ const culversThemePlugin = plugin(({ addBase, addComponents }) => {
         {},
     },
     '.footer-nav__link--legal': {
-      '@apply font-label text-xs uppercase tracking-widest text-lighter-cream transition-colors hover:text-glowleaf':
+      '@apply font-label text-[10px] font-normal uppercase tracking-[0.05em] leading-[1.3] text-lighter-cream transition-colors hover:text-glowleaf':
         {},
     },
     '.footer-nav__link-phone': {

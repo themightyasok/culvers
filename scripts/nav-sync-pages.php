@@ -14,9 +14,9 @@
  *   2. Run {@see App\Nav\PrimaryNavLinkSync} — rewrites every `href="#"` item
  *      in the assigned `primary_navigation` menu to its canonical archive /
  *      page / deep-link URL (companion to {@see App\Nav\ShopDirectoryNavSync}).
- *   3. Run {@see App\Nav\FooterNavLinkSync} — patches `footer_column_one` +
- *      `footer_brand_subnav` placeholders, and rebuilds `footer_column_two`
- *      ("Useful Links") to the canonical Figma seed shape.
+ *   3. Run {@see App\Nav\FooterNavLinkSync} — rebuilds `footer_column_one` + `footer_column_two`
+ *      to the canonical Figma item sets when their version gates allow, aligns `footer_brand_subnav`
+ *      URLs for Cookie / Accessibility / Privacy / Terms.
  *
  * Re-running is idempotent — version options short-circuit work that is
  * already up to date and hand-edited URLs (anything other than `#`) are
@@ -72,7 +72,7 @@ $ensurePage = static function (string $slug, string $title, string $body): array
 $stubPages = [
     [
         'slug' => 'accessible-guide',
-        'title' => __('Accessible Guide', 'culvers'),
+        'title' => __('AccessAble Guide', 'culvers'),
         'body' => '<p>'
             . esc_html__(
                 'Shopping and days out in town shouldn’t be tricky. We are working on a full accessible '

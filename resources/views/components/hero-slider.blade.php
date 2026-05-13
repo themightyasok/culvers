@@ -125,15 +125,15 @@
 
                   <div
                     class="hero-slider__stage relative z-10 flex min-h-[100svh] w-full items-center px-4 pb-16 pt-[length:var(--site-header-offset,11.25rem)] md:px-5 lg:px-6 {{ esc_attr($justify) }}">
-                    <div class="hero-slider__copy pointer-events-auto max-w-[40rem] motion-safe:transition-opacity motion-safe:duration-300 motion-safe:ease-out {{ esc_attr($textAlign) }}">
+                    <div class="hero-slider__copy pointer-events-auto max-w-[min(100%,60rem)] motion-safe:transition-opacity motion-safe:duration-300 motion-safe:ease-out {{ esc_attr($textAlign) }}">
                       @if($headline !== '')
                         @php
-                          /* Sheet feedback row 5: hero title needs to break to two lines. Editors author
-                             either real newlines OR `<br />` literals in the ACF Headline; normalise both
-                             to a newline before escaping so the rendered output is a single safe `<br>`. */
+                          /* Editors can use `<br />` or newlines in the slide headline — preserve as `<br>`
+                             after escaping; widen `.hero-slider__copy` so automatic wrapping hits ~two lines
+                             once manual breaks end. */
                           $headlineSafe = preg_replace('#<br\s*/?>#i', "\n", $headline);
                         @endphp
-                        <{{ $headingTag }} class="font-heading text-5xl leading-[1.1] text-brand-500 sm:text-7xl sm:leading-none md:text-8xl lg:text-9xl">
+                        <{{ $headingTag }} class="hero-slider__title text-balance break-words font-heading text-5xl leading-[1.1] text-brand-500 sm:text-7xl sm:leading-none md:text-8xl lg:text-9xl">
                           {!! nl2br(e($headlineSafe)) !!}
                         </{{ $headingTag }}>
                       @endif

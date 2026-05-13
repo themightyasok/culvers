@@ -298,6 +298,8 @@ final class CulverSquareFigmaPrimaryMenu
                 } elseif ($branch['parent_slug'] === 'whats-on') {
                     $path = '/' . ltrim($childSlug, '/') . '/';
                     $childUrl = function_exists('home_url') ? home_url($path) : $path;
+                } elseif ($branch['parent_slug'] === 'careers') {
+                    $childUrl = esc_url_raw(self::careerArchiveUrl());
                 } elseif (str_contains($childSlug, '/')) {
                     $path = '/' . trim($childSlug, '/') . '/';
                     $childUrl = function_exists('home_url') ? home_url($path) : $path;
@@ -474,6 +476,19 @@ final class CulverSquareFigmaPrimaryMenu
         return is_string($url) && $url !== '' ? $url : home_url('/shops/');
     }
 
+    public static function careerArchiveUrl(): string
+    {
+        $url = get_post_type_archive_link('culvers_career');
+
+        return is_string($url) && $url !== '' ? $url : home_url('/careers/');
+    }
+
+    /** Remote hover-preview asset seeded on Careers mega rows (mirrors Plan my visit imagery). */
+    public static function careersMegaPreviewSourceUrl(): string
+    {
+        return self::IMG_PLAN_VISIT;
+    }
+
     /**
      * Mega-menu category rows under Shop → `/shops/?category={slug}`.
      *
@@ -554,6 +569,7 @@ final class CulverSquareFigmaPrimaryMenu
     private static function branches(): array
     {
         $shopArchive = self::shopArchiveUrl();
+        $careersArchive = self::careerArchiveUrl();
 
         return [
             [
@@ -630,6 +646,19 @@ final class CulverSquareFigmaPrimaryMenu
                     ['slug' => 'facilities', 'title' => __('Facilities', 'culvers'), 'preview' => self::IMG_GUEST_SERVICES],
                     ['slug' => 'faqs', 'title' => __("FAQ's", 'culvers'), 'preview' => self::IMG_GUEST_SERVICES],
                     ['slug' => 'contact-us', 'title' => __('Contact Us', 'culvers'), 'preview' => self::IMG_GUEST_SERVICES],
+                ],
+            ],
+            [
+                'title' => __('Careers', 'culvers'),
+                'url' => $careersArchive,
+                'parent_slug' => 'careers',
+                'panel_image' => self::IMG_PLAN_VISIT,
+                'children' => [
+                    [
+                        'slug' => 'open-roles',
+                        'title' => __('Open roles', 'culvers'),
+                        'preview' => self::IMG_PLAN_VISIT,
+                    ],
                 ],
             ],
         ];

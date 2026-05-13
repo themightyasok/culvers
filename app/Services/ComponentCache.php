@@ -10,7 +10,7 @@ namespace App\Services;
 class ComponentCache
 {
     /** Cache key for component registry (bump version to invalidate stale/empty cache) */
-    private const CACHE_KEY = 'culvers_theme_components_v10';
+    private const CACHE_KEY = 'culvers_theme_components_v12';
 
     /** Cache group name */
     private const CACHE_GROUP = 'components';

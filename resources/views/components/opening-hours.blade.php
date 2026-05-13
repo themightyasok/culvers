@@ -72,31 +72,33 @@
 $hoursHeadingClass = $isShopSingle
     ? 'font-heading text-5xl text-faded-olive'
     : Component::sectionHeadingClasses('text-faded-olive');
+  // Plan / landing (Figma 51:4918): sub + body = Halyard Book 20px / lh 1.3; shop single unchanged.
   $hoursSubClass = $isShopSingle
-      ? 'mt-4 font-sans text-xl font-light text-faded-olive'
-      : 'mt-4 font-sans text-base leading-relaxed text-deep-moss/85 md:text-xl';
+      ? 'mt-4 font-sans text-xl font-light leading-[1.3] text-faded-olive'
+      : 'mt-4 font-sans text-xl font-light leading-[1.3] text-deep-moss';
   $hoursIntroBodyBase = $isShopSingle
-      ? 'opening-hours__body mt-6 max-w-none text-center font-sans text-xl font-light text-faded-olive [&_p+p]:mt-4 [&_strong]:font-medium rt-link-olive-surface'
-      : 'opening-hours__body prose prose-lg mt-6 max-w-none text-left md:text-center text-deep-moss prose-headings:text-deep-moss prose-p:text-deep-moss prose-li:text-deep-moss prose-strong:text-deep-moss rt-link-prose';
+      ? 'opening-hours__body mt-6 max-w-none text-center font-sans text-xl font-light leading-[1.3] text-faded-olive [&_p+p]:mt-4 [&_strong]:font-medium rt-link-olive-surface'
+      : 'opening-hours__body mt-6 max-w-none text-left md:text-center font-sans [&_p]:text-xl [&_p]:font-light [&_p]:leading-[1.3] [&_p+p]:mt-4 [&_strong]:font-medium rt-link-prose';
   $hoursListTopBorder = $isShopSingle ? 'border-faded-olive/45' : 'border-deep-moss/20';
-  /** Row shell — bottom divider applied per row so “today” can sit flush under previous row (Figma: no line above pill). */
-  $hoursRowShellShop = 'flex items-center justify-between gap-6 px-1 py-3.5 font-sans text-xl font-light text-faded-olive sm:px-2';
-  $hoursRowShellDefault = 'flex items-center justify-between gap-6 px-1 py-3.5 font-sans text-base text-deep-moss sm:px-2 sm:text-xl';
-  /** Pill highlight: no top/side borders; keep bottom rule below pill unless last row. */
-  $hoursRowTodayShop = '!mx-0 !rounded-full bg-brand-500 !border-t-0 !border-x-0 border-b border-faded-olive/40 !px-4 !py-3 text-faded-olive last:border-b-0 sm:!py-3.5';
-  $hoursRowTodayDefault = '!mx-0 !rounded-full bg-brand-500 !border-t-0 !border-x-0 border-b border-deep-moss/15 !px-4 !py-3 last:border-b-0 sm:!py-3.5';
+  /** Rows: Book 300 + lh 1.3; “today” uses same px as peers — pill is a pseudo-element bleed. */
+  $hoursRowShellShop = 'flex items-center justify-between gap-6 px-1 py-3.5 font-sans text-xl font-light leading-[1.3] text-faded-olive sm:px-2';
+  $hoursRowShellDefault = 'flex items-center justify-between gap-6 px-1 py-3.5 font-sans text-xl font-light leading-[1.3] text-deep-moss sm:px-2';
+  /** Figma (~740px pill vs ~692px rules): widen with before:-inset-x-*; spans get z-[1]. */
+  $hoursTodayBleedShop =
+      'relative isolate overflow-visible font-normal leading-[26px] before:pointer-events-none before:absolute before:inset-y-[-3px] before:z-0 before:-inset-x-5 before:rounded-full before:bg-brand-500 sm:before:-inset-x-[1.875rem]';
+  $hoursTodayBleedDefault =
+      'relative isolate overflow-visible font-normal leading-[26px] before:pointer-events-none before:absolute before:inset-y-[-3px] before:z-0 before:-inset-x-5 before:rounded-full before:bg-brand-500 sm:before:-inset-x-[1.875rem]';
   $hoursFootClass = $isShopSingle
-      ? 'mx-auto mt-8 max-w-[40rem] text-center font-sans text-xl font-light text-faded-olive'
-      : 'mx-auto mt-8 max-w-[40rem] text-center font-sans text-xs leading-6 text-deep-moss/80';
+      ? 'mx-auto mt-8 max-w-[22.5rem] text-center font-sans text-xl font-light leading-[1.3] text-faded-olive'
+      : 'mx-auto mt-8 max-w-[22.5rem] text-center font-sans text-xl font-light leading-[1.3] text-deep-moss';
 
   $hoursFirstRowToday = isset($normalizedRows[0]) && ($normalizedRows[0]['is_today'] ?? false);
 @endphp
 
 @if($hasIntro || $hasRows || $footnote !== '' || $leftUrl !== '' || $rightUrl !== '')
-  {{-- Sheet feedback row 16: "the box needs to be a tad wider" — go from a 960 readable shell to
-       the wider 1120 shell so the table breathes without losing the centred read. --}}
+  {{-- Same inner cap + horizontal gutters as three-card strip (max-w-7xl + LayoutShell gutters). --}}
   <section class="opening-hours {{ esc_attr($root) }} text-deep-moss" id="opening-hours" data-component-root data-opening-hours>
-    <div class="mx-auto w-full max-w-[1120px] px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto w-full max-w-7xl {{ LayoutShell::GUTTER_X }}">
       @if($hasIntro)
         <header class="mx-auto mb-10 max-w-[40rem] text-center md:mb-12">
           @if($heading !== '')
@@ -119,14 +121,13 @@ $hoursHeadingClass = $isShopSingle
       @endif
 
       @if($hasRows)
-        {{-- Sheet feedback row 16: wider gap so illustrations sit clear of the table, and bumped
-             illustration container width so the assets keep their aspect ratio (previously squashed
-             into a 9rem column on lg). Items vertically centred on the table block. --}}
+        {{-- Side illustrations: cap column + max-height slightly under prior pass so glyphs don’t
+             overpower the hours table while staying clear of the list. --}}
         <div class="flex flex-col items-stretch gap-10 lg:flex-row lg:items-center lg:gap-14 xl:gap-20">
           @if($leftUrl !== '')
-            <div class="order-2 hidden shrink-0 items-center justify-center lg:order-1 lg:flex lg:w-[min(28vw,11.5rem)] xl:w-[min(28vw,13rem)]">
+            <div class="order-2 hidden shrink-0 items-center justify-center lg:order-1 lg:flex lg:w-[min(26vw,10rem)] xl:w-[min(26vw,11.25rem)]">
               {!! Image::render($graphicLeft, [
-                  'class' => 'h-auto max-h-[240px] w-full max-w-full object-contain opacity-95 lg:max-h-[300px]',
+                  'class' => 'h-auto max-h-[200px] w-full max-w-full object-contain opacity-95 lg:max-h-[252px]',
                   'alt' => $leftAlt,
               ]) !!}
             </div>
@@ -139,13 +140,19 @@ $hoursHeadingClass = $isShopSingle
               aria-label="{{ esc_attr__('Opening hours by day', 'culvers') }}">
               @foreach($normalizedRows as $index => $row)
                 @php
-                  $nextIsToday = isset($normalizedRows[$index + 1]) && ($normalizedRows[$index + 1]['is_today'] ?? false);
                   $isLastRow = $index === count($normalizedRows) - 1;
+                  $nextRowIsToday = isset($normalizedRows[$index + 1])
+                      && ($normalizedRows[$index + 1]['is_today'] ?? false);
+
                   if ($isShopSingle) {
                       $hoursRowBase = $hoursRowShellShop;
                       if ($row['is_today']) {
-                          $hoursRowBase .= ' ' . $hoursRowTodayShop;
-                      } elseif ($nextIsToday || $isLastRow) {
+                          $hoursRowBase .= ' ' . $hoursTodayBleedShop;
+                          if ($isLastRow) {
+                              $hoursRowBase .= ' border-b border-faded-olive/40';
+                          }
+                      } elseif ($nextRowIsToday) {
+                          /** No divider between previous day and Glowleaf pill (Figma: no stroke above pill). */
                           $hoursRowBase .= ' border-b-0';
                       } else {
                           $hoursRowBase .= ' border-b border-faded-olive/40';
@@ -153,8 +160,11 @@ $hoursHeadingClass = $isShopSingle
                   } else {
                       $hoursRowBase = $hoursRowShellDefault;
                       if ($row['is_today']) {
-                          $hoursRowBase .= ' ' . $hoursRowTodayDefault;
-                      } elseif ($nextIsToday || $isLastRow) {
+                          $hoursRowBase .= ' ' . $hoursTodayBleedDefault;
+                          if ($isLastRow) {
+                              $hoursRowBase .= ' border-b border-deep-moss/15';
+                          }
+                      } elseif ($nextRowIsToday) {
                           $hoursRowBase .= ' border-b-0';
                       } else {
                           $hoursRowBase .= ' border-b border-deep-moss/15';
@@ -166,17 +176,17 @@ $hoursHeadingClass = $isShopSingle
                   @if($row['is_today'])
                     aria-current="true"
                   @endif>
-                  <span class="min-w-0 {{ $isShopSingle ? ($row['is_today'] ? 'font-normal leading-[26px]' : 'font-light') : 'font-medium leading-snug' }}">{{ esc_html($row['label']) }}</span>
-                  <span class="shrink-0 tabular-nums text-right {{ $isShopSingle ? ($row['is_today'] ? 'font-normal leading-[26px] text-faded-olive' : 'leading-snug text-faded-olive') : 'leading-snug text-deep-moss/95' }}">{{ esc_html($row['times']) }}</span>
+                  <span class="min-w-0 {{ $row['is_today'] ? 'relative z-[1]' : '' }}">{{ esc_html($row['label']) }}</span>
+                  <span class="shrink-0 tabular-nums text-right {{ $row['is_today'] ? 'relative z-[1]' : '' }}">{{ esc_html($row['times']) }}</span>
                 </li>
               @endforeach
             </ul>
           </div>
 
           @if($rightUrl !== '')
-            <div class="order-3 hidden shrink-0 items-center justify-center lg:flex lg:w-[min(28vw,11.5rem)] xl:w-[min(28vw,13rem)]">
+            <div class="order-3 hidden shrink-0 items-center justify-center lg:flex lg:w-[min(26vw,10rem)] xl:w-[min(26vw,11.25rem)]">
               {!! Image::render($graphicRight, [
-                  'class' => 'h-auto max-h-[240px] w-full max-w-full object-contain opacity-95 lg:max-h-[300px]',
+                  'class' => 'h-auto max-h-[200px] w-full max-w-full object-contain opacity-95 lg:max-h-[252px]',
                   'alt' => $rightAlt,
               ]) !!}
             </div>

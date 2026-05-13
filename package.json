@@ -17,6 +17,7 @@
     "format": "prettier --write \"resources/**/*.{js,css}\" \"tailwind.config.js\" \"vite.config.js\"",
     "format:check": "prettier --check \"resources/**/*.{js,css}\" \"tailwind.config.js\" \"vite.config.js\"",
     "verify": "npm run lint && npm run format:check && npm run build && composer lint && composer analyse",
+    "test:e2e:directory-filters": "node scripts/e2e-directory-filters.mjs",
     "prepare": "husky || true"
   },
   "dependencies": {
@@ -33,6 +34,7 @@
     "globals": "^16.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.4.0",
+    "playwright": "^1.56.1",
     "prettier": "^3.5.3",
     "tailwindcss": "^4.2.4",
     "vite": "^8.0.10"

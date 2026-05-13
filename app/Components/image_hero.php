@@ -30,8 +30,9 @@ return [
             'options' => [
                 'label' => __('Logo (optional)', 'culvers'),
                 'instructions' => __(
-                    'Center lockup over the hero (white artwork preferred), e.g. for brand pages. ' .
-                    'When set, the title/subtitle below are hidden — leave empty to use them.',
+                    'Centre a brand lockup over the photo (knock-out / white artwork reads best). ' .
+                    'When set, the large title line is skipped; the subtitle line still renders. ' .
+                    'Leave empty to use “Title line” instead.',
                     'culvers'
                 ),
                 'return_format' => 'array',

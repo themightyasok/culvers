@@ -1,13 +1,35 @@
 /**
  * Shopping directory archive — Figma frames 51:5152 (4-col, filters hidden) & 51:7183 (3-col + sidebar).
  *
- * Desktop: do NOT keep the filter panel in the same grid row as the tiles — grid row height would become
- * max(sidebar, tiles), leaving a huge empty band beside short grids (e.g. filtered /shops/) and bloating
- * scroll height. Filters open → sidebar absolutely positioned; row height follows tiles only.
+ * Desktop: sidebar + grid are siblings in a two-column grid. The grid column must never stack above the
+ * sidebar for hit-testing — `z-index: auto` on the sidebar (or missing z-index) loses to `z-index: 1` on
+ * the grid when columns overlap by even a few pixels (subpixel / transform), which makes every filter
+ * control feel “dead”. Keep the filter column strictly above the card column whenever filters are shown.
  */
 
 .directory-archive {
   --directory-archive-gap: 22px;
+}
+
+/*
+ * Toolbar + sidebar must paint above the card grid so hit-testing always targets filters first.
+ * (Sibling grid column uses z-index: 0; never set sidebar to z-index: auto when visible — it loses to 1fr column.)
+ */
+.directory-archive__toolbar,
+.directory-archive__sidebar-shell {
+  position: relative;
+  z-index: 30;
+}
+
+.directory-archive__sidebar-shell aside {
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+}
+
+.directory-archive__grid-column {
+  position: relative;
+  z-index: 0;
 }
 
 .directory-archive__main-row {
@@ -52,31 +74,33 @@
   }
 
   /*
-   * Filters open — sidebar out of flow so `.directory-archive__main-row` height tracks the tile grid only.
+   * Filters open — two-column grid: sidebar stacking must stay above the grid column (see file header).
    */
   .directory-archive__main-row.directory-archive__main-row--filters-visible {
-    display: block;
-    position: relative;
-    padding-left: calc(325px + var(--directory-archive-gap));
-    grid-template-columns: unset;
+    display: grid;
+    grid-template-columns: 325px minmax(0, 1fr);
+    align-items: start;
+    column-gap: var(--directory-archive-gap);
+    padding-left: 0;
     row-gap: unset;
-    column-gap: unset;
+    position: static;
   }
 
   .directory-archive__main-row.directory-archive__main-row--filters-visible
     .directory-archive__sidebar-shell {
-    position: absolute;
-    left: 0;
-    top: 0;
-    z-index: 2;
+    position: relative;
+    inset: auto;
+    z-index: 30;
     width: 325px;
-    max-height: 100%;
-    overflow-x: hidden;
-    overflow-y: auto;
+    max-width: 100%;
+    max-height: none;
+    overflow-x: visible;
+    overflow-y: visible;
   }
 
   .directory-archive__main-row.directory-archive__main-row--filters-visible
     .directory-archive__grid-column {
+    z-index: 0;
     width: 100%;
     min-width: 0;
   }

@@ -278,10 +278,16 @@ export default function registerSiteHeaderAlpine(Alpine) {
     },
 
     closeSearch() {
-      this.searchOpen = false;
-      this.searchQuery = '';
-      this.searchHtml = '';
+      /*
+       * Collapse results UI before unmounting the search shell — otherwise the mega bar + offset
+       * measurement visibly “step” while the taller results block fades as a sibling.
+       */
       this.searchResultsVisible = false;
+      this.searchHtml = '';
+      this.searchOpen = false;
+      window.requestAnimationFrame(() => {
+        this.searchQuery = '';
+      });
     },
 
     closeAll() {
@@ -556,10 +562,33 @@ export default function registerSiteHeaderAlpine(Alpine) {
           this.fetchSearch(typeof value === 'string' ? value : '');
         }, SEARCH_DEBOUNCE_MS);
       });
-      this.$watch('searchOpen', () => {
-        if (this.searchOpen) {
+      this.$watch('searchOpen', (open) => {
+        const root = this.$el instanceof HTMLElement ? this.$el : null;
+        if (open) {
           this.revealDock();
+          this.syncDocumentHeaderOffset();
+          this.$nextTick(() => {
+            const inp =
+              root &&
+              typeof root.querySelector === 'function' &&
+              root.querySelector('#site-search-input');
+            if (inp instanceof HTMLInputElement) {
+              inp.focus({ preventScroll: true });
+            }
+          });
+          return;
         }
+        /*
+         * Clearing `searchQuery` on close would re-fire fetch via the debounced watcher; results are
+         * already emptied in closeSearch().
+         */
+        if (root && typeof root.querySelector === 'function') {
+          const inp = root.querySelector('#site-search-input');
+          if (inp instanceof HTMLInputElement && document.activeElement === inp) {
+            inp.blur();
+          }
+        }
+        this.revealDock();
         this.syncDocumentHeaderOffset();
       });
       this.$watch('headerDockHidden', () => this.syncDocumentHeaderOffset());

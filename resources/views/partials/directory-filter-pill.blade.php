@@ -24,8 +24,8 @@
   $pill_show_label = (string) ($show_label ?? __('Show filters', 'culvers'));
   $pill_hide_label = (string) ($hide_label ?? __('Hide filters', 'culvers'));
 
-  /* JSON_HEX_* keeps the strings safe inside Alpine's `x-text="…"` evaluator
-     without forcing us to template-quote per insertion site. */
+  /* JSON for Alpine: HTML-escape when embedded in double-quoted x-text so
+     json_encode outer quotes cannot break the attribute. */
   $json_flags = JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES;
 @endphp
 <button
@@ -39,7 +39,7 @@
   @click="toggleFilters()"
   :aria-expanded="filtersVisible ? 'true' : 'false'"
   aria-controls="{{ esc_attr($pill_controls_id) }}">
-  <span x-text="filtersVisible ? {{ json_encode($pill_hide_label, $json_flags) }} : {{ json_encode($pill_show_label, $json_flags) }}"></span>
+  <span x-text="filtersVisible ? {{ e(json_encode($pill_hide_label, $json_flags)) }} : {{ e(json_encode($pill_show_label, $json_flags)) }}"></span>
   {{-- Icons: detailed close glyph when filters are visible, compact slider
        glyph when they're hidden — matches Figma toolbar states. --}}
   <svg

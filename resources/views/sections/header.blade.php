@@ -52,12 +52,16 @@
         class="site-header__padding relative transition-[padding] duration-300 ease-in-out max-lg:px-0 max-lg:py-0 lg:px-12 lg:pb-2.5 lg:pt-[46px]">
 
         <div class="mx-auto w-full max-w-8xl">
+        {{--
+          Search overlays the mega bar instead of swapping `x-show` siblings (which reflowed the
+          chrome, fought `--site-header-offset` measurement, and read as two bars replacing).
+        --}}
+        <div class="relative isolate w-full">
 
-        {{-- Mega navigation mode --}}
+        {{-- Mega navigation mode — stays in-flow for stable height while search is `absolute`. --}}
         <div
           class="mega-nav relative flex flex-col gap-0"
-          x-show="!searchOpen"
-          x-cloak
+          x-bind:inert="searchOpen"
           x-on:click.outside="closeMega()"
           x-on:mouseenter="cancelCloseMegaHover()"
           x-on:mouseleave="scheduleCloseMegaHover()">
@@ -255,9 +259,11 @@
                     class="mega-nav__panel-inner mx-auto max-h-[min(85vh,560px)] w-full max-w-8xl overflow-y-auto rounded-2xl border border-light-brown/25 bg-lighter-cream px-5 py-8 shadow-lg md:px-8 lg:px-10 lg:pb-10 lg:pt-10">
                     {{-- Figma mega panel: ~40% text / ~60% preview; heading row is title + arrow flush right in the text column. --}}
                     <div
-                      class="flex flex-col gap-10 lg:grid lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-start lg:gap-x-12 lg:gap-y-0 xl:gap-x-16">
-                      <div class="flex min-w-0 flex-col">
-                        <div class="flex w-full items-center justify-between gap-4 lg:gap-6">
+                      class="flex flex-col gap-10 lg:grid lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-stretch lg:gap-x-12 lg:gap-y-0 xl:gap-x-16">
+                      {{-- Left column: list fills from top; socials pin to panel bottom (~Figma 72:4994 inset). --}}
+                      <div class="flex min-h-0 w-full flex-col lg:h-full lg:min-h-0 lg:justify-between">
+                        <div class="flex min-w-0 flex-col">
+                          <div class="flex w-full items-center justify-between gap-4 lg:gap-6">
                           <h2 class="min-w-0 flex-1 font-heading text-4xl text-faded-olive">
                             {{ $branch['title'] }}
                           </h2>
@@ -298,31 +304,32 @@
                             </li>
                           @endforeach
                         </ul>
-                        <div class="mt-10 flex flex-wrap gap-[34px]">
+                        </div>
+                        {{-- Figma Culver Square — Dropdown Menu Shop (72:4994–72:5001): Commuter SemiBold 12 / 1px tracking; 6px icon–label; 34px between marks. --}}
+                        <div class="mt-10 flex shrink-0 flex-wrap gap-[34px] pt-6 lg:mt-auto lg:pt-10 lg:pb-2">
                           <a
-                            class="inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-widest text-faded-olive transition-colors hover:text-glowleaf focus-visible:rounded-sm culvers-focus-ring"
+                            class="inline-flex cursor-pointer items-center gap-1.5 font-label text-xs font-semibold uppercase tracking-[0.0625rem] text-faded-olive transition-colors hover:text-glowleaf focus-visible:rounded-sm culvers-focus-ring"
                             href="{{ esc_url($instagramUrl) }}"
                             rel="noopener noreferrer">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                              <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.3" />
-                              <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.3" />
-                              <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" />
-                            </svg>
+                            @include('partials.figma-social-icon', [
+                                'variant' => 'instagram',
+                                'class' => 'size-[14px] shrink-0 overflow-visible text-faded-olive',
+                            ])
                             {{ __('Instagram', 'culvers') }}
                           </a>
                           <a
-                            class="inline-flex items-center gap-2 font-sans text-xs font-semibold uppercase tracking-widest text-faded-olive transition-colors hover:text-glowleaf focus-visible:rounded-sm culvers-focus-ring"
+                            class="inline-flex cursor-pointer items-center gap-1.5 font-label text-xs font-semibold uppercase tracking-[0.0625rem] text-faded-olive transition-colors hover:text-glowleaf focus-visible:rounded-sm culvers-focus-ring"
                             href="{{ esc_url($facebookUrl) }}"
                             rel="noopener noreferrer">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                              <path
-                                d="M14 8h3V5h-3c-2.2 0-4 1.8-4 4v2H7v3h3v8h3v-8h3.2l.8-3H13v-2c0-.6.4-1 1-1Z" />
-                            </svg>
+                            @include('partials.figma-social-icon', [
+                                'variant' => 'facebook',
+                                'class' => 'size-[15px] shrink-0 text-faded-olive',
+                            ])
                             {{ __('Facebook', 'culvers') }}
                           </a>
                         </div>
                       </div>
-                      <div class="mega-nav__preview-col min-w-0 w-full">
+                      <div class="mega-nav__preview-col flex min-h-0 min-w-0 w-full lg:h-full lg:items-stretch">
                         <div class="relative aspect-[8/5] w-full overflow-hidden rounded-md bg-dustleaf/25">
                           <img
                             alt=""
@@ -342,13 +349,22 @@
 
         </div>
 
-        {{-- Search mode (same gutter / max-width pattern as mega bar). --}}
+        {{-- Search overlays mega bar (+ optional results below); opaque bar masks inactive nav underneath. --}}
         <div
           id="site-header-search"
-          class="site-header__search flex flex-col gap-2.5"
+          class="site-header__search absolute left-0 right-0 top-0 z-[70] flex flex-col gap-2.5"
           x-show="searchOpen"
           x-cloak
-          x-transition.opacity.duration.150ms>
+          x-transition:enter="transition ease-out duration-200 motion-reduce:transition-none motion-reduce:duration-0"
+          x-transition:enter-start="opacity-0"
+          x-transition:enter-end="opacity-100"
+          x-transition:leave="transition ease-in duration-150 motion-reduce:transition-none motion-reduce:duration-0"
+          x-transition:leave-start="opacity-100"
+          x-transition:leave-end="opacity-0"
+          role="dialog"
+          aria-modal="true"
+          x-on:click.outside="closeSearch()"
+          aria-label="{{ esc_attr__('Site search', 'culvers') }}">
           <div
             class="site-header__search-bar border-brand-500 bg-light-cream max-lg:rounded-none max-lg:border-0 max-lg:border-b-4 max-lg:border-glowleaf lg:rounded-full lg:border-4">
             <div class="site-header__search-gutter w-full max-lg:py-0 lg:py-0">
@@ -398,6 +414,8 @@
             aria-relevant="additions text"
             aria-label="{{ esc_attr__('Search results', 'culvers') }}"></div>
         </div>
+
+        </div>{{-- /.relative.site-header-shell-slot --}}
 
         </div>
       </div>
@@ -563,21 +581,19 @@
                     href="{{ esc_url($instagramUrl) }}"
                     target="_blank"
                     rel="noopener noreferrer">
-                    <svg class="size-6 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.4" />
-                      <circle cx="12" cy="12" r="3.6" stroke="currentColor" stroke-width="1.4" />
-                      <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" />
-                    </svg>
+                    @include('partials.figma-social-icon', [
+                        'variant' => 'instagram',
+                        'class' => 'size-6 shrink-0 text-faded-olive',
+                    ])
                     <span class="min-w-0">{{ __('Instagram', 'culvers') }}</span>
                   </a>
                 @else
                   <span
                     class="flex flex-1 cursor-not-allowed items-center justify-center gap-3 px-4 py-3 text-center font-label text-[14.5px] font-semibold uppercase leading-[29px] tracking-[0.08em] text-faded-olive/45">
-                    <svg class="size-6 shrink-0 opacity-50" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.4" />
-                      <circle cx="12" cy="12" r="3.6" stroke="currentColor" stroke-width="1.4" />
-                      <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" />
-                    </svg>
+                    @include('partials.figma-social-icon', [
+                        'variant' => 'instagram',
+                        'class' => 'size-6 shrink-0 opacity-50 text-faded-olive',
+                    ])
                     <span class="min-w-0">{{ __('Instagram', 'culvers') }}</span>
                   </span>
                 @endif
@@ -587,19 +603,19 @@
                     href="{{ esc_url($facebookUrl) }}"
                     target="_blank"
                     rel="noopener noreferrer">
-                    <svg class="size-6 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                      <path
-                        d="M14 8h3V5h-3c-2.2 0-4 1.8-4 4v2H7v3h3v8h3v-8h3.2l.8-3H13v-2c0-.6.4-1 1-1Z" />
-                    </svg>
+                    @include('partials.figma-social-icon', [
+                        'variant' => 'facebook',
+                        'class' => 'size-6 shrink-0 text-faded-olive',
+                    ])
                     <span class="min-w-0">{{ __('Facebook', 'culvers') }}</span>
                   </a>
                 @else
                   <span
                     class="flex flex-1 cursor-not-allowed items-center justify-center gap-3 px-4 py-3 text-center font-label text-[14.5px] font-semibold uppercase leading-[29px] tracking-[0.08em] text-faded-olive/45">
-                    <svg class="size-6 shrink-0 opacity-50" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                      <path
-                        d="M14 8h3V5h-3c-2.2 0-4 1.8-4 4v2H7v3h3v8h3v-8h3.2l.8-3H13v-2c0-.6.4-1 1-1Z" />
-                    </svg>
+                    @include('partials.figma-social-icon', [
+                        'variant' => 'facebook',
+                        'class' => 'size-6 shrink-0 opacity-50 text-faded-olive',
+                    ])
                     <span class="min-w-0">{{ __('Facebook', 'culvers') }}</span>
                   </span>
                 @endif

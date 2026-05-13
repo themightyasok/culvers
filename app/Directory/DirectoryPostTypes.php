@@ -81,6 +81,7 @@ final class DirectoryPostTypes
 
         self::maybeFlushRewrites();
         self::adjustArchiveQueries();
+        self::registerCareersArchivePins();
     }
 
     /**
@@ -454,11 +455,69 @@ final class DirectoryPostTypes
     }
 
     /**
+     * Featured role(s) surfaced first on /careers/ while preserving title order for remaining cards.
+     *
+     * @see apply_filters('culvers_careers_archive_pin_slug', string $default, WP_Query $query)
+     */
+    private static function registerCareersArchivePins(): void
+    {
+        add_filter(
+            'the_posts',
+            static function (array $posts, WP_Query $query): array {
+                if (! $query->is_main_query()) {
+                    return $posts;
+                }
+
+                if (! $query->is_post_type_archive('culvers_career')) {
+                    return $posts;
+                }
+
+                /** @var mixed $pinnedSlugRaw */
+                $pinnedSlugRaw = apply_filters(
+                    'culvers_careers_archive_pin_slug',
+                    'senior-supervisor',
+                    $query,
+                );
+
+                $pinnedSlug = is_string($pinnedSlugRaw) ? trim($pinnedSlugRaw) : '';
+                if ($pinnedSlug === '') {
+                    return $posts;
+                }
+
+                /** @var list<\WP_Post> $pinned */
+                $pinned = [];
+                /** @var list<\WP_Post> $tail */
+                $tail = [];
+
+                foreach ($posts as $post) {
+                    if (! $post instanceof \WP_Post) {
+                        continue;
+                    }
+                    if ($post->post_name === $pinnedSlug) {
+                        $pinned[] = $post;
+
+                        continue;
+                    }
+                    $tail[] = $post;
+                }
+
+                if ($pinned === []) {
+                    return $posts;
+                }
+
+                return array_merge($pinned, $tail);
+            },
+            10,
+            2
+        );
+    }
+
+    /**
      * Override `posts_per_page` + sort order on every directory archive.
      *
      * The per-CPT sort strategy lives in the {@see self::cpts()} config row
      * (`archive_sort` → one of the `SORT_*` constants), so adding a new
-     * directory CPT only needs the config row, not another `if` branch.
+     * directory CPT only needs a config row, not another `if` branch.
      */
     private static function adjustArchiveQueries(): void
     {

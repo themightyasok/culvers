@@ -32,6 +32,7 @@ final class HomepageFlexibleAcfAttach
                     'video_block' => self::videoBlockRow($row),
                     'opening_hours' => self::openingHoursRow($row),
                     'image_hero' => self::imageHeroRow($row),
+                    'career_detail' => self::careerDetailRow($row),
                     'shop_split_highlight' => self::shopSplitHighlightRow($row),
                     'info_block' => self::infoBlockRow($row),
                     'text_image_slider' => self::textImageSliderRow($row),
@@ -167,6 +168,17 @@ final class HomepageFlexibleAcfAttach
         $row['hero_image'] = self::acfImageValue($row['hero_image'] ?? null);
         $row['hero_image_mobile'] = self::acfImageValue($row['hero_image_mobile'] ?? null);
         $row['hero_logo'] = self::acfImageValue($row['hero_logo'] ?? null);
+
+        return $row;
+    }
+
+    /**
+     * @param  array<string, mixed>  $row
+     * @return array<string, mixed>
+     */
+    private static function careerDetailRow(array $row): array
+    {
+        $row['career_sidebar_brand_logo'] = self::acfImageValue($row['career_sidebar_brand_logo'] ?? null);
 
         return $row;
     }

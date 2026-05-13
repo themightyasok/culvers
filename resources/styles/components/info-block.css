@@ -1,0 +1,93 @@
+/**
+ * Info block grid — spacing from Figma **`51:5066`** geometry (`get_metadata`):
+ *
+ * Column width ≈ **`721 − 370 = 351` px**. Horizontal **`Line 22` (`51:5068`)** width **317 px**
+ * ⇒ margin **`(351 − 317) / 2 ≈ 17` px** each side ⇒ **corner gap ≈ 34 px** across the join.
+ *
+ * Vertical lines **`226` px tall** (`51:5116`) between **`y≈3747`** and **`y≈3973`**; row band to divider
+ * **`3990`** leaves **`≈17` px** band above the stroke — **`17 / 243 ≈ 7%`** of nominal row height (**`3990 − 3747`**).
+ *
+ * Top-row cells shorten the stub toward the divider (`bottom 7%`); bottom-row cells shorten from the divider up (`top 7%`),
+ * preserving even corner breaks without widening horizontals.
+ */
+.info-block__cell {
+  /**
+   * Figma `51:5066`: hairlines are very low contrast on lighter-cream (~1 px strokes).
+   * Previous `color-mix(#4f5438 70%, #2e301f)` read as ink-dark on the site — blend faded
+   * olive into the tile background instead (~22 % mixes to a subtle warm grey-brown).
+   */
+  --info-block-rule: color-mix(in srgb, #4f5438 22%, #fffefa);
+  --info-block-rule-h-inset: 17px;
+  /** Matches ~17 px / ~243 px row band — scales with differing tile heights */
+  --info-block-rule-v-end: 7%;
+}
+
+.info-block__grid {
+  @apply grid w-full grid-cols-1 gap-0 md:grid-cols-2 lg:grid-cols-4;
+}
+
+.info-block__cell {
+  position: relative;
+}
+
+/* Row divider segment */
+.info-block__cell::before {
+  pointer-events: none;
+  display: none;
+  content: '';
+  position: absolute;
+  left: var(--info-block-rule-h-inset);
+  right: var(--info-block-rule-h-inset);
+  bottom: 0;
+  height: 1px;
+  background-color: var(--info-block-rule);
+}
+
+/* Column divider — two-row split at lg so verticals don’t read “too long”; breaks match Figma stubs */
+.info-block__cell::after {
+  pointer-events: none;
+  display: none;
+  content: '';
+  position: absolute;
+  right: 0;
+  width: 1px;
+  background-color: var(--info-block-rule);
+}
+
+@media (max-width: 767px) {
+  .info-block__cell:not(:last-child)::before {
+    display: block;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .info-block__cell:nth-child(odd)::after {
+    display: block;
+    top: var(--info-block-rule-v-end);
+    bottom: var(--info-block-rule-v-end);
+  }
+
+  .info-block__cell:not(:nth-last-child(-n + 2))::before {
+    display: block;
+  }
+}
+
+@media (min-width: 1024px) {
+  .info-block__cell:not(:nth-child(4n))::after {
+    display: block;
+  }
+
+  .info-block__cell:nth-child(-n + 4)::before {
+    display: block;
+  }
+
+  .info-block__cell:nth-child(-n + 4)::after {
+    top: 0;
+    bottom: var(--info-block-rule-v-end);
+  }
+
+  .info-block__cell:nth-child(n + 5)::after {
+    top: var(--info-block-rule-v-end);
+    bottom: 0;
+  }
+}

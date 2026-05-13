@@ -12,17 +12,30 @@ return [
     'label' => __('Career — detail', 'culvers'),
     'display' => 'block',
     'main' => [
-        'msg_title' => Component::sectionDivider(__('Job title', 'culvers')),
+        'msg_title' => Component::sectionDivider(__('Job header', 'culvers')),
+        'career_sidebar_brand_logo' => [
+            'type' => 'image',
+            'options' => [
+                'label' => __('Employer logo (sidebar)', 'culvers'),
+                'instructions' => __(
+                    'Shown above the job title in this band. Omit when the hero already carries the retailer lockup.',
+                    'culvers'
+                ),
+                'return_format' => 'array',
+                'preview_size' => 'medium',
+                'library' => 'all',
+            ],
+        ],
         'career_job_title' => [
             'type' => 'text',
             'options' => [
                 'label' => __('Job title', 'culvers'),
-                'instructions' => __('Display serif headline shown top-left (e.g. Senior Supervisor).', 'culvers'),
+                'instructions' => __('Large serif headline (e.g. Senior Supervisor).', 'culvers'),
                 'wrapper' => ['width' => '70'],
             ],
         ],
         'career_job_title_level' => Component::headingLevelField(
-            __('Use H1 only when the page above does not already host one (typically the image hero).', 'culvers'),
+            __('Use H1 only when nothing above hosts the page heading (normally the hero does).', 'culvers'),
             allowH1: true,
             default: 1,
             width: '30',

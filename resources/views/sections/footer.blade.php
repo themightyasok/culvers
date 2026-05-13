@@ -19,18 +19,15 @@
       ? get_theme_file_uri($newsletterFallbackRel)
       : '';
 
-  /* Assigned location but empty menu yields `<ul></ul>` — center column vanished in flex; grid + fallback fixes it. */
-  /* Figma legal-band typography: Commuter Sans Bold 10px / lh 13 / uppercase,
-     0.5px tracking (≈ `tracking-[0.05em]`). Halyard `text-xs` was the legacy
-     value and renders 1px larger with looser leading; switching to `font-label`
-     keeps it crisp without bumping site-wide tracking utilities. */
+  /* Figma footer legal band (`51:5146`): Commuters Sans Regular 10px / lh ~1.3 / uppercase / 0.5px tracking. */
+  $footerLegalListClass =
+      'footer-nav__list footer-nav__list--legal flex flex-wrap items-center justify-center gap-x-[18px] gap-y-2 whitespace-normal font-label text-[10px] font-normal uppercase leading-[1.3] tracking-[0.05em] text-lighter-cream [&>li]:flex [&>li]:shrink-0 [&>li]:items-center [&>li>a]:inline-flex [&>li>a]:min-h-[2rem] [&>li>a]:items-center [&>li>a]:px-0.5 [&>li>a]:py-1';
   $footerLegalNavHtml = '';
   if (has_nav_menu('footer_brand_subnav')) {
       $footerLegalNavHtml = (string) wp_nav_menu([
           'theme_location' => 'footer_brand_subnav',
           'container' => false,
-          'menu_class' =>
-              'footer-nav__list footer-nav__list--legal flex flex-wrap items-center justify-center gap-x-4 gap-y-2 whitespace-normal font-label text-[10px] font-bold uppercase leading-[1.3] tracking-[0.05em] text-lighter-cream md:gap-x-8 [&>li]:flex [&>li]:shrink-0 [&>li]:items-center [&>li>a]:inline-flex [&>li>a]:min-h-[2rem] [&>li>a]:items-center [&>li>a]:px-3 [&>li>a]:py-1 md:[&>li>a]:px-5',
+          'menu_class' => $footerLegalListClass,
           'fallback_cb' => false,
           'depth' => 1,
           'echo' => false,
@@ -38,8 +35,21 @@
   }
   $footerLegalNavHasItems = str_contains($footerLegalNavHtml, '<li');
 
-  $footerLegalFallbackUlClass =
-      'footer-nav__list footer-nav__list--legal flex flex-wrap items-center justify-center gap-x-4 gap-y-2 whitespace-normal font-label text-[10px] font-bold uppercase leading-[1.3] tracking-[0.05em] text-lighter-cream md:gap-x-8 [&>li]:flex [&>li]:shrink-0 [&>li]:items-center [&>li>a]:inline-flex [&>li>a]:min-h-[2rem] [&>li>a]:items-center [&>li>a]:px-3 [&>li>a]:py-1 md:[&>li>a]:px-5';
+  $footerLegalFallbackUlClass = $footerLegalListClass;
+
+  $societyLogoAbs = get_template_directory() . '/resources/images/footer/society-studios-wordmark.svg';
+  $societyLogoSvg = '';
+  if (is_readable($societyLogoAbs)) {
+      $societyLogoRaw = (string) file_get_contents($societyLogoAbs);
+      if ($societyLogoRaw !== '') {
+          $societyLogoSvg = (string) preg_replace(
+              '/<svg\b/',
+              '<svg class="block h-[11px] w-auto max-w-[min(100%,10.5rem)] text-lighter-cream"',
+              $societyLogoRaw,
+              1,
+          );
+      }
+  }
 @endphp
 
 {{--
@@ -98,64 +108,49 @@
             @endif
           </div>
 
-          {{-- Mobile: headline above field. Desktop: right column — headline centred above pill field (Figma). --}}
+          {{-- Headline uses its own max width; pill is capped independently (does not stretch to headline width). CTA hugs the banner's right edge with a modest gutter. --}}
           <div class="relative z-10 grid grid-cols-1 gap-8 px-6 py-11 md:grid-cols-2 md:items-center md:gap-10 md:px-12 md:py-14 lg:gap-14 lg:px-14 lg:py-16">
             <div class="hidden min-h-[80px] md:block" aria-hidden="true"></div>
-            <div class="flex max-w-full flex-col gap-6 md:max-w-[26rem] md:justify-self-end lg:max-w-[30rem]">
-              <div class="flex flex-col gap-4 text-center">
-                @php $headingParts = FooterCustomizer::newsletterHeadingParts(); @endphp
-                {{-- Two-tone headline (Figma): accent words in glowleaf, remainder in white. The
-                     split is data-driven via Customizer (`MOD_NEWSLETTER_HEADING_ACCENT`) so editors
-                     can re-pick which words pop without touching markup. --}}
-                {{-- Figma `2:1113` mobile = 36 px, Figma desktop newsletter heading = ~34 (snapped
-                     to text-4xl = 40 in the type ramp). Mobile bumped from text-3xl (32) → text-[36px]. --}}
+            <div
+              class="footer-newsletter__cta flex w-full flex-col items-center gap-7 justify-self-center md:mr-3 md:w-auto md:justify-self-end lg:mr-5 xl:mr-6">
+              <div class="w-full max-w-[26rem] text-center md:mx-0">
                 <h2
                   id="footer-newsletter-heading"
-                  class="font-heading text-[36px] leading-[1.1] md:text-4xl">
-                  @if($headingParts['accent'] !== '')
-                    <span class="text-glowleaf">{{ esc_html($headingParts['accent']) }}</span><span class="text-lighter-cream">{{ esc_html($headingParts['rest']) }}</span>
-                  @else
-                    <span class="text-lighter-cream">{{ esc_html($headingParts['rest']) }}</span>
-                  @endif
+                  class="w-full text-center font-heading text-[1.75rem] font-normal leading-[1.1] text-white md:text-[2.5rem]">
+                  <span class="block text-glowleaf">{{ __('Get the latest news,', 'culvers') }}</span>
+                  <span class="block"><span class="text-glowleaf">{{ __('offers & events', 'culvers') }}</span> <span class="text-white">{{ __('delivered', 'culvers') }}</span></span>
+                  <span class="block text-white">{{ __('directly to your inbox', 'culvers') }}</span>
                 </h2>
                 @php $newsBody = FooterCustomizer::newsletterBody(); @endphp
                 @if($newsBody !== '')
-                  <p class="font-sans text-lg leading-relaxed text-light-cream/88">
+                  <p class="mt-4 font-sans text-lg leading-relaxed text-light-cream/88">
                     {{ esc_html($newsBody) }}
                   </p>
                 @endif
               </div>
 
               <form
-                class="footer-newsletter-form pointer-events-auto w-full md:max-w-none"
+                class="footer-newsletter-form pointer-events-auto w-full max-w-[363px] shrink-0"
                 method="post"
                 action="{{ esc_url($newsletterAction ?? '#') }}"
                 @if($newsletterAction === null) onsubmit="event.preventDefault(); return false;" @endif>
                 <label class="sr-only" for="footer-newsletter-email">{{ __('Email address', 'culvers') }}</label>
-                {{-- Sheet feedback row 11: reduce size of the email pill (Figma 2:1118 is 46 px tall).
-                     Tightened padding to py-1 + input min-h-[38px] + size-9 button → ~46 px overall. --}}
                 <div
-                  class="flex items-center gap-2 rounded-full border-[1.5px] border-glowleaf bg-transparent px-4 py-1 md:px-5">
+                  class="flex w-full items-center gap-2 rounded-full border-[1.5px] border-glowleaf bg-transparent py-1.5 pl-6 pr-2 md:pr-2.5">
                   <input
                     id="footer-newsletter-email"
                     name="EMAIL"
                     type="email"
                     autocomplete="email"
                     placeholder="{{ esc_attr(FooterCustomizer::newsletterPlaceholder()) }}"
-                    {{-- Figma `2:1118` placeholder: Commuters SemiBold 12.887 / lh 30.928 / 0.6443 px tracking / uppercase. --}}
-                    class="min-h-[38px] flex-1 border-0 bg-transparent font-label text-[13px] font-semibold uppercase leading-[30px] tracking-[0.05em] text-lighter-cream placeholder:text-lighter-cream/75 placeholder:uppercase focus:ring-0 focus:outline-none md:text-sm" />
+                    class="min-w-0 flex-1 border-0 bg-transparent font-label text-[13px] font-normal leading-[31px] tracking-normal text-white placeholder:font-semibold placeholder:uppercase placeholder:tracking-[0.05em] placeholder:text-white placeholder:opacity-100 focus:ring-0 focus:outline-none" />
                   <button
                     type="submit"
-                    class="inline-flex size-9 shrink-0 cursor-pointer items-center justify-center rounded-full text-lighter-cream transition-colors hover:bg-white/10 culvers-focus-ring"
+                    class="inline-flex shrink-0 cursor-pointer items-center justify-center rounded-full py-2 pl-0.5 pr-1 text-lighter-cream transition-colors hover:bg-white/10 culvers-focus-ring"
                     aria-label="{{ esc_attr__('Subscribe', 'culvers') }}">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <path
-                        d="M5 12h14m-6-6 6 6-6 6"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                        stroke-linecap="round"
-                        stroke-linejoin="round" />
-                    </svg>
+                    @include('partials.footer-newsletter-submit-arrow', [
+                        'arrowClass' => 'block size-4 shrink-0 text-current',
+                    ])
                   </button>
                 </div>
                 @if($newsletterAction === null && current_user_can('customize'))
@@ -221,19 +216,16 @@
           @endif
           @if(($instagramUrl !== '' && $instagramUrl !== '#') || ($facebookUrl !== '' && $facebookUrl !== '#'))
             <div class="mt-8 flex flex-wrap gap-x-8 gap-y-3">
-              {{-- Sheet feedback row 9: footer socials need to be visible (URLs now seeded via
-                   Customizer mods) + slightly bigger icons (16 → 22). --}}
               @if($instagramUrl !== '' && $instagramUrl !== '#')
                 <a
                   class="footer-nav__link-social"
                   href="{{ esc_url($instagramUrl) }}"
                   target="_blank"
                   rel="noopener noreferrer">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.4" />
-                    <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.4" />
-                    <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" />
-                  </svg>
+                  @include('partials.figma-social-icon', [
+                      'variant' => 'instagram',
+                      'class' => 'size-6 shrink-0 overflow-visible text-white',
+                  ])
                   {{ __('Instagram', 'culvers') }}
                 </a>
               @endif
@@ -243,10 +235,10 @@
                   href="{{ esc_url($facebookUrl) }}"
                   target="_blank"
                   rel="noopener noreferrer">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                    <path
-                      d="M14 8h3V5h-3c-2.2 0-4 1.8-4 4v2H7v3h3v8h3v-8h3.2l.8-3H13v-2c0-.6.4-1 1-1Z" />
-                  </svg>
+                  @include('partials.figma-social-icon', [
+                      'variant' => 'facebook',
+                      'class' => 'size-6 shrink-0 text-white',
+                  ])
                   {{ __('Facebook', 'culvers') }}
                 </a>
               @endif
@@ -337,20 +329,33 @@
         </div>
       </div>
 
-      {{-- Wordmark — clip SVG/logo bleed so nothing paints over the legal band below (desktop outline marks can extend past the box). --}}
-      {{-- Sheet feedback row 9: footer wordmark should read lighter — apply 70 % opacity so the
-           filled Glowleaf wordmark reads as a thinner accent rather than a heavy banner. --}}
+      {{-- Footer banner uses Figma footer wordmark file when present; otherwise Custom Logo or small inline mark (`partials.culver-square-logo`). --}}
       <div
-        class="relative z-10 mt-14 w-full overflow-hidden opacity-70 md:mt-16 lg:mt-20 [&_img]:mx-auto [&_img]:block [&_img]:h-auto [&_img]:w-full [&_img]:max-h-[min(30vw,220px)] [&_img]:max-w-none [&_img]:object-contain [&_svg]:block [&_svg]:h-auto [&_svg]:w-full [&_svg]:max-h-[min(30vw,220px)] [&_svg]:max-w-none">
+        class="relative z-10 mt-14 w-full overflow-hidden opacity-70 md:mt-16 lg:mt-20 [&_svg]:mx-auto [&_svg]:block [&_svg]:h-auto [&_svg]:w-full [&_svg]:max-h-[min(30vw,220px)] md:[&_svg]:max-h-[min(26vw,240px)] lg:[&_svg]:max-h-[min(22vw,280px)] [&_svg]:max-w-none [&_svg]:object-contain [&_svg]:text-glowleaf [&_img]:mx-auto [&_img]:block [&_img]:h-auto [&_img]:max-h-[min(30vw,220px)] [&_img]:w-full [&_img]:max-w-none md:[&_img]:max-h-[min(26vw,240px)] lg:[&_img]:max-h-[min(22vw,280px)] [&_img]:object-contain">
         <a
           class="site-footer__logo flex w-full justify-center text-glowleaf"
           href="{{ esc_url(home_url('/')) }}"
           rel="home"
           aria-label="{{ esc_attr(get_bloginfo('name')) }}">
-          @if(has_custom_logo())
-            <span class="block w-full [&_img]:mx-auto [&_img]:block [&_img]:w-full [&_img]:max-w-none [&_img]:object-contain">
-              {!! get_custom_logo() !!}
-            </span>
+          @php
+            $footerWordmarkAbs = get_template_directory() . '/resources/images/brand/culver-square-footer-wordmark.svg';
+            $footerWordmarkSvg = '';
+            if (is_readable($footerWordmarkAbs)) {
+                $footerWordmarkRaw = (string) file_get_contents($footerWordmarkAbs);
+                if ($footerWordmarkRaw !== '') {
+                    $footerWordmarkSvg = (string) preg_replace(
+                        '/<svg\b/',
+                        '<svg class="block h-auto w-full max-w-none text-glowleaf" aria-hidden="true" focusable="false"',
+                        $footerWordmarkRaw,
+                        1,
+                    );
+                }
+            }
+          @endphp
+          @if($footerWordmarkSvg !== '')
+            {!! $footerWordmarkSvg !!}
+          @elseif (has_custom_logo())
+            {!! get_custom_logo() !!}
           @else
             @include('partials.culver-square-logo', [
                 'class' => 'block w-full max-w-none text-glowleaf [&_svg]:block [&_svg]:h-auto [&_svg]:w-full [&_svg]:max-w-none',
@@ -365,7 +370,7 @@
         <div
           class="site-footer__legal-band grid w-full grid-cols-1 gap-y-4 py-6 text-center md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:items-center md:gap-x-6 md:gap-y-0 md:py-7">
           <p
-            class="font-label text-[10px] font-bold uppercase leading-[1.3] tracking-[0.05em] text-lighter-cream md:justify-self-start md:text-left">
+            class="font-label text-[10px] font-normal uppercase leading-[1.3] tracking-[0.05em] text-lighter-cream md:justify-self-start md:text-left">
             &copy;
             {{ esc_html(strtoupper((string) get_bloginfo('name'))) }}
             {{ wp_date('Y') }}
@@ -382,6 +387,9 @@
                   <a class="footer-nav__link--legal" href="{{ esc_url(home_url('/cookie-policy/')) }}">{{ __('Cookie Policy', 'culvers') }}</a>
                 </li>
                 <li class="list-none">
+                  <a class="footer-nav__link--legal" href="{{ esc_url(home_url('/accessible-guide/')) }}">{{ __('Accessibility', 'culvers') }}</a>
+                </li>
+                <li class="list-none">
                   <a class="footer-nav__link--legal" href="{{ esc_url(home_url('/privacy-policy/')) }}">{{ __('Privacy Policy', 'culvers') }}</a>
                 </li>
                 <li class="list-none">
@@ -394,9 +402,21 @@
           @php $credit = FooterCustomizer::siteCredit(); @endphp
           @if($credit !== '')
             <p
-              class="font-label text-[10px] font-bold uppercase leading-[1.3] tracking-[0.05em] text-lighter-cream md:justify-self-end md:text-right">
-              {{ esc_html(strtoupper($credit)) }}
+              class="font-label text-[10px] font-normal leading-[1.3] tracking-[0.05em] text-lighter-cream md:justify-self-end md:text-right">
+              {{ esc_html($credit) }}
             </p>
+          @elseif($societyLogoSvg !== '')
+            <div
+              class="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-left font-label md:justify-self-end md:justify-end">
+              {{-- Figma `51:5146`: Off White label + Society Studios wordmark (Layer_1). --}}
+              <span
+                class="text-[10px] font-normal uppercase leading-[1.3] tracking-[0.05em] text-[#ededeb]">
+                {{ __('Site by', 'culvers') }}
+              </span>
+              <span class="inline-flex shrink-0 items-center" aria-label="{{ esc_attr__('Society Studios', 'culvers') }}">
+                {!! $societyLogoSvg !!}
+              </span>
+            </div>
           @else
             <span class="hidden min-h-[1em] md:block" aria-hidden="true"></span>
           @endif

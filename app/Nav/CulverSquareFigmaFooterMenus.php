@@ -28,7 +28,7 @@ final class CulverSquareFigmaFooterMenus
                     ['label' => __('Plan My Visit', 'culvers'), 'url' => '#'],
                     ['label' => __('What’s On', 'culvers'), 'url' => '#'],
                     ['label' => __('Guest Services', 'culvers'), 'url' => '#'],
-                    ['label' => __('Accessibility Guide', 'culvers'), 'url' => '#'],
+                    ['label' => __('AccessAble Guide', 'culvers'), 'url' => '#'],
                 ],
             ],
             'footer_column_two' => [

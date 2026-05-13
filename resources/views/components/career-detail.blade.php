@@ -1,5 +1,6 @@
 @php
   use App\Helpers\Component;
+  use App\Helpers\Image;
   use App\Helpers\LayoutShell;
 
   /**
@@ -20,6 +21,11 @@
   $applyLabel = trim((string) ($c['career_apply_label'] ?? ''));
   $applyUrl = trim((string) ($c['career_apply_url'] ?? ''));
   $hasApply = $applyLabel !== '' && $applyUrl !== '';
+
+  $employerLogo = isset($c['career_sidebar_brand_logo']) && is_array($c['career_sidebar_brand_logo'])
+      ? $c['career_sidebar_brand_logo']
+      : [];
+  $employerLogoUrl = isset($employerLogo['url']) ? trim((string) $employerLogo['url']) : '';
 
   $meta = [];
   if (isset($c['career_meta']) && is_array($c['career_meta'])) {
@@ -56,7 +62,11 @@
       }
   }
 
-  $hasContent = $title !== '' || $meta !== [] || $sections !== [] || $hasApply;
+  $hasContent = $title !== ''
+      || ($employerLogoUrl !== '')
+      || $meta !== []
+      || $sections !== []
+      || $hasApply;
 @endphp
 
 @if(! $hasContent)
@@ -77,6 +87,25 @@
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
       <div class="career-detail__band grid gap-10 md:gap-12 lg:grid-cols-[minmax(0,336px)_minmax(0,1fr)] lg:gap-16">
         <aside class="career-detail__sidebar flex flex-col text-deep-moss">
+          @if($employerLogoUrl !== '')
+            <div class="career-detail__employer-logo mb-6 flex max-w-[13rem] md:max-w-[15rem]">
+              @php
+                  $employerLogoAlt = trim((string) ($employerLogo['alt'] ?? ''));
+                  $employerLogoImgArgs = [
+                      'class' => 'h-auto w-full max-h-14 object-contain object-left md:max-h-[4.25rem]',
+                      'loading' => 'eager',
+                      'decoding' => 'async',
+                  ];
+                  if ($employerLogoAlt !== '') {
+                      $employerLogoImgArgs['alt'] = $employerLogoAlt;
+                  } else {
+                      $employerLogoImgArgs['alt'] = '';
+                      $employerLogoImgArgs['role'] = 'presentation';
+                  }
+              @endphp
+              {!! Image::render($employerLogo, $employerLogoImgArgs) !!}
+            </div>
+          @endif
           @if($title !== '')
             <{{ $titleTag }} class="career-detail__title font-heading text-4xl leading-[0.95] md:text-5xl lg:text-6xl">
               {{ esc_html($title) }}

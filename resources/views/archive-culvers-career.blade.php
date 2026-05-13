@@ -109,8 +109,12 @@
           <div class="directory-archive__main-row" :class="{ 'directory-archive__main-row--filters-visible': filtersVisible }">
             <div
               id="directory-archive-filters-careers"
-              class="directory-archive__sidebar-shell min-w-0 shrink-0 overflow-hidden max-lg:max-h-0"
-              :class="filtersVisible ? 'max-lg:max-h-[1600px]' : 'max-lg:max-h-0'"
+              class="directory-archive__sidebar-shell min-w-0 shrink-0 lg:overflow-visible"
+              :class="
+                filtersVisible
+                  ? 'max-lg:max-h-[1600px] max-lg:overflow-visible'
+                  : 'max-lg:max-h-0 max-lg:overflow-hidden'
+              "
               role="region"
               aria-label="{{ esc_attr__('Careers filters', 'culvers') }}">
               <aside class="directory-archive__aside w-[325px] max-w-full rounded-none bg-white px-0 pb-6 pt-0 shadow-none md:px-0 lg:shrink-0">

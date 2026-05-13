@@ -7,32 +7,50 @@ namespace App\Nav;
 /**
  * Wires the three footer menu locations to the live page set.
  *
- * - `footer_column_one` ("What's Here") — rewrites placeholder URLs in place.
- * - `footer_column_two` ("Useful Links") — rebuilds to the canonical Figma
- *   seed shape (Careers / Leasing Opportunities / Parking / Opening hours).
- * - `footer_brand_subnav` (legal row) — rewrites placeholder URLs in place.
+ * - `footer_column_one` ("What's Here") — matches Figma labels (incl. AccessAble Guide) + canonical URLs.
+ * - `footer_column_two` ("Useful Links") — rebuilds once per seed version to Careers / Leasing /
+ *   Parking / Opening hours with real routes (incl. `/careers/`).
+ * - `footer_brand_subnav` (legal row) — forces URLs for Cookie / Accessibility / Privacy / Terms.
  *
- * Idempotent: safe to call from CLI or boot. Bumps a per-location version
- * option so the boot path only does work when something has changed.
+ * Idempotent: safe to call from CLI or boot. “What’s Here” + Useful Links each have their own
+ * version option; the legal row URL pass is additionally gated by `OPTION_VER` on the boot path
+ * (CLI {@see syncAllLocations()} always applies the legal map).
  */
 final class FooterNavLinkSync
 {
     public const OPTION_VER = 'culvers_footer_nav_link_sync_ver';
 
-    public const CURRENT_VER = 1;
+    public const CURRENT_VER = 2;
+
+    /** Footer column one is replaced wholesale (Figma footprint) once per bump. */
+    public const OPTION_COLUMN_ONE_SHAPE_VER = 'culvers_footer_column_one_shape_ver';
+
+    public const COLUMN_ONE_SHAPE_CURRENT_VER = 1;
 
     /** Useful Links is structurally rebuilt to match the Figma seed. */
     public const OPTION_USEFUL_LINKS_VER = 'culvers_footer_useful_links_seed_ver';
 
-    public const USEFUL_LINKS_CURRENT_VER = 1;
+    public const USEFUL_LINKS_CURRENT_VER = 2;
 
     public static function maybeSync(): void
     {
+        $locations = get_nav_menu_locations();
+
+        if (isset($locations['footer_column_one'])) {
+            self::resetWhatsHereColumn((int) $locations['footer_column_one']);
+        }
+
+        if (isset($locations['footer_column_two'])) {
+            self::resetUsefulLinks((int) $locations['footer_column_two']);
+        }
+
         if ((int) get_option(self::OPTION_VER, 0) >= self::CURRENT_VER) {
             return;
         }
 
-        self::syncAllLocations();
+        if (isset($locations['footer_brand_subnav'])) {
+            self::applyCanonicalUrlMap((int) $locations['footer_brand_subnav'], self::legalRowMap());
+        }
 
         update_option(self::OPTION_VER, self::CURRENT_VER, true);
     }
@@ -42,7 +60,7 @@ final class FooterNavLinkSync
         $locations = get_nav_menu_locations();
 
         if (isset($locations['footer_column_one'])) {
-            self::patchPlaceholderUrls((int) $locations['footer_column_one'], self::columnOneMap());
+            self::resetWhatsHereColumn((int) $locations['footer_column_one']);
         }
 
         if (isset($locations['footer_column_two'])) {
@@ -50,30 +68,25 @@ final class FooterNavLinkSync
         }
 
         if (isset($locations['footer_brand_subnav'])) {
-            self::patchPlaceholderUrls((int) $locations['footer_brand_subnav'], self::legalRowMap());
+            self::applyCanonicalUrlMap((int) $locations['footer_brand_subnav'], self::legalRowMap());
         }
     }
 
     /**
-     * @return array<string, string> map of canonicalised title → URL
+     * Canonical “What’s Here” shape from footer Figma (developer release footer frame).
+     *
+     * @return list<array{label: string, url: string}>
      */
-    private static function columnOneMap(): array
+    private static function whatsHereDefinition(): array
     {
         $home = static fn (string $path): string => function_exists('home_url') ? home_url($path) : $path;
 
-        return self::canonicaliseMap([
-            'Centre Map' => $home('/plan-my-visit/'),
-            'Getting Here' => $home('/plan-my-visit/'),
-            'Opening Hours' => $home('/plan-my-visit/'),
-            'Accessible Access' => $home('/accessible-guide/'),
-            // The original Figma seed for column one is the same shape as the
-            // mega Plan-My-Visit branch; keep these as fallbacks if an editor
-            // restores the seeded labels later.
-            'Plan My Visit' => $home('/plan-my-visit/'),
-            "What's On" => $home('/whats-on/'),
-            'Guest Services' => $home('/guest-services/'),
-            'Accessibility Guide' => $home('/accessible-guide/'),
-        ]);
+        return [
+            ['label' => __('Plan My Visit', 'culvers'), 'url' => $home('/plan-my-visit/')],
+            ['label' => __('What’s On', 'culvers'), 'url' => $home('/whats-on/')],
+            ['label' => __('Guest Services', 'culvers'), 'url' => $home('/guest-services/')],
+            ['label' => __('AccessAble Guide', 'culvers'), 'url' => $home('/accessible-guide/')],
+        ];
     }
 
     /**
@@ -111,7 +124,7 @@ final class FooterNavLinkSync
             ['label' => __('Careers', 'culvers'), 'url' => $home('/careers/')],
             ['label' => __('Leasing Opportunities', 'culvers'), 'url' => $home('/leasing-opportunities/')],
             ['label' => __('Parking', 'culvers'), 'url' => $home('/plan-my-visit/')],
-            ['label' => __('Opening Hours', 'culvers'), 'url' => $home('/plan-my-visit/')],
+            ['label' => __('Opening hours', 'culvers'), 'url' => $home('/plan-my-visit/')],
         ];
     }
 
@@ -153,14 +166,47 @@ final class FooterNavLinkSync
     }
 
     /**
-     * Sweep a menu and rewrite items whose URL is a placeholder (`#`/empty)
-     * when the title matches an entry in `$titleToUrl`.
-     *
-     * @param array<string, string> $titleToUrl already-canonicalised map
+     * Rebuild “What’s Here” to the canonical Figma list (destructive once per `{@see COLUMN_ONE_SHAPE_CURRENT_VER}` bump).
      */
-    private static function patchPlaceholderUrls(int $menuId, array $titleToUrl): void
+    private static function resetWhatsHereColumn(int $menuId): void
     {
         if ($menuId <= 0) {
+            return;
+        }
+
+        if ((int) get_option(self::OPTION_COLUMN_ONE_SHAPE_VER, 0) >= self::COLUMN_ONE_SHAPE_CURRENT_VER) {
+            return;
+        }
+
+        $items = wp_get_nav_menu_items($menuId);
+        if (is_array($items)) {
+            foreach ($items as $item) {
+                if ($item instanceof \WP_Post) {
+                    wp_delete_post((int) $item->ID, true);
+                }
+            }
+        }
+
+        foreach (self::whatsHereDefinition() as $row) {
+            wp_update_nav_menu_item($menuId, 0, [
+                'menu-item-title' => $row['label'],
+                'menu-item-url' => esc_url_raw($row['url']),
+                'menu-item-status' => 'publish',
+                'menu-item-type' => 'custom',
+            ]);
+        }
+
+        update_option(self::OPTION_COLUMN_ONE_SHAPE_VER, self::COLUMN_ONE_SHAPE_CURRENT_VER, true);
+    }
+
+    /**
+     * Apply canonical URLs for every footer legal-row item matching the Figma palette.
+     *
+     * @param array<string, string> $canonicalKeyToUrl from {@see legalRowMap()}
+     */
+    private static function applyCanonicalUrlMap(int $menuId, array $canonicalKeyToUrl): void
+    {
+        if ($menuId <= 0 || $canonicalKeyToUrl === []) {
             return;
         }
 
@@ -173,25 +219,25 @@ final class FooterNavLinkSync
             if (! $item instanceof \WP_Post) {
                 continue;
             }
-            // See note in PrimaryNavLinkSync: `wp_get_nav_menu_items()` adds
-            // a runtime `->url` property that isn't on the WP_Post stubs.
-            $current = trim((string) get_post_meta((int) $item->ID, '_menu_item_url', true));
-            if ($current !== '' && $current !== '#') {
-                continue;
-            }
 
+            $id = (int) $item->ID;
             $key = self::canonicaliseTitle((string) $item->post_title);
-            if (! isset($titleToUrl[$key])) {
+            if (! isset($canonicalKeyToUrl[$key])) {
                 continue;
             }
 
-            wp_update_nav_menu_item($menuId, (int) $item->ID, [
-                'menu-item-db-id' => (int) $item->ID,
-                'menu-item-title' => $item->post_title,
-                'menu-item-url' => esc_url_raw($titleToUrl[$key]),
-                'menu-item-status' => 'publish',
-                'menu-item-type' => 'custom',
-            ]);
+            $targetUrl = $canonicalKeyToUrl[$key];
+            $currentUrl = trim((string) get_post_meta($id, '_menu_item_url', true));
+
+            if ($currentUrl !== $targetUrl) {
+                wp_update_nav_menu_item($menuId, $id, [
+                    'menu-item-db-id' => $id,
+                    'menu-item-title' => $item->post_title,
+                    'menu-item-url' => esc_url_raw($targetUrl),
+                    'menu-item-status' => 'publish',
+                    'menu-item-type' => 'custom',
+                ]);
+            }
         }
     }
 

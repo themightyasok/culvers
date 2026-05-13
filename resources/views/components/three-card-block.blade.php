@@ -97,7 +97,7 @@
           @php $tid = 'three-card-tab-' . $index; $pid = 'three-card-panel-' . $index; @endphp
           <button
             type="button"
-            class="three-card-block__tab rounded-full border border-deep-moss px-5 py-2 font-sans text-xs font-semibold uppercase tracking-widest text-deep-moss transition-colors duration-150 culvers-focus-ring-deep-moss md:px-7 md:py-2.5 md:text-xs"
+            class="three-card-block__tab cursor-pointer rounded-full border border-deep-moss px-5 py-2 font-sans text-xs font-semibold uppercase tracking-widest text-deep-moss transition-colors duration-150 culvers-focus-ring-deep-moss md:px-7 md:py-2.5 md:text-xs"
             id="{{ esc_attr($tid) }}"
             role="tab"
             aria-controls="{{ esc_attr($pid) }}"
@@ -111,21 +111,24 @@
       </div>
     @endif
 
-    {{-- Shared `relative` parent so the leaving panel's `absolute` leave-transition
-         layer anchors to this stack (and not the viewport), letting the entering
-         panel claim the same row of space without a layout jump. --}}
-    <div class="three-card-block__panels relative">
-    @foreach($tabs as $index => $tab)
-      {{-- Fade swap between tab panels (250ms ease-out). Cards fade out, the new
-           CPT's row fades in. Reduced-motion users get an instant swap because
-           `x-transition` honours `prefers-reduced-motion: reduce`. --}}
+    {{--
+      Panels share one grid cell. A dual opacity cross-fade stacks the incoming panel above the
+      outgoing one while the new panel is still at opacity 0 → the old cards remain visible underneath.
+      Use an instantaneous leave plus a eased enter-only fade; `isolate` separates stacking contexts.
+      `overflow-visible`: card hover scales (`scale-[1.03]`) must not be clipped away from rounded
+      corners (`overflow-hidden` here previously cut the zoom off inside the panels box).
+      Top margin stays on this wrapper only.
+    --}}
+    <div
+      class="three-card-block__panels relative isolate mt-10 grid grid-cols-1 overflow-visible md:mt-14 [&>.three-card-block__panel]:col-start-1 [&>.three-card-block__panel]:row-start-1 [&>.three-card-block__panel]:w-full [&>.three-card-block__panel]:min-w-0">
+      @foreach($tabs as $index => $tab)
       <div
-        class="mt-10 md:mt-14"
+        class="three-card-block__panel"
         x-show="activeTab === {{ $index }}"
-        x-transition:enter="transition ease-out duration-300"
+        x-transition:enter="transition ease-out duration-300 motion-reduce:transition-none motion-reduce:duration-0"
         x-transition:enter-start="opacity-0"
         x-transition:enter-end="opacity-100"
-        x-transition:leave="transition ease-in duration-200 absolute inset-x-0 top-0"
+        x-transition:leave="transition ease-in duration-0"
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
         x-cloak
@@ -136,12 +139,12 @@
         @php $cards = $tab['cards'] ?? []; @endphp
         @if($cards !== [])
           {{--
-            Figma (three-up strip): 1198px row, 16px column gutter, 11.43px corner radius,
-            390×585 portrait card (3:2 aspect). Width sits ~1px tighter than the
-            8xl shell so the row never wraps before lg.
+            Figma (three-up strip) artboard ~1198px; layout uses max-w-7xl (1280px) for the stock
+            width ladder + parity with opening-hours. 16px column gutter, ~11px corner radius,
+            390×585 portrait cards (3:2 aspect).
           --}}
           <div
-            class="three-card-block__grid mx-auto grid w-full max-w-[1198px] grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            class="three-card-block__grid mx-auto grid w-full max-w-7xl grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             @foreach($cards as $card)
               @php
                 $href = trim((string) ($card['url'] ?? ''));
@@ -157,13 +160,12 @@
               @if($href !== '' && $title !== '')
                 <a
                   href="{{ esc_url($href) }}"
-                  class="three-card-block__card group/card relative flex aspect-[2/3] w-full origin-center overflow-hidden rounded-[11px] outline-none motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out motion-safe:hover:scale-[1.03] motion-safe:focus-visible:scale-[1.03] motion-reduce:hover:scale-100 motion-reduce:focus-visible:scale-100 focus-visible:ring-2 focus-visible:ring-glowleaf focus-visible:ring-offset-2 focus-visible:ring-offset-light-cream">
+                  class="three-card-block__card group/card relative flex aspect-[2/3] w-full origin-center rounded-[11px] outline-none motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out motion-safe:hover:scale-[1.03] motion-safe:focus-visible:scale-[1.03] motion-reduce:hover:scale-100 motion-reduce:focus-visible:scale-100 focus-visible:ring-2 focus-visible:ring-glowleaf focus-visible:ring-offset-2 focus-visible:ring-offset-light-cream">
                   <span
                     class="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[inherit]"
-                    data-background-parallax-trigger
                     aria-hidden="true">
                     @if($mediaType === 'video' && $videoUrl !== '')
-                      <span class="relative z-0 block h-full min-h-0 w-full" data-background-parallax-image="1">
+                      <span class="relative z-0 block h-full min-h-0 w-full">
                         {{--
                           Idle state must show decoded frame 0 of the file (not an uploaded poster image).
                           Hover/focus plays the clip; mouseleave snaps back to frame 0 (see three-card-block.js).
@@ -180,7 +182,7 @@
                         </video>
                       </span>
                     @elseif($imageUrl !== '')
-                      <span class="relative z-0 block h-full min-h-0 w-full" data-background-parallax-image="1">
+                      <span class="relative z-0 block h-full min-h-0 w-full">
                         {!! Image::render($image, [
                             'class' => 'three-card-block__media absolute inset-0 h-full w-full object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:ease-out motion-safe:group-hover/card:scale-[1.08] motion-safe:group-focus-within/card:scale-[1.08] motion-reduce:group-hover/card:scale-100 motion-reduce:group-focus-within/card:scale-100',
                             'alt' => $alt,

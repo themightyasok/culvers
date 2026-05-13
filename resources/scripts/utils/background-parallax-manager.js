@@ -60,10 +60,26 @@ class BackgroundParallaxManager {
     }
   }
 
-  collectTargets() {
+  /** @returns {HTMLElement[]} */
+  queryAllParallaxTargets() {
     return Array.from(document.querySelectorAll('[data-background-parallax-image]')).filter(
       (el) => el instanceof HTMLElement
     );
+  }
+
+  /**
+   * Alpine `x-show` / tab panels hide off-DOM-branch cards without removing nodes; those targets
+   * report 0x0 rects so ScrollTrigger scrub tweens stash bad transforms onto images that break
+   * once the panel becomes visible. Only bind parallax while the trigger has real layout space.
+   * @param {HTMLElement} el
+   */
+  isTargetInLayout(el) {
+    const rect = el.getBoundingClientRect();
+    return rect.width > 0 && rect.height > 0;
+  }
+
+  collectTargets() {
+    return this.queryAllParallaxTargets().filter((el) => this.isTargetInLayout(el));
   }
 
   getComponentRoot(element) {
@@ -159,6 +175,12 @@ class BackgroundParallaxManager {
 
       this.tweens.push(tween);
     });
+
+    requestAnimationFrame(() => {
+      if (typeof window.ScrollTrigger !== 'undefined' && window.ScrollTrigger) {
+        window.ScrollTrigger.refresh();
+      }
+    });
   }
 
   killTweens() {
@@ -168,7 +190,7 @@ class BackgroundParallaxManager {
     });
     this.tweens = [];
 
-    this.collectTargets().forEach((el) => {
+    this.queryAllParallaxTargets().forEach((el) => {
       el.style.removeProperty('transform');
       el.style.removeProperty('will-change');
     });

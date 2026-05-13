@@ -186,7 +186,7 @@
             :aria-expanded="panelOpen.toString()"
             aria-controls="centre-map-panel-groups"
             @click="panelOpen = !panelOpen"
-            x-text="panelOpen ? {{ $hideLabelJson }} : {{ $showLabelJson }}">
+            x-text="panelOpen ? {{ e($hideLabelJson) }} : {{ e($showLabelJson) }}">
             {{ esc_html($filterButtonLabel) }}
           </button>
         @endif
@@ -248,26 +248,26 @@
             @foreach($groups as $group)
               @php($groupSlugAttr = esc_attr($group['slug']))
               @php($groupSlugJson = json_encode($group['slug'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES))
-              <li class="centre-map__group" :class="openGroup === {{ $groupSlugJson }} ? 'centre-map__group--open' : ''">
+              <li class="centre-map__group" :class="openGroup === {{ e($groupSlugJson) }} ? 'centre-map__group--open' : ''">
                 <h3 class="m-0">
                   <button
                     type="button"
                     class="centre-map__group-toggle flex w-full items-center justify-between gap-4 py-4 text-left font-sans text-sm font-semibold uppercase tracking-widest text-glowleaf transition hover:text-lighter-cream culvers-focus-ring-compact"
                     aria-expanded="false"
-                    :aria-expanded="(openGroup === {{ $groupSlugJson }}).toString()"
+                    :aria-expanded="(openGroup === {{ e($groupSlugJson) }}).toString()"
                     aria-controls="centre-map-group-{{ $groupSlugAttr }}"
-                    @click="openGroup = openGroup === {{ $groupSlugJson }} ? '' : {{ $groupSlugJson }}">
+                    @click="openGroup = openGroup === {{ e($groupSlugJson) }} ? '' : {{ e($groupSlugJson) }}">
                     <span>{{ esc_html($group['label']) }}</span>
                     <span class="relative inline-flex size-4 shrink-0 items-center justify-center" aria-hidden="true">
                       <span class="block h-px w-4 bg-current"></span>
-                      <span class="absolute h-4 w-px bg-current transition" :class="openGroup === {{ $groupSlugJson }} ? 'opacity-0' : 'opacity-100'"></span>
+                      <span class="absolute h-4 w-px bg-current transition" :class="openGroup === {{ e($groupSlugJson) }} ? 'opacity-0' : 'opacity-100'"></span>
                     </span>
                   </button>
                 </h3>
                 <div
                   id="centre-map-group-{{ $groupSlugAttr }}"
                   class="centre-map__group-panel overflow-hidden"
-                  x-show="openGroup === {{ $groupSlugJson }}"
+                  x-show="openGroup === {{ e($groupSlugJson) }}"
                   x-transition.opacity.duration.150ms
                   style="display: none;">
                   <ul class="centre-map__category-list flex flex-col gap-1 pb-5">
@@ -278,10 +278,10 @@
                           <a
                             href="{{ esc_url($cat['url']) }}"
                             class="centre-map__category group flex items-center gap-3 rounded-md px-1 py-1.5 font-sans text-sm font-medium uppercase tracking-[0.18em] text-lighter-cream transition hover:text-glowleaf culvers-focus-ring-compact"
-                            @click="activeCategorySlug = {{ $catSlugJson }}">
+                            @click="activeCategorySlug = {{ e($catSlugJson) }}">
                             <span
                               class="centre-map__category-bullet inline-flex size-3 shrink-0 items-center justify-center rounded-full border border-lighter-cream/60 transition"
-                              :class="activeCategorySlug === {{ $catSlugJson }} ? 'centre-map__category-bullet--active border-glowleaf bg-glowleaf' : ''"
+                              :class="activeCategorySlug === {{ e($catSlugJson) }} ? 'centre-map__category-bullet--active border-glowleaf bg-glowleaf' : ''"
                               aria-hidden="true">
                             </span>
                             <span>{{ esc_html($cat['label']) }}</span>
@@ -290,10 +290,10 @@
                           <button
                             type="button"
                             class="centre-map__category group flex w-full items-center gap-3 rounded-md px-1 py-1.5 text-left font-sans text-sm font-medium uppercase tracking-[0.18em] text-lighter-cream transition hover:text-glowleaf culvers-focus-ring-compact"
-                            @click="activeCategorySlug = activeCategorySlug === {{ $catSlugJson }} ? '' : {{ $catSlugJson }}">
+                            @click="activeCategorySlug = activeCategorySlug === {{ e($catSlugJson) }} ? '' : {{ e($catSlugJson) }}">
                             <span
                               class="centre-map__category-bullet inline-flex size-3 shrink-0 items-center justify-center rounded-full border border-lighter-cream/60 transition"
-                              :class="activeCategorySlug === {{ $catSlugJson }} ? 'centre-map__category-bullet--active border-glowleaf bg-glowleaf' : ''"
+                              :class="activeCategorySlug === {{ e($catSlugJson) }} ? 'centre-map__category-bullet--active border-glowleaf bg-glowleaf' : ''"
                               aria-hidden="true">
                             </span>
                             <span>{{ esc_html($cat['label']) }}</span>

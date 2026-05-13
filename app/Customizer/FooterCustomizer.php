@@ -82,6 +82,10 @@ final class FooterCustomizer
         ]);
         $wp_customize->add_control(self::MOD_NEWSLETTER_HEADING, [
             'label' => __('Newsletter — headline', 'culvers'),
+            'description' => __(
+                'Reserved: the live site uses the Figma three-line newsletter lead (frame 51:5148).',
+                'culvers'
+            ),
             'section' => self::SECTION,
             'type' => 'text',
         ]);
@@ -93,7 +97,7 @@ final class FooterCustomizer
         $wp_customize->add_control(self::MOD_NEWSLETTER_HEADING_ACCENT, [
             'label' => __('Newsletter — accent words (glowleaf)', 'culvers'),
             'description' => __(
-                'Words inside the headline above that should render in glowleaf yellow. Leave blank to render the whole headline in white.',
+                'Reserved: accent split is encoded in the theme to match Figma line breaks.',
                 'culvers'
             ),
             'section' => self::SECTION,
@@ -111,11 +115,12 @@ final class FooterCustomizer
         ]);
 
         $wp_customize->add_setting(self::MOD_NEWSLETTER_PLACEHOLDER, [
-            'default' => __('Email address', 'culvers'),
+            'default' => __('EMAIL ADDRESS', 'culvers'),
             'sanitize_callback' => Sanitize::text(...),
         ]);
         $wp_customize->add_control(self::MOD_NEWSLETTER_PLACEHOLDER, [
             'label' => __('Newsletter — email placeholder', 'culvers'),
+            'description' => __('Shown in uppercase (Figma: Commuters Sans SemiBold, ~13px, tracked).', 'culvers'),
             'section' => self::SECTION,
             'type' => 'text',
         ]);
@@ -271,11 +276,15 @@ final class FooterCustomizer
         ]);
 
         $wp_customize->add_setting(self::MOD_SITE_CREDIT, [
-            'default' => __('Site by Society Studios', 'culvers'),
+            'default' => '',
             'sanitize_callback' => Sanitize::text(...),
         ]);
         $wp_customize->add_control(self::MOD_SITE_CREDIT, [
             'label' => __('Footer — site credit (right)', 'culvers'),
+            'description' => __(
+                'Leave empty to show “Site by” + the Society Studios wordmark (Figma). Enter plain text to replace the whole credit line.',
+                'culvers'
+            ),
             'section' => self::SECTION,
             'type' => 'text',
         ]);
@@ -423,6 +432,17 @@ final class FooterCustomizer
 
     public static function siteCredit(): string
     {
-        return Sanitize::toString(get_theme_mod(self::MOD_SITE_CREDIT, __('Site by Society Studios', 'culvers')));
+        $value = Sanitize::toString(get_theme_mod(self::MOD_SITE_CREDIT, ''));
+        $trimmed = trim($value);
+        if ($trimmed === '') {
+            return '';
+        }
+        // Empty default in Customizer now shows the Figma Society Studios mark; treat the old
+        // non-localised default as “use logo” so existing installs pick up the asset without a manual clear.
+        if (strcasecmp($trimmed, 'Site by Society Studios') === 0) {
+            return '';
+        }
+
+        return $value;
     }
 }
