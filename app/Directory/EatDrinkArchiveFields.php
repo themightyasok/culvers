@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Directory;
 
+use StoutLogic\AcfBuilder\FieldsBuilder;
+
 /**
  * Theme options + archive wiring for `/eat-drink/`.
  *
@@ -25,7 +27,7 @@ final class EatDrinkArchiveFields
             'option_slug' => self::OPTION_PAGE_SLUG,
             'menu_title' => __('Eat & Drink directory', 'culvers'),
             'page_title' => __('Eat & Drink directory', 'culvers'),
-            'description' => __('Hero and copy for the venues archive (/eat-drink/).', 'culvers'),
+            'description' => __('Hero, intro copy, and optional stories strip for the venues archive (/eat-drink/).', 'culvers'),
             'icon' => 'dashicons-coffee',
             'position' => 62,
             'group_key' => 'group_culvers_eat_drink_archive_options',
@@ -41,6 +43,13 @@ final class EatDrinkArchiveFields
                 'Centered below the hero. Leave blank to use the default Eat & Drink line.',
                 'culvers'
             ),
+            'extra' => static function (FieldsBuilder $group): void {
+                ArchiveStoriesThreeCardFields::attach(
+                    $group,
+                    self::FIELD_PREFIX,
+                    __('below the Eat & Drink listing', 'culvers')
+                );
+            },
         ]);
     }
 }

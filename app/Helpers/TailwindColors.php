@@ -33,7 +33,8 @@ final class TailwindColors
             'info_block',
             'shop_intro_block',
             'shop_store_details',
-            'shop_related_shops' => self::DEFAULT_LIGHT_BAND_BODY_TEXT_TONE,
+            'shop_related_shops',
+            'leasing_agent_grid' => self::DEFAULT_LIGHT_BAND_BODY_TEXT_TONE,
             default => self::DEFAULT_BODY_TEXT_TONE,
         };
     }

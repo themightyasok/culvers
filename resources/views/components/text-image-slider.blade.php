@@ -6,8 +6,8 @@
   /**
    * Text-image slider — vertical stack of large Canela headlines that expand
    * in place to reveal a body paragraph plus two polaroid-style images that
-   * pop in (left + right) with a staggered scale/rotate animation. Inactive
-   * headlines fade to a muted tone while one is open. Figma ref: 51:8074
+   * pop in (left + right) with a staggered scale/rotate animation. Headlines
+   * stay readable (solid foreground) regardless of open state. Figma ref: 51:8074
    * (closed) / 51:8114 (open with images).
    *
    * Markup notes
@@ -96,14 +96,13 @@
             <button
               id="{{ esc_attr($labelId) }}"
               type="button"
-              class="text-image-slider__label group block w-full cursor-pointer py-3 text-center font-heading text-5xl leading-[1.1] tracking-tight transition-colors duration-300 ease-out culvers-focus-ring md:text-6xl lg:text-7xl"
+              class="text-image-slider__label group block w-full cursor-pointer py-3 text-center font-heading text-5xl leading-[1.1] tracking-tight text-black transition-colors duration-300 ease-out culvers-focus-ring md:text-6xl lg:text-7xl"
               data-tis-label
               aria-controls="{{ esc_attr($panelId) }}"
               aria-expanded="{{ $isOpen ? 'true' : 'false' }}"
               x-on:click="toggle({{ $i }})"
               x-on:keydown.down.prevent="focusSibling({{ $i }}, 1)"
-              x-on:keydown.up.prevent="focusSibling({{ $i }}, -1)"
-              x-bind:class="isMuted({{ $i }}) ? 'text-deep-moss/30' : 'text-deep-moss'">
+              x-on:keydown.up.prevent="focusSibling({{ $i }}, -1)">
               {{ esc_html($item['label']) }}
             </button>
 
@@ -147,7 +146,9 @@
                       class="text-image-slider__media text-image-slider__media--left pointer-events-none absolute left-[-22rem] top-1/2 w-[18rem] opacity-0 xl:left-[-24rem] xl:w-[20rem]"
                       data-tis-media="left"
                       data-tilt="{{ esc_attr((string) $item['tilt_left']) }}">
-                      <div class="text-image-slider__polaroid relative aspect-[4/5] w-full overflow-hidden rounded-[6px] shadow-2xl shadow-deep-moss/30 ring-1 ring-deep-moss/10">
+                      <div
+                        class="text-image-slider__polaroid relative aspect-[4/5] w-full overflow-hidden rounded-[6px] shadow-2xl shadow-deep-moss/30 ring-1 ring-deep-moss/10"
+                        data-tis-polaroid>
                         {!! Image::render($item['image_left'], [
                             'class' => 'absolute inset-0 size-full object-cover',
                             'alt' => '',
@@ -162,7 +163,9 @@
                       class="text-image-slider__media text-image-slider__media--right pointer-events-none absolute right-[-22rem] top-1/2 w-[16rem] opacity-0 xl:right-[-24rem] xl:w-[18rem]"
                       data-tis-media="right"
                       data-tilt="{{ esc_attr((string) $item['tilt_right']) }}">
-                      <div class="text-image-slider__polaroid relative aspect-[4/5] w-full overflow-hidden rounded-[6px] shadow-2xl shadow-deep-moss/30 ring-1 ring-deep-moss/10">
+                      <div
+                        class="text-image-slider__polaroid relative aspect-[4/5] w-full overflow-hidden rounded-[6px] shadow-2xl shadow-deep-moss/30 ring-1 ring-deep-moss/10"
+                        data-tis-polaroid>
                         {!! Image::render($item['image_right'], [
                             'class' => 'absolute inset-0 size-full object-cover',
                             'alt' => '',
@@ -187,7 +190,9 @@
                     class="text-image-slider__media text-image-slider__media--left w-[14rem] flex-none opacity-0 sm:w-[16rem]"
                     data-tis-media="left-mobile"
                     data-tilt="{{ esc_attr((string) $item['tilt_left']) }}">
-                    <div class="text-image-slider__polaroid relative aspect-[4/5] w-full overflow-hidden rounded-[6px] shadow-2xl shadow-deep-moss/30 ring-1 ring-deep-moss/10">
+                    <div
+                      class="text-image-slider__polaroid relative aspect-[4/5] w-full overflow-hidden rounded-[6px] shadow-2xl shadow-deep-moss/30 ring-1 ring-deep-moss/10"
+                      data-tis-polaroid>
                       {!! Image::render($item['image_left'], [
                           'class' => 'absolute inset-0 size-full object-cover',
                           'alt' => '',
@@ -202,7 +207,9 @@
                     class="text-image-slider__media text-image-slider__media--right w-[12rem] flex-none opacity-0 sm:w-[14rem]"
                     data-tis-media="right-mobile"
                     data-tilt="{{ esc_attr((string) $item['tilt_right']) }}">
-                    <div class="text-image-slider__polaroid relative aspect-[4/5] w-full overflow-hidden rounded-[6px] shadow-2xl shadow-deep-moss/30 ring-1 ring-deep-moss/10">
+                    <div
+                      class="text-image-slider__polaroid relative aspect-[4/5] w-full overflow-hidden rounded-[6px] shadow-2xl shadow-deep-moss/30 ring-1 ring-deep-moss/10"
+                      data-tis-polaroid>
                       {!! Image::render($item['image_right'], [
                           'class' => 'absolute inset-0 size-full object-cover',
                           'alt' => '',

@@ -9,6 +9,21 @@
   $hereUrl = get_theme_mod('culvers_getting_here_url', '#');
   $instagramUrl = get_theme_mod('culvers_instagram_url', '#');
   $facebookUrl = get_theme_mod('culvers_facebook_url', '#');
+
+  /* Same full wordmark SVG as `sections/footer` — `currentColor` picks up link `text-*`. */
+  $headerWordmarkAbs = get_template_directory() . '/resources/images/brand/culver-square-footer-wordmark.svg';
+  $headerWordmarkSvg = '';
+  if (is_readable($headerWordmarkAbs)) {
+      $headerWordmarkRaw = (string) file_get_contents($headerWordmarkAbs);
+      if ($headerWordmarkRaw !== '') {
+          $headerWordmarkSvg = (string) preg_replace(
+              '/<svg\b/',
+              '<svg class="block h-[22px] w-auto max-w-[min(100%,178px)] max-lg:h-[20px] shrink-0 text-current [&_svg]:max-h-full" aria-hidden="true" focusable="false"',
+              $headerWordmarkRaw,
+              1,
+          );
+      }
+  }
 @endphp
 
 {{--
@@ -94,7 +109,9 @@
                     href="{{ esc_url(home_url('/')) }}"
                     rel="home"
                     aria-label="{{ esc_attr(get_bloginfo('name')) }}">
-                    @if(has_custom_logo())
+                    @if($headerWordmarkSvg !== '')
+                      <span class="flex max-h-[28px] w-[178px] max-w-[min(100%,178px)] items-center max-lg:max-h-[24px] [&_svg]:max-h-full [&_svg]:max-w-full [&_svg]:object-contain max-lg:[&_svg]:object-center lg:[&_svg]:object-left">{!! $headerWordmarkSvg !!}</span>
+                    @elseif(has_custom_logo())
                       <span class="block max-h-[28px] w-[178px] max-lg:max-h-[24px] [&_img]:h-full [&_img]:w-auto [&_img]:max-h-[28px] max-lg:[&_img]:max-h-[24px] [&_img]:object-contain [&_img]:object-left max-lg:[&_img]:object-center">
                         {!! get_custom_logo() !!}
                       </span>
@@ -371,7 +388,9 @@
               <div
                 class="site-header__search-row flex min-h-[75px] items-center gap-4 px-4 py-2 lg:min-h-[80px] lg:gap-8 lg:px-5 xl:px-6">
                 <a class="shrink-0 text-deep-moss" href="{{ esc_url(home_url('/')) }}" rel="home" aria-label="{{ esc_attr(get_bloginfo('name')) }}">
-                  @if(has_custom_logo())
+                  @if($headerWordmarkSvg !== '')
+                    <span class="flex max-h-[28px] w-[178px] max-w-full items-center [&_svg]:max-h-full [&_svg]:max-w-full [&_svg]:object-contain [&_svg]:object-left">{!! $headerWordmarkSvg !!}</span>
+                  @elseif(has_custom_logo())
                     <span class="block max-h-[28px] w-[178px] [&_img]:h-full [&_img]:w-auto [&_img]:object-contain [&_img]:object-left">
                       {!! get_custom_logo() !!}
                     </span>

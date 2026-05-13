@@ -31,11 +31,7 @@
 <button
   id="{{ esc_attr($pill_toggle_id) }}"
   type="button"
-  {{-- Sheet feedback row 18: filter pill should read in Halyard Display (not the all-caps Commuters
-       look) and the icon should be slightly larger. Dropped uppercase / tracking, bumped weight
-       from semibold (which reads SemiBold) to medium and pad slightly larger so the label sits
-       comfortably on a single line. --}}
-  class="directory-archive__filter-pill inline-flex w-max max-w-full items-center gap-3 rounded-full bg-brand-500 py-2 pl-6 pr-5 font-sans text-base font-medium normal-case leading-8 tracking-normal text-deep-moss transition hover:brightness-95 culvers-focus-ring-deep-moss"
+  class="directory-archive__filter-pill inline-flex w-max max-w-full items-center gap-[13px] rounded-full bg-brand-500 py-[7.732px] pl-[26px] pr-5 font-label text-[12.887px] font-semibold uppercase leading-[30.928px] tracking-[0.6443px] text-deep-moss transition hover:brightness-95 culvers-focus-ring-deep-moss"
   @click="toggleFilters()"
   :aria-expanded="filtersVisible ? 'true' : 'false'"
   aria-controls="{{ esc_attr($pill_controls_id) }}">
@@ -43,7 +39,7 @@
   {{-- Icons: detailed close glyph when filters are visible, compact slider
        glyph when they're hidden — matches Figma toolbar states. --}}
   <svg
-    class="size-6 shrink-0"
+    class="size-[19.825px] shrink-0"
     x-show="filtersVisible"
     x-cloak
     viewBox="0 0 24 24"

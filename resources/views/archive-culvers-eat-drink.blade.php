@@ -119,7 +119,6 @@
                     'toggle_var' => 'retailerOpen',
                     'setter' => 'setType',
                     'options' => $eat_drink_type_options,
-                    'extra_section_classes' => 'pt-2',
                 ])
               </aside>
             </div>
@@ -144,10 +143,8 @@
     </div>
   </section>
 
-  {{-- Sheet feedback row 21: Eat & Drink archive needs the same "what next?" strip as Shops.
-       Re-use the shared `ShopArchiveThreeCard` payload (heading + view-all + recent feature posts);
-       the editor controls all three cards centrally via the Site Options page. --}}
-  @php $eatDrinkArchiveStories = \App\Directory\ShopArchiveThreeCard::componentOrNull(); @endphp
+  {{-- Same News / Events / Offers strip as Shops — Eat & Drink has its own options under Appearance → Eat & Drink directory. --}}
+  @php $eatDrinkArchiveStories = \App\Directory\EatDrinkArchiveThreeCard::componentOrNull(); @endphp
   @if ($eatDrinkArchiveStories !== null)
     <div class="bg-lighter-cream px-4 md:px-12">
       @include('components.three-card-block', ['component' => $eatDrinkArchiveStories])

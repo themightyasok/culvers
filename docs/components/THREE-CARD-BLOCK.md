@@ -73,8 +73,7 @@ The `cards_source` switch covers two distinct use cases:
 - Hover-play of video cards is gated by
   `prefers-reduced-motion: reduce` — falls back to the first decoded
   frame.
-- Reused by `App\Directory\ShopArchiveThreeCard` to render the
-  "stories" strip below `/shops/`.
+- Reused by `App\Directory\ShopArchiveThreeCard` and **`EatDrinkArchiveThreeCard`** (each reads its own Theme Options `{archive}_three_card_*` rows; defaults CPT tabs News / Events / Offers; optional blog categories override).
 
 ## Related components
 

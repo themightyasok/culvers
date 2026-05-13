@@ -76,13 +76,9 @@ const culversThemePlugin = plugin(({ addBase, addComponents }) => {
       '@apply font-sans text-base leading-snug text-light-cream/85 transition-colors hover:text-glowleaf':
         {},
     },
-    /* Column nav `<a>` styling — wp_nav_menu emits bare `<li><a>`, so we target descendants here
-     * once instead of repeating `[&>li>a]:…` arbitrary variants on every menu_class string.
-     *
-     * Sheet feedback row 9: "secondary text needs to be a tad bigger". Bumped lg (18 px) → xl (20 px)
-     * to align with Figma footer column body copy. */
+    /* Column nav `<a>` — Figma Footer 51:5147: What’s Here / Useful links use Halyard Display Book 18 px / lh 26. */
     '.footer-nav--col li > a': {
-      '@apply font-sans text-xl leading-[1.4] text-light-cream transition-colors hover:text-glowleaf':
+      '@apply font-sans text-[18px] font-normal leading-[26px] text-white transition-colors hover:text-glowleaf':
         {},
     },
     '.footer-nav__link--legal': {

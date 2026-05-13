@@ -57,6 +57,13 @@ final class PagesFlexibleSeedData
 
     private const LEASING_PROMO_FILE = 'leasing-promo.jpg';
 
+    /** Lettings trio (Figma 51:6527) — logos in `resources/images/seeds/`. */
+    private const LEASING_AGENT_LOGO_GREEN = 'agent-green-partners-logo.png';
+
+    private const LEASING_AGENT_LOGO_WHYBROW = 'agent-whybrow-logo.png';
+
+    private const LEASING_AGENT_LOGO_CUSHMAN = 'agent-cushman-wakefield-logo.png';
+
     /**
      * What’s On landing (51:6386) — same lifestyle band as /latest-events/ archive
      * ({@see DirectoryArchiveHeroPopulate} `archive-whats-on-hero.jpg`).
@@ -536,12 +543,11 @@ final class PagesFlexibleSeedData
     }
 
     /* -----------------------------------------------------------------
-     * Leasing Opportunities page (Figma 51:6500)
+     * Leasing Opportunities page (Figma 51:6500 / lettings trio 51:6524)
      * Stack: image_hero → section_header (Commercialisation) →
-     *        shop_split_highlight (no tabs: Promotional Space) →
-     *        section_header (Lettings) →
-     *        three_card_block (manual: 3 agent contacts) →
-     *        info_block (Can’t see what you’re looking for? + CTA)
+     *        shop_split_highlight (Promotional Space) →
+     *        leasing_agent_grid (Lettings + three agents) →
+     *        info_block (Can’t see… + CTA)
      * --------------------------------------------------------------- */
 
     /**
@@ -606,54 +612,44 @@ final class PagesFlexibleSeedData
                 'split_cta_label' => __('Visit website', 'culvers'),
                 'split_cta_url' => 'https://www.spaceandpeople.co.uk',
             ]),
-            array_merge(self::base('section_header'), [
-                'header_eyebrow' => '',
-                'header_heading' => __('Lettings', 'culvers'),
-                'header_heading_level' => '2',
-                'header_body' => __(
+            array_merge(self::base('leasing_agent_grid'), [
+                'agents_heading' => __('Lettings', 'culvers'),
+                'agents_heading_level' => '2',
+                'agents_intro' => __(
                     'If you would like to know more about letting a unit at Culver Square, '
-                    . 'please contact the following agents.',
+                        . 'please contact the following agents;',
                     'culvers'
                 ),
-                'header_align' => 'center',
-                'header_max_width' => 'medium',
-            ]),
-            // Three lettings agent cards. Card titles double up as the agent name; the
-            // body copy carries phone + URL because three_card_block doesn't expose
-            // sub-fields for those today (kept inline so editors can edit them directly).
-            array_merge(self::base('three_card_block'), [
-                'cards_source' => 'manual',
-                'cards_heading' => '',
-                'cards_subheading' => '',
-                'cards_heading_level' => '2',
-                'cards_body' => '',
-                'cards_items' => [
+                'leasing_agents' => [
                     [
-                        'card_title' => __('Green & Partners', 'culvers'),
-                        'card_url' => 'https://www.greenandpartners.co.uk',
-                        'card_media_type' => 'image',
-                        'card_image' => null,
-                        'card_image_alt' => '',
-                        'card_video' => null,
-                        'card_video_poster' => null,
+                        'agent_logo' => [
+                            'url' => self::seedAssetUrl(self::LEASING_AGENT_LOGO_GREEN),
+                            'alt' => __('Green & Partners logo', 'culvers'),
+                        ],
+                        'agent_name' => __('Green & Partners', 'culvers'),
+                        'agent_phone' => __('020 7659 4848', 'culvers'),
+                        'agent_website_url' => 'https://www.greenandpartners.co.uk',
+                        'agent_website_label' => 'greenandpartners.co.uk',
                     ],
                     [
-                        'card_title' => __('Whybrow', 'culvers'),
-                        'card_url' => 'https://www.whybrow.net',
-                        'card_media_type' => 'image',
-                        'card_image' => null,
-                        'card_image_alt' => '',
-                        'card_video' => null,
-                        'card_video_poster' => null,
+                        'agent_logo' => [
+                            'url' => self::seedAssetUrl(self::LEASING_AGENT_LOGO_WHYBROW),
+                            'alt' => __('Whybrow logo', 'culvers'),
+                        ],
+                        'agent_name' => __('Whybrow', 'culvers'),
+                        'agent_phone' => __('01206 577 667', 'culvers'),
+                        'agent_website_url' => 'https://www.whybrow.net',
+                        'agent_website_label' => 'whybrow.net',
                     ],
                     [
-                        'card_title' => __('Cushman & Wakefield', 'culvers'),
-                        'card_url' => 'https://www.cushmanwakefield.com',
-                        'card_media_type' => 'image',
-                        'card_image' => null,
-                        'card_image_alt' => '',
-                        'card_video' => null,
-                        'card_video_poster' => null,
+                        'agent_logo' => [
+                            'url' => self::seedAssetUrl(self::LEASING_AGENT_LOGO_CUSHMAN),
+                            'alt' => __('Cushman & Wakefield logo', 'culvers'),
+                        ],
+                        'agent_name' => __('Cushman & Wakefield', 'culvers'),
+                        'agent_phone' => __('020 7935 5000', 'culvers'),
+                        'agent_website_url' => 'https://www.cushmanwakefield.com',
+                        'agent_website_label' => 'cushmanwakefield.com',
                     ],
                 ],
             ]),

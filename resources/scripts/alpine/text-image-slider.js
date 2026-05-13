@@ -2,14 +2,14 @@
  * Text-image slider: a vertical stack of large Canela headlines that expand
  * in place to reveal a body paragraph and two polaroid-style images that
  * pop in from the left and right with a staggered scale/rotate animation.
- * Inactive headlines fade to a muted tone while one row is open.
+ * Headlines stay full-contrast regardless of open state (see Blade `text-black`).
  *
  * Animation choreography per open row:
  *   1. Panel height transitions via CSS grid-rows trick.
  *   2. Body fades up (opacity 0 → 1, y 16 → 0)             [delay 60ms].
- *   3. Left image pops in (opacity 0 → 1, scale 0.6 → 1,
- *      rotate from 0 → tilt-deg, x -60 → 0)                [delay 200ms].
- *   4. Right image pops in (mirrored)                       [delay 320ms].
+ *   3. Left polaroid pops in — wrapper: opacity / xPercent / yPercent; inner
+ *      [data-tis-polaroid]: scale + rotate (shadow stays aligned with tilt).
+ *   4. Right polaroid (mirrored).
  *
  * Honours `prefers-reduced-motion` — falls back to a 1-frame fade-in.
  *
@@ -44,11 +44,6 @@ export default function registerTextImageSliderAlpine(Alpine) {
     /** @param {number} index */
     isOpen(index) {
       return this.openIndices.includes(index);
-    },
-
-    /** @param {number} index */
-    isMuted(index) {
-      return this.openIndices.length > 0 && !this.isOpen(index);
     },
 
     /** @param {number} index */
@@ -161,17 +156,30 @@ export default function registerTextImageSliderAlpine(Alpine) {
         if (!(el instanceof HTMLElement)) {
           return;
         }
+        const polaroid = el.querySelector('[data-tis-polaroid]');
+        if (!(polaroid instanceof HTMLElement)) {
+          return;
+        }
         const tilt = Number(el.dataset.tilt || 0);
         const base = baselineY(el);
         tl.fromTo(
           el,
-          { opacity: 0, scale: 0.6, rotate: 0, xPercent: -20, yPercent: base + 4 },
+          { opacity: 0, xPercent: -20, yPercent: base + 4 },
           {
             opacity: 1,
-            scale: 1,
-            rotate: tilt,
             xPercent: 0,
             yPercent: base,
+            duration: 0.7,
+            ease: 'back.out(1.6)',
+          },
+          0.2
+        );
+        tl.fromTo(
+          polaroid,
+          { scale: 0.6, rotate: 0 },
+          {
+            scale: 1,
+            rotate: tilt,
             duration: 0.7,
             ease: 'back.out(1.6)',
           },
@@ -183,17 +191,30 @@ export default function registerTextImageSliderAlpine(Alpine) {
         if (!(el instanceof HTMLElement)) {
           return;
         }
+        const polaroid = el.querySelector('[data-tis-polaroid]');
+        if (!(polaroid instanceof HTMLElement)) {
+          return;
+        }
         const tilt = Number(el.dataset.tilt || 0);
         const base = baselineY(el);
         tl.fromTo(
           el,
-          { opacity: 0, scale: 0.6, rotate: 0, xPercent: 20, yPercent: base + 4 },
+          { opacity: 0, xPercent: 20, yPercent: base + 4 },
           {
             opacity: 1,
-            scale: 1,
-            rotate: tilt,
             xPercent: 0,
             yPercent: base,
+            duration: 0.7,
+            ease: 'back.out(1.6)',
+          },
+          0.32
+        );
+        tl.fromTo(
+          polaroid,
+          { scale: 0.6, rotate: 0 },
+          {
+            scale: 1,
+            rotate: tilt,
             duration: 0.7,
             ease: 'back.out(1.6)',
           },
@@ -209,13 +230,19 @@ export default function registerTextImageSliderAlpine(Alpine) {
         if (!(el instanceof HTMLElement)) {
           return;
         }
+        const polaroid = el.querySelector('[data-tis-polaroid]');
+        if (!(polaroid instanceof HTMLElement)) {
+          return;
+        }
         const isDesktop = el.dataset.tisMedia === 'left' || el.dataset.tisMedia === 'right';
         gsap.set(el, {
-          rotate: Number(el.dataset.tilt || 0),
           opacity: 1,
-          scale: 1,
           xPercent: 0,
           yPercent: isDesktop ? -50 : 0,
+        });
+        gsap.set(polaroid, {
+          rotate: Number(el.dataset.tilt || 0),
+          scale: 1,
         });
       });
     },

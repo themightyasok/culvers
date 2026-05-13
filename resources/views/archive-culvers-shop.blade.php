@@ -113,7 +113,6 @@
                     'toggle_var' => 'retailerOpen',
                     'setter' => 'setType',
                     'options' => $shop_type_options,
-                    'extra_section_classes' => 'pt-2',
                 ])
               </aside>
             </div>

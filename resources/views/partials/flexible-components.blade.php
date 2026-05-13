@@ -41,7 +41,7 @@ $templateResolver = TemplateResolver::getInstance();
         $layout = $component['acf_fc_layout'] ?? '';
         $component = $component + ComponentDefaults::get($layout);
         $rawTone = $component['body_text_tone'] ?? TailwindColors::defaultBodyTextToneForLayout($layout);
-        $component['body_text_tone'] = in_array($layout, ['shop_intro_block', 'shop_store_details'], true)
+        $component['body_text_tone'] = in_array($layout, ['shop_intro_block', 'shop_store_details', 'leasing_agent_grid'], true)
             ? TailwindColors::bodyToneForWhiteBackground($rawTone)
             : TailwindColors::sanitizeBodyTextTone($rawTone);
 

@@ -19,23 +19,10 @@
       ? get_theme_file_uri($newsletterFallbackRel)
       : '';
 
-  /* Figma footer legal band (`51:5146`): Commuters Sans Regular 10px / lh ~1.3 / uppercase / 0.5px tracking. */
+  /* Fixed legal row — always these four pages in this order (menu location is unused here
+     so editors cannot ship wrong labels/URLs to production). */
   $footerLegalListClass =
       'footer-nav__list footer-nav__list--legal flex flex-wrap items-center justify-center gap-x-[18px] gap-y-2 whitespace-normal font-label text-[10px] font-normal uppercase leading-[1.3] tracking-[0.05em] text-lighter-cream [&>li]:flex [&>li]:shrink-0 [&>li]:items-center [&>li>a]:inline-flex [&>li>a]:min-h-[2rem] [&>li>a]:items-center [&>li>a]:px-0.5 [&>li>a]:py-1';
-  $footerLegalNavHtml = '';
-  if (has_nav_menu('footer_brand_subnav')) {
-      $footerLegalNavHtml = (string) wp_nav_menu([
-          'theme_location' => 'footer_brand_subnav',
-          'container' => false,
-          'menu_class' => $footerLegalListClass,
-          'fallback_cb' => false,
-          'depth' => 1,
-          'echo' => false,
-      ]);
-  }
-  $footerLegalNavHasItems = str_contains($footerLegalNavHtml, '<li');
-
-  $footerLegalFallbackUlClass = $footerLegalListClass;
 
   $societyLogoAbs = get_template_directory() . '/resources/images/footer/society-studios-wordmark.svg';
   $societyLogoSvg = '';
@@ -57,9 +44,11 @@
 
   Naming:
     site-footer          Outer landmark (`site-footer__*` for major bands).
-    footer-nav__link*    Column/legal/social/phone link styles (`addComponents` in tailwind.config.js).
-    footer-nav           WP menu wrappers (`footer-nav__list`, modifiers).
-    footer-link--*       Shared link treatments (e.g. persistent underline).
+  footer-nav__link*    Column/legal/social/phone link styles (`addComponents` in tailwind.config.js).
+  footer-nav           Shared list classes (`footer-nav__list`, modifiers).
+
+  Legal row under wordmark always renders Cookie → Accessibility → Privacy → Terms (`home_url`).
+  Theme still registers `footer_brand_subnav` for tooling/seeds but the template does not read it.
 
   Layout:
     `site-footer__columns` uses gutter padding, then `max-w-8xl` inner — pair with
@@ -181,16 +170,19 @@
             </div>
           @endif
           @if($mapUrl !== '')
-            {{-- Figma: Commuter Sans Bold 14px / lh 1.3 / 1px tracking. --}}
+            {{-- Figma 51:5147: SemiBold 14px, 1px tracking, underline is one rule under label + icon (`ab99cd24-795f-472c-bb05-6417de243aba` path, −45°). --}}
             <a
-              class="footer-link--persistent-underline mt-6 inline-flex items-center gap-2 font-label text-sm font-bold uppercase leading-[1.3] tracking-[0.07em] text-glowleaf transition-colors hover:text-lighter-cream"
+              class="group mt-6 inline-flex w-fit flex-col items-start text-glowleaf transition-colors hover:text-lighter-cream"
               href="{{ esc_url($mapUrl) }}"
               @if(str_starts_with($mapUrl, 'http')) target="_blank" rel="noopener noreferrer" @endif>
-              {{ esc_html(FooterCustomizer::gettingHereMapLabel()) }}
+              <span
+                class="inline-flex items-center gap-0.5 border-b-2 border-current pb-0.5 font-label text-sm font-semibold uppercase leading-[1.3] tracking-[1px]">
+                {{ esc_html(FooterCustomizer::gettingHereMapLabel()) }}
+                @include('partials.footer-external-arrow-figma')
+              </span>
               @if(str_starts_with($mapUrl, 'http'))
                 <span class="sr-only">{{ __('(opens in new tab)', 'culvers') }}</span>
               @endif
-              <span aria-hidden="true">›</span>
             </a>
           @endif
         </div>
@@ -377,26 +369,20 @@
           </p>
 
           <nav class="min-w-0 justify-self-center md:max-w-none" aria-label="{{ esc_attr__('Legal', 'culvers') }}">
-            @if($footerLegalNavHasItems)
-              {!! $footerLegalNavHtml !!}
-            @else
-              {{-- Site has no `footer_brand_subnav` menu yet — link directly to the seeded policy pages
-                   so live legal links never depend on the optional WP menu being assigned. --}}
-              <ul class="{{ esc_attr($footerLegalFallbackUlClass) }} list-none">
-                <li class="list-none">
-                  <a class="footer-nav__link--legal" href="{{ esc_url(home_url('/cookie-policy/')) }}">{{ __('Cookie Policy', 'culvers') }}</a>
-                </li>
-                <li class="list-none">
-                  <a class="footer-nav__link--legal" href="{{ esc_url(home_url('/accessible-guide/')) }}">{{ __('Accessibility', 'culvers') }}</a>
-                </li>
-                <li class="list-none">
-                  <a class="footer-nav__link--legal" href="{{ esc_url(home_url('/privacy-policy/')) }}">{{ __('Privacy Policy', 'culvers') }}</a>
-                </li>
-                <li class="list-none">
-                  <a class="footer-nav__link--legal" href="{{ esc_url(home_url('/terms-and-conditions/')) }}">{{ __('Terms & Conditions', 'culvers') }}</a>
-                </li>
-              </ul>
-            @endif
+            <ul class="{{ esc_attr($footerLegalListClass) }} list-none">
+              <li class="list-none">
+                <a class="footer-nav__link--legal" href="{{ esc_url(home_url('/cookie-policy/')) }}">{{ __('Cookie Policy', 'culvers') }}</a>
+              </li>
+              <li class="list-none">
+                <a class="footer-nav__link--legal" href="{{ esc_url(home_url('/accessible-guide/')) }}">{{ __('Accessibility', 'culvers') }}</a>
+              </li>
+              <li class="list-none">
+                <a class="footer-nav__link--legal" href="{{ esc_url(home_url('/privacy-policy/')) }}">{{ __('Privacy Policy', 'culvers') }}</a>
+              </li>
+              <li class="list-none">
+                <a class="footer-nav__link--legal" href="{{ esc_url(home_url('/terms-and-conditions/')) }}">{{ __('Terms & Conditions', 'culvers') }}</a>
+              </li>
+            </ul>
           </nav>
 
           @php $credit = FooterCustomizer::siteCredit(); @endphp

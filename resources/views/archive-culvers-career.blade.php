@@ -139,7 +139,6 @@
                       'toggle_var' => 'retailerOpen',
                       'setter' => 'setType',
                       'options' => $career_contract_options,
-                      'extra_section_classes' => 'pt-2',
                   ])
                 @endif
               </aside>

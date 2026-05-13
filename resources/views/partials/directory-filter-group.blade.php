@@ -32,17 +32,14 @@
    *                            responsible for ordering.
    *   • `$extra_section_classes` — extra classes on the outer
    *                            `<div class="directory-archive__filter-section">`.
-   *                            Pass `'pt-2'` for the second group on a page
-   *                            so it sits flush with the first.
+   *                            Used only when a page needs legacy spacing tweaks.
    *   • `$all_label`        — copy for the "All" sentinel option (default
    *                            `'All'`).
    *
    * Normalisations vs the legacy hand-rolled markup (intentional, both
    * imperceptible at any realistic sidebar width):
-   *   • Toggle button uses `gap-3` everywhere. The legacy second group used
-   *     `gap-2` — but `justify-between` makes the gap a min-spacing only
-   *     and the button is always wider than `label + gap + +/- icon`, so
-   *     the difference never materialises on screen.
+   *   • Section hairlines (`directory-archive.css`) enforce Figma divider
+   *     rhythm; callers should avoid `extra_section_classes` spacer hacks.
    *   • Toggle button always carries `focus-visible:rounded-md`. The legacy
    *     first group omitted it; the legacy second group had it. Rounded
    *     focus rings on these section headers are a small a11y improvement
@@ -64,19 +61,23 @@
   $json_flags = JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES;
 @endphp
 <div class="directory-archive__filter-section{{ $group_extra_section_classes !== '' ? ' ' . $group_extra_section_classes : '' }}">
-  <button
-    type="button"
-    class="flex w-full items-center justify-between gap-3 py-4 text-left font-sans text-xs font-semibold uppercase tracking-widest text-faded-olive transition hover:text-deep-moss focus-visible:rounded-md culvers-focus-ring-compact"
-    @click="{{ $group_toggle_var }} = ! {{ $group_toggle_var }}"
-    :aria-expanded="{{ $group_toggle_var }}.toString()"
-    aria-controls="{{ esc_attr($group_panel_id) }}">
-    <span>{{ esc_html($group_label) }}</span>
-    <span class="text-lg leading-none text-deep-moss tabular-nums" aria-hidden="true" x-text="{{ $group_toggle_var }} ? '−' : '+'"></span>
-  </button>
+  {{-- Figma 51:7443 (+ related filter frames): divider under heading row; CATEGORY uses Commuters SemiBold 12 /
+       lh 24 / tracking 1; vertical inset ≈ py-5 between twin hairlines. --}}
+  <div class="directory-archive__filter-heading">
+    <button
+      type="button"
+      class="flex w-full items-center justify-between gap-3 py-5 text-left font-label text-xs font-semibold uppercase leading-6 tracking-[1px] text-faded-olive transition hover:text-deep-moss focus-visible:rounded-md culvers-focus-ring-compact"
+      @click="{{ $group_toggle_var }} = ! {{ $group_toggle_var }}"
+      :aria-expanded="{{ $group_toggle_var }}.toString()"
+      aria-controls="{{ esc_attr($group_panel_id) }}">
+      <span>{{ esc_html($group_label) }}</span>
+      <span class="flex size-[15px] shrink-0 items-center justify-center leading-none text-deep-moss tabular-nums" aria-hidden="true" x-text="{{ $group_toggle_var }} ? '−' : '+'"></span>
+    </button>
+  </div>
 
   <ul
     id="{{ esc_attr($group_panel_id) }}"
-    class="directory-archive__filter-list flex flex-col gap-3 pb-5 pt-1"
+    class="directory-archive__filter-list flex flex-col gap-3 pb-6 pt-7"
     role="radiogroup"
     aria-label="{{ esc_attr($group_aria_label) }}"
     x-show="{{ $group_toggle_var }}"
@@ -85,12 +86,12 @@
       <button
         type="button"
         role="radio"
-        class="directory-archive__filter-option flex w-full items-center gap-[14px] py-0.5 text-left focus-visible:rounded-md culvers-focus-ring-compact"
+        class="directory-archive__filter-option flex w-full min-h-6 items-center gap-[13px] py-0 text-left leading-6 focus-visible:rounded-md culvers-focus-ring-compact"
         :class="{{ $group_state_var }} === '' ? 'directory-archive__filter-option--on' : 'directory-archive__filter-option--off'"
         :aria-checked="{{ $group_state_var }} === ''"
         @click="{{ $group_setter }}('')">
         <span class="directory-archive__radio" :class="{{ $group_state_var }} === '' ? 'directory-archive__radio--checked' : ''" aria-hidden="true"></span>
-        <span class="font-sans text-xs font-semibold uppercase tracking-widest">{{ esc_html($group_all_label) }}</span>
+        <span>{{ esc_html($group_all_label) }}</span>
       </button>
     </li>
     @foreach ($group_options as $opt)
@@ -106,12 +107,12 @@
         <button
           type="button"
           role="radio"
-          class="directory-archive__filter-option flex w-full items-center gap-[14px] py-0.5 text-left focus-visible:rounded-md culvers-focus-ring-compact"
+          class="directory-archive__filter-option flex w-full min-h-6 items-center gap-[13px] py-0 text-left leading-6 focus-visible:rounded-md culvers-focus-ring-compact"
           :class="{{ $group_state_var }} === {{ e($slug_json) }} ? 'directory-archive__filter-option--on' : 'directory-archive__filter-option--off'"
           :aria-checked="{{ $group_state_var }} === {{ e($slug_json) }}"
           @click="{{ $group_setter }}({{ e($slug_json) }})">
           <span class="directory-archive__radio" :class="{{ $group_state_var }} === {{ e($slug_json) }} ? 'directory-archive__radio--checked' : ''" aria-hidden="true"></span>
-          <span class="leading-snug">{{ esc_html($opt_name) }}</span>
+          <span>{{ esc_html($opt_name) }}</span>
         </button>
       </li>
     @endforeach

@@ -39,6 +39,7 @@ final class HomepageFlexibleAcfAttach
                     'faq' => self::faqRow($row),
                     'centre_map' => self::centreMapRow($row),
                     'travel_calculator' => self::travelCalculatorRow($row),
+                    'leasing_agent_grid' => self::leasingAgentGridRow($row),
                     default => $row,
                 };
             }
@@ -288,6 +289,27 @@ final class HomepageFlexibleAcfAttach
     private static function travelCalculatorRow(array $row): array
     {
         $row['tc_map_initial_image'] = self::acfImageValue($row['tc_map_initial_image'] ?? null);
+
+        return $row;
+    }
+
+    /**
+     * @param  array<string, mixed>  $row
+     * @return array<string, mixed>
+     */
+    private static function leasingAgentGridRow(array $row): array
+    {
+        $agents = $row['leasing_agents'] ?? [];
+        if (! is_array($agents)) {
+            return $row;
+        }
+        foreach ($agents as $i => $agent) {
+            if (! is_array($agent)) {
+                continue;
+            }
+            $agents[$i]['agent_logo'] = self::acfImageValue($agent['agent_logo'] ?? null);
+        }
+        $row['leasing_agents'] = $agents;
 
         return $row;
     }
