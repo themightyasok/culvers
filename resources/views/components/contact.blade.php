@@ -9,7 +9,7 @@
    * Contact — sidebar with "Getting here / Contact Us" details (single-source
    * via FooterCustomizer) plus a contact form posting to
    * `wp-json/culvers/v1/contact-form`. Optional Maps Embed below the band.
-   * Figma ref: 51:9378.
+   * Figma ref: `51:9378` (frame under contact page `51:9353`).
    */
 
   $c = is_array($component ?? null) ? $component : [];
@@ -108,37 +108,37 @@
 @endphp
 
 <section
-  class="contact {{ esc_attr($root) }} text-deep-moss"
+  class="contact {{ esc_attr($root) }} bg-lighter-cream text-deep-moss"
   data-component-root
   data-contact
   x-data='contactForm({{ $alpineConfig }})'
   @if($heading !== '') aria-labelledby="{{ esc_attr($headingId) }}" @endif>
   <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
     @if($heading !== '')
-      {{-- Section H2: 64px desktop / 48px mobile (Component::sectionHeadingClasses). --}}
+      {{-- Optional band title (page often uses `image_hero` for H1). Figma section H2: Canela 58 / faded olive when used. --}}
       <{{ $headingTag }}
         id="{{ esc_attr($headingId) }}"
-        class="contact__heading {{ Component::sectionHeadingClasses('text-deep-moss', 'mb-10 text-center md:mb-14') }}">
+        class="contact__heading {{ Component::sectionHeadingClasses('text-faded-olive', 'mb-10 text-center md:mb-14') }}">
         {{ esc_html($heading) }}
       </{{ $headingTag }}>
     @endif
 
     <div class="contact__band grid gap-10 md:gap-12 @if($showPanel) lg:grid-cols-[minmax(0,30%)_minmax(0,1fr)] lg:gap-16 @endif">
       @if($showPanel)
-        <aside class="contact__panel flex flex-col text-deep-moss" aria-label="{{ esc_attr__('Getting here and contact details', 'culvers') }}">
+        <aside class="contact__panel flex flex-col text-faded-olive" aria-label="{{ esc_attr__('Getting here and contact details', 'culvers') }}">
           <div class="contact__panel-block">
-            {{-- Figma `2:1034` / `2:1043` Contact panel sub-heading: Canela Regular 32 / lh 1.1. --}}
-            <h3 class="contact__panel-heading font-heading text-[32px] leading-[1.1]">
+            {{-- Figma `51:9414`: Canela 32 / lh 1.1, faded olive. --}}
+            <h3 class="contact__panel-heading font-heading text-3xl leading-[1.1]">
               {{ esc_html(FooterCustomizer::gettingHereTitle()) }}
             </h3>
             @if($address !== '')
-              <p class="contact__panel-address mt-5 font-sans text-base leading-7 text-deep-moss/85">
+              <p class="contact__panel-address mt-5 font-sans text-xl font-light leading-[1.3] text-faded-olive">
                 {!! nl2br(esc_html($address)) !!}
               </p>
             @endif
             @if($mapUrl !== '')
               <a
-                class="contact__panel-map-link mt-5 inline-flex items-center gap-2 border-b border-deep-moss/40 pb-1 font-sans text-xs font-semibold uppercase tracking-widest text-deep-moss transition-colors hover:border-deep-moss hover:text-faded-olive"
+                class="contact__panel-map-link mt-5 inline-flex items-center gap-2 border-b border-faded-olive/40 pb-1 font-label text-xs font-semibold uppercase tracking-widest text-faded-olive transition-colors hover:border-deep-moss hover:text-deep-moss"
                 href="{{ esc_url($mapUrl) }}"
                 @if(str_starts_with($mapUrl, 'http')) target="_blank" rel="noopener noreferrer" @endif>
                 {{ esc_html($mapLabel) }}
@@ -152,20 +152,20 @@
 
           @if($phone !== '' || $contactEmail !== '' || $hasSocial)
             <div class="contact__panel-block mt-12">
-              {{-- Figma `2:1034` / `2:1043` Contact panel sub-heading: Canela Regular 32 / lh 1.1. --}}
-            <h3 class="contact__panel-heading font-heading text-[32px] leading-[1.1]">
+              {{-- Figma `51:9414`: Canela 32 / lh 1.1, faded olive. --}}
+              <h3 class="contact__panel-heading font-heading text-3xl leading-[1.1]">
                 {{ esc_html(FooterCustomizer::contactTitle()) }}
               </h3>
               @if($phone !== '')
                 <a
-                  class="contact__panel-phone mt-5 block font-sans text-lg text-deep-moss transition-colors hover:text-faded-olive"
+                  class="contact__panel-phone mt-5 block font-sans text-xl font-light leading-[30px] text-faded-olive transition-colors hover:text-deep-moss"
                   href="{{ esc_url('tel:' . preg_replace('/\s+/', '', $phone)) }}">
                   {{ esc_html($phone) }}
                 </a>
               @endif
               @if($contactEmail !== '')
                 <a
-                  class="contact__panel-email mt-2 inline-block w-fit border-b border-deep-moss/40 pb-0.5 font-sans text-base text-deep-moss transition-colors hover:border-deep-moss hover:text-faded-olive"
+                  class="contact__panel-email mt-2 inline-block w-fit font-sans text-xl font-light leading-[30px] text-faded-olive underline decoration-faded-olive underline-offset-[5px] transition-colors hover:text-deep-moss hover:decoration-deep-moss"
                   href="{{ esc_url('mailto:' . $contactEmail) }}">
                   {{ esc_html($contactEmail) }}
                 </a>
@@ -174,27 +174,27 @@
                 <div class="contact__panel-social mt-6 flex flex-wrap gap-x-8 gap-y-3">
                   @if($instagramUrl !== '')
                     <a
-                      class="contact__panel-social-link inline-flex items-center gap-2 font-sans text-sm font-semibold uppercase tracking-wider text-deep-moss transition-colors hover:text-faded-olive"
+                      class="contact__panel-social-link inline-flex items-center gap-2 font-label text-sm font-semibold uppercase tracking-widest text-faded-olive transition-colors hover:text-deep-moss"
                       href="{{ esc_url($instagramUrl) }}"
                       rel="noopener noreferrer"
                       target="_blank">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <rect x="3" y="3" width="18" height="18" rx="5" stroke="currentColor" stroke-width="1.3" />
-                        <circle cx="12" cy="12" r="4" stroke="currentColor" stroke-width="1.3" />
-                        <circle cx="17.5" cy="6.5" r="1.2" fill="currentColor" />
-                      </svg>
+                      @include('partials.figma-social-icon', [
+                          'variant' => 'instagram',
+                          'class' => 'size-6 shrink-0 overflow-visible text-faded-olive',
+                      ])
                       {{ __('Instagram', 'culvers') }}
                     </a>
                   @endif
                   @if($facebookUrl !== '')
                     <a
-                      class="contact__panel-social-link inline-flex items-center gap-2 font-sans text-sm font-semibold uppercase tracking-wider text-deep-moss transition-colors hover:text-faded-olive"
+                      class="contact__panel-social-link inline-flex items-center gap-2 font-label text-sm font-semibold uppercase tracking-widest text-faded-olive transition-colors hover:text-deep-moss"
                       href="{{ esc_url($facebookUrl) }}"
                       rel="noopener noreferrer"
                       target="_blank">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                        <path d="M14 8h3V5h-3c-2.2 0-4 1.8-4 4v2H7v3h3v8h3v-8h3.2l.8-3H13v-2c0-.6.4-1 1-1Z" />
-                      </svg>
+                      @include('partials.figma-social-icon', [
+                          'variant' => 'facebook',
+                          'class' => 'size-6 shrink-0 text-faded-olive',
+                      ])
                       {{ __('Facebook', 'culvers') }}
                     </a>
                   @endif
@@ -212,7 +212,7 @@
           <div class="contact__field flex flex-col gap-2">
             <label
               for="{{ esc_attr($instanceId) }}-first"
-              class="contact__label font-sans text-xs font-semibold uppercase tracking-wider text-deep-moss">
+              class="contact__label font-label text-xs font-semibold uppercase tracking-widest text-deep-moss">
               {{ esc_html($firstNameLabel) }}
             </label>
             <input
@@ -222,7 +222,7 @@
               autocomplete="given-name"
               maxlength="100"
               required
-              class="contact__input h-[46px] w-full rounded-full border border-deep-moss/30 bg-white px-5 font-sans text-sm text-deep-moss placeholder:text-deep-moss/50 focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
+              class="contact__input h-[46px] w-full rounded-full border border-deep-moss/30 bg-white px-5 font-sans text-[15px] font-light leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
               placeholder="{{ esc_attr($firstNamePlaceholder) }}"
               x-model.trim="firstName"
               x-on:input="onFieldInput()"
@@ -232,7 +232,7 @@
           <div class="contact__field flex flex-col gap-2">
             <label
               for="{{ esc_attr($instanceId) }}-last"
-              class="contact__label font-sans text-xs font-semibold uppercase tracking-wider text-deep-moss">
+              class="contact__label font-label text-xs font-semibold uppercase tracking-widest text-deep-moss">
               {{ esc_html($lastNameLabel) }}
             </label>
             <input
@@ -242,7 +242,7 @@
               autocomplete="family-name"
               maxlength="100"
               required
-              class="contact__input h-[46px] w-full rounded-full border border-deep-moss/30 bg-white px-5 font-sans text-sm text-deep-moss placeholder:text-deep-moss/50 focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
+              class="contact__input h-[46px] w-full rounded-full border border-deep-moss/30 bg-white px-5 font-sans text-[15px] font-light leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
               placeholder="{{ esc_attr($lastNamePlaceholder) }}"
               x-model.trim="lastName"
               x-on:input="onFieldInput()"
@@ -252,7 +252,7 @@
           <div class="contact__field flex flex-col gap-2">
             <label
               for="{{ esc_attr($instanceId) }}-email"
-              class="contact__label font-sans text-xs font-semibold uppercase tracking-wider text-deep-moss">
+              class="contact__label font-label text-xs font-semibold uppercase tracking-widest text-deep-moss">
               {{ esc_html($emailLabel) }}
             </label>
             <input
@@ -263,7 +263,7 @@
               maxlength="200"
               required
               inputmode="email"
-              class="contact__input h-[46px] w-full rounded-full border border-deep-moss/30 bg-white px-5 font-sans text-sm text-deep-moss placeholder:text-deep-moss/50 focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
+              class="contact__input h-[46px] w-full rounded-full border border-deep-moss/30 bg-white px-5 font-sans text-[15px] font-light leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
               placeholder="{{ esc_attr($emailPlaceholder) }}"
               x-model.trim="email"
               x-on:input="onFieldInput()"
@@ -273,7 +273,7 @@
           <div class="contact__field flex flex-col gap-2">
             <label
               for="{{ esc_attr($instanceId) }}-reason"
-              class="contact__label font-sans text-xs font-semibold uppercase tracking-wider text-deep-moss">
+              class="contact__label font-label text-xs font-semibold uppercase tracking-widest text-deep-moss">
               {{ esc_html($reasonLabel) }}
             </label>
             @if($hasReasonChoices)
@@ -281,7 +281,7 @@
                 <select
                   id="{{ esc_attr($instanceId) }}-reason"
                   name="reason"
-                  class="contact__select h-[46px] w-full appearance-none rounded-full border border-deep-moss/30 bg-white px-5 pr-10 font-sans text-sm text-deep-moss focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
+                  class="contact__select h-[46px] w-full appearance-none rounded-full border border-deep-moss/30 bg-white px-5 pr-10 font-sans text-[15px] font-light leading-[1.32] text-deep-moss focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
                   x-model="reason"
                   x-on:change="onFieldInput()"
                   x-bind:disabled="loading">
@@ -302,7 +302,7 @@
                 type="text"
                 name="reason"
                 maxlength="100"
-                class="contact__input h-[46px] w-full rounded-full border border-deep-moss/30 bg-white px-5 font-sans text-sm text-deep-moss placeholder:text-deep-moss/50 focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
+                class="contact__input h-[46px] w-full rounded-full border border-deep-moss/30 bg-white px-5 font-sans text-[15px] font-light leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
                 placeholder="{{ esc_attr($reasonPlaceholder) }}"
                 x-model.trim="reason"
                 x-on:input="onFieldInput()"
@@ -313,7 +313,7 @@
           <div class="contact__field md:col-span-2 flex flex-col gap-2">
             <label
               for="{{ esc_attr($instanceId) }}-message"
-              class="contact__label font-sans text-xs font-semibold uppercase tracking-wider text-deep-moss">
+              class="contact__label font-label text-xs font-semibold uppercase tracking-widest text-deep-moss">
               {{ esc_html($messageLabel) }}
             </label>
             <textarea
@@ -322,7 +322,7 @@
               rows="6"
               maxlength="5000"
               required
-              class="contact__textarea min-h-[156px] w-full resize-y rounded-[18px] border border-deep-moss/30 bg-white px-5 py-4 font-sans text-sm text-deep-moss placeholder:text-deep-moss/50 focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
+              class="contact__textarea min-h-[156px] w-full resize-y rounded-[18px] border border-deep-moss/30 bg-white px-5 py-4 font-sans text-[15px] font-light leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
               placeholder="{{ esc_attr($messagePlaceholder) }}"
               x-model.trim="message"
               x-on:input="onFieldInput()"
