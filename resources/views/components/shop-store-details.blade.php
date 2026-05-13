@@ -37,16 +37,16 @@
     data-component-root
     data-shop-store-details>
     <div class="{{ LayoutShell::INNER_READABLE_960 }}">
-      {{-- Section H2: 64px desktop / 48px mobile (Component::sectionHeadingClasses). --}}
+      {{-- Section H2 — Figma shop single `51:6850`: Canela 58 / lh 84 (token: `text-5xl` → `md:text-6xl`). --}}
       <{{ $headingTag }} class="shop-store-details__heading {{ Component::sectionHeadingClasses('text-faded-olive', 'mb-10 text-center md:mb-12') }}">
         {{ esc_html($sectionHeading) }}
       </{{ $headingTag }}>
 
       <div
         class="{{ esc_attr($hasSocial ? 'grid gap-10 divide-y divide-faded-olive/15 lg:grid-cols-3 lg:gap-0 lg:divide-x lg:divide-y-0' : 'grid gap-10 divide-y divide-faded-olive/15 lg:grid-cols-2 lg:gap-0 lg:divide-x lg:divide-y-0') }}">
-        {{-- Column labels: Halyard Book 20 / lh 1.3 (shop single Opening Hours intros). Values:Book 24 / lh ~30 — match leasing-agents contact lines. --}}
+        {{-- Column titles: Figma H4 subtitle (`51:6900`, `51:6903`): Canela 32 lh 1.1 (`text-3xl`). Values (`51:6901`, `51:6904`): Halyard Book 24 lh 30. --}}
         <div class="flex flex-col items-center text-center lg:px-8 lg:pb-0 lg:pt-1 {{ $hasSocial ? '' : 'lg:pl-0' }}">
-          <p class="font-sans text-xl font-light leading-[1.3] text-faded-olive">{{ esc_html($contactLabel) }}</p>
+          <p class="font-heading text-3xl text-faded-olive">{{ esc_html($contactLabel) }}</p>
           @if($phone !== '')
             @php $telHref = preg_replace('/[^0-9+]/', '', str_replace("\xc2\xa0", ' ', $phone)); @endphp
             <p class="mt-3 font-sans text-2xl font-light leading-[30px] text-faded-olive">
@@ -60,7 +60,7 @@
         </div>
 
         <div class="flex flex-col items-center pt-10 text-center lg:px-8 lg:pt-1">
-          <p class="font-sans text-xl font-light leading-[1.3] text-faded-olive">{{ esc_html($addressLabel) }}</p>
+          <p class="font-heading text-3xl text-faded-olive">{{ esc_html($addressLabel) }}</p>
           @if($addressForDisplay !== '')
             <p class="mt-3 font-sans text-2xl font-light leading-[30px] text-faded-olive">
               {{ esc_html($addressForDisplay) }}</p>
@@ -69,7 +69,7 @@
 
         @if($hasSocial)
           <div class="flex flex-col items-center pt-10 text-center lg:px-8 lg:pt-1 lg:pr-0">
-            <p class="font-sans text-xl font-light leading-[1.3] text-faded-olive">{{ esc_html($socialLabel) }}</p>
+            <p class="font-heading text-3xl text-faded-olive">{{ esc_html($socialLabel) }}</p>
             @php
               $socialLinkClass =
                   'shop-store-details__social-link inline-flex items-center gap-2 font-label text-sm font-semibold uppercase '
