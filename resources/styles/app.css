@@ -406,3 +406,122 @@ a.footer-link--persistent-underline:hover,
 a.footer-link--persistent-underline:focus-visible {
   text-decoration-color: var(--color-lighter-cream);
 }
+
+/*
+ * Theme button CTAs rendered as <a class="btn …"> — same unlayered-vs-layered trap as
+ * footer links. WP 6 prints global styles (and `.wp-element-button` defaults) after our
+ * linked stylesheet; layered `.btn*` then loses on key longhands, so anchors read as a
+ * tight glowleaf highlight (e.g. shop “View all”).
+ *
+ * `@include('components.button')` adds `wp-element-button` on links. These rules sit in
+ * the unlayered bucket with `a` + classes so they beat `:root :where(.wp-element-button)`.
+ */
+a.btn {
+  display: inline-flex;
+  flex-shrink: 0;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: transparent;
+  background-color: transparent;
+  font-family: var(--font-label);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 28px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition-property: padding, background-color, color, border-color;
+  transition-duration: 150ms;
+  transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
+}
+
+a.btn:focus-visible {
+  outline: 2px solid var(--color-deep-moss);
+  outline-offset: 2px;
+}
+
+a.btn:disabled,
+a.btn[aria-disabled='true'] {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+a.btn-primary {
+  background-color: var(--color-brand-500);
+  color: var(--color-deep-moss);
+  padding-inline: 1.5rem;
+  padding-block: 0.5rem;
+}
+
+@media (hover: hover) {
+  a.btn-primary:hover {
+    padding-inline: 2rem;
+  }
+}
+
+a.btn-outline {
+  border-color: var(--color-glowleaf);
+  background-color: transparent;
+  color: var(--color-glowleaf);
+  padding-inline: 1.5rem;
+  padding-block: 0.5rem;
+}
+
+@media (hover: hover) {
+  a.btn-outline:hover {
+    background-color: var(--color-brand-500);
+    color: var(--color-deep-moss);
+    padding-inline: 2rem;
+  }
+}
+
+a.btn-dark {
+  background-color: var(--color-deep-moss);
+  color: var(--color-glowleaf);
+  padding-inline: 1.5rem;
+  padding-block: 0.5rem;
+}
+
+a.btn-dark:focus-visible {
+  outline-color: var(--color-glowleaf);
+}
+
+@media (hover: hover) {
+  a.btn-dark:hover {
+    padding-inline: 2rem;
+  }
+}
+
+a.btn-large {
+  padding-inline: 2rem;
+  padding-block: 0.625rem;
+}
+
+@media (hover: hover) {
+  a.btn-large:hover {
+    padding-inline: 2.75rem;
+  }
+}
+
+@media (width >= 48rem) {
+  a.btn-large {
+    padding-inline: 2.5rem;
+  }
+
+  @media (hover: hover) {
+    a.btn-large:hover {
+      padding-inline: 3.5rem;
+    }
+  }
+}
+
+a.btn-form {
+  min-height: 46px;
+  min-width: 120px;
+}

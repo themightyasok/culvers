@@ -7,7 +7,8 @@
   Required:
     'label' — visible button text (string).
   Optional:
-    'href'       — set to render an <a>; omit for a <button>.
+    'href'       — set to render an <a>; omit for a <button> (links also get
+                   `wp-element-button` so WP 6 global anchors do not strip `.btn` padding).
     'variant'    — 'primary' (default) | 'outline' | 'dark' (deep-moss fill,
                    glowleaf text — for use on pale-sage / light surfaces where
                    the brand-yellow primary doesn't carry contrast).
@@ -62,7 +63,8 @@
 @endphp
 
 @if(! empty($href))
-  <a href="{{ esc_url($href) }}" class="{{ esc_attr($classes) }}"{!! $attrHtml !!}>
+  {{-- WP 6 theme.json emits unlayered `a:link` / `.wp-element-button` globals after our bundle; layered `.btn` lost padding on anchors ("View all" on shop singles). `.wp-element-button` opts out of bare link element styles; see unlayered `a.btn` rules in resources/styles/app.css. --}}
+  <a href="{{ esc_url($href) }}" class="{{ esc_attr(trim($classes . ' wp-element-button')) }}"{!! $attrHtml !!}>
     {{ esc_html($label ?? '') }}
   </a>
 @else
