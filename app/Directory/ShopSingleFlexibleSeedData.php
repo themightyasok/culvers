@@ -40,10 +40,16 @@ final class ShopSingleFlexibleSeedData
 
         $title = $retailer['title'];
         $logoUrlRaw = $retailer['logo_url'] !== null ? trim((string) $retailer['logo_url']) : '';
-        // Figma MCP asset URLs expire; sideload fails in Local. Prefer text titles until logos are committed to `/resources/images/seeds/`.
-        $logoUrl = ($logoUrlRaw !== '' && ! str_contains($logoUrlRaw, 'figma.com/api/mcp/'))
-            ? $logoUrlRaw
-            : '';
+        /*
+         * Figma MCP logos expire in Local; authored seeds under `resources/images/seeds/` sideload cleanly.
+         * Accessorize ships a traced wordmark (from the same MCP export wired into uploads during directory populate).
+         */
+        $logoUrl = '';
+        if ($shopSlug === 'accessorize-london') {
+            $logoUrl = PagesFlexibleSeedData::seedAssetUrl('accessorize-logo.svg');
+        } elseif ($logoUrlRaw !== '' && ! str_contains($logoUrlRaw, 'figma.com/api/mcp/')) {
+            $logoUrl = $logoUrlRaw;
+        }
         $featuredFromDirectory = $retailer['featured_url'] !== null ? trim((string) $retailer['featured_url']) : '';
 
         /*
@@ -84,7 +90,8 @@ final class ShopSingleFlexibleSeedData
                 'hero_image_mobile' => ['url' => $heroMobile],
                 'hero_logo' => $logoUrl !== '' ? ['url' => $logoUrl] : null,
                 'hero_title_line' => $logoUrl !== '' ? '' : mb_strtoupper($title),
-                'hero_subtitle_line' => $shopSlug === 'accessorize-london' ? 'LONDON' : ($logoUrl !== '' ? '' : 'Culver Square'),
+                'hero_subtitle_line' => $logoUrl !== '' ? ''
+                    : ($shopSlug === 'accessorize-london' ? 'LONDON' : 'Culver Square'),
                 'hero_overlay_opacity' => 52,
             ],
             [
@@ -125,6 +132,7 @@ final class ShopSingleFlexibleSeedData
                 'acf_fc_layout' => 'shop_store_details',
                 'details_heading' => __('Store Details', 'culvers'),
                 'details_heading_level' => '2',
+                'details_show_social_column' => 1,
                 'details_contact_label' => __('Contact Number', 'culvers'),
                 'details_contact_phone' => '01452 302646',
                 'details_address_label' => __('Address', 'culvers'),

@@ -185,7 +185,7 @@
                       @include('components.button', [
                           'label' => $tab['cta_label'],
                           'href' => $tab['cta_url'],
-                          'class' => 'self-start',
+                          'button_extra_class' => 'self-start',
                       ])
                     </div>
                   @endif

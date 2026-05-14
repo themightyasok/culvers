@@ -105,8 +105,9 @@
           <h1 class="sr-only">{{ esc_html($titleLine !== '' ? $titleLine : get_the_title()) }}</h1>
           @php
               $heroLogoAlt = trim((string) ($logo['alt'] ?? ''));
+              // Large centre lockups (shop singles etc.): cap by viewport + px ceiling so logos read boldly on wide bands.
               $heroLogoImgArgs = [
-                  'class' => 'max-h-[min(35vw,200px)] w-auto max-w-full object-contain md:max-h-[min(28vw,260px)]',
+                  'class' => 'max-h-[min(60vw,400px)] w-auto max-w-full object-contain md:max-h-[min(52vw,520px)] lg:max-h-[min(50vw,640px)]',
                   'loading' => 'eager',
                   'decoding' => 'async',
               ];
@@ -117,7 +118,7 @@
                   $heroLogoImgArgs['role'] = 'presentation';
               }
           @endphp
-          <div class="flex max-w-[min(100%,52rem)] justify-center">
+          <div class="flex max-w-[min(100%,72rem)] justify-center px-2">
             {!! Image::render($logo, $heroLogoImgArgs) !!}
           </div>
         {{-- Image-hero H1 — same type ramp as hero-slider; wider max-width for wrapping; editorial `<br>` / newlines kept. --}}
@@ -125,11 +126,11 @@
           @php
               $titleSafe = preg_replace('#<br\s*/?>#i', "\n", $titleLine);
           @endphp
-          <h1 class="image-hero__title mx-auto max-w-[min(100%,60rem)] text-balance break-words font-heading text-5xl leading-[1.1] md:text-8xl md:leading-[1] lg:text-9xl {{ $titleToneClass }}">
+          <h1 class="image-hero__title mx-auto max-w-[min(100%,68rem)] text-balance break-words font-heading text-6xl leading-[1.05] md:text-9xl md:leading-[1] lg:text-[7.75rem] lg:leading-none {{ $titleToneClass }}">
             {!! nl2br(e($titleSafe)) !!}
           </h1>
         @else
-          <h1 class="image-hero__title mx-auto max-w-[min(100%,60rem)] text-balance break-words font-heading text-5xl leading-[1.1] md:text-8xl md:leading-[1] lg:text-9xl {{ $titleToneClass }}">
+          <h1 class="image-hero__title mx-auto max-w-[min(100%,68rem)] text-balance break-words font-heading text-6xl leading-[1.05] md:text-9xl md:leading-[1] lg:text-[7.75rem] lg:leading-none {{ $titleToneClass }}">
             {{ esc_html(get_the_title()) }}
           </h1>
         @endif

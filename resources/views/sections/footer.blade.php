@@ -215,8 +215,8 @@
                   target="_blank"
                   rel="noopener noreferrer">
                   @include('partials.figma-social-icon', [
-                      'variant' => 'instagram',
-                      'class' => 'size-6 shrink-0 overflow-visible text-white',
+                      'social_icon_variant' => 'instagram',
+                      'social_icon_class' => 'size-6 shrink-0 overflow-visible text-white',
                   ])
                   {{ __('Instagram', 'culvers') }}
                 </a>
@@ -228,8 +228,8 @@
                   target="_blank"
                   rel="noopener noreferrer">
                   @include('partials.figma-social-icon', [
-                      'variant' => 'facebook',
-                      'class' => 'size-6 shrink-0 text-white',
+                      'social_icon_variant' => 'facebook',
+                      'social_icon_class' => 'size-6 shrink-0 text-white',
                   ])
                   {{ __('Facebook', 'culvers') }}
                 </a>

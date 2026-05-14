@@ -19,10 +19,12 @@ namespace App\Directory\Cards;
  *     the partial skips the overlay markup entirely so reduced-motion targets
  *     never apply).
  *
- *   • `logoUrl` — image logo for the upper logo slot. Rendered as
- *     white (brightness-0 invert) on the moss tile. Empty string means "use
- *     `eyebrowText` as a centred lockup instead" — events / offers / news use
- *     this to surface the primary category as a textual eyebrow.
+ *   • `logoUrl` — image for the upper logo slot; may duplicate
+ *     `hoverPhotoUrl` when the factory falls back to the featured image.
+ *     When {@see $invertLogoForMossTile} is true, the partial applies
+ *     brightness/invert so raster marks read as white on moss. Empty string
+ *     means "use `eyebrowText` as a centred lockup instead" — events / offers /
+ *     news use this to surface the primary category as a textual eyebrow.
  *
  *   • `eyebrowText` — text fallback used when `logoUrl === ''`. Always
  *     populated with at least the post title so a card never goes blank.
@@ -67,6 +69,11 @@ final class DirectoryCardSpec
         public readonly string $subtitleText,
         public readonly array $categorySlugs,
         public readonly array $typeSlugs,
+        /**
+         * When true, moss-tile logos use brightness/invert Tailwind utilities so raster marks read as white.
+         * Disable when {@see $logoUrl} duplicates {@see $hoverPhotoUrl} (featured image reused in both slots).
+         */
+        public readonly bool $invertLogoForMossTile = false,
     ) {
     }
 

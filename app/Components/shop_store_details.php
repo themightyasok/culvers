@@ -55,11 +55,20 @@ return [
             ],
         ],
         'msg_social' => Component::sectionDivider(__('Social column (optional)', 'culvers')),
+        'details_show_social_column' => [
+            'type' => 'true_false',
+            'options' => [
+                'label' => __('Show social column', 'culvers'),
+                'instructions' => __('Turn off to use two columns even if Instagram URL or handle is filled.', 'culvers'),
+                'ui' => 1,
+                'default_value' => 1,
+            ],
+        ],
         'details_social_label' => [
             'type' => 'text',
             'options' => [
                 'label' => __('Column label', 'culvers'),
-                'instructions' => __('Leave Instagram fields blank to switch to a two-column layout.', 'culvers'),
+                'instructions' => __('Only shown when Social column is enabled and at least one Instagram field has value.', 'culvers'),
                 'default_value' => __('Social Media', 'culvers'),
             ],
         ],

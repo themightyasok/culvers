@@ -26,7 +26,10 @@
   $socialLabel = trim((string) ($c['details_social_label'] ?? __('Social Media', 'culvers')));
   $igUrl = trim((string) ($c['details_instagram_url'] ?? ''));
   $igHandle = trim((string) ($c['details_instagram_handle'] ?? ''));
-  $hasSocial = $igUrl !== '' || $igHandle !== '';
+
+  /** ACF `details_show_social_column` (`true_false`, default on). Unchecked ⇒ two-column layout regardless of IG fields. */
+  $explicitIncludeSocial = (bool) (int) ($c['details_show_social_column'] ?? 1);
+  $hasSocial = $explicitIncludeSocial && ($igUrl !== '' || $igHandle !== '');
 
   $hasDetails = $phone !== '' || $addressForDisplay !== '' || $hasSocial;
 @endphp
@@ -42,8 +45,9 @@
         {{ esc_html($sectionHeading) }}
       </{{ $headingTag }}>
 
+      {{-- Dividers aligned with opening-hours shop rows ({@see opening-hours.blade.php} `border-faded-olive/40`). --}}
       <div
-        class="{{ esc_attr($hasSocial ? 'grid gap-10 divide-y divide-faded-olive/15 lg:grid-cols-3 lg:gap-0 lg:divide-x lg:divide-y-0' : 'grid gap-10 divide-y divide-faded-olive/15 lg:grid-cols-2 lg:gap-0 lg:divide-x lg:divide-y-0') }}">
+        class="{{ esc_attr($hasSocial ? 'grid gap-10 divide-y divide-faded-olive/40 lg:grid-cols-3 lg:gap-0 lg:divide-x lg:divide-y-0' : 'grid gap-10 divide-y divide-faded-olive/40 lg:grid-cols-2 lg:gap-0 lg:divide-x lg:divide-y-0') }}">
         {{-- Column titles: Figma H4 subtitle (`51:6900`, `51:6903`): Canela 32 lh 1.1 (`text-3xl`). Values (`51:6901`, `51:6904`): Halyard Book 24 lh 30. --}}
         <div class="flex flex-col items-center text-center lg:px-8 lg:pb-0 lg:pt-1 {{ $hasSocial ? '' : 'lg:pl-0' }}">
           <p class="font-heading text-3xl text-faded-olive">{{ esc_html($contactLabel) }}</p>
@@ -84,16 +88,16 @@
                   rel="noopener noreferrer nofollow"
                   target="_blank">
                   @include('partials.figma-social-icon', [
-                      'variant' => 'instagram',
-                      'class' => 'size-6 shrink-0 text-faded-olive',
+                      'social_icon_variant' => 'instagram',
+                      'social_icon_class' => 'size-6 shrink-0 text-faded-olive',
                   ])
                   <span>{{ esc_html($igHandle !== '' ? $igHandle : $igUrl) }}</span>
                 </a>
               @else
                 <span class="inline-flex items-center gap-2 font-label text-sm font-semibold uppercase tracking-widest text-faded-olive">
                   @include('partials.figma-social-icon', [
-                      'variant' => 'instagram',
-                      'class' => 'size-6 shrink-0 text-faded-olive',
+                      'social_icon_variant' => 'instagram',
+                      'social_icon_class' => 'size-6 shrink-0 text-faded-olive',
                   ])
                   <span>{{ esc_html($igHandle) }}</span>
                 </span>

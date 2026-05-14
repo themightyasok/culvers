@@ -67,15 +67,13 @@
         @endif
 
         @if ($spec->hasLogoImage())
-          {{-- Image logo: brightness-0 invert renders the source PNG in
-               white on the moss tile so a single source asset works on
-               both light and dark contexts. --}}
+          {{-- Brand marks on moss: monochrome invert unless the slot reuses the storefront photo. Repair SVG-served-as-.jpg via `scripts/fix-shop-jpg-svg-logos.php`. --}}
           <div
             class="directory-shop-card__logo-slot pointer-events-none absolute inset-x-0 top-0 z-30 flex h-[213px] items-center justify-center px-8 {{ $logoFadeClasses }}">
             <img
               src="{{ esc_url($spec->logoUrl) }}"
               alt=""
-              class="max-h-[120px] w-auto max-w-[85%] object-contain brightness-0 invert"
+              class="max-h-[120px] w-auto max-w-[85%] object-contain {{ $spec->invertLogoForMossTile ? 'brightness-0 invert' : '' }}"
               loading="lazy"
               decoding="async" />
           </div>

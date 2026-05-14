@@ -38,7 +38,14 @@ final class DirectoryCardSpecFactory
 
     public static function forShop(int $postId): DirectoryCardSpec
     {
-        $logoUrl = self::imageFieldUrl($postId, 'shop_logo');
+        $logoFromField = self::imageFieldUrl($postId, 'shop_logo');
+        $hoverPhoto = self::featuredPhotoUrl($postId);
+        /*
+         * Figma MCP sideload historically stored SVG payloads with a `.jpg` extension — see
+         * `scripts/fix-shop-jpg-svg-logos.php`. Prefer the authored logo, but reuse the featured storefront
+         * so directory / related rows never ship an empty moss panel when the editor omits the logo field.
+         */
+        $logoUrl = $logoFromField !== '' ? $logoFromField : $hoverPhoto;
         $hoursRaw = self::stringField($postId, 'opening_hours_summary');
         $subtitle = $hoursRaw !== '' ? $hoursRaw : __('Opening hours TBC', 'culvers');
 
@@ -47,18 +54,21 @@ final class DirectoryCardSpecFactory
             permalink: (string) get_permalink($postId),
             title: (string) get_the_title($postId),
             sortTitle: self::sortTitle($postId),
-            hoverPhotoUrl: self::featuredPhotoUrl($postId),
+            hoverPhotoUrl: $hoverPhoto,
             logoUrl: $logoUrl,
             eyebrowText: (string) get_the_title($postId),
             subtitleText: $subtitle,
             categorySlugs: self::termSlugs($postId, 'culvers_shop_category'),
             typeSlugs: self::termSlugs($postId, 'culvers_shop_type'),
+            invertLogoForMossTile: $logoFromField !== '',
         );
     }
 
     public static function forEatDrink(int $postId): DirectoryCardSpec
     {
-        $logoUrl = self::imageFieldUrl($postId, 'eat_drink_logo');
+        $logoFromField = self::imageFieldUrl($postId, 'eat_drink_logo');
+        $hoverPhoto = self::featuredPhotoUrl($postId);
+        $logoUrl = $logoFromField !== '' ? $logoFromField : $hoverPhoto;
         $hoursRaw = self::stringField($postId, 'eat_drink_hours_summary');
         $subtitle = $hoursRaw !== '' ? $hoursRaw : __('Opening hours TBC', 'culvers');
 
@@ -67,12 +77,13 @@ final class DirectoryCardSpecFactory
             permalink: (string) get_permalink($postId),
             title: (string) get_the_title($postId),
             sortTitle: self::sortTitle($postId),
-            hoverPhotoUrl: self::featuredPhotoUrl($postId),
+            hoverPhotoUrl: $hoverPhoto,
             logoUrl: $logoUrl,
             eyebrowText: (string) get_the_title($postId),
             subtitleText: $subtitle,
             categorySlugs: self::termSlugs($postId, 'culvers_eat_drink_category'),
             typeSlugs: self::termSlugs($postId, 'culvers_eat_drink_type'),
+            invertLogoForMossTile: $logoFromField !== '',
         );
     }
 
@@ -99,6 +110,7 @@ final class DirectoryCardSpecFactory
             subtitleText: $employmentType,
             categorySlugs: self::termSlugs($postId, 'culvers_career_department'),
             typeSlugs: $typeSlugs,
+            invertLogoForMossTile: $logoUrl !== '',
         );
     }
 
@@ -217,13 +229,40 @@ final class DirectoryCardSpecFactory
         if (! function_exists('get_field')) {
             return '';
         }
-        $value = get_field($fieldName, $postId);
+
+        return self::acfImagePublicUrl(get_field($fieldName, $postId));
+    }
+
+    /**
+     * ACF image fields may store an attachment ID, an array `{url,ID}`, or (legacy) `{url}` only.
+     *
+     * @param mixed $value Raw {@see get_field} return value.
+     */
+    private static function acfImagePublicUrl(mixed $value): string
+    {
+        if (is_numeric($value) && (int) $value > 0) {
+            $u = wp_get_attachment_image_url((int) $value, 'full');
+
+            return is_string($u) && $u !== '' ? $u : '';
+        }
+
         if (! is_array($value)) {
             return '';
         }
-        $url = $value['url'] ?? null;
 
-        return is_string($url) ? $url : '';
+        $maybeUrl = $value['url'] ?? null;
+        if (is_string($maybeUrl) && trim($maybeUrl) !== '') {
+            return trim($maybeUrl);
+        }
+
+        $id = (int) ($value['ID'] ?? $value['id'] ?? 0);
+        if ($id > 0) {
+            $u = wp_get_attachment_image_url($id, 'full');
+
+            return is_string($u) && $u !== '' ? $u : '';
+        }
+
+        return '';
     }
 
     private static function featuredPhotoUrl(int $postId): string

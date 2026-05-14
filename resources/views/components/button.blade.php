@@ -14,7 +14,7 @@
                    the brand-yellow primary doesn't carry contrast).
     'size'       — 'default' (omit) | 'large' (hero/banner) | 'form' (46px row).
     'type'       — only for <button>: 'submit' | 'button' (default) | 'reset'.
-    'class'      — extra utilities appended to the class string.
+    'button_extra_class' — Tailwind extras appended onto the canonical `.btn*` spine only (never `$class`; BladeOne `@include`s share PHP scope across partials and would inherit unrelated values).
     'attributes' — assoc array merged onto the element (Alpine bindings,
                    data-* attributes, aria-*, x-on:*, etc.).
 
@@ -34,7 +34,7 @@
   /** @var string|null $variant */
   /** @var string|null $size */
   /** @var string|null $type */
-  /** @var string|null $class */
+  /** @var string|null $button_extra_class */
   /** @var array<string, scalar|null>|null $attributes */
 
   $allowedVariants = ['primary', 'outline', 'dark'];
@@ -50,7 +50,7 @@
       $baseClass .= ' btn-' . $size;
   }
 
-  $extraClass = trim($class ?? '');
+  $extraClass = trim((string) ($button_extra_class ?? ''));
   $classes = trim($baseClass . ($extraClass !== '' ? ' ' . $extraClass : ''));
 
   $attrHtml = '';
@@ -63,8 +63,8 @@
 @endphp
 
 @if(! empty($href))
-  {{-- WP 6 theme.json emits unlayered `a:link` / `.wp-element-button` globals after our bundle; layered `.btn` lost padding on anchors ("View all" on shop singles). `.wp-element-button` opts out of bare link element styles; see unlayered `a.btn` rules in resources/styles/app.css. --}}
-  <a href="{{ esc_url($href) }}" class="{{ esc_attr(trim($classes . ' wp-element-button')) }}"{!! $attrHtml !!}>
+  {{-- WP 6+: unlayered `a.wp-element-button.btn…` overrides live in {@see resources/styles/app.css} (anchors vs layered `@layer`). --}}
+  <a href="{{ esc_url($href) }}" class="{{ esc_attr(trim($classes . ' culvers-pill-anchor wp-element-button')) }}"{!! $attrHtml !!}>
     {{ esc_html($label ?? '') }}
   </a>
 @else

@@ -414,6 +414,7 @@ final class CptSinglesFlexibleSeedData
             array_merge(self::base('shop_store_details'), [
                 'details_heading' => __('Store Details', 'culvers'),
                 'details_heading_level' => '2',
+                'details_show_social_column' => 1,
                 'details_contact_label' => __('Contact Number', 'culvers'),
                 'details_contact_phone' => __('01206 562073', 'culvers'),
                 'details_address_label' => __('Address', 'culvers'),

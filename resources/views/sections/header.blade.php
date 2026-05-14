@@ -329,8 +329,8 @@
                             href="{{ esc_url($instagramUrl) }}"
                             rel="noopener noreferrer">
                             @include('partials.figma-social-icon', [
-                                'variant' => 'instagram',
-                                'class' => 'size-[14px] shrink-0 overflow-visible text-faded-olive',
+                                'social_icon_variant' => 'instagram',
+                                'social_icon_class' => 'size-[14px] shrink-0 overflow-visible text-faded-olive',
                             ])
                             {{ __('Instagram', 'culvers') }}
                           </a>
@@ -339,8 +339,8 @@
                             href="{{ esc_url($facebookUrl) }}"
                             rel="noopener noreferrer">
                             @include('partials.figma-social-icon', [
-                                'variant' => 'facebook',
-                                'class' => 'size-[15px] shrink-0 text-faded-olive',
+                                'social_icon_variant' => 'facebook',
+                                'social_icon_class' => 'size-[15px] shrink-0 text-faded-olive',
                             ])
                             {{ __('Facebook', 'culvers') }}
                           </a>
@@ -601,8 +601,8 @@
                     target="_blank"
                     rel="noopener noreferrer">
                     @include('partials.figma-social-icon', [
-                        'variant' => 'instagram',
-                        'class' => 'size-6 shrink-0 text-faded-olive',
+                        'social_icon_variant' => 'instagram',
+                        'social_icon_class' => 'size-6 shrink-0 text-faded-olive',
                     ])
                     <span class="min-w-0">{{ __('Instagram', 'culvers') }}</span>
                   </a>
@@ -610,8 +610,8 @@
                   <span
                     class="flex flex-1 cursor-not-allowed items-center justify-center gap-3 px-4 py-3 text-center font-label text-[14.5px] font-semibold uppercase leading-[29px] tracking-[0.08em] text-faded-olive/45">
                     @include('partials.figma-social-icon', [
-                        'variant' => 'instagram',
-                        'class' => 'size-6 shrink-0 opacity-50 text-faded-olive',
+                        'social_icon_variant' => 'instagram',
+                        'social_icon_class' => 'size-6 shrink-0 opacity-50 text-faded-olive',
                     ])
                     <span class="min-w-0">{{ __('Instagram', 'culvers') }}</span>
                   </span>
@@ -623,8 +623,8 @@
                     target="_blank"
                     rel="noopener noreferrer">
                     @include('partials.figma-social-icon', [
-                        'variant' => 'facebook',
-                        'class' => 'size-6 shrink-0 text-faded-olive',
+                        'social_icon_variant' => 'facebook',
+                        'social_icon_class' => 'size-6 shrink-0 text-faded-olive',
                     ])
                     <span class="min-w-0">{{ __('Facebook', 'culvers') }}</span>
                   </a>
@@ -632,8 +632,8 @@
                   <span
                     class="flex flex-1 cursor-not-allowed items-center justify-center gap-3 px-4 py-3 text-center font-label text-[14.5px] font-semibold uppercase leading-[29px] tracking-[0.08em] text-faded-olive/45">
                     @include('partials.figma-social-icon', [
-                        'variant' => 'facebook',
-                        'class' => 'size-6 shrink-0 opacity-50 text-faded-olive',
+                        'social_icon_variant' => 'facebook',
+                        'social_icon_class' => 'size-6 shrink-0 opacity-50 text-faded-olive',
                     ])
                     <span class="min-w-0">{{ __('Facebook', 'culvers') }}</span>
                   </span>

@@ -391,6 +391,100 @@ final class HomepageFlexibleAcfAttach
     }
 
     /**
+     * Resolve a public theme asset URL ({@see PagesFlexibleSeedData::seedAssetUrl}) to an absolute
+     * filesystem path under {@see get_template_directory()}.
+     *
+     * HTTP sideload ({@see download_url}) often fails against Local hostnames/TLS loops; copying from
+     * disk keeps hero logos and other seeded artwork reliable.
+     */
+    private static function themeDirectoryReadablePathFromPublicUrl(string $url): ?string
+    {
+        if (! function_exists('get_template_directory')) {
+            return null;
+        }
+
+        $pathPart = wp_parse_url($url, PHP_URL_PATH);
+        if (! is_string($pathPart) || $pathPart === '') {
+            return null;
+        }
+
+        $slug = basename(get_template_directory());
+        $needle = '/themes/' . $slug . '/';
+        $pos = strpos($pathPart, $needle);
+        if ($pos === false) {
+            return null;
+        }
+
+        $withinTheme = substr($pathPart, $pos + strlen($needle));
+        if ($withinTheme === '' || str_contains($withinTheme, '..')) {
+            return null;
+        }
+
+        $absolute = path_join(get_template_directory(), str_replace('\\', '/', $withinTheme));
+
+        return is_readable($absolute) && is_file($absolute) ? $absolute : null;
+    }
+
+    /**
+     * Sideload a readable local file into the Media Library (theme seeds, etc.).
+     */
+    private static function attachmentIdFromReadableLocalPath(string $sourceUrlCacheKey, string $absolutePath): int
+    {
+        require_once ABSPATH . 'wp-admin/includes/file.php';
+        require_once ABSPATH . 'wp-admin/includes/media.php';
+        require_once ABSPATH . 'wp-admin/includes/image.php';
+
+        if (! is_readable($absolutePath) || ! is_file($absolutePath)) {
+            self::cliWarn('Local seed path not readable — ' . $absolutePath);
+
+            return 0;
+        }
+
+        $baseName = sanitize_file_name(basename($absolutePath));
+        if ($baseName === '') {
+            self::cliWarn('Invalid seed basename for ' . $absolutePath);
+
+            return 0;
+        }
+
+        $tmp = wp_tempnam($baseName);
+        if (! $tmp) {
+            self::cliWarn('wp_tempnam failed for sideload cache key ' . $sourceUrlCacheKey);
+
+            return 0;
+        }
+
+        if (! @copy($absolutePath, $tmp)) {
+            self::cliWarn('copy failed seeding attachment from ' . $absolutePath);
+            @unlink($tmp);
+
+            return 0;
+        }
+
+        $file_array = [
+            'name' => $baseName,
+            'tmp_name' => $tmp,
+        ];
+
+        $attach_id = media_handle_sideload($file_array, 0);
+
+        @unlink($tmp);
+
+        if (is_wp_error($attach_id)) {
+            self::cliWarn(
+                'media_handle_sideload failed for local seed '
+                . $absolutePath . ' — ' . $attach_id->get_error_message()
+            );
+
+            return 0;
+        }
+
+        $id = (int) $attach_id;
+
+        return $id > 0 ? $id : 0;
+    }
+
+    /**
      * Download once per URL (per process), sideload as attachment.
      */
     private static function attachmentIdFromUrl(string $url): int
@@ -402,6 +496,14 @@ final class HomepageFlexibleAcfAttach
         require_once ABSPATH . 'wp-admin/includes/file.php';
         require_once ABSPATH . 'wp-admin/includes/media.php';
         require_once ABSPATH . 'wp-admin/includes/image.php';
+
+        $localPath = self::themeDirectoryReadablePathFromPublicUrl($url);
+        if ($localPath !== null) {
+            $fromDisk = self::attachmentIdFromReadableLocalPath($url, $localPath);
+            self::$urlCache[$url] = $fromDisk;
+
+            return $fromDisk > 0 ? $fromDisk : 0;
+        }
 
         $tmp = download_url($url, 120);
         if (is_wp_error($tmp)) {

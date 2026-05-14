@@ -38,6 +38,14 @@ $templateResolver = TemplateResolver::getInstance();
     @endphp
     @foreach($components as $component)
       @php
+        /*
+         * BladeOne merges `runChild()` / `@include` array keys into one long-lived PHP scope for the whole
+         * view tree. Earlier flexible rows occasionally bind generic names like `class` / `href` / `label`
+         * (icon partials, etc.); clearing them between rows guarantees the next layout cannot accidentally
+         * reuse stray values — e.g. `size-*` Tailwind slipping onto unrelated CTAs in a later band.
+         */
+        unset($class, $href, $label, $button_extra_class, $attributes);
+
         $layout = $component['acf_fc_layout'] ?? '';
         $component = $component + ComponentDefaults::get($layout);
         $rawTone = $component['body_text_tone'] ?? TailwindColors::defaultBodyTextToneForLayout($layout);
