@@ -2,7 +2,9 @@
 
 /**
  * Writes the full shop-detail flexible stack into the database for one `culvers_shop` post
- * (same workflow as homepage-populate-flexible / shops-directory-populate).
+ * (same workflow as homepage-populate-flexible / shops-directory-populate). Stack matches
+ * {@see ShopSingleFlexibleSeedData::fullStackForSlug()} (hero → intro → optional split →
+ * store details → opening hours + centre graphics → centre map → four related shops).
  *
  * Prerequisites: retailers seeded (`scripts/shops-directory-populate.php`) so slug + imagery URLs resolve.
  *

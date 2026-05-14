@@ -49,7 +49,9 @@ final class ShopFlexibleDefaults
     }
 
     /**
-     * Developer-release order: hero → intro → split highlight → store details → opening hours → related shops.
+     * Developer-release order: hero → intro → split highlight → store details → opening hours →
+     * centre map → related shops. Authors run {@see scripts/shop-single-populate-flexible.php}
+     * to hydrate imagery and copy; placeholders keep registry keys apparent in ACF UI.
      *
      * @return list<array<string, mixed>>
      */
@@ -66,6 +68,7 @@ final class ShopFlexibleDefaults
                 'background_color' => '#ffffff',
                 'component_width' => 'full',
             ],
+            ['acf_fc_layout' => 'centre_map'],
             ['acf_fc_layout' => 'shop_related_shops'],
         ];
     }

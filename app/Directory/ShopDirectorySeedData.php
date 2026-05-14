@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Directory;
 
+use App\Helpers\PagesFlexibleSeedData;
+
 /**
  * Shopping Directory demo retailers — imagery sourced from Figma Developer Release frame
  * “Culver Square - Shopping Directory Page - Filter Hidden Window (4 grid)” (node 51:5152),
@@ -65,8 +67,15 @@ final class ShopDirectorySeedData
 
     private const LOGO_WYE = 'https://www.figma.com/api/mcp/asset/d9b1f50e-93ec-4f3a-867f-195750e5b8f6';
 
-    /** Hero backdrop — directory hero image from same frame (shopping hero band). */
-    public const HERO_DESKTOP_IMAGE = 'https://www.figma.com/api/mcp/asset/36b1d69e-dd63-4d37-8cde-6be9a8d42cb2';
+    /**
+     * Fallback photograph for shop-detail hero + split highlight when a per-retailer storefront
+     * still is not set in {@see storefrontDemoPhoto()}. Reuses the archived shopping‑directory
+     * hero crop committed with the developer handover ({@see PagesFlexibleSeedData} seed library).
+     */
+    public static function heroDesktopImageUrl(): string
+    {
+        return PagesFlexibleSeedData::seedAssetUrl('archive-shops-hero.jpg');
+    }
 
     /**
      * @return list<array{

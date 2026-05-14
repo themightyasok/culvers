@@ -5,17 +5,24 @@ declare(strict_types=1);
 namespace App\Directory;
 
 use App\Constants\ComponentTypes;
+use App\Helpers\PagesFlexibleSeedData;
+use App\Helpers\TailwindColors;
 
 /**
  * Canonical flexible `components` payloads for `culvers_shop` singles — same pattern as
  * {@see HomepageFlexibleSeedData}: URLs wrapped as `['url' => …]` for {@see HomepageFlexibleAcfAttach}.
+ *
+ * Target layout follows the shop-detail frame in Figma Developer Release (~51:6679): hero imagery,
+ * static split highlight (tabs off when split is present), store details,
+ * opening hours with side illustrations, centre map, then four related shops.
  *
  * @see scripts/shop-single-populate-flexible.php
  */
 final class ShopSingleFlexibleSeedData
 {
     /**
-     * Full designer stack with populated fields (hero → intro → split → details → hours → related).
+     * Full designer stack with populated fields
+     * (hero → intro → split → details → hours → centre map → related ×4).
      *
      * @return list<array<string, mixed>>
      */
@@ -32,11 +39,32 @@ final class ShopSingleFlexibleSeedData
         }
 
         $title = $retailer['title'];
-        $logoUrl = $retailer['logo_url'] !== null ? trim($retailer['logo_url']) : '';
-        $featuredUrl = $retailer['featured_url'] !== null ? trim($retailer['featured_url']) : '';
+        $logoUrlRaw = $retailer['logo_url'] !== null ? trim((string) $retailer['logo_url']) : '';
+        // Figma MCP asset URLs expire; sideload fails in Local. Prefer text titles until logos are committed to `/resources/images/seeds/`.
+        $logoUrl = ($logoUrlRaw !== '' && ! str_contains($logoUrlRaw, 'figma.com/api/mcp/'))
+            ? $logoUrlRaw
+            : '';
+        $featuredFromDirectory = $retailer['featured_url'] !== null ? trim((string) $retailer['featured_url']) : '';
+
+        /*
+         * Per-retailer storefront stills intentionally return empty from {@see ShopDirectorySeedData::storefrontDemoPhoto}
+         * until MCP exports land in git. Singles still ship with full-width photography for hero + split (51:6679 parity),
+         * so reuse the archived shopping‑directory hero backdrop ({@see ShopDirectorySeedData::heroDesktopImageUrl()})
+         * whenever the directory payload has nothing stronger.
+         */
+        $promoBackdrop = $featuredFromDirectory !== ''
+            ? $featuredFromDirectory
+            : ShopDirectorySeedData::heroDesktopImageUrl();
 
         $heroWide = self::detailHeroUrl($shopSlug);
         $heroMobile = self::detailHeroMobileUrl($shopSlug);
+
+        if ($heroWide === '') {
+            $heroWide = $promoBackdrop;
+        }
+        if ($heroMobile === '') {
+            $heroMobile = $promoBackdrop;
+        }
 
         $relatedIds = self::relatedShopIdsExcluding(
             $shopSlug,
@@ -52,16 +80,16 @@ final class ShopSingleFlexibleSeedData
         $rows = [
             [
                 'acf_fc_layout' => 'image_hero',
-                'hero_image' => $heroWide !== '' ? ['url' => $heroWide] : null,
-                'hero_image_mobile' => $heroMobile !== '' ? ['url' => $heroMobile] : null,
+                'hero_image' => ['url' => $heroWide],
+                'hero_image_mobile' => ['url' => $heroMobile],
                 'hero_logo' => $logoUrl !== '' ? ['url' => $logoUrl] : null,
                 'hero_title_line' => $logoUrl !== '' ? '' : mb_strtoupper($title),
                 'hero_subtitle_line' => $shopSlug === 'accessorize-london' ? 'LONDON' : ($logoUrl !== '' ? '' : 'Culver Square'),
-                'hero_overlay_opacity' => $heroWide !== '' ? 52 : 0,
+                'hero_overlay_opacity' => 52,
             ],
             [
                 'acf_fc_layout' => 'shop_intro_block',
-                'intro_body' => self::introWysiwyg($title),
+                'intro_body' => self::introWysiwyg($title, $shopSlug),
                 'intro_cta_label' => $brandUrl !== ''
                     ? sprintf(__('Visit %s online', 'culvers'), $title)
                     : '',
@@ -69,30 +97,28 @@ final class ShopSingleFlexibleSeedData
             ],
         ];
 
-        // Only emit the split-highlight section for shops with a real Figma
-        // photo asset. Skipping it (rather than faking a placeholder) keeps
-        // the page honest to the design library — the singles for shops
-        // without a Figma export render hero → intro → details → hours →
-        // related, which still tells a complete story.
-        if ($featuredUrl !== '') {
-            $rows[] = [
-                'acf_fc_layout' => 'shop_split_highlight',
-                'split_kicker' => __('New season', 'culvers'),
-                'split_headline' => __('Layers you will wear on repeat', 'culvers'),
-                'split_body' => '<p>'
-                    . sprintf(
-                        esc_html__(
-                            'Discover what\'s new at %s — styled for everyday Culver Square visits.',
-                            'culvers'
-                        ),
-                        esc_html($title)
-                    )
-                    . '</p>',
-                'split_cta_label' => __('Plan your visit', 'culvers'),
-                'split_cta_url' => $archive !== '' ? $archive : '/shops/',
-                'split_image' => ['url' => $featuredUrl],
-            ];
-        }
+        /*
+         * Two-column highlight — static mode only (Greggs parity in {@see CptSinglesFlexibleSeedData::greggs}).
+         * Image column prefers directory storefront when present; otherwise the same hero panorama as banner.
+         */
+        $rows[] = [
+            'acf_fc_layout' => 'shop_split_highlight',
+            'split_use_tabs' => false,
+            'split_kicker' => __('New season', 'culvers'),
+            'split_headline' => __('Layers you will wear on repeat', 'culvers'),
+            'split_body' => '<p>'
+                . sprintf(
+                    esc_html__(
+                        'Discover what\'s new at %s — styled for everyday Culver Square visits.',
+                        'culvers'
+                    ),
+                    esc_html($title)
+                )
+                . '</p>',
+            'split_cta_label' => __('Plan your visit', 'culvers'),
+            'split_cta_url' => $archive,
+            'split_image' => ['url' => $promoBackdrop],
+        ];
 
         $rows = array_merge($rows, [
             [
@@ -107,18 +133,22 @@ final class ShopSingleFlexibleSeedData
                 'details_instagram_url' => $shopSlug === 'accessorize-london' ? 'https://www.instagram.com/accessorize/' : '',
                 'details_instagram_handle' => $shopSlug === 'accessorize-london' ? '@accessorize' : '',
             ],
-            [
-                'acf_fc_layout' => 'opening_hours',
+            /*
+             * Line art + hours pattern is shared with top-level seeded pages (@see PagesFlexibleSeedData::openingHoursRow).
+             * Coerce typography for the white band the same way as other shop-intro surfaces.
+             */
+            array_merge(PagesFlexibleSeedData::openingHoursRow(), [
+                'body_text_tone' => TailwindColors::DEFAULT_LIGHT_BAND_BODY_TEXT_TONE,
                 'hours_heading' => __('Opening hours', 'culvers'),
                 'hours_heading_level' => '2',
                 'hours_subheading' => __('Typical centre hours — confirm before travelling.', 'culvers'),
                 'hours_body' => '',
-                'hours_rows' => self::defaultHoursRepeater(),
                 'hours_footnote' => __('Hours may change on bank holidays.', 'culvers'),
                 'background_type' => ComponentTypes::BACKGROUND_COLOR,
                 'background_color' => '#ffffff',
                 'component_width' => 'full',
-            ],
+            ]),
+            PagesFlexibleSeedData::centreMapRow(),
             [
                 'acf_fc_layout' => 'shop_related_shops',
                 'related_heading' => __('More shops you might enjoy', 'culvers'),
@@ -157,56 +187,39 @@ final class ShopSingleFlexibleSeedData
     }
 
     /**
-     * Per-shop hero photo URL (desktop / mobile).
-     *
-     * The Figma developer release only ships a real hero photograph for H&M
-     * (the centre's anchor tile, exposed via {@see ShopDirectorySeedData::HERO_DESKTOP_IMAGE}
-     * and {@see ShopDirectorySeedData::FEAT_HM_STOREFRONT}). Every other shop
-     * uses its logo on a brand-coloured deep-moss band — image_hero falls back
-     * to that styling when `hero_image` is empty and `hero_logo` is present.
-     *
-     * Returning an empty string here intentionally drops the prior random
-     * `picsum.photos` placeholders so we never ship imagery that isn't from
-     * the Figma file. To wire up a real Figma hero export per shop, add a
-     * match arm and reference the local seed asset (or a Figma MCP URL).
+     * Per-shop hero photo URL reserved for bespoke exports (currently unused — hero resolves via {@see ShopDirectorySeedData::heroDesktopImageUrl()}).
      */
     private static function detailHeroUrl(string $slug): string
     {
-        return match ($slug) {
-            'h-m', 'hm' => ShopDirectorySeedData::HERO_DESKTOP_IMAGE,
-            default => '',
-        };
+        unset($slug);
+
+        return '';
     }
 
     private static function detailHeroMobileUrl(string $slug): string
     {
-        return match ($slug) {
-            'h-m', 'hm' => ShopDirectorySeedData::HERO_DESKTOP_IMAGE,
-            default => '',
-        };
+        unset($slug);
+
+        return '';
     }
 
-    /**
-     * @return list<array{day_label: string, time_range: string, weekday_highlight: string}>
-     */
-    private static function defaultHoursRepeater(): array
+    private static function introWysiwyg(string $shopTitle, string $shopSlug): string
     {
-        return [
-            ['day_label' => __('Monday', 'culvers'), 'time_range' => '9:00am – 5:30pm', 'weekday_highlight' => 'mon'],
-            ['day_label' => __('Tuesday', 'culvers'), 'time_range' => '9:00am – 5:30pm', 'weekday_highlight' => 'tue'],
-            ['day_label' => __('Wednesday', 'culvers'), 'time_range' => '9:00am – 5:30pm', 'weekday_highlight' => 'wed'],
-            ['day_label' => __('Thursday', 'culvers'), 'time_range' => '9:00am – 5:30pm', 'weekday_highlight' => 'thu'],
-            ['day_label' => __('Friday', 'culvers'), 'time_range' => '9:00am – 5:30pm', 'weekday_highlight' => 'fri'],
-            ['day_label' => __('Saturday', 'culvers'), 'time_range' => '9:00am – 6:00pm', 'weekday_highlight' => 'sat'],
-            ['day_label' => __('Sunday', 'culvers'), 'time_range' => '10:30am – 4:30pm', 'weekday_highlight' => 'sun'],
-        ];
-    }
+        if ($shopSlug === 'accessorize-london') {
+            $lead = sprintf(
+                esc_html__(
+                    '%s brings playful accessories and thoughtful gifting to Culver Square — perfect for finishing an outfit or picking up a treat.',
+                    'culvers'
+                ),
+                esc_html($shopTitle)
+            );
 
-    private static function introWysiwyg(string $shopTitle): string
-    {
+            return '<p>' . $lead . '</p>';
+        }
+
         $lead = sprintf(
             esc_html__(
-                '%s brings playful accessories and thoughtful gifting to Culver Square — perfect for finishing an outfit or picking up a treat.',
+                '%s is part of the Culver Square line-up — plan your visit to explore stores, cafés and more in Colchester.',
                 'culvers'
             ),
             esc_html($shopTitle)
