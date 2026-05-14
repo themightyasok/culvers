@@ -273,12 +273,12 @@
                   role="region"
                   aria-label="{{ esc_attr($branch['title']) }}">
                   <div
-                    class="mega-nav__panel-inner mx-auto max-h-[min(85vh,560px)] w-full max-w-8xl overflow-y-auto rounded-2xl border border-light-brown/25 bg-lighter-cream px-5 py-8 shadow-lg md:px-8 lg:px-10 lg:pb-10 lg:pt-10">
-                    {{-- Figma mega panel: ~40% text / ~60% preview; heading row is title + arrow flush right in the text column. --}}
+                    class="mega-nav__panel-inner mx-auto w-full max-w-8xl overflow-visible rounded-2xl border border-light-brown/25 bg-lighter-cream px-5 py-8 shadow-lg md:px-8 lg:px-10 lg:pb-10 lg:pt-10">
+                    {{-- Figma mega panel: ~40% text / ~60% preview; no inner scroll — panel grows with links (Sheet: dropdowns stay scrollbar-free). --}}
                     <div
                       class="flex flex-col gap-10 lg:grid lg:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] lg:items-stretch lg:gap-x-12 lg:gap-y-0 xl:gap-x-16">
                       {{-- Left column: list fills from top; socials pin to panel bottom (~Figma 72:4994 inset). --}}
-                      <div class="flex min-h-0 w-full flex-col lg:h-full lg:min-h-0 lg:justify-between">
+                      <div class="flex min-h-0 w-full flex-col lg:justify-between">
                         <div class="flex min-w-0 flex-col">
                           <div class="flex w-full items-center justify-between gap-4 lg:gap-6">
                           <h2 class="min-w-0 flex-1 font-heading text-4xl text-faded-olive">
@@ -346,7 +346,7 @@
                           </a>
                         </div>
                       </div>
-                      <div class="mega-nav__preview-col flex min-h-0 min-w-0 w-full lg:h-full lg:items-stretch">
+                      <div class="mega-nav__preview-col flex min-h-0 min-w-0 w-full lg:items-stretch">
                         <div class="relative aspect-[8/5] w-full overflow-hidden rounded-md bg-dustleaf/25">
                           <img
                             alt=""

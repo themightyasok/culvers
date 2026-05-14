@@ -53,7 +53,13 @@
     <a
       href="{{ esc_url($spec->permalink) }}"
       class="group directory-shop-card__link relative block w-full max-w-none overflow-hidden rounded-[11px] outline-none culvers-focus-ring">
-      <div class="relative h-[294px] w-full bg-dustleaf">
+      {{--
+        Moss tile: outer height is fixed at 294px so grid tiles stay uniform. The rule is not
+        at a fixed y-position: the upper band is flex-1 (min-h-0) and shrinks so the lower band
+        can grow upward when the title wraps; eyebrow/logo stays centred in the band that remains.
+        Title + subtitle stack in normal flow (no absolute overlap).
+      --}}
+      <div class="relative flex h-[294px] w-full flex-col overflow-hidden bg-dustleaf">
         @if ($spec->hasHoverPhoto())
           <img
             src="{{ esc_url($spec->hoverPhotoUrl) }}"
@@ -69,7 +75,7 @@
         @if ($spec->hasLogoImage())
           {{-- Brand marks on moss: monochrome invert unless the slot reuses the storefront photo. Repair SVG-served-as-.jpg via `scripts/fix-shop-jpg-svg-logos.php`. --}}
           <div
-            class="directory-shop-card__logo-slot pointer-events-none absolute inset-x-0 top-0 z-30 flex h-[213px] items-center justify-center px-8 {{ $logoFadeClasses }}">
+            class="directory-shop-card__logo-slot pointer-events-none relative z-30 flex min-h-0 flex-1 items-center justify-center px-8 {{ $logoFadeClasses }}">
             <img
               src="{{ esc_url($spec->logoUrl) }}"
               alt=""
@@ -80,24 +86,27 @@
         @else
           {{-- Text eyebrow lockup: events / offers / news / "no-logo" shops. --}}
           <div
-            class="directory-shop-card__logo-slot pointer-events-none absolute inset-x-0 top-0 z-30 flex h-[213px] items-center justify-center px-6 {{ $logoFadeClasses }}">
-            <span class="text-center font-heading text-2xl font-normal text-white">{{ esc_html($spec->eyebrowText) }}</span>
+            class="directory-shop-card__logo-slot pointer-events-none relative z-30 flex min-h-0 flex-1 items-center justify-center px-6 {{ $logoFadeClasses }}">
+            <span class="text-center font-heading text-2xl font-normal leading-tight text-white">{{ esc_html($spec->eyebrowText) }}</span>
           </div>
         @endif
 
-        <div class="pointer-events-none absolute left-0 right-0 top-[213px] z-40 h-px bg-white" aria-hidden="true"></div>
+        <div class="pointer-events-none relative z-40 h-px w-full shrink-0 bg-white" aria-hidden="true"></div>
 
-        {{-- Figma directory card title: 22 px Halyard Display Medium, snapped to text-2xl (24 px).
-             `!font-sans` is important because the base layer `h1–h6 { font-heading }` rule
-             otherwise wins over a plain `font-sans` utility in Tailwind v4. --}}
-        <h2 class="absolute left-[23px] top-[233px] z-40 max-w-[calc(100%-46px)] !font-sans text-2xl font-medium leading-tight text-white">
-          {{ $spec->title }}
-        </h2>
-        @if ($spec->hasSubtitle())
-          <p class="absolute left-[23px] top-[263px] z-40 max-w-[calc(100%-46px)] font-sans text-sm font-light text-white">
-            {{ esc_html($spec->subtitleText) }}
-          </p>
-        @endif
+        {{-- Bottom band height follows copy; top band absorbs the remainder so the outer stays 294px. --}}
+        <div class="relative z-40 flex shrink-0 flex-col gap-2 px-[23px] pb-5 pt-5">
+          {{-- Figma directory card title: 22 px Halyard Display Medium, snapped to text-2xl (24 px).
+               `!font-sans` is important because the base layer `h1–h6 { font-heading }` rule
+               otherwise wins over a plain `font-sans` utility in Tailwind v4. --}}
+          <h2 class="max-w-none !font-sans text-2xl font-medium leading-tight text-white">
+            {{ $spec->title }}
+          </h2>
+          @if ($spec->hasSubtitle())
+            <p class="max-w-none font-sans text-sm font-light text-white">
+              {{ esc_html($spec->subtitleText) }}
+            </p>
+          @endif
+        </div>
       </div>
     </a>
   </article>

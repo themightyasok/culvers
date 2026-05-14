@@ -8,8 +8,9 @@ namespace App\Directory\Cards;
  * Flat presentation contract for a single directory tile (Shop / Eat & Drink /
  * Career / Event / Offer / News). One canonical Blade partial
  * ({@see resources/views/partials/directory-card.blade.php}) consumes this and
- * renders the 294px moss tile every directory archive shares — the per-CPT
- * resolvers in {@see DirectoryCardSpecFactory} are the only place CPT-specific
+ * renders the fixed 294px moss tile used on directory archives: the upper band and
+ * title/subtitle band split available height internally (rule moves up when copy wraps).
+ * The per-CPT resolvers in {@see DirectoryCardSpecFactory} are the only place CPT-specific
  * field names live.
  *
  * Field semantics (visual mapping into the tile):

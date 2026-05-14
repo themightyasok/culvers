@@ -408,6 +408,21 @@ a.footer-link--persistent-underline:focus-visible {
 }
 
 /*
+ * Footer “View on map” (51:5147) — unlayered so WP theme.json / global-styles link colours
+ * never inherit cream/white over the intended Glowleaf arrow row.
+ */
+a.footer-getting-here-map-link {
+  color: var(--color-glowleaf);
+  border-bottom-color: var(--color-glowleaf);
+}
+
+a.footer-getting-here-map-link:hover,
+a.footer-getting-here-map-link:focus-visible {
+  color: var(--color-lighter-cream);
+  border-bottom-color: var(--color-lighter-cream);
+}
+
+/*
  * Theme button CTAs rendered as <a class="btn …"> — same unlayered-vs-layered trap as
  * footer links. WP 6 prints global styles (and `.wp-element-button` defaults) after our
  * linked stylesheet; layered `.btn*` then loses on key longhands, so anchors read as a

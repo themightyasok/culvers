@@ -170,16 +170,16 @@
             </div>
           @endif
           @if($mapUrl !== '')
-            {{-- Figma 51:5147: SemiBold 14px, 1px tracking, underline is one rule under label + icon (`ab99cd24-795f-472c-bb05-6417de243aba` path, −45°). --}}
+            {{--
+              Figma 51:5147: glowleaf label + icon, 2 px underline hugs text+arrow only (`w-max self-start`).
+              Explicit border/text colours beat parent `text-light-cream` / flex stretch making a full‑width rule.
+            --}}
             <a
-              class="group mt-6 inline-flex w-fit flex-col items-start text-glowleaf transition-colors hover:text-lighter-cream"
               href="{{ esc_url($mapUrl) }}"
+              class="footer-getting-here-map-link mt-6 inline-flex max-w-full w-max shrink-0 self-start flex-nowrap items-center gap-2 border-b-2 border-glowleaf pb-0.5 font-label text-sm font-semibold uppercase leading-[1.3] tracking-[1px] text-glowleaf transition-colors hover:border-lighter-cream hover:text-lighter-cream"
               @if(str_starts_with($mapUrl, 'http')) target="_blank" rel="noopener noreferrer" @endif>
-              <span
-                class="inline-flex items-center gap-0.5 border-b-2 border-current pb-0.5 font-label text-sm font-semibold uppercase leading-[1.3] tracking-[1px]">
-                {{ esc_html(FooterCustomizer::gettingHereMapLabel()) }}
-                @include('partials.footer-external-arrow-figma')
-              </span>
+              {{ esc_html(FooterCustomizer::gettingHereMapLabel()) }}
+              @include('partials.footer-external-arrow-figma')
               @if(str_starts_with($mapUrl, 'http'))
                 <span class="sr-only">{{ __('(opens in new tab)', 'culvers') }}</span>
               @endif
