@@ -111,16 +111,18 @@
            <img> is absolutely positioned (out of flow). Flex would leave the media cell at min-height only. --}}
       <div
         class="grid overflow-hidden rounded-[10px] bg-faded-olive shadow-sm lg:min-h-[597px] lg:grid-cols-12 lg:items-stretch">
-        {{-- Copy column --}}
+        {{-- Copy column — always center on cross axis to match Figma 51:7158 (tabs row + heading
+             + body + CTA all sit on the panel's vertical centre line, with or without tabs/CTA). --}}
         <div
-          class="flex flex-col gap-6 px-8 py-12 max-lg:order-1 lg:order-none lg:gap-8 lg:px-10 xl:px-14 xl:py-12 {{ $ratio === '50-50' ? 'lg:col-span-6' : 'lg:col-span-7' }} {{ $hasTabs ? 'items-stretch text-left' : 'items-center justify-center text-center' }}">
+          class="flex flex-col items-center justify-center gap-6 px-8 py-12 text-center max-lg:order-1 lg:order-none lg:gap-8 lg:px-10 xl:px-14 xl:py-12 {{ $ratio === '50-50' ? 'lg:col-span-6' : 'lg:col-span-7' }}">
           @if($hasTabs)
-            {{-- Tab list (Figma parity: thin divider rule beneath the pill row). --}}
+            {{-- Tab list — Figma 51:7171 gaps 32px and is centre-justified; the divider rule below
+                 needs the row to be `w-full` so the line spans the full panel padding box. --}}
             <div
               id="{{ esc_attr($tablistId) }}"
               role="tablist"
               aria-label="{{ esc_attr__('Highlight sections', 'culvers') }}"
-              class="shop-split-highlight__tabs flex flex-wrap items-center gap-2 border-b border-light-cream/30 pb-6 lg:pb-8">
+              class="shop-split-highlight__tabs flex w-full flex-wrap items-center justify-center gap-6 border-b border-light-cream/30 pb-6 lg:gap-8 lg:pb-8">
               @foreach($tabs as $i => $tab)
                 @php
                     $tabId = $tablistId . '-tab-' . $i;
@@ -145,8 +147,10 @@
               @endforeach
             </div>
 
-            {{-- Panel deck (all panels share one grid cell so the column sizes to the tallest). --}}
-            <div class="shop-split-highlight__panels relative grid">
+            {{-- Panel deck — all panels share one grid cell so the column sizes to the tallest;
+                 each panel is `justify-self-center` so the capped copy block (max-w 34.625rem)
+                 sits on the same centre line as the tab row above. --}}
+            <div class="shop-split-highlight__panels relative grid w-full">
               @foreach($tabs as $i => $tab)
                 @php
                     $tabId = $tablistId . '-tab-' . $i;
@@ -156,7 +160,7 @@
                   id="{{ esc_attr($panelId) }}"
                   role="tabpanel"
                   aria-labelledby="{{ esc_attr($tabId) }}"
-                  class="shop-split-highlight__panel col-start-1 row-start-1 flex max-w-[34.625rem] flex-col gap-6 transition-opacity duration-300 ease-out lg:gap-8"
+                  class="shop-split-highlight__panel col-start-1 row-start-1 flex max-w-[34.625rem] flex-col items-center gap-6 justify-self-center transition-opacity duration-300 ease-out lg:gap-8"
                   x-bind:class="activeTab === {{ $i }} ? 'opacity-100' : 'opacity-0 pointer-events-none'"
                   x-bind:aria-hidden="activeTab === {{ $i }} ? 'false' : 'true'">
                   @if($tab['kicker'] !== '' || $tab['headline'] !== '')
@@ -185,7 +189,6 @@
                       @include('components.button', [
                           'label' => $tab['cta_label'],
                           'href' => $tab['cta_url'],
-                          'button_extra_class' => 'self-start',
                       ])
                     </div>
                   @endif
