@@ -137,13 +137,18 @@
                   aria-controls="{{ esc_attr($panelId) }}"
                   aria-selected="{{ $i === 0 ? 'true' : 'false' }}"
                   tabindex="{{ $i === 0 ? '0' : '-1' }}"
-                  class="shop-split-highlight__tab cursor-pointer rounded-full px-5 py-2 font-label text-xs font-semibold uppercase tracking-widest transition-colors duration-150 culvers-focus-ring"
+                  class="shop-split-highlight__tab cursor-pointer rounded-full font-label text-xs font-semibold uppercase tracking-widest transition-colors duration-150 culvers-focus-ring"
                   x-on:click="selectTab({{ $i }})"
                   x-on:keydown.right.prevent="selectTab(({{ $i }} + 1) % {{ count($tabs) }}, true)"
                   x-on:keydown.left.prevent="selectTab(({{ $i }} - 1 + {{ count($tabs) }}) % {{ count($tabs) }}, true)"
                   x-on:keydown.home.prevent="selectTab(0, true)"
                   x-on:keydown.end.prevent="selectTab({{ count($tabs) - 1 }}, true)"
-                  x-bind:class="activeTab === {{ $i }} ? 'bg-glowleaf text-deep-moss' : 'bg-transparent text-light-cream hover:text-glowleaf'">
+                  {{-- Figma 51:7178 puts the px-6 / py-2 pill padding on the ACTIVE wrapper only;
+                       inactive tabs (51:7172 / 51:7175) are bare text inside a flex-col with no
+                       horizontal padding. Mirror that here so the gap-8 between tabs reads at the
+                       Figma 32px-text-to-text spacing instead of being inflated by hidden padding
+                       on every tab. --}}
+                  x-bind:class="activeTab === {{ $i }} ? 'bg-glowleaf px-6 py-2 text-deep-moss' : 'bg-transparent text-white hover:text-glowleaf'">
                   {{ esc_html($tab['label'] !== '' ? $tab['label'] : ($tab['headline'] !== '' ? $tab['headline'] : __('Tab', 'culvers'))) }}
                 </button>
               @endforeach
