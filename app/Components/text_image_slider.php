@@ -113,7 +113,8 @@ return [
                         'options' => [
                             'label' => __('Left image tilt (°)', 'culvers'),
                             'instructions' => __('Negative tilts left, positive tilts right.', 'culvers'),
-                            'default_value' => -8,
+                            // Figma 51:8145 — left polaroid tilts +7.24° clockwise.
+                            'default_value' => 7,
                             'min' => -20,
                             'max' => 20,
                             'step' => 1,
@@ -124,7 +125,8 @@ return [
                         'type' => 'range',
                         'options' => [
                             'label' => __('Right image tilt (°)', 'culvers'),
-                            'default_value' => 6,
+                            // Figma 51:8144 — right polaroid tilts -5.99° (counter-clockwise).
+                            'default_value' => -6,
                             'min' => -20,
                             'max' => 20,
                             'step' => 1,

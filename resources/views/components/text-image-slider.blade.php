@@ -5,19 +5,28 @@
 
   /**
    * Text-image slider — vertical stack of large Canela headlines that expand
-   * in place to reveal a body paragraph plus two polaroid-style images that
-   * pop in (left + right) with a staggered scale/rotate animation. Headlines
-   * stay readable (solid foreground) regardless of open state. Figma ref: 51:8074
-   * (closed) / 51:8114 (open with images).
+   * in place to reveal a body paragraph plus polaroid-style images. Headlines
+   * stay readable (solid foreground) regardless of open state.
+   *
+   * Figma refs
+   *  - 51:8129 / 51:8144 / 51:8145 — desktop open state. TWO angled polaroids:
+   *    LEFT smaller (~247×290) tilted +7.24° clockwise; RIGHT larger (~327×384)
+   *    tilted -5.99° counter-clockwise.
+   *  - 51:9225 — mobile closed state (vertical accordion list with +/- icons).
+   *  - 51:9312 / 51:9352 — mobile open state. ONE flat landscape image
+   *    (~382×274, rounded-[10px], no tilt, no polaroid framing) under the body.
    *
    * Markup notes
    *  - The body panel is height-animated via the CSS grid-rows-[0fr→1fr] trick
    *    inside an `overflow-hidden` shell so opening doesn't jump the page.
-   *  - Side images live OUTSIDE that shell as siblings of the panel: on mobile
-   *    they stack in normal flow under the body; on lg+ the wrapper turns into
-   *    `display:contents`, allowing each image to be positioned absolutely
-   *    relative to the `<li>` (so they can overflow the central column without
-   *    being clipped by the height-animation shell).
+   *  - Desktop images live OUTSIDE that shell as siblings of the panel inside
+   *    an `lg:relative` anchor; `lg:contents` collapses the wrapper so each
+   *    absolute child anchors directly to the anchor and can overflow the
+   *    central column without being clipped.
+   *  - Mobile renders a single image in normal flow under the body (Figma
+   *    deliberately drops the polaroid framing + the second image at narrow
+   *    widths). We prefer the right/larger asset and fall back to the left so
+   *    rows with only one image slot filled still render.
    */
 
   $c = is_array($component ?? null) ? $component : [];
@@ -46,8 +55,10 @@
               'body_html' => $bodyHtml,
               'image_left' => $left,
               'image_right' => $right,
-              'tilt_left' => isset($row['item_image_left_tilt']) ? (int) $row['item_image_left_tilt'] : -8,
-              'tilt_right' => isset($row['item_image_right_tilt']) ? (int) $row['item_image_right_tilt'] : 6,
+              // Figma 51:8144 (right polaroid, -5.99°) and 51:8145 (left polaroid, +7.24°).
+              // Defaults mirror Figma: left tilts clockwise, right tilts counter-clockwise.
+              'tilt_left' => isset($row['item_image_left_tilt']) ? (int) $row['item_image_left_tilt'] : 7,
+              'tilt_right' => isset($row['item_image_right_tilt']) ? (int) $row['item_image_right_tilt'] : -6,
           ];
       }
   }
@@ -138,12 +149,13 @@
                      `lg:relative` parent above (the anchor) — no clipping. --}}
                 <div class="hidden lg:contents" x-show="isOpen({{ $i }})" x-cloak>
                   @if($hasLeftImage)
-                    {{-- Vertical centering is handled by GSAP via `yPercent: -50`
-                         (see text-image-slider.js) so we don't apply -translate-y-1/2
-                         here — combining a CSS translate with GSAP's inline transform
-                         leaves the image stuck at the top of the anchor. --}}
+                    {{-- Figma 51:8145 — LEFT polaroid is the smaller of the pair
+                         (~247×290 in the 1500px frame), tilted +7.24° clockwise.
+                         Vertical centering is owned by GSAP via `yPercent: -50`
+                         (see text-image-slider.js) — don't add a CSS translate
+                         here, it conflicts with the inline GSAP transform. --}}
                     <div
-                      class="text-image-slider__media text-image-slider__media--left pointer-events-none absolute left-[-22rem] top-1/2 w-[18rem] opacity-0 xl:left-[-24rem] xl:w-[20rem]"
+                      class="text-image-slider__media text-image-slider__media--left pointer-events-none absolute left-[-20rem] top-1/2 w-[15rem] opacity-0 xl:left-[-22rem] xl:w-[16.5rem]"
                       data-tis-media="left"
                       data-tilt="{{ esc_attr((string) $item['tilt_left']) }}">
                       <div
@@ -159,8 +171,10 @@
                   @endif
 
                   @if($hasRightImage)
+                    {{-- Figma 51:8144 — RIGHT polaroid is the larger of the pair
+                         (~327×384 in the 1500px frame), tilted -5.99° CCW. --}}
                     <div
-                      class="text-image-slider__media text-image-slider__media--right pointer-events-none absolute right-[-22rem] top-1/2 w-[16rem] opacity-0 xl:right-[-24rem] xl:w-[18rem]"
+                      class="text-image-slider__media text-image-slider__media--right pointer-events-none absolute right-[-22rem] top-1/2 w-[20rem] opacity-0 xl:right-[-24rem] xl:w-[22rem]"
                       data-tis-media="right"
                       data-tilt="{{ esc_attr((string) $item['tilt_right']) }}">
                       <div
@@ -179,45 +193,29 @@
             </div>
 
             @if($hasLeftImage || $hasRightImage)
-              {{-- Mobile-only image stack: rendered in normal flow under the body so the
-                   two photos appear stacked vertically below the body copy at narrow widths. --}}
+              {{-- Mobile-only image: Figma 51:9352 places a single landscape photo
+                   (~382×274, 10px corner radius, no tilt, no polaroid framing)
+                   under the body + CTA. We prefer the right/larger asset, falling
+                   back to the left, so authors who only fill one slot still see it. --}}
+              @php
+                  $mobileImage = $hasRightImage ? $item['image_right'] : $item['image_left'];
+                  $mobileTisHandle = $hasRightImage ? 'right-mobile' : 'left-mobile';
+              @endphp
               <div
-                class="text-image-slider__media-stack mt-2 mb-8 flex flex-col items-center gap-6 lg:hidden"
+                class="text-image-slider__media text-image-slider__media--mobile mt-2 mb-8 w-full opacity-0 lg:hidden"
+                data-tis-media="{{ $mobileTisHandle }}"
+                data-tilt="0"
                 x-show="isOpen({{ $i }})"
                 x-cloak>
-                @if($hasLeftImage)
-                  <div
-                    class="text-image-slider__media text-image-slider__media--left w-[14rem] flex-none opacity-0 sm:w-[16rem]"
-                    data-tis-media="left-mobile"
-                    data-tilt="{{ esc_attr((string) $item['tilt_left']) }}">
-                    <div
-                      class="text-image-slider__polaroid relative aspect-[4/5] w-full overflow-hidden rounded-[6px] shadow-2xl shadow-deep-moss/30 ring-1 ring-deep-moss/10"
-                      data-tis-polaroid>
-                      {!! Image::render($item['image_left'], [
-                          'class' => 'absolute inset-0 size-full object-cover',
-                          'alt' => '',
-                          'role' => 'presentation',
-                      ]) !!}
-                    </div>
-                  </div>
-                @endif
-
-                @if($hasRightImage)
-                  <div
-                    class="text-image-slider__media text-image-slider__media--right w-[12rem] flex-none opacity-0 sm:w-[14rem]"
-                    data-tis-media="right-mobile"
-                    data-tilt="{{ esc_attr((string) $item['tilt_right']) }}">
-                    <div
-                      class="text-image-slider__polaroid relative aspect-[4/5] w-full overflow-hidden rounded-[6px] shadow-2xl shadow-deep-moss/30 ring-1 ring-deep-moss/10"
-                      data-tis-polaroid>
-                      {!! Image::render($item['image_right'], [
-                          'class' => 'absolute inset-0 size-full object-cover',
-                          'alt' => '',
-                          'role' => 'presentation',
-                      ]) !!}
-                    </div>
-                  </div>
-                @endif
+                <div
+                  class="text-image-slider__polaroid relative aspect-[7/5] w-full overflow-hidden rounded-[10px]"
+                  data-tis-polaroid>
+                  {!! Image::render($mobileImage, [
+                      'class' => 'absolute inset-0 size-full object-cover',
+                      'alt' => '',
+                      'role' => 'presentation',
+                  ]) !!}
+                </div>
               </div>
             @endif
           </li>
