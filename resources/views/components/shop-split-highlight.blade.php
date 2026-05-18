@@ -89,13 +89,38 @@
   $ctaUrl = trim((string) ($c['split_cta_url'] ?? ''));
   $showCta = $ctaLabel !== '' && $ctaUrl !== '';
 
+  $centerLists = ! empty($c['split_center_lists']) || ! empty($c['split_center_copy']);
+
   $hasStaticSerifLines = $kicker !== '' || $headline !== '';
   $hasStaticCopy = $hasStaticSerifLines || $bodyPlain !== '';
   $hasCopy = $hasTabs || $hasStaticCopy;
 
-  $bodyClasses = 'shop-split-highlight__body max-w-[34.625rem] w-full font-sans text-xl font-light text-light-cream rt-link-brand'
-      . ' [&_p+p]:mt-4 [&_strong]:font-medium [&_strong]:text-light-cream'
-      . ' [&>*:first-child]:mt-0';
+  /** Left-aligned disc list (default). */
+  $bodyListClassesLeft = ' [&_ul]:mt-9 [&_ul]:w-full [&_ul]:list-outside [&_ul]:list-disc [&_ul]:p-0 [&_ul]:text-left [&_ul]:leading-[1.8]'
+      . ' [&_ul>li]:ms-[1.875rem] [&_ul>li+li]:mt-0';
+
+  /**
+   * Figma 51:6490 — centre-aligned lines; list-inside so bullets follow each line.
+   */
+  $bodyListClassesCentered = ' [&_ul]:mt-9 [&_ul]:w-full [&_ul]:list-inside [&_ul]:list-disc [&_ul]:p-0 [&_ul]:text-center [&_ul]:leading-[1.8]'
+      . ' [&_ul>li+li]:mt-0';
+
+  $bodyListClasses = $centerLists ? $bodyListClassesCentered : $bodyListClassesLeft;
+
+  $bodyClasses = 'max-w-[34.625rem] w-full font-sans text-xl font-light text-lighter-cream rt-link-brand'
+      . ' [&_p+p]:mt-4 [&_strong]:font-medium [&_strong]:text-lighter-cream'
+      . ' [&>*:first-child]:mt-0'
+      . $bodyListClasses
+      . ' [&_ul>li]:marker:text-lighter-cream';
+
+  $bodyClassesStatic = 'w-full max-w-[34.625rem] font-sans text-xl font-light text-white rt-link-brand'
+      . ' [&_p+p]:mt-4 [&_strong]:font-medium [&_strong]:text-white [&>*:first-child]:mt-0'
+      . $bodyListClasses
+      . ' [&_ul>li]:marker:text-white';
+
+  $staticCopyColumnClasses = $hasTabs
+      ? 'flex flex-col items-center justify-center gap-6 px-8 pb-12 pt-12 text-center lg:gap-8 lg:px-10 xl:px-14 xl:pt-12'
+      : 'px-8 pb-12 pt-12 lg:px-10 xl:px-14';
 
   $tablistId = 'split-highlight-tabs-' . uniqid();
 @endphp
@@ -111,10 +136,9 @@
            <img> is absolutely positioned (out of flow). Flex would leave the media cell at min-height only. --}}
       <div
         class="grid overflow-hidden rounded-[10px] bg-faded-olive shadow-sm lg:min-h-[597px] lg:grid-cols-12 lg:items-stretch">
-        {{-- Copy column: tabbed decks stay centred (Figma 51:7158); static blocks align start +
-             use smaller top inset so the headline lines up with the flush-top image column. --}}
+        {{-- Copy column: tabbed decks centred (Figma 51:7158). Static copy uses standard padding; list alignment is editor-controlled. --}}
         <div
-          class="flex flex-col gap-6 px-8 pb-12 max-lg:order-1 lg:order-none lg:gap-8 lg:px-10 xl:px-14 xl:pb-12 {{ $hasTabs ? 'items-center justify-center pt-12 text-center xl:pt-12' : 'items-start justify-start pt-8 text-left lg:pt-8 xl:pt-9' }} {{ $ratio === '50-50' ? 'lg:col-span-6' : 'lg:col-span-7' }}">
+          class="max-lg:order-1 lg:order-none {{ $staticCopyColumnClasses }} {{ $ratio === '50-50' ? 'lg:col-span-6' : 'lg:col-span-7' }}">
           @if($hasTabs)
             {{-- Tab list — Figma 51:7171 gaps 32px and is centre-justified. The border-b sits on
                  this row so its width MUST match the body block below (Figma's wrapper 51:7170 is
@@ -203,33 +227,34 @@
               @endforeach
             </div>
           @else
-            @if($hasStaticSerifLines)
-              <div class="flex max-w-[34.625rem] flex-col gap-0">
-                {{-- Canela 64px / lh 1.2 → text-7xl (paired line-height in theme). --}}
-                @if($kicker !== '')
-                  <p class="font-heading text-7xl text-brand-500">
-                    {{ esc_html($kicker) }}
-                  </p>
-                @endif
-                @if($headline !== '')
-                  <p class="font-heading text-7xl text-brand-500 {{ $kicker !== '' ? '-mt-1' : '' }}">
-                    {{ esc_html($headline) }}
-                  </p>
-                @endif
-              </div>
-            @endif
+            <div class="w-full max-w-[34.625rem]">
+              @if($hasStaticSerifLines)
+                <div>
+                  @if($kicker !== '')
+                    <p class="font-heading text-7xl leading-[1.2] text-brand-500">
+                      {{ esc_html($kicker) }}
+                    </p>
+                  @endif
+                  @if($headline !== '')
+                    <p class="font-heading text-7xl leading-[1.2] text-brand-500 {{ $kicker !== '' ? '-mt-1' : '' }}">
+                      {{ esc_html($headline) }}
+                    </p>
+                  @endif
+                </div>
+              @endif
 
-            @if($bodyPlain !== '')
-              <div class="{{ $bodyClasses }}">
-                {!! $bodyHtml !!}
-              </div>
-            @endif
+              @if($bodyPlain !== '')
+                <div class="{{ $bodyClassesStatic }}">
+                  {!! $bodyHtml !!}
+                </div>
+              @endif
 
-            @if($showCta)
-              <div class="pt-2">
-                @include('components.button', ['label' => $ctaLabel, 'href' => $ctaUrl])
-              </div>
-            @endif
+              @if($showCta)
+                <div class="mt-6 flex justify-start pt-2">
+                  @include('components.button', ['label' => $ctaLabel, 'href' => $ctaUrl])
+                </div>
+              @endif
+            </div>
           @endif
         </div>
 

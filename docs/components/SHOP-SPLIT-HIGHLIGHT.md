@@ -33,10 +33,11 @@ component.
 
 ### Static copy mode (`split_use_tabs = false`)
 
-| Field | Type | Notes |
-| --- | --- | --- |
-| `split_kicker` | text | Glowleaf Canela first line. |
-| `split_headline` | text | Second Canela line. |
+| Field | Type | Default | Notes |
+| --- | --- | --- | --- |
+| `split_center_lists` | true_false | off | Centre-aligns list lines in the copy column (`list-inside` + `text-center`). Does not move headline or paragraphs. |
+| `split_kicker` | text | | Glowleaf Canela first line. |
+| `split_headline` | text | | Second Canela line. |
 | `split_body` | wysiwyg (`toolbar: basic`, `media_upload: 0`) | Halyard (body) copy. |
 | `split_cta_label` | text | Leave blank to hide. |
 | `split_cta_url` | url | |

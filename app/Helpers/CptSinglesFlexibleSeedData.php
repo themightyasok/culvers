@@ -154,6 +154,7 @@ final class CptSinglesFlexibleSeedData
             array_merge(self::base('shop_split_highlight'), [
                 'split_ratio' => '50-50',
                 'split_use_tabs' => false,
+                'split_center_lists' => 1,
                 'split_image' => [
                     'url' => PagesFlexibleSeedData::seedAssetUrl(self::CAREER_PERKS_FILE),
                     'alt' => __('Subway team in a happy group hug', 'culvers'),

@@ -85,17 +85,20 @@
     data-component-root
     data-career-detail>
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
-      <div class="career-detail__band grid items-start gap-10 md:gap-12 lg:grid-cols-[minmax(0,336px)_minmax(0,1fr)] lg:gap-16">
-        {{-- Figma 51:8408 mobile: every sidebar element (logo, title, meta rows, Apply CTA)
-             is centred on the column. `max-sm:` keeps tablet + desktop pixel-identical to the
-             pre-mobile-audit build — only viewports under 640 px reflow. --}}
-        <aside class="career-detail__sidebar flex flex-col text-deep-moss max-sm:items-center max-sm:text-center">
+      <div
+        class="career-detail__band grid items-start gap-10 md:gap-12 lg:grid-cols-[minmax(0,336px)_minmax(0,1fr)] lg:gap-x-16">
+        {{-- Figma 51:6450: title (51:6464) top-aligns with sections (51:6472); meta below title (51:6465). --}}
+        <aside class="career-detail__sidebar flex flex-col gap-9 self-start text-deep-moss max-sm:items-center max-sm:text-center">
+          @if($title !== '')
+            <{{ $titleTag }} class="career-detail__title font-heading text-5xl leading-[1.1]">
+              {{ esc_html($title) }}
+            </{{ $titleTag }}>
+          @endif
+
           @if($employerLogoUrl !== '')
             <div class="career-detail__employer-logo mb-6 flex max-w-[13rem] md:max-w-[15rem] max-sm:justify-center">
               @php
                   $employerLogoAlt = trim((string) ($employerLogo['alt'] ?? ''));
-                  /* Sidebar centring on mobile (Figma 51:8408) → logo centred in column too.
-                     `max-sm:` keeps the tablet + desktop `object-left` alignment intact. */
                   $employerLogoImgArgs = [
                       'class' => 'h-auto w-full max-h-14 object-contain object-left md:max-h-[4.25rem] max-sm:object-center',
                       'loading' => 'eager',
@@ -111,30 +114,18 @@
               {!! Image::render($employerLogo, $employerLogoImgArgs) !!}
             </div>
           @endif
-          @if($title !== '')
-            {{-- Desktop ramp preserved exactly as shipped (`text-4xl leading-[0.95] md:text-5xl lg:text-6xl`).
-                 `max-sm:` overrides land Figma 51:8409 mobile H1 (Canela 48 / lh 1.1) without
-                 touching tablet+desktop typography. --}}
-            <{{ $titleTag }} class="career-detail__title font-heading text-4xl leading-[0.95] md:text-5xl lg:text-6xl max-sm:text-5xl max-sm:leading-[1.1]">
-              {{ esc_html($title) }}
-            </{{ $titleTag }}>
-          @endif
 
           @if($meta !== [])
-            {{-- Figma 51:8411 / 8413 / 8415: meta rows are centred on mobile, label = Halyard
-                 Medium 20 / lh 24 (NOT uppercase), value = Halyard Light 20 / lh 24. All Figma
-                 mobile spec is `max-sm:`-scoped so tablet + desktop keep the original ramp
-                 (Commuters 12 caps label / Halyard 16 value, left aligned). --}}
-            <dl class="career-detail__meta mt-8 flex flex-col">
+            <dl class="career-detail__meta flex flex-col gap-[30px]">
               @foreach($meta as $row)
-                <div class="career-detail__meta-row flex flex-col gap-1 border-t border-deep-moss/20 py-5 first:border-t-0 first:pt-0 max-sm:items-center">
+                <div class="career-detail__meta-row flex flex-col gap-1 border-t border-deep-moss/20 pt-[30px] first:border-t-0 first:pt-0 max-sm:items-center">
                   @if($row['label'] !== '')
-                    <dt class="career-detail__meta-label font-sans text-xs font-semibold uppercase tracking-widest text-deep-moss max-sm:text-xl max-sm:font-medium max-sm:normal-case max-sm:tracking-normal max-sm:leading-6">
+                    <dt class="career-detail__meta-label font-sans text-xl font-medium leading-6 text-deep-moss max-sm:text-center">
                       {{ esc_html($row['label']) }}
                     </dt>
                   @endif
                   @if($row['value'] !== '')
-                    <dd class="career-detail__meta-value m-0 font-sans text-base text-deep-moss/85 max-sm:text-xl max-sm:font-light max-sm:leading-6 max-sm:text-deep-moss">
+                    <dd class="career-detail__meta-value m-0 font-sans text-xl font-light leading-6 text-deep-moss max-sm:text-center">
                       {{ esc_html($row['value']) }}
                     </dd>
                   @endif
@@ -144,11 +135,6 @@
           @endif
 
           @if($hasApply)
-            {{-- Hand-rolled link (not the partial) because external apply URLs need an
-                 inline `sr-only` span the partial doesn't model. Class spine matches
-                 the partial — `btn btn-primary` — so hover stays consistent with every
-                 other CTA on the site. --}}
-            {{-- Apply CTA centred on mobile (Figma 51:8408) via `max-sm:`, left-aligned default at tablet+. --}}
             <div class="career-detail__sidebar-cta mt-10 max-sm:flex max-sm:w-full max-sm:justify-center @if($meta !== []) border-t border-deep-moss/20 pt-8 @endif">
               <a
                 class="btn btn-primary"
@@ -164,16 +150,16 @@
         </aside>
 
         @if($sections !== [])
-          <div class="career-detail__sections flex flex-col gap-10 md:gap-12">
+          <div class="career-detail__sections flex flex-col gap-10 self-start md:gap-[5.125rem] lg:gap-[5.125rem]">
             @foreach($sections as $section)
               <article class="career-detail__section">
                 @if($section['heading'] !== '')
-                  <{{ $sectionTag }} class="career-detail__section-heading font-heading text-2xl leading-tight md:text-3xl">
+                  <{{ $sectionTag }} class="career-detail__section-heading font-heading text-3xl leading-[1.1] text-faded-olive">
                     {{ esc_html($section['heading']) }}
                   </{{ $sectionTag }}>
                 @endif
                 @if($section['body_plain'] !== '')
-                  <div class="career-detail__section-body mt-4 font-sans text-base font-light leading-7 text-deep-moss/85 md:text-lg rt-link-faded [&_p+p]:mt-3 [&_strong]:font-medium [&_strong]:text-deep-moss [&_ul]:my-3 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol_li+li]:mt-2">
+                  <div class="career-detail__section-body mt-[4.1875rem] font-sans text-xl font-light leading-[1.3] text-deep-moss rt-link-faded [&_p+p]:mt-3 [&_strong]:font-medium [&_strong]:text-deep-moss [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol_li+li]:mt-2 [&_ul]:m-0 [&_ul]:w-full [&_ul]:list-outside [&_ul]:list-disc [&_ul]:p-0 [&_ul]:text-left [&_ul>li]:ms-[1.875rem] [&_ul>li]:leading-[1.3] [&_ul>li]:marker:text-deep-moss [&_ul>li+li]:mt-0">
                     {!! $section['body_html'] !!}
                   </div>
                 @endif

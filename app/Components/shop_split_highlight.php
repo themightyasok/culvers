@@ -46,6 +46,21 @@ return [
                 'wrapper' => ['width' => '50'],
             ],
         ],
+        'split_center_lists' => [
+            'type' => 'true_false',
+            'options' => [
+                'label' => __('Centre bullet lists', 'culvers'),
+                'instructions' => __(
+                    'When on, list lines are centre-aligned in the copy column (Figma job perks: '
+                    . 'bullets follow each line, not a single left column). Headline and body '
+                    . 'paragraphs are unchanged.',
+                    'culvers'
+                ),
+                'default_value' => 0,
+                'ui' => 1,
+                'wrapper' => ['width' => '50'],
+            ],
+        ],
         'msg_static' => Component::sectionDivider(__('Static copy (when tabs are off)', 'culvers')),
         'split_kicker' => [
             'type' => 'text',
