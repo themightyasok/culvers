@@ -64,9 +64,10 @@
    * (logo or brand name centred on the brand colour) instead of disappearing.
    */
   $hasContent = $hasHero || $logoUrl !== '' || $titleLine !== '' || $subParts !== [];
-  /** Figma 51:9234 / 51:9493 (mobile) + 51:9360 (desktop) band heights — taller mobile shell so the
-   *  centred title + subtitle stack has the same breathing room Figma shows on the 430-wide frame. */
-  $heroBandMin = 'min-h-[640px] md:min-h-[600px] lg:min-h-[646px]';
+  /** Figma 51:9360 band heights — fixed steps so type sizing reads consistently across breakpoints.
+   *  Mobile-only override (Figma 51:9234 / 51:9493 mobile frame is taller than desktop) lives in
+   *  `max-sm:min-h-[640px]` so tablet + desktop keep the original 580 / 646 px. */
+  $heroBandMin = 'min-h-[480px] md:min-h-[580px] lg:min-h-[646px] max-sm:min-h-[640px]';
 @endphp
 
 @if($hasContent)
@@ -127,20 +128,25 @@
           @php
               $titleSafe = preg_replace('#<br\s*/?>#i', "\n", $titleLine);
           @endphp
-          <h1 class="image-hero__title mx-auto max-w-[min(100%,68rem)] text-balance break-words font-heading text-5xl md:text-9xl md:leading-[1] lg:text-[7.75rem] lg:leading-none {{ $titleToneClass }}">
+          {{-- Desktop H1 (md:9xl, lg:7.75rem) kept exactly as shipped — mobile uses
+               `max-sm:` overrides to land Figma's H1 Mobile token (Canela 48 / lh 1.1)
+               without touching the tablet+ ramp above. --}}
+          <h1 class="image-hero__title mx-auto max-w-[min(100%,68rem)] text-balance break-words font-heading text-6xl leading-[1.05] md:text-9xl md:leading-[1] lg:text-[7.75rem] lg:leading-none max-sm:text-5xl max-sm:leading-[1.1] {{ $titleToneClass }}">
             {!! nl2br(e($titleSafe)) !!}
           </h1>
         @else
-          <h1 class="image-hero__title mx-auto max-w-[min(100%,68rem)] text-balance break-words font-heading text-5xl md:text-9xl md:leading-[1] lg:text-[7.75rem] lg:leading-none {{ $titleToneClass }}">
+          <h1 class="image-hero__title mx-auto max-w-[min(100%,68rem)] text-balance break-words font-heading text-6xl leading-[1.05] md:text-9xl md:leading-[1] lg:text-[7.75rem] lg:leading-none max-sm:text-5xl max-sm:leading-[1.1] {{ $titleToneClass }}">
             {{ esc_html(get_the_title()) }}
           </h1>
         @endif
 
         @if(! $titleInImage && ! empty($subParts))
           {{-- Sheet feedback row 21: page-hero secondary line should be Commuter Sans (Figma 51:9080 etc). --}}
-          {{-- Figma 51:9236 / 51:9495: Commuters SemiBold 16 / lh 24 / 1 px tracking, white, all caps.
-               Type does not scale at md/lg — Figma keeps 16 px through every breakpoint. --}}
-          <p class="image-hero__subtitle mt-6 max-w-2xl font-label text-base font-semibold uppercase leading-6 tracking-[0.0625em] text-white">
+          {{-- Sheet feedback row 21: page-hero secondary line should be Commuter Sans (Figma 51:9080 etc).
+               Desktop ramp (text-base / md:text-lg / lg:text-xl, 0.2em tracking) is preserved exactly
+               as shipped — only `max-sm:` overrides to Figma 51:9236 / 51:9495 mobile spec (16 / lh 24 /
+               ~1 px tracking, sentence kerning) so the band stays untouched on tablet + desktop. --}}
+          <p class="image-hero__subtitle mt-6 max-w-2xl font-label text-base font-semibold uppercase leading-[1.4] tracking-[0.2em] text-white md:text-lg lg:text-xl max-sm:leading-6 max-sm:tracking-[0.0625em]">
             @foreach($subParts as $i => $line)
               @if($i > 0)
                 <br />

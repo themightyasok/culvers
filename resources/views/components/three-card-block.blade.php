@@ -178,11 +178,12 @@
                 $alt = trim((string) ($card['alt'] ?? $title));
               @endphp
               @php
-                /* Manual-mode mobile aspect — landscape band per Figma 51:8214,
-                   reverts to the canonical 2:3 portrait at `sm:` and above so
-                   every breakpoint from tablet up reads as Figma desktop. */
+                /* Defensive mobile-only override (Figma 51:8214 mobile manual cards).
+                   The base aspect stays `2/3` — desktop is untouched even if a stale CSS
+                   build is loaded — and `max-sm:aspect-[173/100]` only swaps in landscape
+                   below 640 px when manual mode is active. */
                 $cardAspectClass = $isManualMode
-                    ? 'aspect-[173/100] sm:aspect-[2/3]'
+                    ? 'aspect-[2/3] max-sm:aspect-[173/100]'
                     : 'aspect-[2/3]';
               @endphp
               @if($href !== '' && $title !== '')
@@ -222,28 +223,29 @@
                       <span class="block h-full w-full bg-gradient-to-br from-dustleaf/40 via-deep-moss/25 to-faded-olive/35"></span>
                     @endif
 
-                    {{-- Figma uses a single ~30% black scrim (51:8217 / 8223 / 8229), not a 3-stop gradient. --}}
+                    {{-- Figma uses a single ~25% black scrim, not a 3-stop gradient. --}}
                     <span
-                      class="pointer-events-none absolute inset-0 z-10 bg-black/30"></span>
+                      class="pointer-events-none absolute inset-0 z-10 bg-black/25"></span>
                   </span>
 
-                  {{-- Figma 51:8214 (mobile manual): landscape card with title + 43 × 43 glowleaf
-                       arrow rendered inline horizontally. Figma desktop + every non-manual
-                       (blog/CPT) layout keeps the portrait stack — title centred, "Explore" pill
-                       revealed on hover (motion-safe only). The same markup serves both shapes
-                       via responsive flex-direction + the always-visible mobile arrow icon. --}}
+                  {{-- Sheet feedback row 11: hover state. Title turns Glowleaf and an "Explore"
+                       pill button reveals below it (motion-safe only). Stack lives in a flex column
+                       so the centred resting title and the post-hover button form one centred block.
+                       Manual mode adds a `max-sm:`-scoped landscape reflow + inline glowleaf arrow
+                       (Figma 51:8214/8220/8226) — desktop is untouched. --}}
                   <span
-                    class="relative z-10 flex w-full flex-1 items-center justify-center gap-5 px-6 py-10 text-center {{ $isManualMode ? 'max-sm:flex-row max-sm:justify-between max-sm:gap-4 max-sm:px-7 max-sm:py-6 max-sm:text-left sm:flex-col' : 'flex-col' }}">
+                    class="relative z-10 flex w-full flex-1 flex-col items-center justify-center gap-5 px-6 py-10 text-center {{ $isManualMode ? 'max-sm:flex-row max-sm:justify-between max-sm:gap-4 max-sm:px-7 max-sm:py-6 max-sm:text-left' : '' }}">
                     <span
                       class="font-heading text-[36px] leading-[1.1] text-white transition-colors duration-300 ease-out motion-safe:group-hover/card:text-glowleaf motion-safe:group-focus-within/card:text-glowleaf md:text-[46px] md:leading-none">
                       {{ esc_html($title) }}
                     </span>
                     @if($isManualMode)
-                      {{-- Inline arrow shown in the resting state on mobile only — Figma 51:8217 etc.
-                           Hidden at sm+ so the desktop "Explore" pill below remains the canonical CTA. --}}
+                      {{-- Inline glowleaf arrow — `hidden` by default so desktop is untouched even
+                           with a stale CSS cache, only shown below 640 px via `max-sm:inline-flex`.
+                           Figma 51:8217 etc. (43 × 43 pill on mobile manual cards). --}}
                       <span
                         aria-hidden="true"
-                        class="inline-flex size-[43px] shrink-0 items-center justify-center rounded-full bg-glowleaf text-deep-moss transition-transform duration-300 ease-out motion-safe:group-hover/card:scale-[1.06] motion-safe:group-focus-within/card:scale-[1.06] sm:hidden">
+                        class="hidden size-[43px] shrink-0 items-center justify-center rounded-full bg-glowleaf text-deep-moss transition-transform duration-300 ease-out motion-safe:group-hover/card:scale-[1.06] motion-safe:group-focus-within/card:scale-[1.06] max-sm:inline-flex">
                         <svg class="size-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                           <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                         </svg>
