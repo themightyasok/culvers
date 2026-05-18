@@ -178,6 +178,60 @@ If the API key is empty:
   a Google Maps API key…" placeholder visible only to logged-in
   editors).
 
+## Local mock mode (no key required)
+
+To unblock front-end work while the client provisions a real Google
+Maps key, the Distance Matrix client ships a deterministic mock
+mode that returns canned distance + duration data without ever
+hitting Google. It is **never active on staging or live** — the
+checks are designed to fail-closed in any non-local environment.
+
+### Activation
+
+The mock is on when **either** of these is true:
+
+1. `wp_get_environment_type() === 'local'` _and_ no Google Maps API
+   key is set in Customizer → Google Maps (zero-config: a fresh
+   checkout on `culvers.local` "just works").
+2. The constant `CULVERS_TRAVEL_MOCK` is defined and `true` in
+   `wp-config.php` (explicit opt-in, useful if you want to keep
+   mocking locally even after pasting a real key for the map
+   iframe). Recommended placement:
+
+```php
+// wp-config.php — local only. Do NOT commit to staging/live wp-config.
+if (defined('WP_ENVIRONMENT_TYPE') && WP_ENVIRONMENT_TYPE === 'local') {
+    define('CULVERS_TRAVEL_MOCK', true);
+}
+```
+
+### What it does
+
+- Hashes the trimmed origin string into a stable per-address
+  distance bucket (0.5–80 miles), so the same input always yields
+  the same canned distance.
+- Derives the duration from per-mode average speeds (driving 35
+  mph, transit 18 mph, bicycling 12 mph, walking 3 mph).
+- Formats distance + duration in the same shape as Google
+  (`6.4 mi`, `1 hour 38 mins`) so the result strip renders the
+  identical copy as it would in production.
+- Resolves the destination to whatever the Customizer holds (or
+  the documented Culver Square default).
+
+### What the editor sees
+
+- A small slate dev-mode notice above the form: _"Dev mock active —
+  distances and durations are deterministic canned values…"_
+- The map slot, which can't render without a real Maps Embed key,
+  shows a token-tinted band with a pin-pair illustration and the
+  caption _"Live route preview disabled in dev mock mode."_
+
+### Turning it off locally
+
+Paste a real (restricted) key into Customizer → Google Maps. The
+mock check sees the key, switches off automatically, and the live
+Distance Matrix + Maps Embed path takes over.
+
 ## Troubleshooting
 
 - **"Travel Calculator is not configured yet."** — API key missing.

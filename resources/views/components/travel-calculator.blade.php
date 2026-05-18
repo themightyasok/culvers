@@ -6,6 +6,11 @@
   use App\Travel\GoogleDistanceMatrixClient;
   use App\Travel\TravelCalculatorEndpoint;
 
+  // Dev-only: mock mode short-circuits the Distance Matrix call to return canned
+  // data so designers can verify the result strip locally without a live key.
+  // Always false on staging/live when a real key is set.
+  $mockActive = GoogleDistanceMatrixClient::isMockEnabled();
+
   /**
    * Travel Calculator — pale-sage (Figma "Light Green" #DFE7BA) card with a
    * 64px Canela H2, a 20px Halyard subtitle, two pill inputs with 1.5px
@@ -143,7 +148,13 @@
           </header>
         @endif
 
-        @if(! $apiConfigured && current_user_can('edit_posts'))
+        @if(! $apiConfigured && $mockActive && current_user_can('edit_posts'))
+          {{-- Dev-only mock indicator: visible to editors on local so it's obvious
+               the result strip is canned, not live. Suppressed on staging/live. --}}
+          <div class="mt-8 rounded border border-deep-moss/30 bg-deep-moss/10 px-4 py-3 text-sm text-deep-moss">
+            {{ __('Dev mock active — distances and durations are deterministic canned values. Set a Google Maps API key in Appearance → Customize → Google Maps for live lookups.', 'culvers') }}
+          </div>
+        @elseif(! $apiConfigured && current_user_can('edit_posts'))
           <div class="mt-8 rounded border border-amber-400 bg-amber-50 px-4 py-3 text-sm text-amber-950">
             {{ __('Add a Google Maps API key at Appearance → Customize → Google Maps to enable live travel lookups.', 'culvers') }}
           </div>
@@ -260,6 +271,19 @@
               'class' => 'block h-auto w-full object-cover',
               'alt' => __('Map placeholder', 'culvers'),
           ]) !!}
+        @elseif($mockActive)
+          {{-- Dev-mock: shape-match the live iframe band (420 / 528) but render
+               a token-tinted panel with a pin-pair illustration so the page
+               reads visually like the Figma even without a real Maps key. --}}
+          <div class="flex h-[420px] w-full flex-col items-center justify-center gap-4 bg-light-green/60 text-center text-deep-moss md:h-[528px]">
+            <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+              <path d="M20 6c-7.18 0-13 5.82-13 13 0 9.75 13 27 13 27s13-17.25 13-27c0-7.18-5.82-13-13-13Zm0 17.5a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9Z" fill="currentColor" opacity="0.85" />
+              <path d="M44 18c-7.18 0-13 5.82-13 13 0 9.75 13 27 13 27s13-17.25 13-27c0-7.18-5.82-13-13-13Zm0 17.5a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9Z" fill="currentColor" />
+            </svg>
+            <p class="font-sans text-sm text-deep-moss/80 md:text-base">
+              {{ __('Live route preview disabled in dev mock mode.', 'culvers') }}
+            </p>
+          </div>
         @elseif(current_user_can('edit_posts'))
           <div class="flex h-[420px] w-full items-center justify-center bg-light-cream text-center font-sans text-sm text-deep-moss/70">
             {{ __('Configure a Google Maps API key to render the route preview.', 'culvers') }}

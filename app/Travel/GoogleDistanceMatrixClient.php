@@ -50,6 +50,14 @@ final class GoogleDistanceMatrixClient
             throw TravelCalculatorException::invalidMode($mode);
         }
 
+        // Dev-only fast-path: when mock mode is on (local env + no key, or explicit
+        // CULVERS_TRAVEL_MOCK constant), return deterministic canned data instead of
+        // hitting Distance Matrix. Guarded by self::isMockEnabled() so staging/live
+        // (where a key is set) always take the real path below.
+        if (self::isMockEnabled()) {
+            return self::mockRoute($origin, $mode);
+        }
+
         $apiKey = GoogleMapsCustomizer::apiKey();
         if ($apiKey === '') {
             throw TravelCalculatorException::missingApiKey();
@@ -158,5 +166,86 @@ final class GoogleDistanceMatrixClient
             $language,
             $units,
         ]));
+    }
+
+    /**
+     * Dev/local mock: enabled when explicitly opted in via `CULVERS_TRAVEL_MOCK`,
+     * or when the local environment has no Google Maps key configured (so a fresh
+     * checkout on `culvers.local` "just works" without standing up a key). On any
+     * environment with a real key set, this returns false and the live path runs.
+     */
+    public static function isMockEnabled(): bool
+    {
+        if (defined('CULVERS_TRAVEL_MOCK') && CULVERS_TRAVEL_MOCK === true) {
+            return true;
+        }
+
+        if (function_exists('wp_get_environment_type') && wp_get_environment_type() === 'local') {
+            return GoogleMapsCustomizer::apiKey() === '';
+        }
+
+        return false;
+    }
+
+    /**
+     * Deterministic canned route data — same (origin, mode) tuple always returns
+     * the same distance/duration. Distances vary across origins so a designer can
+     * visually verify the result strip with several inputs; mode-specific average
+     * speeds (mph) keep durations plausible.
+     *
+     * @return RouteResult
+     */
+    private static function mockRoute(string $origin, string $mode): array
+    {
+        $bucket = (int) hexdec(substr(md5(strtolower($origin)), 0, 4));
+        $distanceMiles = round(($bucket % 7950) / 100 + 0.5, 1);
+
+        $speedMph = match ($mode) {
+            'driving' => 35,
+            'transit' => 18,
+            'bicycling' => 12,
+            'walking' => 3,
+            default => 30,
+        };
+        $minutes = max(1, (int) round(($distanceMiles / $speedMph) * 60));
+
+        return [
+            'status' => 'OK',
+            'mode' => $mode,
+            'distance_text' => self::formatMockDistance($distanceMiles),
+            'distance_value' => (int) round($distanceMiles * 1609.34),
+            'duration_text' => self::formatMockDuration($minutes),
+            'duration_value' => $minutes * 60,
+            'resolved_origin' => $origin,
+            'resolved_destination' => GoogleMapsCustomizer::destinationAddress(),
+        ];
+    }
+
+    private static function formatMockDistance(float $miles): string
+    {
+        // Match Google's Distance Matrix text style: "6.4 mi" / "12 mi"
+        if (fmod($miles, 1.0) === 0.0) {
+            return sprintf('%d mi', (int) $miles);
+        }
+
+        return sprintf('%.1f mi', $miles);
+    }
+
+    private static function formatMockDuration(int $minutes): string
+    {
+        // Match Google's Distance Matrix text style: "38 mins" / "1 hour 38 mins"
+        if ($minutes < 60) {
+            return sprintf('%d mins', $minutes);
+        }
+
+        $hours = intdiv($minutes, 60);
+        $remainder = $minutes % 60;
+        $hoursWord = $hours === 1 ? 'hour' : 'hours';
+
+        if ($remainder === 0) {
+            return sprintf('%d %s', $hours, $hoursWord);
+        }
+
+        return sprintf('%d %s %d mins', $hours, $hoursWord, $remainder);
     }
 }
