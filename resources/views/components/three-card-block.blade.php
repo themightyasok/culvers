@@ -85,6 +85,14 @@
     @endif
 
     @if($showTabs)
+      {{-- Filter chips — Figma 51:5133/5134/5135.
+           - Font: Commuters Sans SemiBold 12.887px (font-label text-[13px] font-semibold).
+           - Tracking: 0.6443px on 12.887px ≈ 0.05em (tracking-[0.05em]).
+           - Padding: 25.773px × 7.732px (px-[26px] py-[8px]).
+           - Radius: 64.433px → rounded-full.
+           - Active (51:5133): bg-glowleaf, text-deep-moss, NO border.
+           - Inactive (51:5134/5135): 1.5px Dustleaf border + Dustleaf text on
+             transparent fill. (Token: --color-dustleaf #8B8C67.) --}}
       <div
         class="mt-10 flex flex-wrap items-center justify-center gap-3 md:mt-12 md:gap-4"
         role="tablist"
@@ -95,15 +103,20 @@
         x-on:keydown.end.prevent="selectTab({{ count($tabs) - 1 }}, true)">
         @foreach($tabs as $index => $tab)
           @php $tid = 'three-card-tab-' . $index; $pid = 'three-card-panel-' . $index; @endphp
+          {{-- Visual state is driven entirely by `aria-selected` (bound below by
+               Alpine). The `aria-[selected=true]:*` variants compile to selectors
+               like `.foo[aria-selected="true"] { … }`, which beats the static
+               inactive utilities on specificity — so we don't need a class-toggle
+               and there's no glowleaf flash before Alpine hydrates. --}}
           <button
             type="button"
-            class="three-card-block__tab cursor-pointer rounded-full border border-deep-moss px-5 py-2 font-sans text-xs font-semibold uppercase tracking-widest text-deep-moss transition-colors duration-150 culvers-focus-ring-deep-moss md:px-7 md:py-2.5 md:text-xs"
+            class="three-card-block__tab cursor-pointer rounded-full border-[1.5px] border-dustleaf bg-transparent px-[26px] py-[8px] font-label text-[13px] font-semibold uppercase leading-[1.85] tracking-[0.05em] text-dustleaf transition-colors duration-150 hover:bg-light-cream/60 aria-[selected=true]:border-transparent aria-[selected=true]:bg-glowleaf aria-[selected=true]:text-deep-moss aria-[selected=true]:hover:bg-glowleaf culvers-focus-ring-deep-moss"
             id="{{ esc_attr($tid) }}"
             role="tab"
             aria-controls="{{ esc_attr($pid) }}"
+            aria-selected="{{ $index === 0 ? 'true' : 'false' }}"
             x-bind:aria-selected="activeTab === {{ $index }} ? 'true' : 'false'"
             x-bind:tabindex="activeTab === {{ $index }} ? 0 : -1"
-            x-bind:class="{ 'border-transparent bg-glowleaf text-deep-moss': activeTab === {{ $index }}, 'bg-transparent hover:bg-light-cream/60': activeTab !== {{ $index }} }"
             x-on:click="selectTab({{ $index }})">
             {{ esc_html($tab['label']) }}
           </button>
