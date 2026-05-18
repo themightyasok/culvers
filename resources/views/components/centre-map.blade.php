@@ -167,16 +167,29 @@
       </div>
     @endif
 
-    {{-- Heading bar (filter toggle moves into the panel/map columns below to
-         match Figma 51:7122 — "Hide filter" lives at the top of the filter
-         column when panelOpen, and "Show filter" floats absolutely over the
-         top-left of the map when panelOpen is false). --}}
-    @if(! $isMapOnly && $heading !== '')
+    {{-- Heading + HIDE FILTER on the same row. Button is `x-show`-gated on
+         panelOpen so when the panel is closed it disappears here and the
+         floating SHOW FILTER pill over the map takes over (Figma 51:7122). --}}
+    @if(! $isMapOnly && ($heading !== '' || $groups !== []))
       <div class="{{ LayoutShell::INNER_MAX_GUTTERED }} centre-map__toolbar flex flex-wrap items-center justify-between gap-4 pt-12 md:pt-16 lg:pt-20">
-        {{-- Section H2 (64px desktop / 48px mobile) — see Component::sectionHeadingClasses(). --}}
-        <{{ $headingTag }} class="centre-map__heading {{ Component::sectionHeadingClasses('text-lighter-cream', 'm-0') }}">
-          {{ esc_html($heading) }}
-        </{{ $headingTag }}>
+        @if($heading !== '')
+          {{-- Section H2 (64px desktop / 48px mobile) — see Component::sectionHeadingClasses(). --}}
+          <{{ $headingTag }} class="centre-map__heading {{ Component::sectionHeadingClasses('text-lighter-cream', 'm-0') }}">
+            {{ esc_html($heading) }}
+          </{{ $headingTag }}>
+        @endif
+        @if($groups !== [])
+          <button
+            type="button"
+            class="centre-map__filter-toggle inline-flex items-center justify-center rounded-full bg-glowleaf px-5 py-2 font-sans text-xs font-semibold uppercase tracking-widest text-deep-moss transition hover:bg-lighter-cream culvers-focus-ring-compact"
+            aria-controls="centre-map-panel-groups"
+            :aria-expanded="panelOpen.toString()"
+            x-show="panelOpen"
+            x-transition.opacity.duration.150ms
+            @click="panelOpen = false">
+            {{ esc_html($filterButtonLabel) }}
+          </button>
+        @endif
       </div>
     @endif
 
@@ -227,20 +240,6 @@
           ? '{{ $panelPosition === 'right' ? 'lg:order-2' : 'lg:order-1' }}'
           : 'lg:hidden'">
         @if($groups !== [])
-          {{-- Hide-filter pill sits at the top of the filter column when the
-               panel is open (matches Figma 51:7122 where the toggle floats
-               over the map at top-left when closed and lives next to the
-               category list when open). --}}
-          <div class="centre-map__panel-toolbar mb-6 flex justify-end" x-show="panelOpen" x-transition.opacity.duration.150ms>
-            <button
-              type="button"
-              class="centre-map__filter-toggle inline-flex items-center justify-center rounded-full bg-glowleaf px-5 py-2 font-sans text-xs font-semibold uppercase tracking-widest text-deep-moss transition hover:bg-lighter-cream culvers-focus-ring-compact"
-              aria-controls="centre-map-panel-groups"
-              :aria-expanded="panelOpen.toString()"
-              @click="panelOpen = false">
-              {{ esc_html($filterButtonLabel) }}
-            </button>
-          </div>
           <ul
             id="centre-map-panel-groups"
             class="centre-map__groups divide-y divide-lighter-cream/15 border-y border-lighter-cream/15"
