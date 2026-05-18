@@ -127,10 +127,11 @@
       @if($showPanel)
         <aside class="contact__panel flex flex-col text-faded-olive" aria-label="{{ esc_attr__('Getting here and contact details', 'culvers') }}">
           <div class="contact__panel-block">
-            {{-- Mobile-first so `max-sm:` can't lose to the base `h1-h6 { @apply font-heading }`
-                 rule. Base = Figma 51:9546 mobile (Halyard Medium 20 / lh 24).
-                 `sm:` restores Figma 51:9414 desktop (Canela 32 / lh 1.1). --}}
-            <h3 class="contact__panel-heading font-sans text-xl font-medium leading-6 sm:font-heading sm:text-3xl sm:font-normal sm:leading-[1.1]">
+            {{-- `font-sans!` forces the mobile Halyard 20 (Figma 51:9546) past the base
+                 `h1-h6 { @apply font-heading }` rule + the `.font-heading` utility that
+                 still compile above the `font-sans` rule in Tailwind 4's source order.
+                 `sm:font-heading` (no `!`) restores Canela 32 / lh 1.1 from tablet up. --}}
+            <h3 class="contact__panel-heading font-sans! text-xl font-medium leading-6 sm:font-heading! sm:text-3xl sm:font-normal sm:leading-[1.1]">
               {{ esc_html(FooterCustomizer::gettingHereTitle()) }}
             </h3>
             @if($address !== '')
@@ -154,10 +155,9 @@
 
           @if($phone !== '' || $contactEmail !== '' || $hasSocial)
             <div class="contact__panel-block mt-12">
-              {{-- Matches Getting Here subhead spec above: mobile-first so `max-sm:` can't lose
-                   to the base h1-h6 rule. Base = Halyard Medium 20 / lh 24 (Figma 51:9556 mobile);
-                   `sm:` restores Canela 32 / lh 1.1 desktop. --}}
-              <h3 class="contact__panel-heading font-sans text-xl font-medium leading-6 sm:font-heading sm:text-3xl sm:font-normal sm:leading-[1.1]">
+              {{-- Matches Getting Here subhead above: `font-sans!` wins mobile, `sm:font-heading!`
+                   restores Canela 32 / lh 1.1 at tablet+. --}}
+              <h3 class="contact__panel-heading font-sans! text-xl font-medium leading-6 sm:font-heading! sm:text-3xl sm:font-normal sm:leading-[1.1]">
                 {{ esc_html(FooterCustomizer::contactTitle()) }}
               </h3>
               @if($phone !== '')
