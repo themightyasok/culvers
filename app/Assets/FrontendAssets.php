@@ -63,8 +63,41 @@ final class FrontendAssets
     public static function register(): void
     {
         add_action('wp_enqueue_scripts', [self::class, 'enqueueFront'], 100);
+        add_action('wp_enqueue_scripts', [self::class, 'dequeueCoreBlockLibrary'], 200);
         add_filter('script_loader_tag', [self::class, 'filterDeferMainScript'], 10, 2);
         add_action('enqueue_block_editor_assets', [self::class, 'enqueueEditor'], 100);
+    }
+
+    /**
+     * Drop WordPress core block-library CSS on the front-end.
+     *
+     * The Culvers front-end renders no Gutenberg block markup — every section is
+     * an ACF flexible layout rendered through Blade — so the `wp-block-library` and
+     * `wp-block-library-theme` stylesheets are dead weight on every request. Dropping
+     * them is purely a **payload win** (fewer HTTP requests, smaller critical path);
+     * it does NOT, on its own, remove the cascade fight that motivates the unlayered
+     * `a.btn-*` mirror and the `!important` button block in `resources/styles/app.css`.
+     *
+     * The reason: WordPress also emits the same `.wp-element-button` default block
+     * (background, padding longhands, etc.) inside `<style id="global-styles-inline-css">`
+     * — derived from `theme.json` + core defaults — which is **unlayered** and **cannot
+     * be dequeued** because it also carries the CSS custom properties (`--wp--preset--*`)
+     * that the rest of the theme relies on. The safety nets in `app.css` therefore stay.
+     *
+     * Block editor (admin) assets are untouched — only `wp_enqueue_scripts` (front-end)
+     * fires this hook. The editor still has full block styling.
+     *
+     * Escape hatch: set the `culvers_dequeue_core_block_library` filter to false in a
+     * site-specific MU-plugin if any page ever requires raw block styling.
+     */
+    public static function dequeueCoreBlockLibrary(): void
+    {
+        if (! apply_filters('culvers_dequeue_core_block_library', true)) {
+            return;
+        }
+
+        wp_dequeue_style('wp-block-library');
+        wp_dequeue_style('wp-block-library-theme');
     }
 
     public static function enqueueFront(): void

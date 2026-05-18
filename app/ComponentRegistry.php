@@ -30,6 +30,9 @@ use StoutLogic\AcfBuilder\FlexibleContentBuilder;
  * `main`, `typography`, `items`, `mobile`. Each is a flat field map of the same
  * shape consumed by {@see self::addField()}. The component file no longer declares
  * its own ACF tabs.
+ *
+ * Section schema is required: there is no legacy top-level `fields` fallback —
+ * `app/Components/*.php` files that don't conform are rejected by the validator.
  */
 class ComponentRegistry
 {
@@ -534,8 +537,7 @@ class ComponentRegistry
     }
 
     /**
-     * Pull a section's flat field map out of the component config, supporting
-     * the new section schema and the legacy single `fields` key for any not-yet-migrated layout.
+     * Pull a section's flat field map out of the component config.
      *
      * @param array<string, mixed> $config
      * @return array<string, array<string, mixed>>
@@ -551,7 +553,6 @@ class ComponentRegistry
 
     /**
      * Flatten a component config to all field configs for validation purposes.
-     * Supports both the new section schema and the legacy `fields` key.
      *
      * @param array<string, mixed> $config
      * @return array<string, array<string, mixed>>
@@ -566,14 +567,6 @@ class ComponentRegistry
                     if (is_array($field)) {
                         $merged[(string) $name] = $field;
                     }
-                }
-            }
-        }
-
-        if (isset($config['fields']) && is_array($config['fields'])) {
-            foreach ($config['fields'] as $name => $field) {
-                if (is_array($field)) {
-                    $merged[(string) $name] = $field;
                 }
             }
         }
