@@ -1,9 +1,17 @@
 /**
  * Hero slider: Splide carousel + breakpoint-driven copy motion (Alpine lifecycle).
  *
+ * Accessibility: respects `prefers-reduced-motion: reduce` by suppressing autoplay
+ * (WCAG 2.2.2 / 2.3.3 — no unsolicited motion). Manual navigation, drag, and
+ * pagination remain enabled — user-initiated motion is fine under reduce.
+ * The handler is reactive: if the user toggles the OS preference at runtime,
+ * autoplay pauses / resumes without a reload.
+ *
  * @param {import('alpinejs').Alpine} Alpine
  */
 import Splide from '@splidejs/splide';
+
+const REDUCE_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
 
 export default function registerHeroSliderAlpine(Alpine) {
   Alpine.data('heroSlider', () => ({
@@ -16,6 +24,18 @@ export default function registerHeroSliderAlpine(Alpine) {
     /** @type {ReturnType<typeof setTimeout> | undefined} */
     resizeTimer: undefined,
 
+    /** @type {MediaQueryList | null} */
+    reduceMql: null,
+
+    /** @type {((event: MediaQueryListEvent) => void) | undefined} */
+    boundOnReduceChange: undefined,
+
+    /** @type {number} */
+    slideCount: 0,
+
+    /** @type {boolean} */
+    reducedMotion: false,
+
     init() {
       const root = this.$root;
       const splideRoot = this.$refs.splideRoot;
@@ -26,7 +46,19 @@ export default function registerHeroSliderAlpine(Alpine) {
       this.boundOnResize = this.onResize.bind(this);
       window.addEventListener('resize', this.boundOnResize, { passive: true });
 
-      const slideCount = Number.parseInt(root.dataset.heroSlideCount || '0', 10);
+      this.slideCount = Number.parseInt(root.dataset.heroSlideCount || '0', 10);
+
+      this.reduceMql =
+        typeof window.matchMedia === 'function' ? window.matchMedia(REDUCE_MOTION_QUERY) : null;
+      this.reducedMotion = !!(this.reduceMql && this.reduceMql.matches);
+      if (this.reduceMql) {
+        this.boundOnReduceChange = this.onReduceChange.bind(this);
+        if (typeof this.reduceMql.addEventListener === 'function') {
+          this.reduceMql.addEventListener('change', this.boundOnReduceChange);
+        } else if (typeof this.reduceMql.addListener === 'function') {
+          this.reduceMql.addListener(this.boundOnReduceChange);
+        }
+      }
 
       this.splide = new Splide(splideRoot, {
         type: 'slide',
@@ -34,13 +66,13 @@ export default function registerHeroSliderAlpine(Alpine) {
         speed: 950,
         easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
         arrows: false,
-        pagination: slideCount > 1,
+        pagination: this.slideCount > 1,
         drag: true,
         gap: 0,
         height: '100%',
         cover: true,
         trimSpace: false,
-        autoplay: slideCount > 1,
+        autoplay: this.slideCount > 1 && !this.reducedMotion,
         interval: 6500,
         pauseOnHover: true,
         pauseOnFocus: true,
@@ -81,11 +113,41 @@ export default function registerHeroSliderAlpine(Alpine) {
       }, 420);
     },
 
+    /** @param {MediaQueryListEvent} event */
+    onReduceChange(event) {
+      this.reducedMotion = !!event.matches;
+      if (!this.splide) {
+        return;
+      }
+      /* Splide v4 exposes the Autoplay component on the live instance. Toggle it
+         rather than re-mounting so drag / pagination state stay intact. */
+      const autoplay = this.splide.Components && this.splide.Components.Autoplay;
+      if (!autoplay) {
+        return;
+      }
+      if (this.reducedMotion) {
+        if (typeof autoplay.pause === 'function') {
+          autoplay.pause();
+        }
+      } else if (this.slideCount > 1 && typeof autoplay.play === 'function') {
+        autoplay.play();
+      }
+    },
+
     teardown() {
       window.clearTimeout(this.resizeTimer);
       if (this.boundOnResize) {
         window.removeEventListener('resize', this.boundOnResize);
       }
+      if (this.reduceMql && this.boundOnReduceChange) {
+        if (typeof this.reduceMql.removeEventListener === 'function') {
+          this.reduceMql.removeEventListener('change', this.boundOnReduceChange);
+        } else if (typeof this.reduceMql.removeListener === 'function') {
+          this.reduceMql.removeListener(this.boundOnReduceChange);
+        }
+      }
+      this.reduceMql = null;
+      this.boundOnReduceChange = undefined;
       if (this.splide) {
         this.splide.destroy();
         this.splide = null;

@@ -10,8 +10,8 @@
  * Idempotent: only sets visibility_hide_phone when legacy meta is `hidden` and phone hide is still unset/false.
  */
 
-if (! defined('WPINC')) {
-    fwrite(STDERR, "Run via wp eval-file (WordPress must be bootstrapped).\n");
+if (! defined('WPINC') || ! defined('WP_CLI') || ! WP_CLI) {
+    fwrite(STDERR, "Run via WP-CLI (wp eval-file) so WordPress is bootstrapped under CLI.\n");
     exit(1);
 }
 

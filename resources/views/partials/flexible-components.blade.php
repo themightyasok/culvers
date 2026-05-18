@@ -114,7 +114,7 @@ $templateResolver = TemplateResolver::getInstance();
                data-component-background-wrapper="1"
                data-component-layout="{{ esc_attr($layout) }}"
                data-background-parallax="{{ ! empty($backgroundData['parallax']) ? '1' : '0' }}"
-               @if($backgroundData['styles'] ?? '') style="{{ $backgroundData['styles'] }}" @endif>
+               @if($backgroundData['styles'] ?? '') style="{{ esc_attr($backgroundData['styles']) }}" @endif>
             @include('partials.component-background-media', [
                 'backgroundData' => $backgroundData,
                 'backgroundParallaxAxis' => $parallaxAxis,

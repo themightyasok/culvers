@@ -16,7 +16,7 @@ $backgroundParallaxAxis = isset($backgroundParallaxAxis) && $backgroundParallaxA
     @if($backgroundType === 'image_centered')
         <div class="pointer-events-none absolute inset-0 z-0" aria-hidden="true">
             <div class="shadow-card mx-auto h-[80%] w-full max-w-[500px] overflow-hidden rounded-2xl {{ $centeredCardClasses }}"
-                 @if($centeredCardStyles !== '') style="{{ $centeredCardStyles }}" @endif>
+                 @if($centeredCardStyles !== '') style="{{ esc_attr($centeredCardStyles) }}" @endif>
                 <img class="h-full w-full object-cover"
                      @if($parallaxEnabled) data-background-parallax-image="1" data-background-parallax-axis="{{ $backgroundParallaxAxis }}" @endif
                      src="{{ esc_url($image['url']) }}"
@@ -55,5 +55,5 @@ $backgroundParallaxAxis = isset($backgroundParallaxAxis) && $backgroundParallaxA
 @endif
 
 @if($overlayStyles !== '')
-    <div class="absolute inset-0 z-10" style="{{ $overlayStyles }}" aria-hidden="true"></div>
+    <div class="absolute inset-0 z-10" style="{{ esc_attr($overlayStyles) }}" aria-hidden="true"></div>
 @endif

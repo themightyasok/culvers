@@ -261,6 +261,13 @@
                   }
                   $fp = $firstPreview !== '' ? esc_url($firstPreview) : '';
                   $fpJs = json_encode($fp, JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES);
+                  /* Fallback alt when the hovered sublink has no `previewAlt`. Uses the branch
+                     title (e.g. "Shop") so the preview image is never alt-empty while visible —
+                     WCAG SC 1.1.1: non-decorative imagery must carry a text alternative. */
+                  $branchAltJs = json_encode(
+                      (string) ($branch['title'] ?? ''),
+                      JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES
+                  );
                 @endphp
                 {{-- Panel anchor is full-width of `.mega-nav`; inner card stays `max-w-8xl`. --}}
                 <div
@@ -353,7 +360,7 @@
                             class="absolute inset-0 size-full object-cover"
                             x-bind:key='"mega-preview-{{ $branch['id'] }}:" + (megaOpenId === {{ $branch['id'] }} ? (previewSrc || {!! $fpJs !!}) : {!! $fpJs !!})'
                             x-bind:src='megaOpenId === {{ $branch['id'] }} ? (previewSrc || {!! $fpJs !!}) : {!! $fpJs !!}'
-                            x-bind:alt='megaOpenId === {{ $branch['id'] }} ? previewAlt : ""'
+                            x-bind:alt='megaOpenId === {{ $branch['id'] }} ? (previewAlt || {!! $branchAltJs !!}) : ""'
                             x-show='(megaOpenId === {{ $branch['id'] }} ? (previewSrc || {!! $fpJs !!}) : {!! $fpJs !!}).length > 0' />
                         </div>
                       </div>

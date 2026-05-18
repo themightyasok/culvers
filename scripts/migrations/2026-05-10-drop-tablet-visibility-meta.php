@@ -10,8 +10,8 @@
  *     wp eval-file wp-content/themes/culvers/scripts/migrations/2026-05-10-drop-tablet-visibility-meta.php
  */
 
-if (! defined('WPINC')) {
-    fwrite(STDERR, "Run via wp eval-file (WordPress must be bootstrapped).\n");
+if (! defined('WPINC') || ! defined('WP_CLI') || ! WP_CLI) {
+    fwrite(STDERR, "Run via WP-CLI (wp eval-file) so WordPress is bootstrapped under CLI.\n");
     exit(1);
 }
 

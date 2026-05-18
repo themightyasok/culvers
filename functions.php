@@ -59,7 +59,10 @@ if (! function_exists('blade_view')) {
             echo culvers_blade()->run($template, $data);
         } catch (\Throwable $e) {
             error_log('[culvers][blade_view] ' . $e->getMessage());
-            if (defined('WP_DEBUG') && WP_DEBUG) {
+            /* Show the message in the rendered page on local only — `WP_DEBUG` is often on
+               in staging, where the error trace would leak internal paths to anyone with
+               the URL. Keep `error_log` always-on so the message still reaches the log. */
+            if (function_exists('wp_get_environment_type') && wp_get_environment_type() === 'local') {
                 echo '<pre>' . esc_html($e->getMessage()) . '</pre>';
             }
         }
