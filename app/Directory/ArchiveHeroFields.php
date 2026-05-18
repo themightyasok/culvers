@@ -149,6 +149,18 @@ final class ArchiveHeroFields
             'new_lines' => 'wpautop',
         ]);
 
+        $group->addImage($prefix . '_footer_newsletter_image', [
+            'label' => __('Footer newsletter — background image', 'culvers'),
+            'instructions' => __(
+                'Used on this directory’s archive and on singles until a post overrides it '
+                . '(sidebar “Footer newsletter” when editing a single). Leave empty to use the site-wide '
+                . 'Customizer image under Appearance → Customize → Culver Square footer.',
+                'culvers'
+            ),
+            'return_format' => 'id',
+            'preview_size' => 'large',
+        ]);
+
         if (isset($config['extra'])) {
             /* PHPDoc constrains `extra` to `callable(FieldsBuilder): void`; no
                extra `is_callable()` guard required. */

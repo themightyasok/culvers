@@ -9,8 +9,8 @@
    * square · flat 20 % black scrim · centred Canela headline + Commuters
    * kicker + Glowleaf CTA).
    *
-   * Figma frame `51:7648` (1440 × 855) — body is `bg-light-cream` so the
-   * footer reads against the same surface.
+   * Figma frame `51:7648` referenced 855px band height — live behaviour matches the
+   * homepage hero viewport fill (`min-h-[100svh]`).
    *
    * Image source:
    *   1. `culvers_404_image_id` theme mod (Appearance → Customize).
@@ -48,19 +48,21 @@
 
   $headline = (string) apply_filters(
       'culvers_404_headline',
-      __('This wasn\u2019t on the map.', 'culvers')
+      // Real apostrophes (U+2019) — `\u2019` in PHP single-quoted strings is not decoded and leaked to HTML.
+      __('This wasn’t on the map.', 'culvers')
   );
   $kicker = (string) apply_filters(
       'culvers_404_kicker',
-      __('Let\u2019s get you back on track', 'culvers')
+      __('Let’s get you back on track', 'culvers')
   );
   $ctaLabel = (string) apply_filters('culvers_404_cta_label', __('Return to homepage', 'culvers'));
   $ctaUrl = (string) apply_filters('culvers_404_cta_url', home_url('/'));
 @endphp
 
 @section('content')
+  {{-- Same viewport fill as homepage hero slides (`hero-slider.blade.php` inner `min-h-[100svh]`). --}}
   <section
-    class="four-oh-four hero-slider--viewport relative isolate flex min-h-[855px] w-full items-center justify-center overflow-hidden bg-deep-moss text-white"
+    class="four-oh-four hero-slider--viewport relative isolate flex min-h-[100svh] w-full items-center justify-center overflow-hidden bg-deep-moss text-white"
     aria-labelledby="four-oh-four-heading">
     @if($bgUrl !== '' && $bgId > 0)
       <div class="pointer-events-none absolute inset-0 z-0" aria-hidden="true">
@@ -91,15 +93,17 @@
     {{-- Flat 20 % black scrim — Figma uses a single scrim, not a gradient. --}}
     <div class="pointer-events-none absolute inset-0 z-0 bg-black/20" aria-hidden="true"></div>
 
-    <div class="relative z-10 mx-auto flex w-full max-w-3xl flex-col items-center px-6 pb-16 pt-[length:var(--site-header-offset,11.25rem)] text-center">
+    <div
+      class="relative z-10 mx-auto flex w-full max-w-[min(100%,60rem)] flex-col items-center px-4 pb-16 pt-[length:var(--site-header-offset,11.25rem)] text-center md:px-5 lg:px-6">
+      {{-- Match `.hero-slider__copy` width + title ramp so the lockup wraps ~two lines like the homepage hero. --}}
       <h1
         id="four-oh-four-heading"
-        class="font-heading text-6xl leading-none text-brand-500 sm:text-7xl md:text-8xl lg:text-9xl">
-        {{ $headline }}
+        class="text-balance break-words font-heading text-5xl leading-[1.1] text-brand-500 sm:text-7xl sm:leading-none md:text-8xl lg:text-9xl">
+        {{ esc_html($headline) }}
       </h1>
 
-      <p class="mt-7 font-label text-xl font-semibold uppercase leading-6 tracking-[0.2em] text-white">
-        {{ $kicker }}
+      <p class="mt-5 font-label text-xl font-semibold uppercase leading-6 tracking-[0.2em] text-white md:mt-7">
+        {{ esc_html($kicker) }}
       </p>
 
       <div class="mt-8 flex justify-center">

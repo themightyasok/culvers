@@ -48,5 +48,6 @@ class Fields
         Directory\NewsArchiveFields::register();
         Directory\CareerFields::register();
         Directory\CareerArchiveFields::register();
+        Footer\FooterNewsletterEditorFields::register();
     }
 }

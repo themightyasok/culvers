@@ -1,7 +1,8 @@
 @php
   use App\Customizer\FooterCustomizer;
+  use App\Footer\FooterNewsletterImage;
 
-  $newsletterImgId = (int) get_theme_mod(FooterCustomizer::MOD_NEWSLETTER_IMAGE_ID, 0);
+  $newsletterImgId = FooterNewsletterImage::attachmentIdForCurrentView();
   $newsletterAction = FooterCustomizer::newsletterFormAction();
   $instagramUrl = FooterCustomizer::instagramUrl();
   $facebookUrl = FooterCustomizer::facebookUrl();
