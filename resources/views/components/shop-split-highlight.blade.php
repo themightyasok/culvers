@@ -116,13 +116,15 @@
         <div
           class="flex flex-col items-center justify-center gap-6 px-8 py-12 text-center max-lg:order-1 lg:order-none lg:gap-8 lg:px-10 xl:px-14 xl:py-12 {{ $ratio === '50-50' ? 'lg:col-span-6' : 'lg:col-span-7' }}">
           @if($hasTabs)
-            {{-- Tab list — Figma 51:7171 gaps 32px and is centre-justified; the divider rule below
-                 needs the row to be `w-full` so the line spans the full panel padding box. --}}
+            {{-- Tab list — Figma 51:7171 gaps 32px and is centre-justified. The border-b sits on
+                 this row so its width MUST match the body block below (Figma's wrapper 51:7170 is
+                 524px, body 51:7182 is 522px — same line). Cap with `max-w-[34.625rem]` so the rule
+                 and the copy share the same column. --}}
             <div
               id="{{ esc_attr($tablistId) }}"
               role="tablist"
               aria-label="{{ esc_attr__('Highlight sections', 'culvers') }}"
-              class="shop-split-highlight__tabs flex w-full flex-wrap items-center justify-center gap-6 border-b border-light-cream/30 pb-6 lg:gap-8 lg:pb-8">
+              class="shop-split-highlight__tabs flex w-full max-w-[34.625rem] flex-wrap items-center justify-center gap-6 border-b border-light-cream/30 pb-6 lg:gap-8 lg:pb-8">
               @foreach($tabs as $i => $tab)
                 @php
                     $tabId = $tablistId . '-tab-' . $i;
