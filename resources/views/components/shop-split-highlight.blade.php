@@ -137,7 +137,7 @@
                   aria-controls="{{ esc_attr($panelId) }}"
                   aria-selected="{{ $i === 0 ? 'true' : 'false' }}"
                   tabindex="{{ $i === 0 ? '0' : '-1' }}"
-                  class="shop-split-highlight__tab cursor-pointer rounded-full px-5 py-2 font-sans text-xs font-semibold uppercase tracking-wider transition-colors duration-150 culvers-focus-ring"
+                  class="shop-split-highlight__tab cursor-pointer rounded-full px-5 py-2 font-label text-xs font-semibold uppercase tracking-widest transition-colors duration-150 culvers-focus-ring"
                   x-on:click="selectTab({{ $i }})"
                   x-on:keydown.right.prevent="selectTab(({{ $i }} + 1) % {{ count($tabs) }}, true)"
                   x-on:keydown.left.prevent="selectTab(({{ $i }} - 1 + {{ count($tabs) }}) % {{ count($tabs) }}, true)"
