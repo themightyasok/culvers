@@ -1,18 +1,43 @@
 # Component authoring — the canonical contract
 
+> [!WARNING]
+> **Sections 2 (ACF field model) of this document is partly stale.** The theme
+> was refactored to a section-keyed component schema (`main` / `typography` /
+> `items` / `mobile`) — see `app/ComponentRegistry.php` and any file in
+> `app/Components/` (e.g. `content_section.php`) for the actual contract.
+>
+> The following references in this file describe **symbols that no longer exist**:
+>
+> - `ResponsiveFields` class — removed.
+> - `ResponsiveFields::breakpointTabFields()` / `imageArray()` / `value()` /
+>   `valueForMdUp()` / `valueForPhone()` — removed.
+> - `Component::responsiveImagePair()` / `responsiveImageTriplet()` — removed.
+> - `ComponentRegistry::registerSharedLayoutChrome()` — removed.
+> - Top-level `'fields' => array_merge([...], …)` scaffold — replaced by
+>   section-keyed arrays (`main` / `typography` / `items` / `mobile`).
+> - `tab_general` / `tab_breakpoints` / `tab_section_typography` /
+>   `tab_motion_spacing` / `tab_settings` field-name conventions — components
+>   no longer emit their own ACF tabs; the registry injects four tabs
+>   (Main, Typography, Items, Mobile) around the section-keyed config.
+>
+> **Source of truth, in this order:**
+>
+> 1. `app/ComponentRegistry.php` (class docblock + `addMainTab` / `addTypographyTab`
+>    / `addItemsTab` / `addMobileTab`).
+> 2. `app/Components/content_section.php` — minimal canonical example.
+> 3. `app/Components/three_card_block.php` — complex canonical example with
+>    typography + items + mobile sections.
+>
+> Sections 1, 2.2 (vertical rhythm), 2.3 (naming rules), 2.4 (migrations),
+> 3 (Blade template), and 4 (Tailwind & tokens) below are still accurate.
+
 Every flexible-content component in this theme follows the same shape. The
 goal is **one predictable pattern** so editors, reviewers, and AI agents
 can read, build, modify, or replace any component without surprises.
 
-> **AI agents, read this first.** Anything that doesn't follow the rules
-> here is wrong by definition — fix the component, don't bend the rules.
-> When this file disagrees with one component, the rules win and the
-> component gets aligned.
-
 > Source of truth (code):
 > [`app/ComponentRegistry.php`](../app/ComponentRegistry.php),
 > [`app/Helpers/Component.php`](../app/Helpers/Component.php),
-> [`app/Helpers/ResponsiveFields.php`](../app/Helpers/ResponsiveFields.php),
 > [`app/Components/`](../app/Components),
 > [`resources/views/components/`](../resources/views/components).
 >
