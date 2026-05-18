@@ -127,8 +127,10 @@
       @if($showPanel)
         <aside class="contact__panel flex flex-col text-faded-olive" aria-label="{{ esc_attr__('Getting here and contact details', 'culvers') }}">
           <div class="contact__panel-block">
-            {{-- Figma `51:9414`: Canela 32 / lh 1.1, faded olive. --}}
-            <h3 class="contact__panel-heading font-heading text-3xl leading-[1.1]">
+            {{-- Figma 51:9546 mobile: panel subheads are Halyard Medium 20 / lh 24 — quieter than
+                 the image-hero H1 above so the address copy below feels related, not announced.
+                 (Was Canela 32 — too display-y next to the body copy.) --}}
+            <h3 class="contact__panel-heading font-sans text-xl font-medium leading-6 text-faded-olive">
               {{ esc_html(FooterCustomizer::gettingHereTitle()) }}
             </h3>
             @if($address !== '')
@@ -152,8 +154,8 @@
 
           @if($phone !== '' || $contactEmail !== '' || $hasSocial)
             <div class="contact__panel-block mt-12">
-              {{-- Figma `51:9414`: Canela 32 / lh 1.1, faded olive. --}}
-              <h3 class="contact__panel-heading font-heading text-3xl leading-[1.1]">
+              {{-- Figma 51:9556 mobile: matches Getting Here subhead spec above. --}}
+              <h3 class="contact__panel-heading font-sans text-xl font-medium leading-6 text-faded-olive">
                 {{ esc_html(FooterCustomizer::contactTitle()) }}
               </h3>
               @if($phone !== '')
@@ -210,9 +212,11 @@
         x-on:submit.prevent="submit()"
         novalidate>
           <div class="contact__field flex flex-col gap-2">
+            {{-- Figma 51:9574: form field labels are Halyard Medium 20 / lh 24 title-case (no
+                 uppercase / no tracking). Single source for every contact field below. --}}
             <label
               for="{{ esc_attr($instanceId) }}-first"
-              class="contact__label font-label text-xs font-semibold uppercase tracking-widest text-deep-moss">
+              class="contact__label font-sans text-xl font-medium leading-6 text-deep-moss">
               {{ esc_html($firstNameLabel) }}
             </label>
             <input
@@ -232,7 +236,7 @@
           <div class="contact__field flex flex-col gap-2">
             <label
               for="{{ esc_attr($instanceId) }}-last"
-              class="contact__label font-label text-xs font-semibold uppercase tracking-widest text-deep-moss">
+              class="contact__label font-sans text-xl font-medium leading-6 text-deep-moss">
               {{ esc_html($lastNameLabel) }}
             </label>
             <input
@@ -252,7 +256,7 @@
           <div class="contact__field flex flex-col gap-2">
             <label
               for="{{ esc_attr($instanceId) }}-email"
-              class="contact__label font-label text-xs font-semibold uppercase tracking-widest text-deep-moss">
+              class="contact__label font-sans text-xl font-medium leading-6 text-deep-moss">
               {{ esc_html($emailLabel) }}
             </label>
             <input
@@ -273,7 +277,7 @@
           <div class="contact__field flex flex-col gap-2">
             <label
               for="{{ esc_attr($instanceId) }}-reason"
-              class="contact__label font-label text-xs font-semibold uppercase tracking-widest text-deep-moss">
+              class="contact__label font-sans text-xl font-medium leading-6 text-deep-moss">
               {{ esc_html($reasonLabel) }}
             </label>
             @if($hasReasonChoices)
@@ -313,7 +317,7 @@
           <div class="contact__field md:col-span-2 flex flex-col gap-2">
             <label
               for="{{ esc_attr($instanceId) }}-message"
-              class="contact__label font-label text-xs font-semibold uppercase tracking-widest text-deep-moss">
+              class="contact__label font-sans text-xl font-medium leading-6 text-deep-moss">
               {{ esc_html($messageLabel) }}
             </label>
             <textarea

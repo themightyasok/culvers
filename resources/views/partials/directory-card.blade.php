@@ -54,12 +54,13 @@
       href="{{ esc_url($spec->permalink) }}"
       class="group directory-shop-card__link relative block w-full max-w-none overflow-hidden rounded-[11px] outline-none culvers-focus-ring">
       {{--
-        Moss tile: outer height is fixed at 294px so grid tiles stay uniform. The rule is not
-        at a fixed y-position: the upper band is flex-1 (min-h-0) and shrinks so the lower band
-        can grow upward when the title wraps; eyebrow/logo stays centred in the band that remains.
+        Moss tile: outer height is fixed at 334px (Figma 51:8467 card frame — 334 px tall on the
+        mobile shop archive, divider at y=242, title at y=265). The rule is not at a fixed
+        y-position: the upper band is flex-1 (min-h-0) and shrinks so the lower band can grow
+        upward when the title wraps; eyebrow/logo stays centred in the band that remains.
         Title + subtitle stack in normal flow (no absolute overlap).
       --}}
-      <div class="relative flex h-[294px] w-full flex-col overflow-hidden bg-dustleaf">
+      <div class="relative flex h-[334px] w-full flex-col overflow-hidden bg-dustleaf">
         @if ($spec->hasHoverPhoto())
           <img
             src="{{ esc_url($spec->hoverPhotoUrl) }}"

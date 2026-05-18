@@ -39,10 +39,10 @@
             (half of the newsletter sits in the white band, half on olive). The spacer must reserve
             **newsletter_half + clear breathing room** so the card never visually slams into the last
             component above it. Newsletter min-heights (Figma calibrated) are
-            300 / 380 / 420 → halves 150 / 190 / 210. We add ~90 / 130 / 150 px of clean whitespace
+            420 / 460 / 480 → halves 210 / 230 / 240. We add ~90 / 130 / 150 px of clean whitespace
             on top so the rhythm matches the rest of the page-to-section spacing.
           --}}
-          <div aria-hidden="true" class="site-footer-spacer h-[240px] w-full bg-lighter-cream md:h-[320px] lg:h-[360px]"></div>
+          <div aria-hidden="true" class="site-footer-spacer h-[300px] w-full bg-lighter-cream md:h-[360px] lg:h-[390px]"></div>
 
           @include('sections.footer')
         </div>

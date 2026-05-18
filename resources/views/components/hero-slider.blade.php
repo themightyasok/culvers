@@ -139,7 +139,9 @@
                       @endif
 
                       @if($kicker !== '')
-                        <p class="mt-5 font-label text-xl font-semibold uppercase leading-6 tracking-[0.2em] text-white">
+                        {{-- Figma 51:8206: Commuters SemiBold 16 / lh 24 / 1 px tracking, white, all caps.
+                             Single size across breakpoints to match image-hero subtitle. --}}
+                        <p class="mt-5 font-label text-base font-semibold uppercase leading-6 tracking-[0.0625em] text-white">
                           {{ esc_html($kicker) }}
                         </p>
                       @endif

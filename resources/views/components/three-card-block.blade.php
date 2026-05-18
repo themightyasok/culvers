@@ -23,6 +23,12 @@
   $sub = trim((string) ($c['cards_subheading'] ?? ''));
   $body = (string) ($c['cards_body'] ?? '');
 
+  /* Figma `51:8214 / 8220 / 8226` (homepage mobile manual cards): landscape
+     ≈1.73:1 with title + glowleaf arrow rendered inline. Manual mode is the
+     only variant that reflows on mobile — blog / CPT carousels keep the
+     portrait card so the swipable strip still reads as a stack. */
+  $isManualMode = (($c['cards_source'] ?? 'manual') === 'manual');
+
   /* Resolve via helper so CPT mode auto-targets the chosen archive URL
      (e.g. Latest Events strip on /whats-on/ links to /latest-events/
      with no editor wiring). Manual + blog modes still honour the explicit URL. */
@@ -73,11 +79,12 @@
         @endif
 
         @if($body !== '')
-          {{-- Figma: short intro copy = Halyard Display Light 20px / lh 26 (text-xl).
+          {{-- Figma 51:8212 mobile: Halyard Book 14 / lh 20 (text-sm).
+               Figma desktop: Halyard Light 20 / lh 26 (text-xl).
                Prose plugin defaults force 18px so we render the body with explicit
                utilities — keeps prose for rich text elsewhere intact. --}}
           <div
-            class="three-card-block__intro mx-auto mt-6 max-w-[36.75rem] text-left font-sans text-xl font-light leading-[1.3] text-deep-moss md:text-center [&_p+p]:mt-4 [&_strong]:font-medium rt-link-olive-surface">
+            class="three-card-block__intro mx-auto mt-6 max-w-[36.75rem] text-left font-sans text-sm font-light leading-5 text-deep-moss md:text-center md:text-xl md:leading-[1.3] [&_p+p]:mt-4 [&_strong]:font-medium rt-link-olive-surface">
             {!! $body !!}
           </div>
         @endif
@@ -170,10 +177,18 @@
                 $imageUrl = isset($image['url']) ? (string) $image['url'] : '';
                 $alt = trim((string) ($card['alt'] ?? $title));
               @endphp
+              @php
+                /* Manual-mode mobile aspect — landscape band per Figma 51:8214,
+                   reverts to the canonical 2:3 portrait at `sm:` and above so
+                   every breakpoint from tablet up reads as Figma desktop. */
+                $cardAspectClass = $isManualMode
+                    ? 'aspect-[173/100] sm:aspect-[2/3]'
+                    : 'aspect-[2/3]';
+              @endphp
               @if($href !== '' && $title !== '')
                 <a
                   href="{{ esc_url($href) }}"
-                  class="three-card-block__card group/card relative flex aspect-[2/3] w-full origin-center rounded-[11px] outline-none motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out motion-safe:hover:scale-[1.03] motion-safe:focus-visible:scale-[1.03] motion-reduce:hover:scale-100 motion-reduce:focus-visible:scale-100 focus-visible:ring-2 focus-visible:ring-glowleaf focus-visible:ring-offset-2 focus-visible:ring-offset-light-cream">
+                  class="three-card-block__card group/card relative flex {{ $cardAspectClass }} w-full origin-center rounded-[11px] outline-none motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out motion-safe:hover:scale-[1.03] motion-safe:focus-visible:scale-[1.03] motion-reduce:hover:scale-100 motion-reduce:focus-visible:scale-100 focus-visible:ring-2 focus-visible:ring-glowleaf focus-visible:ring-offset-2 focus-visible:ring-offset-light-cream">
                   <span
                     class="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[inherit]"
                     aria-hidden="true">
@@ -207,24 +222,36 @@
                       <span class="block h-full w-full bg-gradient-to-br from-dustleaf/40 via-deep-moss/25 to-faded-olive/35"></span>
                     @endif
 
-                    {{-- Figma uses a single ~25% black scrim, not a 3-stop gradient. --}}
+                    {{-- Figma uses a single ~30% black scrim (51:8217 / 8223 / 8229), not a 3-stop gradient. --}}
                     <span
-                      class="pointer-events-none absolute inset-0 z-10 bg-black/25"></span>
+                      class="pointer-events-none absolute inset-0 z-10 bg-black/30"></span>
                   </span>
 
-                  {{-- Sheet feedback row 11: hover state. Title turns Glowleaf and an "Explore"
-                       pill button reveals below it (motion-safe only — reduced-motion users see
-                       the resting state). Stack lives in a flex column so the centred resting
-                       title and the post-hover button form one centred block. --}}
+                  {{-- Figma 51:8214 (mobile manual): landscape card with title + 43 × 43 glowleaf
+                       arrow rendered inline horizontally. Figma desktop + every non-manual
+                       (blog/CPT) layout keeps the portrait stack — title centred, "Explore" pill
+                       revealed on hover (motion-safe only). The same markup serves both shapes
+                       via responsive flex-direction + the always-visible mobile arrow icon. --}}
                   <span
-                    class="relative z-10 flex w-full flex-1 flex-col items-center justify-center gap-5 px-6 py-10 text-center">
+                    class="relative z-10 flex w-full flex-1 items-center justify-center gap-5 px-6 py-10 text-center {{ $isManualMode ? 'max-sm:flex-row max-sm:justify-between max-sm:gap-4 max-sm:px-7 max-sm:py-6 max-sm:text-left sm:flex-col' : 'flex-col' }}">
                     <span
                       class="font-heading text-[36px] leading-[1.1] text-white transition-colors duration-300 ease-out motion-safe:group-hover/card:text-glowleaf motion-safe:group-focus-within/card:text-glowleaf md:text-[46px] md:leading-none">
                       {{ esc_html($title) }}
                     </span>
+                    @if($isManualMode)
+                      {{-- Inline arrow shown in the resting state on mobile only — Figma 51:8217 etc.
+                           Hidden at sm+ so the desktop "Explore" pill below remains the canonical CTA. --}}
+                      <span
+                        aria-hidden="true"
+                        class="inline-flex size-[43px] shrink-0 items-center justify-center rounded-full bg-glowleaf text-deep-moss transition-transform duration-300 ease-out motion-safe:group-hover/card:scale-[1.06] motion-safe:group-focus-within/card:scale-[1.06] sm:hidden">
+                        <svg class="size-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                      </span>
+                    @endif
                     <span
                       aria-hidden="true"
-                      class="inline-flex items-center justify-center rounded-full border border-glowleaf bg-transparent px-7 py-2 font-label text-[13px] font-semibold uppercase leading-[28px] tracking-[0.05em] text-glowleaf opacity-0 transition-opacity duration-300 ease-out motion-safe:group-hover/card:opacity-100 motion-safe:group-focus-within/card:opacity-100 motion-reduce:hidden">
+                      class="inline-flex items-center justify-center rounded-full border border-glowleaf bg-transparent px-7 py-2 font-label text-[13px] font-semibold uppercase leading-[28px] tracking-[0.05em] text-glowleaf opacity-0 transition-opacity duration-300 ease-out motion-safe:group-hover/card:opacity-100 motion-safe:group-focus-within/card:opacity-100 motion-reduce:hidden {{ $isManualMode ? 'max-sm:hidden' : '' }}">
                       {{ __('Explore', 'culvers') }}
                     </span>
                   </span>

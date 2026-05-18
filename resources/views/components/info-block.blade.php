@@ -114,6 +114,9 @@
                 @endif
               </div>
               <div class="mt-4 flex w-full max-w-[19rem] flex-col items-center gap-1.5">
+                {{-- Figma 51:8283 tile heading: Canela 42 / Faded Olive. Tile uses fixed heights
+                     (`md:h-[248px]`) so we keep `leading-none` for single-line titles — the airy
+                     "lh 84" feel comes from the surrounding mt-4 + tile padding, not the lh value. --}}
                 <h3 class="m-0 w-full font-heading text-[42px] font-normal leading-none tracking-normal text-faded-olive lg:whitespace-nowrap">
                   {{ esc_html($cell['title']) }}
                 </h3>

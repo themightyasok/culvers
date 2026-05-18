@@ -48,9 +48,11 @@
       {{-- Dividers aligned with opening-hours shop rows ({@see opening-hours.blade.php} `border-faded-olive/40`). --}}
       <div
         class="{{ esc_attr($hasSocial ? 'grid gap-10 divide-y divide-faded-olive/40 lg:grid-cols-3 lg:gap-0 lg:divide-x lg:divide-y-0' : 'grid gap-10 divide-y divide-faded-olive/40 lg:grid-cols-2 lg:gap-0 lg:divide-x lg:divide-y-0') }}">
-        {{-- Column titles: Figma H4 subtitle (`51:6900`, `51:6903`): Canela 32 lh 1.1 (`text-3xl`). Values (`51:6901`, `51:6904`): Halyard Book 24 lh 30. --}}
+        {{-- Column titles: Figma 51:8898 / 8902 / 8906 mobile = Halyard Medium 20 / lh 23
+             (quieter label that matches Figma's shop card subheads — Canela 32 was too display-y).
+             Values (51:6901, 51:6904) remain Halyard Book 24 / lh 30. --}}
         <div class="flex flex-col items-center text-center lg:px-8 lg:pb-0 lg:pt-1 {{ $hasSocial ? '' : 'lg:pl-0' }}">
-          <p class="font-heading text-3xl text-faded-olive">{{ esc_html($contactLabel) }}</p>
+          <p class="font-sans text-xl font-medium leading-6 text-faded-olive">{{ esc_html($contactLabel) }}</p>
           @if($phone !== '')
             @php $telHref = preg_replace('/[^0-9+]/', '', str_replace("\xc2\xa0", ' ', $phone)); @endphp
             <p class="mt-3 font-sans text-2xl font-light leading-[30px] text-faded-olive">
@@ -64,7 +66,7 @@
         </div>
 
         <div class="flex flex-col items-center pt-10 text-center lg:px-8 lg:pt-1">
-          <p class="font-heading text-3xl text-faded-olive">{{ esc_html($addressLabel) }}</p>
+          <p class="font-sans text-xl font-medium leading-6 text-faded-olive">{{ esc_html($addressLabel) }}</p>
           @if($addressForDisplay !== '')
             <p class="mt-3 font-sans text-2xl font-light leading-[30px] text-faded-olive">
               {{ esc_html($addressForDisplay) }}</p>
@@ -73,7 +75,7 @@
 
         @if($hasSocial)
           <div class="flex flex-col items-center pt-10 text-center lg:px-8 lg:pt-1 lg:pr-0">
-            <p class="font-heading text-3xl text-faded-olive">{{ esc_html($socialLabel) }}</p>
+            <p class="font-sans text-xl font-medium leading-6 text-faded-olive">{{ esc_html($socialLabel) }}</p>
             @php
               $socialLinkClass =
                   'shop-store-details__social-link inline-flex items-center gap-2 font-label text-sm font-semibold uppercase '

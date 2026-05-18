@@ -113,10 +113,12 @@
   data-travel-calculator
   x-data='travelCalculator({{ $alpineConfig }})'>
   <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
-    {{-- Card matches Figma 51:7973 (1248px wide / 64px vertical padding /
-         120px horizontal at desktop). On smaller screens we ramp the
-         horizontal padding down so the inputs never touch the rounded edge. --}}
-    <div class="travel-calculator__band mx-auto w-full max-w-[78rem] rounded-[10px] bg-light-green px-6 py-12 sm:px-10 md:px-16 md:py-16 lg:px-24 xl:px-[120px]">
+    {{-- Card matches Figma 51:7973 (1248 × 441, 64 / 120 padding desktop)
+         + Figma 51:9028 mobile (16 / 58 / 91 padding inside a 399-wide card).
+         Mobile uses asymmetric vertical padding (58 top / 91 bottom) so the
+         title sits closer to the top edge while the search button has room
+         below — sm and up reset to the symmetric desktop pattern. --}}
+    <div class="travel-calculator__band mx-auto w-full max-w-[78rem] rounded-[10px] bg-light-green px-4 pt-14 pb-20 sm:px-10 sm:py-12 md:px-16 md:py-16 lg:px-24 xl:px-[120px]">
       {{-- Inner content area is 1008px wide per Figma (1248 - 120·2). --}}
       <div class="mx-auto w-full max-w-[63rem]">
         @if($hasIntro)
@@ -155,10 +157,11 @@
           x-on:submit.prevent="submit()"
           novalidate>
           <div class="travel-calculator__field flex flex-col gap-[14px]">
-            {{-- Figma `51:7982` field label: Commuters SemiBold 12 / lh 24 / 1 px tracking / uppercase. --}}
+            {{-- Figma 51:7982 field label: Commuters SemiBold 12 / lh 24 / 0.64 px tracking / uppercase.
+                 0.64 / 12 ≈ 0.054em — was 0.0833em (1 px) which read slightly too open in dense form rows. --}}
             <label
               for="{{ esc_attr($instanceId) }}-origin"
-              class="font-label text-xs font-semibold uppercase leading-6 tracking-[0.0833em] text-deep-moss">
+              class="font-label text-xs font-semibold uppercase leading-6 tracking-[0.054em] text-deep-moss">
               {{ esc_html($destLabel) }}
             </label>
             <input
@@ -175,10 +178,10 @@
           </div>
 
           <div class="travel-calculator__field flex flex-col gap-[14px]">
-            {{-- Figma `51:7988` field label: Commuters SemiBold 12 / lh 24 / 1 px tracking / uppercase. --}}
+            {{-- Figma 51:7988 field label: matches origin label tracking above (0.054em ≈ 0.64 px). --}}
             <label
               for="{{ esc_attr($instanceId) }}-mode"
-              class="font-label text-xs font-semibold uppercase leading-6 tracking-[0.0833em] text-deep-moss">
+              class="font-label text-xs font-semibold uppercase leading-6 tracking-[0.054em] text-deep-moss">
               {{ esc_html($modeLabel) }}
             </label>
             <div class="relative">
@@ -222,7 +225,9 @@
         </form>
 
         <div
-          class="travel-calculator__result mt-10 min-h-[1.5rem] text-center font-sans text-xs font-semibold uppercase leading-6 tracking-[1px] text-deep-moss md:text-xs"
+          {{-- Figma 51:9221: result copy "Your journey via public transport is …" sits in
+               Halyard Book 20 / lh 1.3 / Deep Moss — sentence case, no tracking. --}}
+          class="travel-calculator__result mt-10 min-h-[1.5rem] text-center font-sans text-xl font-light leading-[1.3] text-deep-moss"
           role="status"
           aria-live="polite">
           <span x-show="error !== ''" class="text-red-700" x-text="error" x-cloak></span>

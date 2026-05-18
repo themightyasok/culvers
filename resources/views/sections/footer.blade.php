@@ -66,10 +66,10 @@
            phantom layout gap (transform does not affect flow). Spacer in `layouts/app.blade.php`
            matches these halves so main content is not overlapped. --}}
       <section
-        class="footer-newsletter-band relative z-20 -mb-[150px] -translate-y-1/2 md:-mb-[190px] lg:-mb-[210px]"
+        class="footer-newsletter-band relative z-20 -mb-[210px] -translate-y-1/2 md:-mb-[230px] lg:-mb-[240px]"
         aria-labelledby="footer-newsletter-heading">
         <div
-          class="footer-newsletter relative min-h-[300px] overflow-hidden rounded-lg md:min-h-[380px] md:rounded-[10px] lg:min-h-[420px]"
+          class="footer-newsletter relative min-h-[420px] overflow-hidden rounded-lg md:min-h-[460px] md:rounded-[10px] lg:min-h-[480px]"
           data-background-parallax-trigger>
           <div class="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]" aria-hidden="true">
             @if($newsletterImgId > 0 || $newsletterFallbackUri !== '')

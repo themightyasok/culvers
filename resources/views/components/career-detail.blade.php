@@ -86,13 +86,18 @@
     data-career-detail>
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
       <div class="career-detail__band grid gap-10 md:gap-12 lg:grid-cols-[minmax(0,336px)_minmax(0,1fr)] lg:gap-16">
-        <aside class="career-detail__sidebar flex flex-col text-deep-moss">
+        {{-- Figma 51:8408 mobile: every sidebar element (logo, title, meta rows, Apply CTA)
+             is centred on the column. Reverts to a left-aligned column at lg+ where the
+             grid splits to a 2-up layout. --}}
+        <aside class="career-detail__sidebar flex flex-col items-center text-center text-deep-moss lg:items-stretch lg:text-left">
           @if($employerLogoUrl !== '')
-            <div class="career-detail__employer-logo mb-6 flex max-w-[13rem] md:max-w-[15rem]">
+            <div class="career-detail__employer-logo mb-6 flex max-w-[13rem] justify-center lg:justify-start md:max-w-[15rem]">
               @php
                   $employerLogoAlt = trim((string) ($employerLogo['alt'] ?? ''));
+                  /* Sidebar centring on mobile (Figma 51:8408) → logo centred in column too.
+                     Reverts to `object-left` at lg+ where the sidebar is left-aligned. */
                   $employerLogoImgArgs = [
-                      'class' => 'h-auto w-full max-h-14 object-contain object-left md:max-h-[4.25rem]',
+                      'class' => 'h-auto w-full max-h-14 object-contain object-center lg:object-left md:max-h-[4.25rem]',
                       'loading' => 'eager',
                       'decoding' => 'async',
                   ];
@@ -107,22 +112,28 @@
             </div>
           @endif
           @if($title !== '')
-            <{{ $titleTag }} class="career-detail__title font-heading text-4xl leading-[0.95] md:text-5xl lg:text-6xl">
+            {{-- Figma 51:8409 mobile: Canela 46 / lh 1.1 / Faded Olive (H1 Mobile token).
+                 `text-5xl` (48 / lh 1.1) is the closest stock token and matches the rest of the
+                 site H1 ladder. Desktop bumps to `text-6xl` (58 / lh 1.15) per section H2 spec. --}}
+            <{{ $titleTag }} class="career-detail__title font-heading text-5xl lg:text-6xl">
               {{ esc_html($title) }}
             </{{ $titleTag }}>
           @endif
 
           @if($meta !== [])
-            <dl class="career-detail__meta mt-8 flex flex-col">
+            {{-- Figma 51:8411 / 8413 / 8415: meta rows are centred on mobile with a hairline
+                 divider between each row, label = Halyard Medium 20 / lh 24 (NOT uppercase),
+                 value = Halyard Light 20 / lh 24. Reverts to left-align at lg+. --}}
+            <dl class="career-detail__meta mt-8 flex w-full flex-col items-stretch">
               @foreach($meta as $row)
-                <div class="career-detail__meta-row flex flex-col gap-1 border-t border-deep-moss/20 py-5 first:border-t-0 first:pt-0">
+                <div class="career-detail__meta-row flex flex-col items-center gap-1 border-t border-deep-moss/20 py-5 first:border-t-0 first:pt-0 lg:items-start">
                   @if($row['label'] !== '')
-                    <dt class="career-detail__meta-label font-sans text-xs font-semibold uppercase tracking-widest text-deep-moss">
+                    <dt class="career-detail__meta-label font-sans text-xl font-medium leading-6 text-deep-moss">
                       {{ esc_html($row['label']) }}
                     </dt>
                   @endif
                   @if($row['value'] !== '')
-                    <dd class="career-detail__meta-value m-0 font-sans text-base text-deep-moss/85">
+                    <dd class="career-detail__meta-value m-0 font-sans text-xl font-light leading-6 text-deep-moss">
                       {{ esc_html($row['value']) }}
                     </dd>
                   @endif
@@ -136,7 +147,8 @@
                  inline `sr-only` span the partial doesn't model. Class spine matches
                  the partial — `btn btn-primary` — so hover stays consistent with every
                  other CTA on the site. --}}
-            <div class="career-detail__sidebar-cta mt-10 @if($meta !== []) border-t border-deep-moss/20 pt-8 @endif">
+            {{-- Apply CTA centred on mobile (Figma 51:8408), left-aligned at lg+ via parent. --}}
+            <div class="career-detail__sidebar-cta mt-10 flex w-full justify-center lg:justify-start @if($meta !== []) border-t border-deep-moss/20 pt-8 @endif">
               <a
                 class="btn btn-primary"
                 href="{{ esc_url($applyUrl) }}"
