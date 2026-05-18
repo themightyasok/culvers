@@ -98,8 +98,12 @@
             @endif
           </div>
 
-          {{-- Headline uses its own max width; pill is capped independently (does not stretch to headline width). CTA hugs the banner's right edge with a modest gutter. --}}
-          <div class="relative z-10 grid grid-cols-1 gap-8 px-6 py-11 md:grid-cols-2 md:items-center md:gap-10 md:px-12 md:py-14 lg:gap-14 lg:px-14 lg:py-16">
+          {{-- Headline uses its own max width; pill is capped independently (does not stretch to headline width). CTA hugs the banner's right edge with a modest gutter.
+               Grid inherits the band's `min-h-*` so the empty space below the CTA stack collapses
+               and `items-center` actually centres the heading + email pill vertically inside
+               the photographic band (otherwise the grid takes content-height and the stack sits
+               near the top, leaving the image bottom-heavy on desktop). --}}
+          <div class="relative z-10 grid min-h-[300px] grid-cols-1 items-center gap-8 px-6 py-11 md:min-h-[380px] md:grid-cols-2 md:gap-10 md:px-12 md:py-14 lg:min-h-[420px] lg:gap-14 lg:px-14 lg:py-16">
             <div class="hidden min-h-[80px] md:block" aria-hidden="true"></div>
             <div
               class="footer-newsletter__cta flex w-full flex-col items-center gap-7 justify-self-center md:mr-3 md:w-auto md:justify-self-end lg:mr-5 xl:mr-6">
