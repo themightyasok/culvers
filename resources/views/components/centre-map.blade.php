@@ -124,6 +124,7 @@
       'panelOpen' => true,
       'openGroup' => $expandedGroupSlug,
       'activeCategorySlug' => '',
+      'activeCategoryLabel' => '',
       'zoom' => 1,
   ], JSON_UNESCAPED_SLASHES);
 
@@ -166,30 +167,16 @@
       </div>
     @endif
 
-    {{-- Heading + filter-toggle bar. Lives ABOVE the two-column band so the
-         "Show filter" pill stays visible after the panel is closed — otherwise
-         the button hides with the panel it lives in and users have no way to
-         bring the filter back (sheet feedback: matches the persistent filter
-         toolbar pattern used on the Shop / Eat & Drink archives). --}}
-    @if(! $isMapOnly && ($heading !== '' || $groups !== []))
+    {{-- Heading bar (filter toggle moves into the panel/map columns below to
+         match Figma 51:7122 — "Hide filter" lives at the top of the filter
+         column when panelOpen, and "Show filter" floats absolutely over the
+         top-left of the map when panelOpen is false). --}}
+    @if(! $isMapOnly && $heading !== '')
       <div class="{{ LayoutShell::INNER_MAX_GUTTERED }} centre-map__toolbar flex flex-wrap items-center justify-between gap-4 pt-12 md:pt-16 lg:pt-20">
-        @if($heading !== '')
-          {{-- Section H2 (64px desktop / 48px mobile) — see Component::sectionHeadingClasses(). --}}
-          <{{ $headingTag }} class="centre-map__heading {{ Component::sectionHeadingClasses('text-lighter-cream', 'm-0') }}">
-            {{ esc_html($heading) }}
-          </{{ $headingTag }}>
-        @endif
-        @if($groups !== [])
-          <button
-            type="button"
-            class="centre-map__filter-toggle inline-flex items-center justify-center rounded-full bg-glowleaf px-5 py-2 font-sans text-xs font-semibold uppercase tracking-widest text-deep-moss transition hover:bg-lighter-cream culvers-focus-ring-compact"
-            :aria-expanded="panelOpen.toString()"
-            aria-controls="centre-map-panel-groups"
-            @click="panelOpen = !panelOpen"
-            x-text="panelOpen ? {{ e($hideLabelJson) }} : {{ e($showLabelJson) }}">
-            {{ esc_html($filterButtonLabel) }}
-          </button>
-        @endif
+        {{-- Section H2 (64px desktop / 48px mobile) — see Component::sectionHeadingClasses(). --}}
+        <{{ $headingTag }} class="centre-map__heading {{ Component::sectionHeadingClasses('text-lighter-cream', 'm-0') }}">
+          {{ esc_html($heading) }}
+        </{{ $headingTag }}>
       </div>
     @endif
 
@@ -240,6 +227,20 @@
           ? '{{ $panelPosition === 'right' ? 'lg:order-2' : 'lg:order-1' }}'
           : 'lg:hidden'">
         @if($groups !== [])
+          {{-- Hide-filter pill sits at the top of the filter column when the
+               panel is open (matches Figma 51:7122 where the toggle floats
+               over the map at top-left when closed and lives next to the
+               category list when open). --}}
+          <div class="centre-map__panel-toolbar mb-6 flex justify-end" x-show="panelOpen" x-transition.opacity.duration.150ms>
+            <button
+              type="button"
+              class="centre-map__filter-toggle inline-flex items-center justify-center rounded-full bg-glowleaf px-5 py-2 font-sans text-xs font-semibold uppercase tracking-widest text-deep-moss transition hover:bg-lighter-cream culvers-focus-ring-compact"
+              aria-controls="centre-map-panel-groups"
+              :aria-expanded="panelOpen.toString()"
+              @click="panelOpen = false">
+              {{ esc_html($filterButtonLabel) }}
+            </button>
+          </div>
           <ul
             id="centre-map-panel-groups"
             class="centre-map__groups divide-y divide-lighter-cream/15 border-y border-lighter-cream/15"
@@ -273,32 +274,28 @@
                   <ul class="centre-map__category-list flex flex-col gap-1 pb-5">
                     @foreach($group['items'] as $cat)
                       @php($catSlugJson = json_encode($cat['slug'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES))
+                      @php($catLabelJson = json_encode($cat['label'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES))
+                      @php($isAll = str_ends_with($cat['slug'], '-all') || $cat['slug'] === 'all')
                       <li>
-                        @if($cat['url'] !== '')
-                          <a
-                            href="{{ esc_url($cat['url']) }}"
-                            class="centre-map__category group flex items-center gap-3 rounded-md px-1 py-1.5 font-sans text-sm font-medium uppercase tracking-[0.18em] text-lighter-cream transition hover:text-glowleaf culvers-focus-ring-compact"
-                            @click="activeCategorySlug = {{ e($catSlugJson) }}">
-                            <span
-                              class="centre-map__category-bullet inline-flex size-3 shrink-0 items-center justify-center rounded-full border border-lighter-cream/60 transition"
-                              :class="activeCategorySlug === {{ e($catSlugJson) }} ? 'centre-map__category-bullet--active border-glowleaf bg-glowleaf' : ''"
-                              aria-hidden="true">
-                            </span>
-                            <span>{{ esc_html($cat['label']) }}</span>
-                          </a>
-                        @else
-                          <button
-                            type="button"
-                            class="centre-map__category group flex w-full items-center gap-3 rounded-md px-1 py-1.5 text-left font-sans text-sm font-medium uppercase tracking-[0.18em] text-lighter-cream transition hover:text-glowleaf culvers-focus-ring-compact"
-                            @click="activeCategorySlug = activeCategorySlug === {{ e($catSlugJson) }} ? '' : {{ e($catSlugJson) }}">
-                            <span
-                              class="centre-map__category-bullet inline-flex size-3 shrink-0 items-center justify-center rounded-full border border-lighter-cream/60 transition"
-                              :class="activeCategorySlug === {{ e($catSlugJson) }} ? 'centre-map__category-bullet--active border-glowleaf bg-glowleaf' : ''"
-                              aria-hidden="true">
-                            </span>
-                            <span>{{ esc_html($cat['label']) }}</span>
-                          </button>
-                        @endif
+                        {{-- Category rows are highlight-toggles, not nav links — clicking
+                             one updates `activeCategorySlug` so the map wrap surfaces a
+                             status pill and any future SVG layers can light up matching
+                             shops via the `[data-active-category]` hook. The original
+                             URL is preserved as `data-deep-link` so authors can still
+                             link out from a "View all in {category}" CTA elsewhere. --}}
+                        <button
+                          type="button"
+                          class="centre-map__category group flex w-full items-center gap-3 rounded-md px-1 py-1.5 text-left font-sans text-sm font-medium uppercase tracking-[0.18em] text-lighter-cream transition hover:text-glowleaf culvers-focus-ring-compact"
+                          @if($cat['url'] !== '') data-deep-link="{{ esc_url($cat['url']) }}" @endif
+                          :class="activeCategorySlug === {{ e($catSlugJson) }} ? 'text-glowleaf' : ''"
+                          @click="@if($isAll)activeCategorySlug = ''; activeCategoryLabel = '';@else activeCategorySlug = activeCategorySlug === {{ e($catSlugJson) }} ? '' : {{ e($catSlugJson) }}; activeCategoryLabel = activeCategorySlug === {{ e($catSlugJson) }} ? {{ e($catLabelJson) }} : '';@endif">
+                          <span
+                            class="centre-map__category-bullet inline-flex size-3 shrink-0 items-center justify-center rounded-full border border-lighter-cream/60 transition"
+                            :class="activeCategorySlug === {{ e($catSlugJson) }} ? 'centre-map__category-bullet--active border-glowleaf bg-glowleaf' : ''"
+                            aria-hidden="true">
+                          </span>
+                          <span>{{ esc_html($cat['label']) }}</span>
+                        </button>
                       </li>
                     @endforeach
                   </ul>
@@ -313,7 +310,49 @@
         class="centre-map__map-wrap relative w-full overflow-hidden rounded-2xl bg-deep-moss/60"
         :class="panelOpen
           ? '{{ $panelPosition === 'right' ? 'lg:order-1' : 'lg:order-2' }}'
-          : 'lg:order-1'">
+          : 'lg:order-1'"
+        :data-active-category="activeCategorySlug || null">
+        @if($groups !== [])
+          {{-- Status pill: visible whenever a category is active. Until the
+               SVG export with per-shop layers arrives this is the visible
+               feedback that a selection took effect. Sits at the bottom-left
+               so it doesn't clash with the floating Show-filter pill or the
+               zoom controls. --}}
+          <div
+            class="centre-map__status absolute bottom-4 left-4 z-10 flex items-center gap-3 rounded-full bg-glowleaf/95 px-4 py-1.5 text-deep-moss shadow-[0_2px_6px_rgba(0,0,0,0.18)] md:bottom-6 md:left-6"
+            x-show="activeCategorySlug !== ''"
+            x-cloak
+            x-transition.opacity.duration.150ms>
+            <span class="font-sans text-[11px] font-semibold uppercase tracking-[0.18em]">
+              {{ __('Filtered', 'culvers') }}:
+            </span>
+            <span class="font-sans text-[11px] font-semibold uppercase tracking-[0.18em]" x-text="activeCategoryLabel"></span>
+            <button
+              type="button"
+              class="-mr-2 inline-flex size-5 items-center justify-center rounded-full text-deep-moss transition hover:bg-deep-moss/15 culvers-focus-ring-compact"
+              aria-label="{{ esc_attr__('Clear filter', 'culvers') }}"
+              @click="activeCategorySlug = ''; activeCategoryLabel = ''">
+              <svg viewBox="0 0 12 12" class="size-2.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+                <path d="M2 2l8 8M10 2l-8 8" />
+              </svg>
+            </button>
+          </div>
+        @endif
+        @if($groups !== [])
+          {{-- Show-filter pill — absolute top-left of the map (Figma 51:7122).
+               Only rendered when the panel is closed; clicking reopens it. --}}
+          <button
+            type="button"
+            class="centre-map__filter-toggle centre-map__filter-toggle--floating absolute left-4 top-4 z-10 inline-flex items-center justify-center rounded-full bg-glowleaf px-5 py-2 font-sans text-xs font-semibold uppercase tracking-widest text-deep-moss shadow-[0_2px_6px_rgba(0,0,0,0.18)] transition hover:bg-lighter-cream culvers-focus-ring-compact md:left-6 md:top-6"
+            aria-controls="centre-map-panel-groups"
+            :aria-expanded="panelOpen.toString()"
+            x-show="!panelOpen"
+            x-cloak
+            x-transition.opacity.duration.150ms
+            @click="panelOpen = true">
+            {{ esc_html($filterButtonShowLabel) }}
+          </button>
+        @endif
         @if($imageUrl !== '')
           {{-- Image is wrapped so we can apply `transform: scale()` for the zoom buttons without
                re-painting the rounded clipping container. `will-change-transform` keeps the

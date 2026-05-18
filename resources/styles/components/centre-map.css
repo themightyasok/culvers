@@ -1,0 +1,62 @@
+/**
+ * Centre map — CSS hooks for per-shop filter highlighting.
+ *
+ * The map element today is a flat PNG, so these rules are a no-op against the
+ * raster image. The moment we drop in an SVG export of the centre plan (one
+ * `<path>` or `<g>` per shop, each annotated with `data-category="fashion home"`
+ * or similar), every shop matching `[data-active-category]` on the wrap will
+ * pop to full opacity while the rest dim down — no JavaScript required beyond
+ * the existing Alpine state binding.
+ *
+ * Required SVG anatomy (designer hand-off):
+ *   <svg viewBox="0 0 2298 2110" data-centre-map-svg>
+ *     <g data-shop-slug="hm" data-category="fashion">…polygon…</g>
+ *     <g data-shop-slug="schuh" data-category="fashion shoes">…</g>
+ *     <g data-shop-slug="greggs" data-category="eat-drink-takeaway">…</g>
+ *     …
+ *   </svg>
+ *
+ * Drop that SVG into the map wrap (replacing the `<img>`) and the rules below
+ * start working immediately.
+ */
+
+.centre-map__map-wrap[data-active-category] [data-category] {
+  opacity: 0.32;
+  transition:
+    opacity 0.25s ease-out,
+    filter 0.25s ease-out;
+}
+
+/* Active category — matched shops snap back to full opacity and pick up a
+ * Glowleaf drop-shadow so they read as the focused layer. We use the CSS
+ * attribute-substring selector (`~=`) so a single shop can belong to several
+ * categories (`data-category="fashion home"`) and still match either filter. */
+.centre-map__map-wrap[data-active-category='shop-all'] [data-category],
+.centre-map__map-wrap[data-active-category='all'] [data-category] {
+  opacity: 1;
+  filter: none;
+}
+
+.centre-map__map-wrap[data-active-category] [data-category]:where([data-active-category-match]) {
+  opacity: 1;
+  filter: drop-shadow(0 0 6px var(--color-glowleaf, #d4ff50));
+}
+
+/* Per-slug match — generated at runtime by the attribute hook below. Using a
+ * data-attribute marker rather than `[data-category~="…"]` keeps the rule
+ * count finite (one rule, set by JS on attribute change) instead of one rule
+ * per possible category. */
+.centre-map__map-wrap[data-active-category]
+  [data-category][data-active]:not([data-active='false']) {
+  opacity: 1;
+  filter: drop-shadow(0 0 6px var(--color-glowleaf, #d4ff50));
+}
+
+/* While no SVG export is wired yet, dim the raster image slightly so the
+ * status pill reads as the focused element. Cheap visual cue that something
+ * happened, removable once `[data-shop-slug]` paths exist on the map. */
+.centre-map__map-wrap[data-active-category]:not([data-active-category=''])
+  .centre-map__image-stage {
+  filter: brightness(0.78) saturate(0.85);
+  transition: filter 0.25s ease-out;
+}
