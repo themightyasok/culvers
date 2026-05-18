@@ -128,8 +128,6 @@
       'zoom' => 1,
   ], JSON_UNESCAPED_SLASHES);
 
-  $hideLabelJson = wp_json_encode($filterButtonLabel, JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES);
-  $showLabelJson = wp_json_encode($filterButtonShowLabel, JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES);
 @endphp
 
 @if(! $hasContent)
@@ -163,32 +161,6 @@
               {{ esc_html(trim($line)) }}
             @endforeach
           </p>
-        @endif
-      </div>
-    @endif
-
-    {{-- Heading + HIDE FILTER on the same row. Button is `x-show`-gated on
-         panelOpen so when the panel is closed it disappears here and the
-         floating SHOW FILTER pill over the map takes over (Figma 51:7122). --}}
-    @if(! $isMapOnly && ($heading !== '' || $groups !== []))
-      <div class="{{ LayoutShell::INNER_MAX_GUTTERED }} centre-map__toolbar flex flex-wrap items-center justify-between gap-4 pt-12 md:pt-16 lg:pt-20">
-        @if($heading !== '')
-          {{-- Section H2 (64px desktop / 48px mobile) — see Component::sectionHeadingClasses(). --}}
-          <{{ $headingTag }} class="centre-map__heading {{ Component::sectionHeadingClasses('text-lighter-cream', 'm-0') }}">
-            {{ esc_html($heading) }}
-          </{{ $headingTag }}>
-        @endif
-        @if($groups !== [])
-          <button
-            type="button"
-            class="centre-map__filter-toggle inline-flex items-center justify-center rounded-full bg-glowleaf px-5 py-2 font-sans text-xs font-semibold uppercase tracking-widest text-deep-moss transition hover:bg-lighter-cream culvers-focus-ring-compact"
-            aria-controls="centre-map-panel-groups"
-            :aria-expanded="panelOpen.toString()"
-            x-show="panelOpen"
-            x-transition.opacity.duration.150ms
-            @click="panelOpen = false">
-            {{ esc_html($filterButtonLabel) }}
-          </button>
         @endif
       </div>
     @endif
@@ -239,6 +211,31 @@
         :class="panelOpen
           ? '{{ $panelPosition === 'right' ? 'lg:order-2' : 'lg:order-1' }}'
           : 'lg:hidden'">
+        @if(! $isMapOnly && ($heading !== '' || $groups !== []))
+          {{-- Heading + HIDE FILTER share one row inside the left panel only.
+               When the panel closes, this row hides with the column; the
+               floating SHOW FILTER pill over the map remains. --}}
+          <div
+            class="centre-map__panel-header mb-6 flex flex-wrap items-center gap-x-4 gap-y-3 @if($heading !== '') justify-between @else justify-end @endif"
+            x-show="panelOpen"
+            x-transition.opacity.duration.150ms>
+            @if($heading !== '')
+              <{{ $headingTag }} class="centre-map__heading min-w-0 flex-1 text-balance {{ Component::sectionHeadingClasses('text-lighter-cream', 'm-0') }}">
+                {{ esc_html($heading) }}
+              </{{ $headingTag }}>
+            @endif
+            @if($groups !== [])
+              <button
+                type="button"
+                class="centre-map__filter-toggle shrink-0 self-start sm:self-center inline-flex items-center justify-center rounded-full bg-glowleaf px-5 py-2 font-sans text-xs font-semibold uppercase tracking-widest text-deep-moss transition hover:bg-lighter-cream culvers-focus-ring-compact"
+                aria-controls="centre-map-panel-groups"
+                :aria-expanded="panelOpen.toString()"
+                @click="panelOpen = false">
+                {{ esc_html($filterButtonLabel) }}
+              </button>
+            @endif
+          </div>
+        @endif
         @if($groups !== [])
           <ul
             id="centre-map-panel-groups"
