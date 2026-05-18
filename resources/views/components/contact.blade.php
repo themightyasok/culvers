@@ -127,10 +127,10 @@
       @if($showPanel)
         <aside class="contact__panel flex flex-col text-faded-olive" aria-label="{{ esc_attr__('Getting here and contact details', 'culvers') }}">
           <div class="contact__panel-block">
-            {{-- Desktop subhead spec (Figma 51:9414, Canela 32 / lh 1.1) preserved exactly;
-                 `max-sm:` overrides land Figma 51:9546 mobile (Halyard Medium 20 / lh 24)
-                 so only viewports under 640 px get the quieter sans label. --}}
-            <h3 class="contact__panel-heading font-heading text-3xl leading-[1.1] max-sm:font-sans max-sm:text-xl max-sm:font-medium max-sm:leading-6">
+            {{-- Mobile-first so `max-sm:` can't lose to the base `h1-h6 { @apply font-heading }`
+                 rule. Base = Figma 51:9546 mobile (Halyard Medium 20 / lh 24).
+                 `sm:` restores Figma 51:9414 desktop (Canela 32 / lh 1.1). --}}
+            <h3 class="contact__panel-heading font-sans text-xl font-medium leading-6 sm:font-heading sm:text-3xl sm:font-normal sm:leading-[1.1]">
               {{ esc_html(FooterCustomizer::gettingHereTitle()) }}
             </h3>
             @if($address !== '')
@@ -154,9 +154,10 @@
 
           @if($phone !== '' || $contactEmail !== '' || $hasSocial)
             <div class="contact__panel-block mt-12">
-              {{-- Matches Getting Here subhead spec above: desktop Canela 32 / lh 1.1,
-                   `max-sm:` overrides to Halyard Medium 20 / lh 24 mobile only. --}}
-              <h3 class="contact__panel-heading font-heading text-3xl leading-[1.1] max-sm:font-sans max-sm:text-xl max-sm:font-medium max-sm:leading-6">
+              {{-- Matches Getting Here subhead spec above: mobile-first so `max-sm:` can't lose
+                   to the base h1-h6 rule. Base = Halyard Medium 20 / lh 24 (Figma 51:9556 mobile);
+                   `sm:` restores Canela 32 / lh 1.1 desktop. --}}
+              <h3 class="contact__panel-heading font-sans text-xl font-medium leading-6 sm:font-heading sm:text-3xl sm:font-normal sm:leading-[1.1]">
                 {{ esc_html(FooterCustomizer::contactTitle()) }}
               </h3>
               @if($phone !== '')
