@@ -1,0 +1,33 @@
+/*
+ * Shop split highlight — rich text body lists (career job pages, etc.).
+ * Figma: small solid cream discs + wrapped lines aligned with first line of copy (not under bullet).
+ * Avoid UA / Tailwind list-marker quirks by drawing discs with ::before.
+ */
+.shop-split-highlight__body :where(ul) {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  text-align: left;
+}
+
+.shop-split-highlight__body :where(ul > li) {
+  position: relative;
+  padding-left: 1.125rem;
+  color: var(--color-light-cream);
+}
+
+.shop-split-highlight__body :where(ul > li + li) {
+  margin-top: 0.5rem;
+}
+
+.shop-split-highlight__body :where(ul > li)::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  width: 0.3125rem;
+  height: 0.3125rem;
+  border-radius: 9999px;
+  background-color: var(--color-light-cream);
+}

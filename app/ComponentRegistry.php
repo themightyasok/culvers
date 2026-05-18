@@ -17,10 +17,9 @@ use StoutLogic\AcfBuilder\FlexibleContentBuilder;
  * Registers `app/Components/*.php` flexible-content layout configs as ACF Flexible
  * Content layouts. Every layout is rendered with the same chrome:
  *
- * - **Main** — Layout (column span), Background (type + conditional fields),
- *             Content (component-specific fields), Visibility (hide on phones / desktop).
- * - **Typography** — body text tone + component-specific typography fields
- *                    (colour, size, weight, intra-element padding).
+ * - **Main** — Theme-controlled grid/surface note, then **Content** (component fields).
+ * - **Typography** — only when a layout declares fields (e.g. hero title colour);
+ *                    block body tone is fixed in code per layout.
  * - **Items** — only rendered when the component declares a top-level repeater.
  * - **Mobile** — overrides that apply below `md` (768px) only. Always present so
  *                authors know where to look; shows an explanatory message when
@@ -158,17 +157,6 @@ class ComponentRegistry
     {
         $components = new FieldsBuilder('page_components');
 
-        $components->addTrueFalse('full_screen_scrolling', [
-            'label' => __('Full Screen Scrolling', 'culvers'),
-            'instructions' => __(
-                'Snap between components like slides on desktop while preserving scroll-hijack behavior ' .
-                'inside pinned components.',
-                'culvers'
-            ),
-            'default_value' => 0,
-            'ui' => 1,
-        ]);
-
         $flexibleContent = $components->addFlexibleContent('components', [
             'label' => __('Page Components', 'culvers'),
             'instructions' => __('Add and arrange components for this page', 'culvers'),
@@ -219,22 +207,16 @@ class ComponentRegistry
     {
         $layout->addTab(__('Main', 'culvers'));
 
-        $this->addSectionHeading($layout, $componentName, 'main_layout', __('Layout', 'culvers'));
-        $layout->addSelect('component_width', [
-            'label' => __('Component grid', 'culvers'),
-            'instructions' => __(
-                'How many columns this block spans (6–12). Grid gaps separate blocks; inner padding follows design defaults.',
+        $layout->addField(sprintf('chrome_%s_chrome_note', $componentName), 'message', [
+            'label' => '',
+            'message' => __(
+                'Grid span, outer band colour, and default body text colour are fixed in the theme for each '
+                . 'block type — edit the content fields below.',
                 'culvers'
             ),
-            'instructions_placement' => 'field',
-            'choices' => \App\Helpers\Grid::getColumnChoices(),
-            'default_value' => 12,
-            'allow_null' => 0,
-            'required' => 0,
+            'esc_html' => 0,
+            'wrapper' => ['class' => 'culvers-acf-help'],
         ]);
-
-        $this->addSectionHeading($layout, $componentName, 'main_background', __('Background', 'culvers'));
-        $this->addBackgroundFields($layout);
 
         $mainFields = $this->fieldsForSection($config, 'main');
         if ($mainFields !== []) {
@@ -244,171 +226,6 @@ class ComponentRegistry
             $this->addSectionHeading($layout, $componentName, 'main_content', $contentLabel);
             $this->emitFields($layout, $componentName, $mainFields);
         }
-
-        $this->addSectionHeading($layout, $componentName, 'main_visibility', __('Visibility', 'culvers'));
-        $layout->addField(sprintf('chrome_%s_visibility_help', $componentName), 'message', [
-            'label' => '',
-            'message' => __(
-                '<strong>Phones</strong>: below the <code>md</code> breakpoint (&lt;768px). '
-                . '<strong>Tablet + desktop</strong>: from <code>md</code> upward share one band. '
-                . 'Mobile content overrides live on the <em>Mobile</em> tab.',
-                'culvers'
-            ),
-            'esc_html' => 0,
-            'wrapper' => ['class' => 'culvers-acf-help'],
-        ]);
-        $layout->addTrueFalse('visibility_hide_phone', [
-            'label' => __('Hide on phones', 'culvers'),
-            'instructions' => __('Below the md breakpoint (&lt;768px). Block stays visible from md upward.', 'culvers'),
-            'default_value' => 0,
-            'ui' => 1,
-            'wrapper' => ['width' => '50'],
-        ]);
-        $layout->addTrueFalse('visibility_hide_desktop', [
-            'label' => __('Hide from tablet / desktop up', 'culvers'),
-            'instructions' => __('From md breakpoint upward (768px+). Phones still see the block.', 'culvers'),
-            'default_value' => 0,
-            'ui' => 1,
-            'wrapper' => ['width' => '50'],
-        ]);
-    }
-
-    private function addBackgroundFields(FieldsBuilder $layout): void
-    {
-        $layout->addSelect('background_type', [
-            'label' => __('Background type', 'culvers'),
-            'instructions' => __(
-                'Surface behind this block. Related fields appear below when you pick something other than None.',
-                'culvers'
-            ),
-            'instructions_placement' => 'field',
-            'choices' => [
-                ComponentTypes::BACKGROUND_NONE => __('None', 'culvers'),
-                ComponentTypes::BACKGROUND_COLOR => __('Color', 'culvers'),
-                ComponentTypes::BACKGROUND_GRADIENT => __('Gradient', 'culvers'),
-                ComponentTypes::BACKGROUND_IMAGE => __('Image', 'culvers'),
-                ComponentTypes::BACKGROUND_IMAGE_CENTERED => __('Centered Image Card', 'culvers'),
-                ComponentTypes::BACKGROUND_VIDEO => __('Video', 'culvers'),
-            ],
-            'default_value' => ComponentTypes::BACKGROUND_NONE,
-            'return_format' => 'value',
-        ]);
-
-        $layout->addColorPicker('background_color', $this->getColorPickerOptions([
-            'label' => __('Background colour', 'culvers'),
-            'conditional_logic' => $this->bgWhen([ComponentTypes::BACKGROUND_COLOR]),
-        ]));
-
-        $layout->addColorPicker('background_gradient_color_from', $this->getColorPickerOptions([
-            'label' => __('Gradient start colour', 'culvers'),
-            'conditional_logic' => $this->bgWhen([ComponentTypes::BACKGROUND_GRADIENT]),
-            'wrapper' => ['width' => '33'],
-        ]));
-        $layout->addColorPicker('background_gradient_color_to', $this->getColorPickerOptions([
-            'label' => __('Gradient end colour', 'culvers'),
-            'conditional_logic' => $this->bgWhen([ComponentTypes::BACKGROUND_GRADIENT]),
-            'wrapper' => ['width' => '33'],
-        ]));
-        $layout->addSelect('background_gradient_angle', [
-            'label' => __('Gradient direction', 'culvers'),
-            'instructions' => __('0° = left to right; 90° = bottom to top.', 'culvers'),
-            'choices' => [
-                '0' => __('0° (left → right)', 'culvers'),
-                '45' => __('45° (bottom-left → top-right)', 'culvers'),
-                '90' => __('90° (bottom → top)', 'culvers'),
-                '135' => __('135° (bottom-right → top-left)', 'culvers'),
-                '180' => __('180° (right → left)', 'culvers'),
-                '225' => __('225° (top-right → bottom-left)', 'culvers'),
-                '270' => __('270° (top → bottom)', 'culvers'),
-                '315' => __('315° (top-left → bottom-right)', 'culvers'),
-            ],
-            'default_value' => '90',
-            'allow_null' => 0,
-            'conditional_logic' => $this->bgWhen([ComponentTypes::BACKGROUND_GRADIENT]),
-            'wrapper' => ['width' => '34'],
-        ]);
-
-        $layout->addImage('background_image', [
-            'label' => __('Background image', 'culvers'),
-            'return_format' => 'array',
-            'conditional_logic' => $this->bgWhen([
-                ComponentTypes::BACKGROUND_IMAGE,
-                ComponentTypes::BACKGROUND_IMAGE_CENTERED,
-            ]),
-        ]);
-        $layout->addColorPicker('background_image_color', $this->getColorPickerOptions([
-            'label' => __('Card colour', 'culvers'),
-            'instructions' => __('Background behind the centred image card.', 'culvers'),
-            'conditional_logic' => $this->bgWhen([ComponentTypes::BACKGROUND_IMAGE_CENTERED]),
-        ]));
-        $layout->addTrueFalse('background_parallax', [
-            'label' => __('Background parallax', 'culvers'),
-            'instructions' => __('Subtle scroll parallax on the background image (desktop only).', 'culvers'),
-            'default_value' => 1,
-            'ui' => 1,
-            'conditional_logic' => $this->bgWhen([ComponentTypes::BACKGROUND_IMAGE]),
-        ]);
-
-        $layout->addFile('background_video', [
-            'label' => __('Background video file', 'culvers'),
-            'instructions' => __('MP4 or WebM; or use YouTube below.', 'culvers'),
-            'return_format' => 'array',
-            'mime_types' => 'mp4,webm',
-            'conditional_logic' => $this->bgWhen([ComponentTypes::BACKGROUND_VIDEO]),
-        ]);
-        $layout->addText('background_video_youtube_url', [
-            'label' => __('Background YouTube URL / embed', 'culvers'),
-            'instructions' => __('Used when no file is selected.', 'culvers'),
-            'placeholder' => 'https://www.youtube.com/watch?v=...',
-            'required' => 0,
-            'conditional_logic' => $this->bgWhen([ComponentTypes::BACKGROUND_VIDEO]),
-        ]);
-
-        $layout->addColorPicker('background_overlay', $this->getColorPickerOptions([
-            'label' => __('Background overlay', 'culvers'),
-            'instructions' => __('Flat overlay on image/video; opacity defaults to 30%.', 'culvers'),
-            'enable_opacity' => true,
-            'default_value' => '',
-            'conditional_logic' => $this->bgWhen([
-                ComponentTypes::BACKGROUND_IMAGE,
-                ComponentTypes::BACKGROUND_IMAGE_CENTERED,
-                ComponentTypes::BACKGROUND_VIDEO,
-            ]),
-        ]));
-        $layout->addNumber('background_overlay_opacity', [
-            'label' => __('Overlay opacity (%)', 'culvers'),
-            'instructions' => __('When the overlay colour has no alpha, use 0–100 (default 30).', 'culvers'),
-            'default_value' => 30,
-            'min' => 0,
-            'max' => 100,
-            'step' => 1,
-            'append' => '%',
-            'conditional_logic' => $this->bgWhen([
-                ComponentTypes::BACKGROUND_IMAGE,
-                ComponentTypes::BACKGROUND_IMAGE_CENTERED,
-                ComponentTypes::BACKGROUND_VIDEO,
-            ]),
-        ]);
-    }
-
-    /**
-     * Build ACF conditional_logic groups (OR list) so a field appears for any of the listed background types.
-     *
-     * @param list<string> $values
-     * @return list<list<array{field: string, operator: string, value: string}>>
-     */
-    private function bgWhen(array $values): array
-    {
-        $groups = [];
-        foreach ($values as $value) {
-            $groups[] = [[
-                'field' => 'background_type',
-                'operator' => '==',
-                'value' => $value,
-            ]];
-        }
-
-        return $groups;
     }
 
     /**
@@ -416,30 +233,13 @@ class ComponentRegistry
      */
     private function addTypographyTab(FieldsBuilder $layout, string $componentName, array $config): void
     {
-        $layout->addTab(__('Typography', 'culvers'));
-
-        $bodyTextToneDefault = match ($componentName) {
-            'info_block' => TailwindColors::DEFAULT_LIGHT_BAND_BODY_TEXT_TONE,
-            default => TailwindColors::DEFAULT_BODY_TEXT_TONE,
-        };
-
-        $this->addSectionHeading($layout, $componentName, 'typography_block', __('Block defaults', 'culvers'));
-        $layout->addSelect('body_text_tone', [
-            'label' => __('Body text colour', 'culvers'),
-            'instructions' => __(
-                'Default paragraph / prose colour for this block. Component-specific text styles override this below.',
-                'culvers'
-            ),
-            'instructions_placement' => 'field',
-            'choices' => TailwindColors::bodyTextToneChoices(),
-            'default_value' => $bodyTextToneDefault,
-            'return_format' => 'value',
-        ]);
-
         $typographyFields = $this->fieldsForSection($config, 'typography');
-        if ($typographyFields !== []) {
-            $this->emitFields($layout, $componentName, $typographyFields);
+        if ($typographyFields === []) {
+            return;
         }
+
+        $layout->addTab(__('Typography', 'culvers'));
+        $this->emitFields($layout, $componentName, $typographyFields);
     }
 
     /**

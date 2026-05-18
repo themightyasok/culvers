@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Helpers;
 
-use App\Constants\ComponentTypes;
-
 /**
  * Canonical flexible-content rows for one representative single per non-shop
  * directory CPT — the same purpose Accessorize London serves for `culvers_shop`.
@@ -53,9 +51,6 @@ final class CptSinglesFlexibleSeedData
     {
         return [
             'acf_fc_layout' => $layout,
-            'component_width' => 12,
-            'background_type' => ComponentTypes::BACKGROUND_NONE,
-            'body_text_tone' => TailwindColors::DEFAULT_BODY_TEXT_TONE,
         ];
     }
 
@@ -90,10 +85,8 @@ final class CptSinglesFlexibleSeedData
                 'hero_title_in_image' => false,
             ]),
             array_merge(self::base('career_detail'), [
-                        'career_sidebar_brand_logo' => [
-                            'url' => PagesFlexibleSeedData::seedAssetUrl(self::CAREER_SUBWAY_LOGO_FILE),
-                            'alt' => __('Subway', 'culvers'),
-                        ],
+                        // Hero above already carries the Subway lockup (Figma 51:6450); no sidebar logo
+                        // so the job title aligns with the first role section heading.
                         'career_job_title' => __('Senior Supervisor', 'culvers'),
                         // Image hero above already supplies the page H1 (the brand name);
                         // demote the job title to H2 so we don't ship two H1s.

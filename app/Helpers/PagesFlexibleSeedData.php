@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Helpers;
 
-use App\Constants\ComponentTypes;
-
 /**
  * Canonical flexible-content rows for the standard top-level pages
  * (Plan My Visit, Contact, Guest Services, Leasing Opportunities).
@@ -94,9 +92,6 @@ final class PagesFlexibleSeedData
     {
         return [
             'acf_fc_layout' => $layout,
-            'component_width' => 12,
-            'background_type' => ComponentTypes::BACKGROUND_NONE,
-            'body_text_tone' => TailwindColors::DEFAULT_BODY_TEXT_TONE,
         ];
     }
 
@@ -287,7 +282,6 @@ final class PagesFlexibleSeedData
                 ],
             ]),
             array_merge(self::base('travel_calculator'), [
-                'background_type' => ComponentTypes::BACKGROUND_NONE,
                 'tc_heading' => __('Travel Calculator', 'culvers'),
                 'tc_intro' => __(
                     'Find out how close Culver is to your work or any point of interest.',
@@ -835,7 +829,6 @@ final class PagesFlexibleSeedData
         }
 
         return array_merge(self::base('centre_map'), [
-            'background_type' => ComponentTypes::BACKGROUND_NONE,
             'centre_map_eyebrow' => '',
             'centre_map_heading' => __('Centre Map', 'culvers'),
             'centre_map_heading_level' => '2',

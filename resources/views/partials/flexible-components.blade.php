@@ -4,7 +4,7 @@
 
 @php
 use App\Helpers\ComponentDefaults;
-use App\Helpers\ComponentVisibility;
+use App\Helpers\ComponentLayoutChrome;
 use App\Helpers\Grid;
 use App\Helpers\Background;
 use App\Helpers\LayoutShell;
@@ -22,7 +22,6 @@ if (is_array($rawComponents)) {
         return is_array($row) && empty($row['acf_fc_layout_disabled']);
     }));
 }
-$isFullScreenScrolling = ! empty(get_field('full_screen_scrolling'));
 
 $components = array_map(static fn ($row) => Sanitizer::component($row), is_array($rawComponents) ? $rawComponents : []);
 
@@ -30,8 +29,7 @@ $templateResolver = TemplateResolver::getInstance();
 @endphp
 
 @if($components)
-  <div class="flexible-components {{ Grid::getMainGridContainerClasses() }}"
-       data-full-screen-scrolling="{{ $isFullScreenScrolling ? '1' : '0' }}">
+  <div class="flexible-components {{ Grid::getMainGridContainerClasses() }}">
     @php
       $previousLayout = null;
       $previousComponent = [];
@@ -48,10 +46,13 @@ $templateResolver = TemplateResolver::getInstance();
 
         $layout = $component['acf_fc_layout'] ?? '';
         $component = $component + ComponentDefaults::get($layout);
-        $rawTone = $component['body_text_tone'] ?? TailwindColors::defaultBodyTextToneForLayout($layout);
-        $component['body_text_tone'] = in_array($layout, ['shop_intro_block', 'shop_store_details', 'leasing_agent_grid'], true)
-            ? TailwindColors::bodyToneForWhiteBackground($rawTone)
-            : TailwindColors::sanitizeBodyTextTone($rawTone);
+        $component = ComponentLayoutChrome::apply($component, $layout);
+        $canonicalTone = TailwindColors::defaultBodyTextToneForLayout($layout);
+        $component['body_text_tone'] = in_array($layout, [
+            'shop_intro_block', 'shop_store_details', 'leasing_agent_grid', 'opening_hours',
+        ], true)
+            ? TailwindColors::bodyToneForWhiteBackground($canonicalTone)
+            : TailwindColors::sanitizeBodyTextTone($canonicalTone);
 
         $rawWidth = $component['component_width'] ?? Grid::getDefaultComponentWidth($layout);
         $componentWidth = Grid::validateComponentWidth($rawWidth);
@@ -60,11 +61,6 @@ $templateResolver = TemplateResolver::getInstance();
         $component['_grid_classes'] = $gridClasses['padding']
             ? trim($gridClasses['column'] . ' ' . $gridClasses['padding'])
             : $gridClasses['column'];
-
-        $visibilityClass = ComponentVisibility::gridUtilityClasses($component);
-        if ($visibilityClass !== '') {
-            $component['_grid_classes'] = trim($visibilityClass . ' ' . $component['_grid_classes']);
-        }
 
         // Inter-section rhythm: the *previous* component decides how much
         // space sits above the current one (Standard 96 / Hugged 60 / Flush 0).
@@ -110,7 +106,7 @@ $templateResolver = TemplateResolver::getInstance();
                 (string) ($component['_grid_classes'] ?? '')
             ));
           @endphp
-          <div class="relative col-span-full w-full min-w-0 py-12 lg:py-16 {{ esc_attr(trim($spaceAboveClass . ' ' . $visibilityClass . ' ' . ($backgroundData['classes'] ?? ''))) }}"
+          <div class="relative col-span-full w-full min-w-0 py-12 lg:py-16 {{ esc_attr(trim($spaceAboveClass . ' ' . ($backgroundData['classes'] ?? ''))) }}"
                data-component-background-wrapper="1"
                data-component-layout="{{ esc_attr($layout) }}"
                data-background-parallax="{{ ! empty($backgroundData['parallax']) ? '1' : '0' }}"

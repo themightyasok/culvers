@@ -142,18 +142,8 @@ $subheading_text_weight_class = match($subheading_text_weight) {
     'font-light', 'font-normal', 'font-medium', 'font-semibold', 'font-bold' => $subheading_text_weight,
     default => 'font-medium',
 };
-$header_padding_class = Padding::getHeaderSubheaderPaddingClasses(
-    $c['scroller_header_padding_top'] ?? 'none',
-    $c['scroller_header_padding_bottom'] ?? 'none'
-);
-$subheader_padding_class = Padding::getHeaderSubheaderPaddingClasses(
-    $c['scroller_subheader_padding_top'] ?? 'none',
-    $c['scroller_subheader_padding_bottom'] ?? 'none'
-);
-$body_padding_class = Padding::getHeaderSubheaderPaddingClasses(
-    $c['scroller_body_padding_top'] ?? 'none',
-    $c['scroller_body_padding_bottom'] ?? 'none'
-);
+// Intra-scroller typography vertical rhythm: fixed (no editor ACF controls).
+$scroller_typography_padding_class = Padding::getHeaderSubheaderPaddingClasses('none', 'none');
 $body_classes = Typography::classes(
     'body',
     $c['scroller_body_text_size'] ?? 'text-xl',
@@ -190,10 +180,6 @@ $item_body_classes = Typography::classes(
     $c['scroller_item_body_size'] ?? 'text-lg',
     $c['scroller_item_body_weight'] ?? 'font-normal'
 );
-
-$item_kicker_padding_class = Padding::getHeaderSubheaderPaddingClasses($c['scroller_item_kicker_padding_top'] ?? 'none', $c['scroller_item_kicker_padding_bottom'] ?? 'none');
-$item_heading_padding_class = Padding::getHeaderSubheaderPaddingClasses($c['scroller_item_heading_padding_top'] ?? 'none', $c['scroller_item_heading_padding_bottom'] ?? 'none');
-$item_body_padding_class = Padding::getHeaderSubheaderPaddingClasses($c['scroller_item_body_padding_top'] ?? 'none', $c['scroller_item_body_padding_bottom'] ?? 'none');
 
 $hasHeaderText = TextFormatter::hasVisibleContent((string) $header_text);
 $hasSubheadingText = TextFormatter::hasVisibleContent((string) $subheading_text);
@@ -344,19 +330,19 @@ $root = $gridClasses;
                 @if($hasHeaderBlock)
                     <div class="{{ $intro_flush_to_content ? 'mb-0' : 'mb-10 md:mb-14' }} {{ $header_text_align_class }}">
                         @if($hasHeaderText)
-                            <h2 class="font-heading {{ $header_text_color_class }} {{ $header_size_class }} {{ $header_text_weight_class }} {{ $header_padding_class }}">
+                            <h2 class="font-heading {{ $header_text_color_class }} {{ $header_size_class }} {{ $header_text_weight_class }} {{ $scroller_typography_padding_class }}">
                                 {!! TextFormatter::inline((string) $header_text) !!}
                             </h2>
                         @endif
 
                         @if($hasSubheadingText)
-                            <h3 class="font-sans {{ $subheading_text_color_class }} {{ $subheading_size_class }} {{ $subheading_text_weight_class }} {{ $subheader_padding_class }}">
+                            <h3 class="font-sans {{ $subheading_text_color_class }} {{ $subheading_size_class }} {{ $subheading_text_weight_class }} {{ $scroller_typography_padding_class }}">
                                 {!! TextFormatter::inline((string) $subheading_text) !!}
                             </h3>
                         @endif
 
                         @if($hasBodyText)
-                            <div class="{{ $body_classes }} {{ $intro_body_color_class }} prose prose-neutral max-w-none {{ $body_padding_class }}">
+                            <div class="{{ $body_classes }} {{ $intro_body_color_class }} prose prose-neutral max-w-none {{ $scroller_typography_padding_class }}">
                                 {!! TextFormatter::rich((string) $body_text) !!}
                             </div>
                         @endif
@@ -421,7 +407,7 @@ $root = $gridClasses;
                         @foreach($normalized_items as $item)
                             <article class="horizontal-scroller-item horizontal-scroller-item--{{ $item['type'] }} horizontal-scroller-item--{{ $item['size'] }} horizontal-scroller-item--offset-{{ $item['offset'] }} horizontal-scroller-item--ratio-{{ $item['ratio'] }}" data-set-index="{{ $set_index }}" @if($is_clone_set) aria-hidden="true" inert @endif>
                                 @if(($item['kicker'] ?? '') !== '')
-                                    <p class="horizontal-scroller-item__kicker {{ $item_kicker_classes }} {{ $item_kicker_padding_class }}">
+                                    <p class="horizontal-scroller-item__kicker {{ $item_kicker_classes }} {{ $scroller_typography_padding_class }}">
                                         {!! TextFormatter::plain((string) $item['kicker']) !!}
                                     </p>
                                 @endif
@@ -490,12 +476,12 @@ $root = $gridClasses;
                                 @if(($item['type'] === 'text' || $item['type'] === 'image_text') && ($item['heading'] !== '' || $item['body'] !== ''))
                                     <div class="horizontal-scroller-item__copy">
                                         @if($item['heading'] !== '')
-                                            <h3 class="horizontal-scroller-item__heading {{ $item_heading_classes }} {{ $item_heading_padding_class }}">
+                                            <h3 class="horizontal-scroller-item__heading {{ $item_heading_classes }} {{ $scroller_typography_padding_class }}">
                                                 {!! TextFormatter::plain((string) $item['heading']) !!}
                                             </h3>
                                         @endif
                                         @if($item['body'] !== '')
-                                            <div class="horizontal-scroller-item__body prose prose-neutral max-w-none {{ $body_text_tone }} {{ $item_body_classes }} {{ $item_body_padding_class }}">
+                                            <div class="horizontal-scroller-item__body prose prose-neutral max-w-none {{ $body_text_tone }} {{ $item_body_classes }} {{ $scroller_typography_padding_class }}">
                                                 {!! TextFormatter::plain((string) $item['body'], true) !!}
                                             </div>
                                         @endif

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Directory;
 
-use App\Constants\ComponentTypes;
-
 /**
  * Reads the per-archive hero option fields registered by
  * {@see ArchiveHeroFields} and packages them as the `$component` array
@@ -34,7 +32,6 @@ final class ArchiveHeroComponent
             /* No background_image — image-hero renders the photo itself via
                `hero_image` and tucks under the fixed header via the
                `.image-hero--viewport` negative margin in app.css. */
-            'background_type' => ComponentTypes::BACKGROUND_NONE,
             'hero_image' => is_array($image) ? $image : [],
             'hero_image_mobile' => is_array($imageMobile) ? $imageMobile : [],
             'hero_title_line' => is_string($titleRaw) ? $titleRaw : '',

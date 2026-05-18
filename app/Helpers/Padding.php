@@ -16,12 +16,12 @@ namespace App\Helpers;
  * contribute to outer spacing. Components that need internal padding around
  * their own painted background apply it directly in their Blade template.
  *
- * What remains here are the **header / subheader / body** padding helpers used
- * by `horizontal_scroller.php` to let editors fine-tune the spacing between
- * text elements *inside* the scroller (heading ↔ subheading ↔ body, item
- * kicker ↔ heading ↔ body). That is genuinely intra-component typography
- * spacing — a different concern from the dead section-level controls — and
- * stays editor-tunable.
+ * What remains here are **header / subheader / body** padding class builders
+ * (`getHeaderSubheaderPaddingClasses`) still used where a component applies
+ * fixed intra-block typography rhythm. The horizontal scroller no longer
+ * exposes ACF controls for these; its Blade template calls this helper with
+ * `none` / `none` so legacy saved meta (if any) is ignored in favour of the
+ * shared default.
  */
 final class Padding
 {

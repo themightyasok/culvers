@@ -16,7 +16,6 @@ import registerTextImageSliderAlpine from './alpine/text-image-slider.js';
 import registerContactAlpine from './alpine/contact.js';
 import registerCentreMapAlpine from './alpine/centre-map.js';
 import gsapManager from './utils/gsap-manager.js';
-import fullScreenScrollManager from './utils/full-screen-scroll-manager.js';
 import backgroundParallaxManager from './utils/background-parallax-manager.js';
 import initSplideCarousels from './utils/splide-init.js';
 
@@ -36,7 +35,6 @@ registerCentreMapAlpine(Alpine);
 Alpine.start();
 
 gsapManager.init();
-fullScreenScrollManager.init();
 backgroundParallaxManager.init();
 
 document.addEventListener('DOMContentLoaded', () => {

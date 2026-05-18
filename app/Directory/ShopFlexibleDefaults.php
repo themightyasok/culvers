@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Directory;
 
-use App\Constants\ComponentTypes;
-
 /**
  * When a shop post has no saved flexible rows yet, provide the standard stack from the developer designs.
  *
@@ -64,9 +62,6 @@ final class ShopFlexibleDefaults
             ['acf_fc_layout' => 'shop_store_details'],
             [
                 'acf_fc_layout' => 'opening_hours',
-                'background_type' => ComponentTypes::BACKGROUND_COLOR,
-                'background_color' => '#ffffff',
-                'component_width' => 'full',
             ],
             ['acf_fc_layout' => 'centre_map'],
             ['acf_fc_layout' => 'shop_related_shops'],

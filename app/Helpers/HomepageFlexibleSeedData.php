@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Helpers;
 
-use App\Constants\ComponentTypes;
-
 /**
  * Canonical homepage flexible rows — same structure/copy/assets as the former runtime defaults.
  * Used only when persisting to the database (WP-CLI); the theme does not merge this at render time.
@@ -77,9 +75,6 @@ final class HomepageFlexibleSeedData
     {
         return [
             'acf_fc_layout' => $layout,
-            'component_width' => 12,
-            'background_type' => ComponentTypes::BACKGROUND_NONE,
-            'body_text_tone' => TailwindColors::DEFAULT_BODY_TEXT_TONE,
         ];
     }
 
@@ -195,8 +190,7 @@ final class HomepageFlexibleSeedData
         }
 
         return array_merge(self::base('horizontal_scroller'), [
-            // Strip sits on the page white — no coloured band, no texture.
-            'background_type' => ComponentTypes::BACKGROUND_NONE,
+            // Strip sits on a white flex band; typography is moss/olive for readability.
             'scroller_header_text_alignment' => 'center',
             'scroller_header_alignment' => 'middle',
             'scroller_header_text_color' => 'text-faded-olive',

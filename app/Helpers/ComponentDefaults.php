@@ -6,6 +6,9 @@ namespace App\Helpers;
 
 /**
  * Optional defaults merged only for keys missing from ACF (`$component + defaults`).
+ *
+ * Grid width and flexible background chrome are **not** authored here — use
+ * {@see ComponentLayoutChrome::apply()} after sanitization so theme code wins over meta.
  */
 final class ComponentDefaults
 {

@@ -85,7 +85,7 @@
     data-component-root
     data-career-detail>
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
-      <div class="career-detail__band grid gap-10 md:gap-12 lg:grid-cols-[minmax(0,336px)_minmax(0,1fr)] lg:gap-16">
+      <div class="career-detail__band grid items-start gap-10 md:gap-12 lg:grid-cols-[minmax(0,336px)_minmax(0,1fr)] lg:gap-16">
         {{-- Figma 51:8408 mobile: every sidebar element (logo, title, meta rows, Apply CTA)
              is centred on the column. `max-sm:` keeps tablet + desktop pixel-identical to the
              pre-mobile-audit build — only viewports under 640 px reflow. --}}
@@ -173,7 +173,7 @@
                   </{{ $sectionTag }}>
                 @endif
                 @if($section['body_plain'] !== '')
-                  <div class="career-detail__section-body mt-4 font-sans text-base font-light leading-7 text-deep-moss/85 md:text-lg rt-link-faded [&_p+p]:mt-3 [&_strong]:font-medium [&_strong]:text-deep-moss [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:marker:text-faded-olive [&_ul_li+li]:mt-2 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol_li+li]:mt-2">
+                  <div class="career-detail__section-body mt-4 font-sans text-base font-light leading-7 text-deep-moss/85 md:text-lg rt-link-faded [&_p+p]:mt-3 [&_strong]:font-medium [&_strong]:text-deep-moss [&_ul]:my-3 [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol_li+li]:mt-2">
                     {!! $section['body_html'] !!}
                   </div>
                 @endif

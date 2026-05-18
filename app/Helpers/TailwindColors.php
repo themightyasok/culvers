@@ -25,12 +25,13 @@ final class TailwindColors
     private const BODY_TEXT_SLUGS = ['zinc-100', 'white', 'zinc-300', 'text-muted', 'brand-500', 'deep-moss'];
 
     /**
-     * Fallback tone when the layout omits `body_text_tone` (ACF default + sanitized payloads).
+     * Canonical default before sanitisation; the renderer overwrites with the same map.
      */
     public static function defaultBodyTextToneForLayout(string $layout): string
     {
         return match ($layout) {
             'info_block',
+            'opening_hours',
             'shop_intro_block',
             'shop_store_details',
             'shop_related_shops',

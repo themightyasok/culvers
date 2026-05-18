@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Directory;
 
-use App\Constants\ComponentTypes;
 use App\Helpers\PagesFlexibleSeedData;
-use App\Helpers\TailwindColors;
 
 /**
  * Canonical flexible `components` payloads for `culvers_shop` singles — same pattern as
@@ -146,15 +144,11 @@ final class ShopSingleFlexibleSeedData
              * Coerce typography for the white band the same way as other shop-intro surfaces.
              */
             array_merge(PagesFlexibleSeedData::openingHoursRow(), [
-                'body_text_tone' => TailwindColors::DEFAULT_LIGHT_BAND_BODY_TEXT_TONE,
                 'hours_heading' => __('Opening hours', 'culvers'),
                 'hours_heading_level' => '2',
                 'hours_subheading' => __('Typical centre hours — confirm before travelling.', 'culvers'),
                 'hours_body' => '',
                 'hours_footnote' => __('Hours may change on bank holidays.', 'culvers'),
-                'background_type' => ComponentTypes::BACKGROUND_COLOR,
-                'background_color' => '#ffffff',
-                'component_width' => 'full',
             ]),
             PagesFlexibleSeedData::centreMapRow(),
             [

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Directory;
 
-use App\Constants\ComponentTypes;
 use App\Helpers\Cast;
 use App\Helpers\ThreeCardBlock;
 
@@ -61,7 +60,6 @@ final class ArchiveStoriesThreeCard
     private static function defaultsSkeleton(): array
     {
         return [
-            'background_type' => ComponentTypes::BACKGROUND_NONE,
             'cards_heading_level' => '2',
             'cards_subheading' => '',
             'cards_body' => '',

@@ -93,9 +93,9 @@
   $hasStaticCopy = $hasStaticSerifLines || $bodyPlain !== '';
   $hasCopy = $hasTabs || $hasStaticCopy;
 
-  $bodyClasses = 'shop-split-highlight__body max-w-[34.625rem] font-sans text-xl font-light text-white rt-link-brand'
-      . ' [&_li]:marker:text-brand-500 [&_p+p]:mt-4 [&_strong]:font-medium [&_strong]:text-white'
-      . ' [&_ul]:my-4 [&_ul]:inline-block [&_ul]:list-disc [&_ul]:pl-6 [&_ul]:text-left';
+  $bodyClasses = 'shop-split-highlight__body max-w-[34.625rem] w-full font-sans text-xl font-light text-light-cream rt-link-brand'
+      . ' [&_p+p]:mt-4 [&_strong]:font-medium [&_strong]:text-light-cream'
+      . ' [&>*:first-child]:mt-0';
 
   $tablistId = 'split-highlight-tabs-' . uniqid();
 @endphp
@@ -111,10 +111,10 @@
            <img> is absolutely positioned (out of flow). Flex would leave the media cell at min-height only. --}}
       <div
         class="grid overflow-hidden rounded-[10px] bg-faded-olive shadow-sm lg:min-h-[597px] lg:grid-cols-12 lg:items-stretch">
-        {{-- Copy column — always center on cross axis to match Figma 51:7158 (tabs row + heading
-             + body + CTA all sit on the panel's vertical centre line, with or without tabs/CTA). --}}
+        {{-- Copy column: tabbed decks stay centred (Figma 51:7158); static blocks align start +
+             use smaller top inset so the headline lines up with the flush-top image column. --}}
         <div
-          class="flex flex-col items-center justify-center gap-6 px-8 py-12 text-center max-lg:order-1 lg:order-none lg:gap-8 lg:px-10 xl:px-14 xl:py-12 {{ $ratio === '50-50' ? 'lg:col-span-6' : 'lg:col-span-7' }}">
+          class="flex flex-col gap-6 px-8 pb-12 max-lg:order-1 lg:order-none lg:gap-8 lg:px-10 xl:px-14 xl:pb-12 {{ $hasTabs ? 'items-center justify-center pt-12 text-center xl:pt-12' : 'items-start justify-start pt-8 text-left lg:pt-8 xl:pt-9' }} {{ $ratio === '50-50' ? 'lg:col-span-6' : 'lg:col-span-7' }}">
           @if($hasTabs)
             {{-- Tab list — Figma 51:7171 gaps 32px and is centre-justified. The border-b sits on
                  this row so its width MUST match the body block below (Figma's wrapper 51:7170 is

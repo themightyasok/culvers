@@ -234,26 +234,6 @@ return [
                 'wrapper' => ['width' => '34'],
             ],
         ],
-        'scroller_header_padding_top' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Padding above', 'culvers'),
-                'choices' => Padding::getHeaderSubheaderPaddingChoices(),
-                'default_value' => 'none',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '50'],
-            ],
-        ],
-        'scroller_header_padding_bottom' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Padding below', 'culvers'),
-                'choices' => Padding::getHeaderSubheaderPaddingChoices(),
-                'default_value' => 'none',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '50'],
-            ],
-        ],
         // Subheading
         'msg_typo_subheading' => Component::sectionDivider(__('Subheading', 'culvers')),
         'scroller_subheading_text_color' => [
@@ -285,26 +265,6 @@ return [
                 'default_value' => 'font-medium',
                 'allow_null' => 0,
                 'wrapper' => ['width' => '34'],
-            ],
-        ],
-        'scroller_subheader_padding_top' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Padding above', 'culvers'),
-                'choices' => Padding::getHeaderSubheaderPaddingChoices(),
-                'default_value' => 'none',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '50'],
-            ],
-        ],
-        'scroller_subheader_padding_bottom' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Padding below', 'culvers'),
-                'choices' => Padding::getHeaderSubheaderPaddingChoices(),
-                'default_value' => 'none',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '50'],
             ],
         ],
         // Body
@@ -340,26 +300,6 @@ return [
                 'wrapper' => ['width' => '34'],
             ],
         ],
-        'scroller_body_padding_top' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Padding above', 'culvers'),
-                'choices' => Padding::getHeaderSubheaderPaddingChoices(),
-                'default_value' => 'none',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '50'],
-            ],
-        ],
-        'scroller_body_padding_bottom' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Padding below', 'culvers'),
-                'choices' => Padding::getHeaderSubheaderPaddingChoices(),
-                'default_value' => 'none',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '50'],
-            ],
-        ],
         // Item kicker
         'msg_typo_kicker' => Component::sectionDivider(__('Item kicker', 'culvers')),
         'scroller_item_kicker_size' => [
@@ -379,26 +319,6 @@ return [
                 'choices' => Typography::getWeightChoices(),
                 'layout' => 'horizontal',
                 'default_value' => 'font-semibold',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '50'],
-            ],
-        ],
-        'scroller_item_kicker_padding_top' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Padding above', 'culvers'),
-                'choices' => Padding::getHeaderSubheaderPaddingChoices(),
-                'default_value' => 'none',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '50'],
-            ],
-        ],
-        'scroller_item_kicker_padding_bottom' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Padding below', 'culvers'),
-                'choices' => Padding::getHeaderSubheaderPaddingChoices(),
-                'default_value' => 'none',
                 'allow_null' => 0,
                 'wrapper' => ['width' => '50'],
             ],
@@ -426,26 +346,6 @@ return [
                 'wrapper' => ['width' => '50'],
             ],
         ],
-        'scroller_item_heading_padding_top' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Padding above', 'culvers'),
-                'choices' => Padding::getHeaderSubheaderPaddingChoices(),
-                'default_value' => 'none',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '50'],
-            ],
-        ],
-        'scroller_item_heading_padding_bottom' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Padding below', 'culvers'),
-                'choices' => Padding::getHeaderSubheaderPaddingChoices(),
-                'default_value' => 'none',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '50'],
-            ],
-        ],
         // Item body
         'msg_typo_item_body' => Component::sectionDivider(__('Item body', 'culvers')),
         'scroller_item_body_size' => [
@@ -465,26 +365,6 @@ return [
                 'choices' => Typography::getWeightChoices(),
                 'layout' => 'horizontal',
                 'default_value' => 'font-normal',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '50'],
-            ],
-        ],
-        'scroller_item_body_padding_top' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Padding above', 'culvers'),
-                'choices' => Padding::getHeaderSubheaderPaddingChoices(),
-                'default_value' => 'none',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '50'],
-            ],
-        ],
-        'scroller_item_body_padding_bottom' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Padding below', 'culvers'),
-                'choices' => Padding::getHeaderSubheaderPaddingChoices(),
-                'default_value' => 'none',
                 'allow_null' => 0,
                 'wrapper' => ['width' => '50'],
             ],

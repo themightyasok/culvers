@@ -91,6 +91,29 @@ add_filter('culvers_full_width_components', static function (array $layouts): ar
     return $layouts;
 });
 
+// Authoritative chrome defaults: see App\Helpers\ComponentLayoutChrome. Shop singles
+// need a white full-bleed band on opening_hours only (matches ShopFlexibleDefaults).
+add_filter('culvers_component_layout_chrome', static function (array $chrome, string $layout, array $component): array {
+    unset($component);
+
+    if ($layout !== 'opening_hours') {
+        return $chrome;
+    }
+
+    if (! function_exists('get_the_ID') || ! function_exists('get_post_type')) {
+        return $chrome;
+    }
+
+    $postId = (int) get_the_ID();
+    if ($postId <= 0 || get_post_type($postId) !== 'culvers_shop') {
+        return $chrome;
+    }
+
+    return array_merge($chrome, [
+        'component_width' => 'full',
+    ]);
+}, 10, 3);
+
 add_action('after_setup_theme', static function (): void {
     remove_theme_support('block-templates');
     remove_theme_support('core-block-patterns');
