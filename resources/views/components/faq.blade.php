@@ -136,9 +136,10 @@
                 <button
                   id="{{ esc_attr($questionId) }}"
                   type="button"
-                  {{-- Figma 51:9315 mobile / 51:8007 desktop: Halyard Book 20 / lh 1.3 / Faded Olive
-                       across every breakpoint (was 18 mobile → 20 desktop). --}}
-                  class="faq__question group flex w-full cursor-pointer items-center justify-between gap-4 py-5 text-left font-sans text-xl leading-[1.3] text-faded-olive transition-colors culvers-focus-ring"
+                  {{-- Desktop spec preserved (`text-lg md:text-xl`, Figma 51:8007 desktop = 20 / lh 1.3).
+                       `max-sm:text-xl` bumps viewports under 640 px to Figma 51:9315 mobile (20 / lh 1.3)
+                       without touching tablet (640-767, intentionally 18) or desktop. --}}
+                  class="faq__question group flex w-full cursor-pointer items-center justify-between gap-4 py-5 text-left font-sans text-lg leading-[1.3] text-faded-olive transition-colors culvers-focus-ring md:text-xl max-sm:text-xl"
                   data-faq-question
                   aria-controls="{{ esc_attr($panelId) }}"
                   aria-expanded="{{ $isOpen ? 'true' : 'false' }}"
@@ -148,14 +149,12 @@
                   x-on:keydown.home.prevent="focusEdge({{ $i }}, 'first')"
                   x-on:keydown.end.prevent="focusEdge({{ $i }}, 'last')">
                   <span class="faq__question-text">{{ esc_html($item['question']) }}</span>
-                  {{-- Figma 51:9292 etc. mobile + 51:8027 desktop: +/- glyph stroke is ~1.5 px,
-                       not the heavier 2 px we shipped initially. --}}
                   <span
                     class="faq__icon relative flex size-4 shrink-0 items-center justify-center text-deep-moss"
                     aria-hidden="true">
-                    <span class="absolute inset-x-0 top-1/2 h-[1.5px] -translate-y-1/2 bg-current"></span>
+                    <span class="absolute inset-x-0 top-1/2 h-[2px] -translate-y-1/2 bg-current"></span>
                     <span
-                      class="absolute inset-y-0 left-1/2 w-[1.5px] -translate-x-1/2 bg-current transition-transform duration-200 ease-out"
+                      class="absolute inset-y-0 left-1/2 w-[2px] -translate-x-1/2 bg-current transition-transform duration-200 ease-out"
                       x-bind:class="isOpen({{ $i }}) ? 'scale-y-0' : 'scale-y-100'"></span>
                   </span>
                 </button>

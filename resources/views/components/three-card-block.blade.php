@@ -79,12 +79,13 @@
         @endif
 
         @if($body !== '')
-          {{-- Figma 51:8212 mobile: Halyard Book 14 / lh 20 (text-sm).
-               Figma desktop: Halyard Light 20 / lh 26 (text-xl).
+          {{-- Desktop spec preserved (Halyard Light 20 / lh 26 = text-xl leading-[1.3]).
+               Figma 51:8212 mobile spec (Halyard Book 14 / lh 20) lands via `max-sm:`
+               only — tablet 640-767 stays at text-xl, matching the pre-mobile-audit build.
                Prose plugin defaults force 18px so we render the body with explicit
                utilities — keeps prose for rich text elsewhere intact. --}}
           <div
-            class="three-card-block__intro mx-auto mt-6 max-w-[36.75rem] text-left font-sans text-sm font-light leading-5 text-deep-moss md:text-center md:text-xl md:leading-[1.3] [&_p+p]:mt-4 [&_strong]:font-medium rt-link-olive-surface">
+            class="three-card-block__intro mx-auto mt-6 max-w-[36.75rem] text-left font-sans text-xl font-light leading-[1.3] text-deep-moss md:text-center max-sm:text-sm max-sm:leading-5 [&_p+p]:mt-4 [&_strong]:font-medium rt-link-olive-surface">
             {!! $body !!}
           </div>
         @endif
