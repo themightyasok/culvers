@@ -409,7 +409,7 @@ final class DirectoryPostTypes
                 'has_archive' => $cfg['archive_slug'],
                 'menu_icon' => $cfg['menu_icon'],
                 'menu_position' => $cfg['menu_position'],
-                'supports' => ['title', 'thumbnail', 'editor', 'excerpt', 'revisions'],
+                'supports' => ['title', 'thumbnail', 'excerpt', 'revisions'],
                 'rewrite' => ['slug' => $cfg['archive_slug'], 'with_front' => false],
                 'show_in_rest' => true,
                 'capability_type' => 'post',

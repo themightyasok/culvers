@@ -15,6 +15,7 @@ declare(strict_types=1);
 namespace App;
 
 use App\Admin\AdminMenu;
+use App\Admin\HideClassicEditor;
 use App\Assets\AcfFlexibleAdmin;
 use App\Assets\FrontendAssets;
 use App\Assets\NavMegaPreviewAdmin;
@@ -23,6 +24,7 @@ FrontendAssets::register();
 AcfFlexibleAdmin::register();
 NavMegaPreviewAdmin::register();
 AdminMenu::register();
+HideClassicEditor::register();
 
 add_action('init', static function (): void {
     Directory\DirectoryPostTypes::register();
