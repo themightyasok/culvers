@@ -216,18 +216,23 @@ final class PlaceholderDirectorySeeder
     private static function eatDrinkRows(): array
     {
         return [
-            ['title' => 'Greggs', 'slug' => 'greggs', 'category' => 'bakery', 'type' => 'takeaway', 'hours' => 'Open Today 7am - 6pm'],
-            ['title' => 'Pret a Manger', 'slug' => 'pret-a-manger', 'category' => 'coffee-cake', 'type' => 'cafe', 'hours' => 'Open Today 7am - 7pm'],
-            ['title' => 'Wagamama', 'slug' => 'wagamama', 'category' => 'asian', 'type' => 'restaurant', 'hours' => 'Open Today 11.30am - 10pm'],
-            ['title' => 'Five Guys', 'slug' => 'five-guys', 'category' => 'burgers-grill', 'type' => 'restaurant', 'hours' => 'Open Today 11am - 10pm'],
-            ['title' => 'Honest Burgers', 'slug' => 'honest-burgers', 'category' => 'burgers-grill', 'type' => 'restaurant', 'hours' => 'Open Today 11am - 10pm'],
-            ['title' => 'Costa Coffee', 'slug' => 'costa-coffee', 'category' => 'coffee-cake', 'type' => 'cafe', 'hours' => 'Open Today 6.30am - 7pm'],
-            ['title' => 'Leon', 'slug' => 'leon', 'category' => 'healthy', 'type' => 'restaurant', 'hours' => 'Open Today 8am - 9pm'],
-            ['title' => 'Itsu', 'slug' => 'itsu', 'category' => 'asian', 'type' => 'takeaway', 'hours' => 'Open Today 10am - 8pm'],
-            ['title' => "Franco Manca", 'slug' => 'franco-manca', 'category' => 'italian', 'type' => 'restaurant', 'hours' => 'Open Today 12pm - 10pm'],
-            ['title' => 'Crosstown Doughnuts', 'slug' => 'crosstown-doughnuts', 'category' => 'sweet-treats', 'type' => 'takeaway', 'hours' => 'Open Today 9am - 7pm'],
-            ['title' => 'The Botanist', 'slug' => 'the-botanist', 'category' => 'casual-dining', 'type' => 'bar', 'hours' => 'Open Today 12pm - 11pm'],
-            ['title' => 'Caffè Nero', 'slug' => 'caffe-nero', 'category' => 'coffee-cake', 'type' => 'cafe', 'hours' => 'Open Today 6.30am - 7pm'],
+            ['title' => 'Greggs Bakery', 'slug' => 'greggs', 'category' => 'bakery', 'type' => 'takeaway', 'hours' => EatDrinkDirectorySeedData::DEFAULT_HOURS_LINE],
+            ['title' => 'Toast Coffee', 'slug' => 'toast-coffee', 'category' => 'coffee-cake', 'type' => 'cafe', 'hours' => EatDrinkDirectorySeedData::DEFAULT_HOURS_LINE],
+            ['title' => 'Subway', 'slug' => 'subway', 'category' => 'burgers-grill', 'type' => 'takeaway', 'hours' => EatDrinkDirectorySeedData::DEFAULT_HOURS_LINE],
+            [
+                'title' => 'Juicy Bar Vitality',
+                'slug' => 'juicy-bar-vitality',
+                'category' => 'healthy',
+                'type' => 'takeaway',
+                'hours' => EatDrinkDirectorySeedData::DEFAULT_HOURS_LINE,
+            ],
+            [
+                'title' => "Godfrey's Creperie",
+                'slug' => 'godfreys-creperie',
+                'category' => 'sweet-treats',
+                'type' => 'restaurant',
+                'hours' => EatDrinkDirectorySeedData::DEFAULT_HOURS_LINE,
+            ],
         ];
     }
 

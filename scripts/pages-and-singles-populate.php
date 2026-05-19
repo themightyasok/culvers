@@ -259,7 +259,7 @@ $singleDefinitions = [
     [
         'post_type' => 'culvers_eat_drink',
         'slug' => 'greggs',
-        'title' => __('Greggs', 'culvers'),
+        'title' => __('Greggs Bakery', 'culvers'),
         'taxonomies' => [
             'culvers_eat_drink_category' => [__('Bakery', 'culvers')],
             'culvers_eat_drink_type' => [__('Takeaway', 'culvers')],
