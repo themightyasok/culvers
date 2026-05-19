@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Directory;
 
+use App\Admin\AdminMenu;
+
 /**
  * Theme options + archive wiring for `/whats-on/` (events archive).
  *
@@ -29,7 +31,7 @@ final class EventArchiveFields
             'page_title' => __('What’s On directory', 'culvers'),
             'description' => __('Hero and copy for the events archive (/whats-on/).', 'culvers'),
             'icon' => 'dashicons-calendar-alt',
-            'position' => 63,
+            'position' => AdminMenu::POS_EVENTS_DIRECTORY,
             'group_key' => 'group_culvers_events_archive_options',
             'group_title' => __('What’s On directory archive', 'culvers'),
             'field_prefix' => self::FIELD_PREFIX,

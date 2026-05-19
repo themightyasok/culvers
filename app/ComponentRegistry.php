@@ -178,6 +178,8 @@ class ComponentRegistry
             ->or('post_type', '==', 'culvers_shop')
             ->or('post_type', '==', 'culvers_eat_drink')
             ->or('post_type', '==', 'culvers_event')
+            ->or('post_type', '==', 'culvers_offer')
+            ->or('post_type', '==', 'culvers_news')
             ->or('post_type', '==', 'culvers_career');
 
         return $components;

@@ -194,7 +194,16 @@ final class PlaceholderDirectorySeeder
             $counter['created']++;
         }
 
-        return is_wp_error($res) ? 0 : (int) $res;
+        if (is_wp_error($res)) {
+            return 0;
+        }
+
+        $postId = (int) $res;
+        if (DirectoryFlexibleDefaults::layoutKeysForPostType($postType) !== []) {
+            DirectoryFlexibleDefaults::persistDefaultsForPost($postId);
+        }
+
+        return $postId;
     }
 
     // ---------------------------------------------------------------------

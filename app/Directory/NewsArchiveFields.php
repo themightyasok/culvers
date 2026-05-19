@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Directory;
 
+use App\Admin\AdminMenu;
+
 /**
  * Theme options + archive wiring for `/latest-news/`.
  *
@@ -26,7 +28,7 @@ final class NewsArchiveFields
             'page_title' => __('Latest News directory', 'culvers'),
             'description' => __('Hero and copy for the news archive (/latest-news/).', 'culvers'),
             'icon' => 'dashicons-megaphone',
-            'position' => 66,
+            'position' => AdminMenu::POS_NEWS_DIRECTORY,
             'group_key' => 'group_culvers_news_archive_options',
             'group_title' => __('Latest News directory archive', 'culvers'),
             'field_prefix' => self::FIELD_PREFIX,

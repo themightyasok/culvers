@@ -477,6 +477,8 @@ final class CptSinglesFlexibleSeedData
      */
     public static function easterEggHunt(): array
     {
+        $eventsUrl = function_exists('home_url') ? home_url('/latest-events/') : '/latest-events/';
+
         return [
             array_merge(self::base('image_hero'), [
                 'hero_image' => [
@@ -519,6 +521,78 @@ final class CptSinglesFlexibleSeedData
                 'header_align' => 'center',
                 'header_max_width' => 'medium',
             ]),
+            array_merge(self::base('shop_split_highlight'), [
+                'split_ratio' => '50-50',
+                'split_use_tabs' => false,
+                'split_image' => [
+                    'url' => PagesFlexibleSeedData::seedAssetUrl(self::EVENT_HERO_FILE),
+                    'alt' => __('Children following Easter hunt clues in the mall', 'culvers'),
+                ],
+                'split_kicker' => '',
+                'split_headline' => __('Free hunt cards at Guest Services.', 'culvers'),
+                'split_body' => '<p>'
+                    . esc_html__(
+                        'Collect your map, follow the trail past participating stores and '
+                        . 'redeem a chocolate reward when you complete every clue.',
+                        'culvers'
+                    )
+                    . '</p>',
+                'split_cta_label' => '',
+                'split_cta_url' => '',
+            ]),
+            array_merge(self::base('section_header'), [
+                'header_eyebrow' => '',
+                'header_heading' => __('Share with friends & family', 'culvers'),
+                'header_heading_level' => '2',
+                'header_body' => __(
+                    'Spread the word — bring the kids, grandparents and friends along for a free day out at the centre.',
+                    'culvers'
+                ),
+                'header_align' => 'center',
+                'header_max_width' => 'medium',
+            ]),
+            array_merge(self::base('three_card_block'), [
+                'cards_source' => 'manual',
+                'cards_heading' => __('More events', 'culvers'),
+                'cards_subheading' => '',
+                'cards_heading_level' => '2',
+                'cards_body' => sprintf(
+                    '<p>%s</p>',
+                    esc_html__('See what else is happening at Culver Square.', 'culvers')
+                ),
+                'cards_items' => [
+                    [
+                        'card_title' => __('Culver Square Easter Egg Hunt', 'culvers'),
+                        'card_url' => $eventsUrl,
+                        'card_media_type' => 'image',
+                        'card_image' => [
+                            'url' => PagesFlexibleSeedData::seedAssetUrl(self::EVENT_HERO_FILE),
+                            'alt' => __('Easter Egg Hunt at Culver Square', 'culvers'),
+                        ],
+                        'card_image_alt' => __('Easter Egg Hunt at Culver Square', 'culvers'),
+                        'card_video' => null,
+                        'card_video_poster' => null,
+                    ],
+                    [
+                        'card_title' => __('Late-night Shopping Thursday', 'culvers'),
+                        'card_url' => $eventsUrl,
+                        'card_media_type' => 'image',
+                        'card_image' => null,
+                        'card_image_alt' => '',
+                        'card_video' => null,
+                        'card_video_poster' => null,
+                    ],
+                    [
+                        'card_title' => __('Live Acoustic Sessions', 'culvers'),
+                        'card_url' => $eventsUrl,
+                        'card_media_type' => 'image',
+                        'card_image' => null,
+                        'card_image_alt' => '',
+                        'card_video' => null,
+                        'card_video_poster' => null,
+                    ],
+                ],
+            ]),
         ];
     }
 
@@ -532,6 +606,8 @@ final class CptSinglesFlexibleSeedData
      */
     public static function spring2026Lineup(): array
     {
+        $newsUrl = function_exists('home_url') ? home_url('/latest-news/') : '/latest-news/';
+
         return [
             array_merge(self::base('image_hero'), [
                 'hero_image' => [
@@ -546,6 +622,17 @@ final class CptSinglesFlexibleSeedData
                 'hero_overlay_opacity' => 35,
                 'hero_title_in_image' => false,
             ]),
+            array_merge(self::base('event_meta'), [
+                'event_meta_date_label' => __('Published', 'culvers'),
+                'event_meta_date_value' => __('1 March 2026', 'culvers'),
+                'event_meta_time_label' => __('Reading time', 'culvers'),
+                'event_meta_time_value' => __('4 min read', 'culvers'),
+                'event_meta_location_label' => __('Category', 'culvers'),
+                'event_meta_location_value' => __('Centre news', 'culvers'),
+                'event_meta_accessibility_note' => '',
+                'event_meta_cta_label' => '',
+                'event_meta_cta_url' => '',
+            ]),
             array_merge(self::base('section_header'), [
                 'header_eyebrow' => __('Centre news', 'culvers'),
                 'header_heading' => __('Five new openings, one refreshed mall.', 'culvers'),
@@ -558,6 +645,78 @@ final class CptSinglesFlexibleSeedData
                 ),
                 'header_align' => 'center',
                 'header_max_width' => 'medium',
+            ]),
+            array_merge(self::base('shop_split_highlight'), [
+                'split_ratio' => '50-50',
+                'split_use_tabs' => false,
+                'split_image' => [
+                    'url' => PagesFlexibleSeedData::seedAssetUrl(self::EVENT_OFFER_IMAGE_FILE),
+                    'alt' => __('Refreshed Lower Mall walkway at Culver Square', 'culvers'),
+                ],
+                'split_kicker' => '',
+                'split_headline' => __('A brighter Lower Mall for spring.', 'culvers'),
+                'split_body' => '<p>'
+                    . esc_html__(
+                        'The refreshed mall walk brings new lighting, seating and planting — '
+                        . 'creating a calmer route between the atrium and the new store line-up.',
+                        'culvers'
+                    )
+                    . '</p>',
+                'split_cta_label' => '',
+                'split_cta_url' => '',
+            ]),
+            array_merge(self::base('section_header'), [
+                'header_eyebrow' => '',
+                'header_heading' => __('More centre news', 'culvers'),
+                'header_heading_level' => '2',
+                'header_body' => __(
+                    'Catch up on sustainability milestones, trading hours and community stories from across Culver Square.',
+                    'culvers'
+                ),
+                'header_align' => 'center',
+                'header_max_width' => 'medium',
+            ]),
+            array_merge(self::base('three_card_block'), [
+                'cards_source' => 'manual',
+                'cards_heading' => __('Latest news', 'culvers'),
+                'cards_subheading' => '',
+                'cards_heading_level' => '2',
+                'cards_body' => sprintf(
+                    '<p>%s</p>',
+                    esc_html__('Stories from across Culver Square.', 'culvers')
+                ),
+                'cards_items' => [
+                    [
+                        'card_title' => __('Spring 2026 line-up', 'culvers'),
+                        'card_url' => $newsUrl,
+                        'card_media_type' => 'image',
+                        'card_image' => [
+                            'url' => PagesFlexibleSeedData::seedAssetUrl(self::EVENT_OFFER_IMAGE_FILE),
+                            'alt' => __('Spring line-up at Culver Square', 'culvers'),
+                        ],
+                        'card_image_alt' => __('Spring line-up at Culver Square', 'culvers'),
+                        'card_video' => null,
+                        'card_video_poster' => null,
+                    ],
+                    [
+                        'card_title' => __('Solar array switched on', 'culvers'),
+                        'card_url' => $newsUrl,
+                        'card_media_type' => 'image',
+                        'card_image' => null,
+                        'card_image_alt' => '',
+                        'card_video' => null,
+                        'card_video_poster' => null,
+                    ],
+                    [
+                        'card_title' => __('Essex Centre of the Year', 'culvers'),
+                        'card_url' => $newsUrl,
+                        'card_media_type' => 'image',
+                        'card_image' => null,
+                        'card_image_alt' => '',
+                        'card_video' => null,
+                        'card_video_poster' => null,
+                    ],
+                ],
             ]),
         ];
     }

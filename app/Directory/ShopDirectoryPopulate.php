@@ -157,6 +157,8 @@ final class ShopDirectoryPopulate
             }
         }
 
+        DirectoryFlexibleDefaults::persistDefaultsForPost($postId);
+
         return $postId;
     }
 

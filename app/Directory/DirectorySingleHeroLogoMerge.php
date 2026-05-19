@@ -13,7 +13,7 @@ namespace App\Directory;
  * Editors can still override via the hero row Logo field — we only merge when
  * `hero_logo` resolves empty and `hero_title_in_image` is unset.
  *
- * Runs after {@see ShopFlexibleDefaults} on the same `acf/load_value` pipeline
+ * Runs after {@see DirectoryFlexibleDefaults} on the same `acf/load_value` pipeline
  * (priority 21).
  */
 final class DirectorySingleHeroLogoMerge

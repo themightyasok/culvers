@@ -24,8 +24,27 @@
 }
 
 .acf-flexible-content.-block .layout .acf-fc-layout-handle {
+  background: #1d2327 !important;
+  color: #fff !important;
   font-weight: 700 !important;
   font-size: 15px !important;
+  line-height: 1.35 !important;
+  padding: 10px 14px !important;
+  border: none !important;
+  border-radius: 4px 4px 0 0 !important;
+}
+
+.acf-flexible-content.-block .layout .acf-fc-layout-handle .acf-fc-layout-order {
+  color: #c3c4c7 !important;
+}
+
+.acf-flexible-content.-block .layout .acf-fc-layout-handle .acf-icon {
+  color: #fff !important;
+}
+
+.acf-flexible-content.-block .layout .acf-fc-layout-handle:hover {
+  background: #2c3338 !important;
+  color: #fff !important;
 }
 
 /* ------- Section dividers inside a tab -------

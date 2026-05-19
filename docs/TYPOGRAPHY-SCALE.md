@@ -146,6 +146,8 @@ Canonical helpers live in **`App\Helpers\Component`** (`sectionHeadingClasses`, 
 | `51:9221` | Travel calc | Result copy | Halyard 20 / 1.3 | `text-xl` | travel-calculator result |
 | `51:9225` | Guest services | Accordion label | Canela 32 | `text-3xl` | text-image-slider label |
 | `51:9484` | Contact | Panel subheads | Halyard 20 / 24 | `text-xl` | contact `font-sans!` panel headings |
+| `51:6386` | Offer single | Page components | Same stack as events (6 layouts) | — | `DirectoryFlexibleDefaults` |
+| — | News single | Page components | Same stack as events (6 layouts) | — | `DirectoryFlexibleDefaults` |
 | `51:9546` | Contact | Form labels | Halyard Med 20 | `text-xl` | contact `max-sm:` on labels |
 
 **Section H2 default:** `text-5xl md:text-6xl` (48 → 58 px). Figma often specifies 46 px on mobile; +2 px is an accepted snap (see table above).

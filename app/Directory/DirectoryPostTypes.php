@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Directory;
 
+use App\Admin\AdminMenu;
 use WP_Query;
 
 /**
@@ -121,7 +122,7 @@ final class DirectoryPostTypes
                 'description' => __('Retailers and brands in the centre directory.', 'culvers'),
                 'archive_slug' => 'shops',
                 'menu_icon' => 'dashicons-store',
-                'menu_position' => 22,
+                'menu_position' => AdminMenu::POS_SHOP,
                 'archive_sort' => self::SORT_ALPHABETICAL,
                 'labels' => [
                     'name' => __('Shops', 'culvers'),
@@ -140,7 +141,7 @@ final class DirectoryPostTypes
                 'description' => __('Restaurants, cafés, bars and takeaways in the centre.', 'culvers'),
                 'archive_slug' => 'eat-drink',
                 'menu_icon' => 'dashicons-coffee',
-                'menu_position' => 23,
+                'menu_position' => AdminMenu::POS_EAT_DRINK,
                 'archive_sort' => self::SORT_ALPHABETICAL,
                 'labels' => [
                     'name' => __('Eat & Drink', 'culvers'),
@@ -163,7 +164,7 @@ final class DirectoryPostTypes
                    isn't itself an archive parent. */
                 'archive_slug' => 'latest-events',
                 'menu_icon' => 'dashicons-calendar-alt',
-                'menu_position' => 24,
+                'menu_position' => AdminMenu::POS_EVENTS,
                 'archive_sort' => self::SORT_OLDEST_FIRST,
                 'labels' => [
                     'name' => __('Latest Events', 'culvers'),
@@ -182,7 +183,7 @@ final class DirectoryPostTypes
                 'description' => __('Promotions, discounts and brand campaigns from across the centre.', 'culvers'),
                 'archive_slug' => 'latest-offers',
                 'menu_icon' => 'dashicons-tag',
-                'menu_position' => 24,
+                'menu_position' => AdminMenu::POS_OFFERS,
                 'archive_sort' => self::SORT_NEWEST_FIRST,
                 'labels' => [
                     'name' => __('Latest Offers', 'culvers'),
@@ -201,7 +202,7 @@ final class DirectoryPostTypes
                 'description' => __('Centre updates, retailer announcements and editorial articles.', 'culvers'),
                 'archive_slug' => 'latest-news',
                 'menu_icon' => 'dashicons-megaphone',
-                'menu_position' => 24,
+                'menu_position' => AdminMenu::POS_NEWS,
                 'archive_sort' => self::SORT_NEWEST_FIRST,
                 'labels' => [
                     'name' => __('Latest News', 'culvers'),
@@ -220,7 +221,7 @@ final class DirectoryPostTypes
                 'description' => __('Open roles at Culver Square and across the centre.', 'culvers'),
                 'archive_slug' => 'careers',
                 'menu_icon' => 'dashicons-businessperson',
-                'menu_position' => 25,
+                'menu_position' => AdminMenu::POS_CAREERS,
                 'archive_sort' => self::SORT_ALPHABETICAL,
                 'labels' => [
                     'name' => __('Careers', 'culvers'),

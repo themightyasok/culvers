@@ -32,7 +32,7 @@ class Fields
      */
     private function registerComponentFields(): void
     {
-        Directory\ShopFlexibleDefaults::register();
+        Directory\DirectoryFlexibleDefaults::register();
         Directory\DirectorySingleHeroLogoMerge::register();
         $flexibleContent = $this->componentRegistry->registerFlexibleContent();
         acf_add_local_field_group($flexibleContent->build());

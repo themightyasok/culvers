@@ -14,11 +14,13 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\Admin\AdminMenu;
 use App\Assets\AcfFlexibleAdmin;
 use App\Assets\FrontendAssets;
 
 FrontendAssets::register();
 AcfFlexibleAdmin::register();
+AdminMenu::register();
 
 add_action('init', static function (): void {
     Directory\DirectoryPostTypes::register();
@@ -92,7 +94,7 @@ add_filter('culvers_full_width_components', static function (array $layouts): ar
 });
 
 // Authoritative chrome defaults: see App\Helpers\ComponentLayoutChrome. Shop singles
-// need a white full-bleed band on opening_hours only (matches ShopFlexibleDefaults).
+// need a white full-bleed band on opening_hours only (matches directory single defaults).
 add_filter('culvers_component_layout_chrome', static function (array $chrome, string $layout, array $component): array {
     unset($component);
 

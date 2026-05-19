@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Directory;
 
+use App\Admin\AdminMenu;
 use StoutLogic\AcfBuilder\FieldsBuilder;
 
 /**
@@ -29,7 +30,7 @@ final class EatDrinkArchiveFields
             'page_title' => __('Eat & Drink directory', 'culvers'),
             'description' => __('Hero, intro copy, and optional stories strip for the venues archive (/eat-drink/).', 'culvers'),
             'icon' => 'dashicons-coffee',
-            'position' => 62,
+            'position' => AdminMenu::POS_EAT_DRINK_DIRECTORY,
             'group_key' => 'group_culvers_eat_drink_archive_options',
             'group_title' => __('Eat & Drink directory archive', 'culvers'),
             'field_prefix' => self::FIELD_PREFIX,

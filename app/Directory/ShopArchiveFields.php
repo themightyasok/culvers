@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Directory;
 
+use App\Admin\AdminMenu;
 use StoutLogic\AcfBuilder\FieldsBuilder;
 
 /**
@@ -31,7 +32,7 @@ final class ShopArchiveFields
             'page_title' => __('Shop directory', 'culvers'),
             'description' => __('Hero, intro and stories strip for the shops archive (/shops/).', 'culvers'),
             'icon' => 'dashicons-store',
-            'position' => 61,
+            'position' => AdminMenu::POS_SHOP_DIRECTORY,
             'group_key' => 'group_culvers_shop_archive_options',
             'group_title' => __('Shop directory archive', 'culvers'),
             'field_prefix' => self::FIELD_PREFIX,

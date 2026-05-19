@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Directory;
 
+use App\Admin\AdminMenu;
+
 /**
  * Theme options + archive wiring for `/latest-offers/`.
  *
@@ -26,7 +28,7 @@ final class OfferArchiveFields
             'page_title' => __('Latest Offers directory', 'culvers'),
             'description' => __('Hero and copy for the offers archive (/latest-offers/).', 'culvers'),
             'icon' => 'dashicons-tag',
-            'position' => 65,
+            'position' => AdminMenu::POS_OFFERS_DIRECTORY,
             'group_key' => 'group_culvers_offers_archive_options',
             'group_title' => __('Latest Offers directory archive', 'culvers'),
             'field_prefix' => self::FIELD_PREFIX,
