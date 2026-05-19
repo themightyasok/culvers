@@ -22,7 +22,7 @@ return [
                 'wrapper' => ['width' => '70'],
             ],
         ],
-        'agents_heading_level' => Component::headingLevelField(width: '30'),
+        'agents_heading_level' => Component::headingLevelField(null, false, 2, '30'),
         'agents_intro' => [
             'type' => 'textarea',
             'options' => [

@@ -101,8 +101,6 @@ return [
                 'wrapper' => ['width' => '50'],
             ],
         ],
-    ],
-    'typography' => [
         'hero_title_tone' => [
             'type' => 'button_group',
             'options' => [
@@ -121,6 +119,7 @@ return [
                 'allow_null' => 0,
                 'return_format' => 'value',
                 'layout' => 'horizontal',
+                'wrapper' => ['width' => '50'],
             ],
         ],
     ],

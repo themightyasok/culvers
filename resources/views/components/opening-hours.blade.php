@@ -12,7 +12,7 @@
   $c = is_array($component ?? null) ? $component : [];
   $root = Component::rootClasses($c);
   $tone = Component::bodyTextTone($c);
-  $headingTag = Component::headingTag($c['hours_heading_level'] ?? null);
+  $headingTag = Component::headingTagFromComponent($c, 'hours_heading_level', 2);
 
   $heading = trim((string) ($c['hours_heading'] ?? ''));
   $subheading = trim((string) ($c['hours_subheading'] ?? ''));

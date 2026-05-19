@@ -1,4 +1,5 @@
 @php
+  use App\Contact\ContactFormCopy;
   use App\Contact\ContactFormEndpoint;
   use App\Customizer\FooterCustomizer;
   use App\Customizer\GoogleMapsCustomizer;
@@ -15,62 +16,27 @@
   $c = is_array($component ?? null) ? $component : [];
   $root = Component::rootClasses($c);
 
-  $headingTag = Component::headingTag($c['contact_heading_level'] ?? 2);
+  $headingTag = Component::headingTagFromComponent($c, 'contact_heading_level', 2);
   $heading = trim((string) ($c['contact_heading'] ?? ''));
 
   $showPanel = ! isset($c['contact_show_panel']) || ! empty($c['contact_show_panel']);
   $showMap = ! isset($c['contact_show_map']) || ! empty($c['contact_show_map']);
 
-  $firstNameLabel = trim((string) ($c['contact_form_first_name_label'] ?? '')) !== ''
-      ? trim((string) $c['contact_form_first_name_label'])
-      : __('First name*', 'culvers');
-  $firstNamePlaceholder = trim((string) ($c['contact_form_first_name_placeholder'] ?? '')) !== ''
-      ? trim((string) $c['contact_form_first_name_placeholder'])
-      : __('Name', 'culvers');
-  $lastNameLabel = trim((string) ($c['contact_form_last_name_label'] ?? '')) !== ''
-      ? trim((string) $c['contact_form_last_name_label'])
-      : __('Last name*', 'culvers');
-  $lastNamePlaceholder = trim((string) ($c['contact_form_last_name_placeholder'] ?? '')) !== ''
-      ? trim((string) $c['contact_form_last_name_placeholder'])
-      : __('Last name', 'culvers');
-  $emailLabel = trim((string) ($c['contact_form_email_label'] ?? '')) !== ''
-      ? trim((string) $c['contact_form_email_label'])
-      : __('Email*', 'culvers');
-  $emailPlaceholder = trim((string) ($c['contact_form_email_placeholder'] ?? '')) !== ''
-      ? trim((string) $c['contact_form_email_placeholder'])
-      : __('Email address', 'culvers');
-  $reasonLabel = trim((string) ($c['contact_form_reason_label'] ?? '')) !== ''
-      ? trim((string) $c['contact_form_reason_label'])
-      : __('Reason for enquiry*', 'culvers');
-  $reasonPlaceholder = trim((string) ($c['contact_form_reason_placeholder'] ?? '')) !== ''
-      ? trim((string) $c['contact_form_reason_placeholder'])
-      : __('Select', 'culvers');
-  $messageLabel = trim((string) ($c['contact_form_message_label'] ?? '')) !== ''
-      ? trim((string) $c['contact_form_message_label'])
-      : __('Message', 'culvers');
-  $messagePlaceholder = trim((string) ($c['contact_form_message_placeholder'] ?? '')) !== ''
-      ? trim((string) $c['contact_form_message_placeholder'])
-      : __('Type message here', 'culvers');
-  $submitLabel = trim((string) ($c['contact_form_submit_label'] ?? '')) !== ''
-      ? trim((string) $c['contact_form_submit_label'])
-      : __('Submit', 'culvers');
-  $successMessage = trim((string) ($c['contact_form_success_message'] ?? '')) !== ''
-      ? trim((string) $c['contact_form_success_message'])
-      : __('Thanks — your message is on its way.', 'culvers');
+  $firstNameLabel = ContactFormCopy::firstNameLabel($c);
+  $firstNamePlaceholder = ContactFormCopy::firstNamePlaceholder($c);
+  $lastNameLabel = ContactFormCopy::lastNameLabel($c);
+  $lastNamePlaceholder = ContactFormCopy::lastNamePlaceholder($c);
+  $emailLabel = ContactFormCopy::emailLabel($c);
+  $emailPlaceholder = ContactFormCopy::emailPlaceholder($c);
+  $reasonLabel = ContactFormCopy::reasonLabel($c);
+  $reasonPlaceholder = ContactFormCopy::reasonPlaceholder($c);
+  $messageLabel = ContactFormCopy::messageLabel($c);
+  $messagePlaceholder = ContactFormCopy::messagePlaceholder($c);
+  $submitLabel = ContactFormCopy::submitLabel($c);
+  $successMessage = ContactFormCopy::successMessage($c);
 
-  $reasons = [];
-  if (isset($c['contact_form_reasons']) && is_array($c['contact_form_reasons'])) {
-      foreach ($c['contact_form_reasons'] as $row) {
-          if (! is_array($row)) {
-              continue;
-          }
-          $reasonValue = trim((string) ($row['item_reason'] ?? ''));
-          if ($reasonValue !== '') {
-              $reasons[] = $reasonValue;
-          }
-      }
-  }
-  $hasReasonChoices = $reasons !== [];
+  $reasons = ContactFormCopy::enquiryReasonChoicesFromComponent($c);
+  $hasReasonChoices = ContactFormCopy::useReasonSelect($c);
 
   $instanceId = 'contact-' . uniqid();
   $headingId = $heading !== '' ? $instanceId . '-heading' : '';

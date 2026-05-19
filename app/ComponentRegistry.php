@@ -263,40 +263,25 @@ class ComponentRegistry
      */
     private function addMobileTab(FieldsBuilder $layout, string $componentName, array $config): void
     {
-        $layout->addTab(__('Mobile', 'culvers'));
-
         $mobileFields = $this->fieldsForSection($config, 'mobile');
 
-        if ($mobileFields !== []) {
-            $layout->addField(sprintf('chrome_%s_mobile_help', $componentName), 'message', [
-                'label' => '',
-                'message' => __(
-                    '<strong>Mobile overrides apply only below the <code>md</code> breakpoint (768px).</strong> '
-                    . 'Leave any field blank to inherit the desktop value.',
-                    'culvers'
-                ),
-                'esc_html' => 0,
-                'wrapper' => ['class' => 'culvers-acf-help'],
-            ]);
-            $this->emitFields($layout, $componentName, $mobileFields);
-
+        if ($mobileFields === []) {
             return;
         }
 
-        $emptyMessage = isset($config['mobile_empty_message']) && is_string($config['mobile_empty_message'])
-            ? $config['mobile_empty_message']
-            : __(
-                'This block renders the same content on mobile and desktop — there are no block-level mobile overrides. '
-                . 'If individual rows on the <em>Items</em> tab expose a per-row mobile asset, set those there.',
-                'culvers'
-            );
+        $layout->addTab(__('Mobile', 'culvers'));
 
-        $layout->addField(sprintf('chrome_%s_mobile_empty', $componentName), 'message', [
+        $layout->addField(sprintf('chrome_%s_mobile_help', $componentName), 'message', [
             'label' => '',
-            'message' => $emptyMessage,
+            'message' => __(
+                '<strong>Mobile overrides apply only below the <code>md</code> breakpoint (768px).</strong> '
+                . 'Leave any field blank to inherit the desktop value.',
+                'culvers'
+            ),
             'esc_html' => 0,
             'wrapper' => ['class' => 'culvers-acf-help'],
         ]);
+        $this->emitFields($layout, $componentName, $mobileFields);
     }
 
     /**

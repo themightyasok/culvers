@@ -12,7 +12,7 @@
   $c = is_array($component ?? null) ? $component : [];
   $root = Component::rootClasses($c);
   $tone = Component::bodyTextTone($c, 'light-band');
-  $headingTag = Component::headingTag($c['info_heading_level'] ?? null);
+  $headingTag = Component::headingTagFromComponent($c, 'info_heading_level', 2);
 
   $heading = trim((string) ($c['info_heading'] ?? ''));
   $subheading = trim((string) ($c['info_subheading'] ?? ''));

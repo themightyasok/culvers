@@ -1,0 +1,60 @@
+.culvers-mega-preview-field {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid #dcdcde;
+}
+
+.culvers-mega-preview-field > label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.culvers-mega-preview-field__frame {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.culvers-mega-preview-field__thumb {
+  position: relative;
+  flex: 0 0 auto;
+  width: 120px;
+  aspect-ratio: 8 / 5;
+  border-radius: 4px;
+  overflow: hidden;
+  background: #f0f0f1;
+  border: 1px solid #c3c4c7;
+}
+
+.culvers-mega-preview-field__preview {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.culvers-mega-preview-field__placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  font-size: 11px;
+  line-height: 1.3;
+  text-align: center;
+  color: #646970;
+}
+
+.culvers-mega-preview-field__actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+.culvers-mega-preview-field__actions .button-link-delete {
+  color: #b32d2e;
+}

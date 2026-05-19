@@ -20,7 +20,7 @@ return [
                 'wrapper' => ['width' => '70'],
             ],
         ],
-        'tis_heading_level' => Component::headingLevelField(width: '30'),
+        'tis_heading_level' => Component::headingLevelField(null, false, 2, '30'),
         'tis_open_mode' => [
             'type' => 'select',
             'options' => [

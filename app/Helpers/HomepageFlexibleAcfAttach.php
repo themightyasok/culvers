@@ -107,7 +107,6 @@ final class HomepageFlexibleAcfAttach
                 continue;
             }
             $cards[$i]['card_video'] = self::acfFileValue($card['card_video'] ?? null);
-            $cards[$i]['card_video_poster'] = self::acfImageValue($card['card_video_poster'] ?? null);
             $cards[$i]['card_image'] = self::acfImageValue($card['card_image'] ?? null);
         }
         $row['cards_items'] = $cards;

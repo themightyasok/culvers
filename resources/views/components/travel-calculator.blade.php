@@ -32,21 +32,12 @@
 
   $heading = trim((string) ($c['tc_heading'] ?? ''));
   $intro = trim((string) ($c['tc_intro'] ?? ''));
-  $destLabel = trim((string) ($c['tc_destination_label'] ?? '')) !== ''
-      ? trim((string) $c['tc_destination_label'])
-      : __('Your destination', 'culvers');
-  $destPlaceholder = trim((string) ($c['tc_destination_placeholder'] ?? '')) !== ''
-      ? trim((string) $c['tc_destination_placeholder'])
-      : __('Type your destination here', 'culvers');
-  $modeLabel = trim((string) ($c['tc_mode_label'] ?? '')) !== ''
-      ? trim((string) $c['tc_mode_label'])
-      : __('Travel by', 'culvers');
-  $modePlaceholder = trim((string) ($c['tc_mode_placeholder'] ?? '')) !== ''
-      ? trim((string) $c['tc_mode_placeholder'])
-      : __('Select', 'culvers');
-  $buttonLabel = trim((string) ($c['tc_button_label'] ?? '')) !== ''
-      ? trim((string) $c['tc_button_label'])
-      : __('Search', 'culvers');
+  $originLabel = __('Where are you travelling from', 'culvers');
+  $originPlaceholder = __('Enter postcode or place', 'culvers');
+  $destinationName = GoogleMapsCustomizer::destinationLabel();
+  $modeLabel = __('Travel by', 'culvers');
+  $modePlaceholder = __('Select', 'culvers');
+  $buttonLabel = __('Search', 'culvers');
 
   $modesRaw = $c['tc_modes'] ?? [];
   $modes = [];
@@ -148,6 +139,14 @@
           </header>
         @endif
 
+        <p class="travel-calculator__destination @if($hasIntro) mt-4 @else mb-6 @endif text-center font-sans text-sm font-medium uppercase tracking-widest text-deep-moss/80 md:text-xs">
+          {{ esc_html(sprintf(
+              /* translators: %s: fixed destination name from Customizer */
+              __('Destination: %s', 'culvers'),
+              $destinationName !== '' ? $destinationName : __('Culver Square', 'culvers')
+          )) }}
+        </p>
+
         @if(! $apiConfigured && $mockActive && current_user_can('edit_posts'))
           {{-- Dev-only mock indicator: visible to editors on local so it's obvious
                the result strip is canned, not live. Suppressed on staging/live. --}}
@@ -172,13 +171,13 @@
             <label
               for="{{ esc_attr($instanceId) }}-origin"
               class="font-label text-xs font-semibold uppercase leading-6 tracking-[0.0833em] text-deep-moss">
-              {{ esc_html($destLabel) }}
+              {{ esc_html($originLabel) }}
             </label>
             <input
               id="{{ esc_attr($instanceId) }}-origin"
               type="text"
               class="travel-calculator__input h-[46px] w-full rounded-full border-[1.5px] border-faded-olive bg-transparent px-5 font-sans text-base leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-deep-moss focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-deep-moss"
-              placeholder="{{ esc_attr($destPlaceholder) }}"
+              placeholder="{{ esc_attr($originPlaceholder) }}"
               autocomplete="street-address"
               maxlength="200"
               required

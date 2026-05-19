@@ -16,4 +16,17 @@ export default [
       'no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
     },
   },
+  {
+    files: ['resources/scripts/admin/**/*.js'],
+    languageOptions: {
+      ecmaVersion: 'latest',
+      sourceType: 'script',
+      globals: {
+        ...globals.browser,
+        jQuery: 'readonly',
+        wp: 'readonly',
+        culversMegaPreview: 'readonly',
+      },
+    },
+  },
 ];

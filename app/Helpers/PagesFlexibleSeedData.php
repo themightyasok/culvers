@@ -123,26 +123,6 @@ final class PagesFlexibleSeedData
                 'contact_heading' => '',
                 'contact_show_panel' => true,
                 'contact_show_map' => true,
-                'contact_form_first_name_label' => __('First name*', 'culvers'),
-                'contact_form_first_name_placeholder' => __('Name', 'culvers'),
-                'contact_form_last_name_label' => __('Last name*', 'culvers'),
-                'contact_form_last_name_placeholder' => __('Last name', 'culvers'),
-                'contact_form_email_label' => __('Email*', 'culvers'),
-                'contact_form_email_placeholder' => __('Email address', 'culvers'),
-                'contact_form_reason_label' => __('Reason for enquiry*', 'culvers'),
-                'contact_form_reason_placeholder' => __('Select', 'culvers'),
-                'contact_form_message_label' => __('Message', 'culvers'),
-                'contact_form_message_placeholder' => __('Type message here', 'culvers'),
-                'contact_form_submit_label' => __('Submit', 'culvers'),
-                'contact_form_success_message' => __('Thanks — your message is on its way.', 'culvers'),
-                'contact_form_reasons' => [
-                    ['item_reason' => __('General enquiry', 'culvers')],
-                    ['item_reason' => __('Lost property', 'culvers')],
-                    ['item_reason' => __('Accessibility', 'culvers')],
-                    ['item_reason' => __('Feedback', 'culvers')],
-                    ['item_reason' => __('Press / media', 'culvers')],
-                    ['item_reason' => __('Leasing & commercial', 'culvers')],
-                ],
             ]),
             self::openingHoursRow(),
         ];
@@ -178,7 +158,6 @@ final class PagesFlexibleSeedData
             array_merge(self::base('section_header'), [
                 'header_eyebrow' => '',
                 'header_heading' => __('Getting Here', 'culvers'),
-                'header_heading_level' => '2',
                 'header_body' => __(
                     'Retail therapy is always a pleasure when visiting Culver Square. '
                     . 'We’ve got everything you need for a smooth and successful shopping experience, '
@@ -287,24 +266,18 @@ final class PagesFlexibleSeedData
                     'Find out how close Culver is to your work or any point of interest.',
                     'culvers'
                 ),
-                'tc_destination_label' => __('Your destination', 'culvers'),
-                'tc_destination_placeholder' => __('Type your destination here', 'culvers'),
-                'tc_mode_label' => __('Travel by', 'culvers'),
-                'tc_mode_placeholder' => __('Select', 'culvers'),
                 'tc_modes' => [
                     ['item_mode' => 'driving', 'item_label' => __('Car (driving)', 'culvers')],
                     ['item_mode' => 'transit', 'item_label' => __('Public transport', 'culvers')],
                     ['item_mode' => 'walking', 'item_label' => __('Walking', 'culvers')],
                     ['item_mode' => 'bicycling', 'item_label' => __('Cycling', 'culvers')],
                 ],
-                'tc_button_label' => __('Search', 'culvers'),
                 'tc_show_map' => true,
                 'tc_map_initial_image' => null,
             ]),
             self::centreMapRow(),
             array_merge(self::base('info_block'), [
                 'info_heading' => __('Accessible Guide', 'culvers'),
-                'info_heading_level' => '2',
                 'info_subheading' => '',
                 'info_body' => sprintf(
                     '<p>%s</p>',
@@ -352,7 +325,6 @@ final class PagesFlexibleSeedData
             array_merge(self::base('section_header'), [
                 'header_eyebrow' => '',
                 'header_heading' => __('About Colchester', 'culvers'),
-                'header_heading_level' => '2',
                 'header_body' => __(
                     'Colchester is a historic Essex town, it was Britain’s first city and former capital '
                     . 'of Roman Britain and has recently been awarded city status as part of the '
@@ -432,7 +404,6 @@ final class PagesFlexibleSeedData
             ]),
             array_merge(self::base('text_image_slider'), [
                 'tis_heading' => '',
-                'tis_heading_level' => '2',
                 'tis_open_mode' => 'single',
                 'tis_initial_open_index' => 0,
                 'tis_items' => [
@@ -475,7 +446,6 @@ final class PagesFlexibleSeedData
             ]),
             array_merge(self::base('faq'), [
                 'faq_heading' => __('Frequently Asked Questions', 'culvers'),
-                'faq_heading_level' => '2',
                 'faq_show_keyline' => true,
                 'faq_open_mode' => 'single',
                 'faq_items' => [
@@ -568,7 +538,6 @@ final class PagesFlexibleSeedData
             array_merge(self::base('section_header'), [
                 'header_eyebrow' => '',
                 'header_heading' => __('Commercialisation Opportunities', 'culvers'),
-                'header_heading_level' => '2',
                 'header_body' => __(
                     'If you wish to enquire about advertising or have any other commercial '
                     . 'enquiries please contact us via email.',
@@ -608,7 +577,6 @@ final class PagesFlexibleSeedData
             ]),
             array_merge(self::base('leasing_agent_grid'), [
                 'agents_heading' => __('Lettings', 'culvers'),
-                'agents_heading_level' => '2',
                 'agents_intro' => __(
                     'If you would like to know more about letting a unit at Culver Square, '
                         . 'please contact the following agents;',
@@ -649,7 +617,6 @@ final class PagesFlexibleSeedData
             ]),
             array_merge(self::base('info_block'), [
                 'info_heading' => __('Can’t see what you’re looking for?', 'culvers'),
-                'info_heading_level' => '2',
                 'info_subheading' => '',
                 'info_body' => sprintf(
                     '<p>%s</p>',
@@ -736,7 +703,6 @@ final class PagesFlexibleSeedData
             'cards_source' => 'cpt',
             'cards_heading' => $heading,
             'cards_subheading' => '',
-            'cards_heading_level' => '2',
             'cards_body' => sprintf('<p>%s</p>', esc_html($body)),
             'cards_items' => [],
             'cards_blog_categories' => [],
@@ -759,7 +725,6 @@ final class PagesFlexibleSeedData
     {
         return array_merge(self::base('opening_hours'), [
             'hours_heading' => __('Opening Hours', 'culvers'),
-            'hours_heading_level' => '2',
             'hours_subheading' => '',
             'hours_body' => '',
             // Hours line-art is shipped via the homepage seed library (hours-graphic-*).
@@ -831,7 +796,6 @@ final class PagesFlexibleSeedData
         return array_merge(self::base('centre_map'), [
             'centre_map_eyebrow' => '',
             'centre_map_heading' => __('Centre Map', 'culvers'),
-            'centre_map_heading_level' => '2',
             'centre_map_body' => '',
             'centre_map_image' => [
                 'url' => self::seedAssetUrl(self::CENTRE_MAP_IMAGE_FILE),
@@ -841,9 +805,6 @@ final class PagesFlexibleSeedData
             'centre_map_filter_button_label' => __('Hide filter', 'culvers'),
             'centre_map_show_zoom_controls' => true,
             'centre_map_categories' => $categories,
-            // Pins intentionally empty — Figma references show the centre map as a flat graphic.
-            // The ACF repeater is preserved for future use, but seeded with no rows.
-            'centre_map_pins' => [],
         ]);
     }
 

@@ -16,11 +16,7 @@ final class HomepageFlexibleSeedData
 
     private const FIGMA_HERO_MAIN = 'https://www.figma.com/api/mcp/asset/7b3fa9c0-91a0-4835-809f-e76b8b57221b';
 
-    private const FIGMA_CARD_SHOP_POSTER = 'https://www.figma.com/api/mcp/asset/68b993f3-3b0c-4ee8-ac98-abace79c8525';
-
     private const FIGMA_CARD_EAT_POSTER = 'https://www.figma.com/api/mcp/asset/d48c7ff9-31ad-407e-9686-7986599ca73f';
-
-    private const FIGMA_CARD_VISIT_POSTER = 'https://www.figma.com/api/mcp/asset/3d2c0967-a71c-48e0-8797-17472ea5f43e';
 
     private const FIGMA_VIDEO_POSTER = 'https://www.figma.com/api/mcp/asset/477b40bd-356a-45e4-a1ba-e7fc2049cbd7';
 
@@ -123,7 +119,6 @@ final class HomepageFlexibleSeedData
             'cards_source' => 'manual',
             'cards_heading' => __('Fun for the whole family', 'culvers'),
             'cards_subheading' => '',
-            'cards_heading_level' => '2',
             'cards_body' => sprintf(
                 '<p>%s</p>',
                 esc_html__(
@@ -137,7 +132,6 @@ final class HomepageFlexibleSeedData
                     'card_url' => home_url('/shopping/'),
                     'card_media_type' => 'video',
                     'card_video' => ['url' => $demoUrl, 'mime_type' => 'video/mp4'],
-                    'card_video_poster' => ['url' => self::FIGMA_CARD_SHOP_POSTER, 'alt' => __('Shop', 'culvers')],
                     'card_image' => null,
                     'card_image_alt' => '',
                 ],
@@ -146,7 +140,6 @@ final class HomepageFlexibleSeedData
                     'card_url' => home_url('/dining/'),
                     'card_media_type' => 'video',
                     'card_video' => ['url' => $demoUrl, 'mime_type' => 'video/mp4'],
-                    'card_video_poster' => ['url' => self::FIGMA_CARD_EAT_POSTER, 'alt' => __('Eat & Drink', 'culvers')],
                     'card_image' => null,
                     'card_image_alt' => '',
                 ],
@@ -155,7 +148,6 @@ final class HomepageFlexibleSeedData
                     'card_url' => home_url('/visit/'),
                     'card_media_type' => 'video',
                     'card_video' => ['url' => $demoUrl, 'mime_type' => 'video/mp4'],
-                    'card_video_poster' => ['url' => self::FIGMA_CARD_VISIT_POSTER, 'alt' => __('Plan My Visit', 'culvers')],
                     'card_image' => null,
                     'card_image_alt' => '',
                 ],
@@ -190,22 +182,7 @@ final class HomepageFlexibleSeedData
         }
 
         return array_merge(self::base('horizontal_scroller'), [
-            // Strip sits on a white flex band; typography is moss/olive for readability.
-            'scroller_header_text_alignment' => 'center',
-            'scroller_header_alignment' => 'middle',
-            'scroller_header_text_color' => 'text-faded-olive',
-            'scroller_header_text_size' => 'text-7xl',
-            'scroller_header_text_weight' => 'font-normal',
-            'scroller_subheading_text_color' => 'text-deep-moss',
-            'scroller_body_text_color' => 'text-deep-moss',
-            'scroller_body_text_weight' => 'font-light',
-            'scroller_intro_flush' => true,
-            // Tight gap between brand logos (was 560 — far too loose). Editors
-            // can re-tune in WP-Admin via Home → Horizontal scroller → Space
-            // between strip items if a different rhythm is needed.
-            'scroller_item_spacing' => 80,
-            'scroller_button_variant' => 'primary',
-            'scroller_button_show_arrow' => true,
+            'scroller_preset' => 'homepage_brands',
             'scroller_header_text' => sprintf('<p>%s</p>', esc_html__('Home to great brands', 'culvers')),
             'scroller_subheading_text' => '',
             'scroller_body_text' => sprintf(
@@ -244,7 +221,6 @@ final class HomepageFlexibleSeedData
     {
         return array_merge(self::base('info_block'), [
             'info_heading' => __('A glimpse of what we have to offer', 'culvers'),
-            'info_heading_level' => '2',
             'info_subheading' => '',
             'info_body' => sprintf(
                 '<p>%s</p>',
@@ -298,7 +274,6 @@ final class HomepageFlexibleSeedData
             'cards_source' => 'manual',
             'cards_heading' => __('What are you looking for today?', 'culvers'),
             'cards_subheading' => '',
-            'cards_heading_level' => '2',
             'cards_body' => '',
             'cards_items' => [
                 [
@@ -308,7 +283,6 @@ final class HomepageFlexibleSeedData
                     'card_image' => ['url' => self::FIGMA_POST_EASTER, 'alt' => __('Culver Square Easter Egg hunt', 'culvers')],
                     'card_image_alt' => __('Culver Square Easter Egg hunt', 'culvers'),
                     'card_video' => null,
-                    'card_video_poster' => null,
                 ],
                 [
                     'card_title' => __('Santa’s Grotto at Culver Square', 'culvers'),
@@ -317,7 +291,6 @@ final class HomepageFlexibleSeedData
                     'card_image' => ['url' => self::FIGMA_POST_SANTA, 'alt' => __('Santa’s Grotto at Culver Square', 'culvers')],
                     'card_image_alt' => __('Santa’s Grotto at Culver Square', 'culvers'),
                     'card_video' => null,
-                    'card_video_poster' => null,
                 ],
                 [
                     'card_title' => __('Mothers Day at Culver Square', 'culvers'),
@@ -326,7 +299,6 @@ final class HomepageFlexibleSeedData
                     'card_image' => ['url' => self::FIGMA_POST_MOTHERS, 'alt' => __('Mothers Day at Culver Square', 'culvers')],
                     'card_image_alt' => __('Mothers Day at Culver Square', 'culvers'),
                     'card_video' => null,
-                    'card_video_poster' => null,
                 ],
             ],
         ]);
@@ -339,7 +311,6 @@ final class HomepageFlexibleSeedData
     {
         return array_merge(self::base('opening_hours'), [
             'hours_heading' => __('Opening Hours', 'culvers'),
-            'hours_heading_level' => '2',
             'hours_subheading' => '',
             'hours_body' => '',
             'hours_graphic_left' => [

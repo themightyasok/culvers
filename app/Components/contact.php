@@ -5,6 +5,9 @@
  * from FooterCustomizer (single source of truth for address, phone, email,
  * social URLs); right contact form (first/last/email/reason/message) posting
  * to `wp-json/culvers/v1/contact-form`. Optional Maps Embed below the band.
+ *
+ * Form copy defaults live in {@see \App\Contact\ContactFormCopy}; fields below
+ * override those defaults for this block instance.
  */
 
 use App\Helpers\Component;
@@ -22,7 +25,12 @@ return [
                 'wrapper' => ['width' => '70'],
             ],
         ],
-        'contact_heading_level' => Component::headingLevelField(width: '30'),
+        'contact_heading_level' => Component::headingLevelField(
+            __('Optional band title only — the page hero usually owns the H1.', 'culvers'),
+            false,
+            2,
+            '30'
+        ),
         'msg_columns' => Component::sectionDivider(__('Column toggles', 'culvers')),
         'contact_show_panel' => [
             'type' => 'true_false',
@@ -30,7 +38,7 @@ return [
                 'label' => __('Show "Getting here / Contact Us" panel', 'culvers'),
                 'instructions' => __(
                     'When enabled, the left column shows the address, map link, phone, email and social ' .
-                    'links from Customizer → Culver Square footer.',
+                    'links from <strong>Appearance → Customize → Culver Square footer</strong>.',
                     'culvers'
                 ),
                 'default_value' => 1,
@@ -43,7 +51,8 @@ return [
             'options' => [
                 'label' => __('Show map below the form', 'culvers'),
                 'instructions' => __(
-                    'Renders the Google Maps Embed for the destination set at Customizer → Google Maps.',
+                    'Renders the Google Maps Embed for the destination set at ' .
+                    '<strong>Appearance → Customize → Google Maps</strong>.',
                     'culvers'
                 ),
                 'default_value' => 1,
@@ -51,94 +60,81 @@ return [
                 'wrapper' => ['width' => '50'],
             ],
         ],
-        'msg_form_first' => Component::sectionDivider(__('Form — name & email', 'culvers')),
+        'msg_form' => Component::sectionDivider(__('Form copy (optional overrides)', 'culvers')),
         'contact_form_first_name_label' => [
             'type' => 'text',
             'options' => [
-                'label' => __('First name label', 'culvers'),
-                'default_value' => __('First name*', 'culvers'),
+                'label' => __('First name — label', 'culvers'),
                 'wrapper' => ['width' => '50'],
             ],
         ],
         'contact_form_first_name_placeholder' => [
             'type' => 'text',
             'options' => [
-                'label' => __('First name placeholder', 'culvers'),
-                'default_value' => __('Name', 'culvers'),
+                'label' => __('First name — placeholder', 'culvers'),
                 'wrapper' => ['width' => '50'],
             ],
         ],
         'contact_form_last_name_label' => [
             'type' => 'text',
             'options' => [
-                'label' => __('Last name label', 'culvers'),
-                'default_value' => __('Last name*', 'culvers'),
+                'label' => __('Last name — label', 'culvers'),
                 'wrapper' => ['width' => '50'],
             ],
         ],
         'contact_form_last_name_placeholder' => [
             'type' => 'text',
             'options' => [
-                'label' => __('Last name placeholder', 'culvers'),
-                'default_value' => __('Last name', 'culvers'),
+                'label' => __('Last name — placeholder', 'culvers'),
                 'wrapper' => ['width' => '50'],
             ],
         ],
         'contact_form_email_label' => [
             'type' => 'text',
             'options' => [
-                'label' => __('Email label', 'culvers'),
-                'default_value' => __('Email*', 'culvers'),
+                'label' => __('Email — label', 'culvers'),
                 'wrapper' => ['width' => '50'],
             ],
         ],
         'contact_form_email_placeholder' => [
             'type' => 'text',
             'options' => [
-                'label' => __('Email placeholder', 'culvers'),
-                'default_value' => __('Email address', 'culvers'),
+                'label' => __('Email — placeholder', 'culvers'),
                 'wrapper' => ['width' => '50'],
             ],
         ],
-        'msg_form_reason' => Component::sectionDivider(__('Form — reason & message', 'culvers')),
         'contact_form_reason_label' => [
             'type' => 'text',
             'options' => [
-                'label' => __('Reason label', 'culvers'),
-                'default_value' => __('Reason for enquiry*', 'culvers'),
+                'label' => __('Reason — label', 'culvers'),
                 'wrapper' => ['width' => '50'],
             ],
         ],
         'contact_form_reason_placeholder' => [
             'type' => 'text',
             'options' => [
-                'label' => __('Reason placeholder', 'culvers'),
-                'default_value' => __('Select', 'culvers'),
+                'label' => __('Reason — placeholder', 'culvers'),
                 'wrapper' => ['width' => '50'],
             ],
         ],
         'contact_form_message_label' => [
             'type' => 'text',
             'options' => [
-                'label' => __('Message label', 'culvers'),
-                'default_value' => __('Message', 'culvers'),
+                'label' => __('Message — label', 'culvers'),
                 'wrapper' => ['width' => '50'],
             ],
         ],
         'contact_form_message_placeholder' => [
             'type' => 'text',
             'options' => [
-                'label' => __('Message placeholder', 'culvers'),
-                'default_value' => __('Type message here', 'culvers'),
+                'label' => __('Message — placeholder', 'culvers'),
                 'wrapper' => ['width' => '50'],
             ],
         ],
-        'msg_form_submit' => Component::sectionDivider(__('Form — submit & success', 'culvers')),
         'contact_form_submit_label' => [
             'type' => 'text',
             'options' => [
                 'label' => __('Submit button label', 'culvers'),
-                'default_value' => __('Submit', 'culvers'),
                 'wrapper' => ['width' => '50'],
             ],
         ],
@@ -146,20 +142,18 @@ return [
             'type' => 'text',
             'options' => [
                 'label' => __('Success message', 'culvers'),
-                'instructions' => __('Shown after a successful submission.', 'culvers'),
+                'instructions' => __('Shown next to the submit button after a successful send.', 'culvers'),
                 'default_value' => __('Thanks — your message is on its way.', 'culvers'),
                 'wrapper' => ['width' => '50'],
             ],
         ],
-    ],
-    'items' => [
         'contact_form_reasons' => [
             'type' => 'repeater',
             'options' => [
-                'label' => __('Reason for enquiry — choices', 'culvers'),
+                'label' => __('Enquiry reasons (dropdown)', 'culvers'),
                 'instructions' => __(
-                    'Options shown in the "reason for enquiry" dropdown. '
-                        . 'Leave empty to render a free-text input instead.',
+                    'When this list has at least one row, the reason field renders as a dropdown. '
+                    . 'When empty, visitors type their reason in a text field.',
                     'culvers'
                 ),
                 'min' => 0,
@@ -171,6 +165,7 @@ return [
                         'type' => 'text',
                         'options' => [
                             'label' => __('Reason', 'culvers'),
+                            'required' => 1,
                         ],
                     ],
                 ],

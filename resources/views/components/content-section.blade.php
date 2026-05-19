@@ -10,7 +10,7 @@
   $c = is_array($component ?? null) ? $component : [];
   $root = Component::rootClasses($c);
   $tone = Component::bodyTextTone($c);
-  $headingTag = Component::headingTag($c['content_heading_level'] ?? null);
+  $headingTag = Component::headingTagFromComponent($c, 'content_heading_level', 2);
   $heading = trim((string) ($c['content_heading'] ?? ''));
   $body = (string) ($c['content_body'] ?? '');
   $hasContent = $heading !== '' || trim(strip_tags($body)) !== '';

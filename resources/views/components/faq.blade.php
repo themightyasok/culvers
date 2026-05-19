@@ -12,7 +12,7 @@
 
   $c = is_array($component ?? null) ? $component : [];
   $root = Component::rootClasses($c);
-  $headingTag = Component::headingTag($c['faq_heading_level'] ?? null);
+  $headingTag = Component::headingTagFromComponent($c, 'faq_heading_level', 2);
 
   $heading = trim((string) ($c['faq_heading'] ?? ''));
   $showKeyline = ! empty($c['faq_show_keyline']);

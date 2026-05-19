@@ -22,7 +22,7 @@ return [
                 'wrapper' => ['width' => '70'],
             ],
         ],
-        'faq_heading_level' => Component::headingLevelField(width: '30'),
+        'faq_heading_level' => Component::headingLevelField(null, false, 2, '30'),
         'faq_show_keyline' => [
             'type' => 'true_false',
             'options' => [

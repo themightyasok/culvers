@@ -2,6 +2,7 @@
 use App\Helpers\Background;
 use App\Helpers\Component;
 use App\Helpers\Grid;
+use App\Helpers\HorizontalScrollerPreset;
 use App\Helpers\Image;
 use App\Helpers\LayoutShell;
 use App\Helpers\Padding;
@@ -20,7 +21,7 @@ use App\Helpers\Video;
  * resources/styles/components/horizontal-scroller.css — not editor-tunable.
  */
 
-$c = is_array($component ?? null) ? $component : [];
+$c = HorizontalScrollerPreset::apply(is_array($component ?? null) ? $component : []);
 
 $body_text_tone = Component::bodyTextTone($c);
 // Canonical opener: always strip the inherited horizontal grid inset because

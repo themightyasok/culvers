@@ -2,25 +2,36 @@
 
 /**
  * Horizontal scroller — GSAP-driven seamless infinite strip with drag and per-item layout controls.
+ *
+ * Colours, type sizes, and common layout defaults come from {@see \App\Helpers\HorizontalScrollerPreset}
+ * (Main → Style preset). Editors control copy, items, motion, and the optional CTA.
  */
 
 use App\Helpers\Component;
-use App\Helpers\Padding;
-use App\Helpers\Typography;
-
-$colourChoices = [
-    'text-white' => __('White', 'culvers'),
-    'text-black' => __('Black', 'culvers'),
-    'text-brand-500' => __('Brand bright', 'culvers'),
-    'text-deep-moss' => __('Deep moss', 'culvers'),
-    'text-faded-olive' => __('Faded olive', 'culvers'),
-];
 
 return [
     'label' => __('Horizontal scroller', 'culvers'),
     'display' => 'block',
     'main' => [
-        // ---------- Header / intro copy ----------
+        'msg_preset' => Component::sectionDivider(__('Style', 'culvers')),
+        'scroller_preset' => [
+            'type' => 'radio',
+            'options' => [
+                'label' => __('Style preset', 'culvers'),
+                'instructions' => __(
+                    'Controls colours, typography scale, header alignment, strip spacing, and button styling. '
+                    . 'Use “Homepage brand strip” for the logo row on the home page.',
+                    'culvers'
+                ),
+                'choices' => [
+                    'default' => __('Default (light text on dark band)', 'culvers'),
+                    'homepage_brands' => __('Homepage brand strip (moss / olive on white)', 'culvers'),
+                ],
+                'default_value' => 'default',
+                'layout' => 'vertical',
+                'return_format' => 'value',
+            ],
+        ],
         'msg_main_copy' => Component::sectionDivider(__('Header & intro copy', 'culvers')),
         'scroller_header_text' => [
             'type' => 'wysiwyg',
@@ -57,50 +68,6 @@ return [
                 'media_upload' => 1,
             ],
         ],
-        // ---------- Header layout ----------
-        'msg_main_layout' => Component::sectionDivider(__('Header layout', 'culvers')),
-        'scroller_header_alignment' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Header vertical alignment', 'culvers'),
-                'choices' => [
-                    'top' => __('Top', 'culvers'),
-                    'middle' => __('Middle', 'culvers'),
-                    'bottom' => __('Bottom', 'culvers'),
-                ],
-                'default_value' => 'top',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '33'],
-            ],
-        ],
-        'scroller_header_text_alignment' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Header & subheader horizontal alignment', 'culvers'),
-                'choices' => [
-                    'left' => __('Left', 'culvers'),
-                    'center' => __('Center', 'culvers'),
-                    'right' => __('Right', 'culvers'),
-                ],
-                'default_value' => 'left',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '33'],
-            ],
-        ],
-        'scroller_intro_flush' => [
-            'type' => 'true_false',
-            'options' => [
-                'label' => __('Tight header to cards', 'culvers'),
-                'instructions' => __(
-                    'Remove the default gap below the header block so the intro sits directly above the card row.',
-                    'culvers'
-                ),
-                'default_value' => 0,
-                'ui' => 1,
-                'wrapper' => ['width' => '34'],
-            ],
-        ],
-        // ---------- Button ----------
         'msg_main_button' => Component::sectionDivider(__('Button', 'culvers')),
         'scroller_button_text' => [
             'type' => 'text',
@@ -120,44 +87,6 @@ return [
                 'wrapper' => ['width' => '50'],
             ],
         ],
-        'scroller_button_variant' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Variant', 'culvers'),
-                'choices' => [
-                    'primary' => __('Primary', 'culvers'),
-                    'secondary' => __('Secondary', 'culvers'),
-                    'outline' => __('Outline', 'culvers'),
-                ],
-                'default_value' => 'primary',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '33'],
-            ],
-        ],
-        'scroller_button_size' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Size', 'culvers'),
-                'choices' => [
-                    'sm' => __('Small', 'culvers'),
-                    'md' => __('Medium', 'culvers'),
-                    'lg' => __('Large', 'culvers'),
-                ],
-                'default_value' => 'md',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '33'],
-            ],
-        ],
-        'scroller_button_show_arrow' => [
-            'type' => 'true_false',
-            'options' => [
-                'label' => __('Show arrow icon', 'culvers'),
-                'default_value' => 1,
-                'ui' => 1,
-                'wrapper' => ['width' => '34'],
-            ],
-        ],
-        // ---------- Strip motion ----------
         'msg_main_motion' => Component::sectionDivider(__('Strip motion', 'culvers')),
         'scroller_speed' => [
             'type' => 'select',
@@ -170,7 +99,7 @@ return [
                 ],
                 'default_value' => 'medium',
                 'allow_null' => 0,
-                'wrapper' => ['width' => '33'],
+                'wrapper' => ['width' => '50'],
             ],
         ],
         'scroller_disabled' => [
@@ -183,189 +112,6 @@ return [
                 ),
                 'default_value' => 0,
                 'ui' => 1,
-                'wrapper' => ['width' => '33'],
-            ],
-        ],
-        'scroller_item_spacing' => [
-            'type' => 'range',
-            'options' => [
-                'label' => __('Space between strip items', 'culvers'),
-                'instructions' => __('Horizontal gap between items (px).', 'culvers'),
-                'default_value' => 240,
-                'min' => 12,
-                'max' => 6000,
-                'step' => 32,
-                'append' => 'px',
-                'wrapper' => ['width' => '34'],
-            ],
-        ],
-    ],
-    'typography' => [
-        // Header
-        'msg_typo_header' => Component::sectionDivider(__('Header', 'culvers')),
-        'scroller_header_text_color' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Colour', 'culvers'),
-                'choices' => $colourChoices,
-                'default_value' => 'text-white',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '33'],
-            ],
-        ],
-        'scroller_header_text_size' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Size', 'culvers'),
-                'choices' => Typography::getHeaderSizeChoices(),
-                'default_value' => 'text-8xl',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '33'],
-            ],
-        ],
-        'scroller_header_text_weight' => [
-            'type' => 'radio',
-            'options' => [
-                'label' => __('Weight (Canela)', 'culvers'),
-                'choices' => Typography::getCanelaHeadingWeightChoices(),
-                'layout' => 'horizontal',
-                'default_value' => 'font-normal',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '34'],
-            ],
-        ],
-        // Subheading
-        'msg_typo_subheading' => Component::sectionDivider(__('Subheading', 'culvers')),
-        'scroller_subheading_text_color' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Colour', 'culvers'),
-                'choices' => $colourChoices,
-                'default_value' => 'text-white',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '33'],
-            ],
-        ],
-        'scroller_subheading_text_size' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Size', 'culvers'),
-                'choices' => Typography::getBodySizeChoices(),
-                'default_value' => 'text-xl',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '33'],
-            ],
-        ],
-        'scroller_subheading_text_weight' => [
-            'type' => 'radio',
-            'options' => [
-                'label' => __('Weight', 'culvers'),
-                'choices' => Typography::getWeightChoices(),
-                'layout' => 'horizontal',
-                'default_value' => 'font-medium',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '34'],
-            ],
-        ],
-        // Body
-        'msg_typo_body' => Component::sectionDivider(__('Body', 'culvers')),
-        'scroller_body_text_color' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Colour', 'culvers'),
-                'choices' => $colourChoices,
-                'default_value' => 'text-white',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '33'],
-            ],
-        ],
-        'scroller_body_text_size' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Size', 'culvers'),
-                'choices' => Typography::getBodySizeChoices(),
-                'default_value' => 'text-xl',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '33'],
-            ],
-        ],
-        'scroller_body_text_weight' => [
-            'type' => 'radio',
-            'options' => [
-                'label' => __('Weight', 'culvers'),
-                'choices' => Typography::getWeightChoices(),
-                'layout' => 'horizontal',
-                'default_value' => 'font-medium',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '34'],
-            ],
-        ],
-        // Item kicker
-        'msg_typo_kicker' => Component::sectionDivider(__('Item kicker', 'culvers')),
-        'scroller_item_kicker_size' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Size', 'culvers'),
-                'choices' => Typography::getBodySizeChoices(),
-                'default_value' => 'text-xs',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '50'],
-            ],
-        ],
-        'scroller_item_kicker_weight' => [
-            'type' => 'radio',
-            'options' => [
-                'label' => __('Weight', 'culvers'),
-                'choices' => Typography::getWeightChoices(),
-                'layout' => 'horizontal',
-                'default_value' => 'font-semibold',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '50'],
-            ],
-        ],
-        // Item heading
-        'msg_typo_item_heading' => Component::sectionDivider(__('Item heading', 'culvers')),
-        'scroller_item_heading_size' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Size', 'culvers'),
-                'choices' => Typography::getHeaderSizeChoices(),
-                'default_value' => 'text-2xl',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '50'],
-            ],
-        ],
-        'scroller_item_heading_weight' => [
-            'type' => 'radio',
-            'options' => [
-                'label' => __('Weight (Canela)', 'culvers'),
-                'choices' => Typography::getCanelaHeadingWeightChoices(),
-                'layout' => 'horizontal',
-                'default_value' => 'font-normal',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '50'],
-            ],
-        ],
-        // Item body
-        'msg_typo_item_body' => Component::sectionDivider(__('Item body', 'culvers')),
-        'scroller_item_body_size' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Size', 'culvers'),
-                'choices' => Typography::getBodySizeChoices(),
-                'default_value' => 'text-lg',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '50'],
-            ],
-        ],
-        'scroller_item_body_weight' => [
-            'type' => 'radio',
-            'options' => [
-                'label' => __('Weight', 'culvers'),
-                'choices' => Typography::getWeightChoices(),
-                'layout' => 'horizontal',
-                'default_value' => 'font-normal',
-                'allow_null' => 0,
                 'wrapper' => ['width' => '50'],
             ],
         ],

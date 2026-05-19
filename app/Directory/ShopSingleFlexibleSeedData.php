@@ -129,13 +129,9 @@ final class ShopSingleFlexibleSeedData
             [
                 'acf_fc_layout' => 'shop_store_details',
                 'details_heading' => __('Store Details', 'culvers'),
-                'details_heading_level' => '2',
                 'details_show_social_column' => 1,
-                'details_contact_label' => __('Contact Number', 'culvers'),
                 'details_contact_phone' => '01452 302646',
-                'details_address_label' => __('Address', 'culvers'),
                 'details_address' => '10B Culver St W, Colchester CO1 1WF',
-                'details_social_label' => __('Social Media', 'culvers'),
                 'details_instagram_url' => $shopSlug === 'accessorize-london' ? 'https://www.instagram.com/accessorize/' : '',
                 'details_instagram_handle' => $shopSlug === 'accessorize-london' ? '@accessorize' : '',
             ],
@@ -145,7 +141,6 @@ final class ShopSingleFlexibleSeedData
              */
             array_merge(PagesFlexibleSeedData::openingHoursRow(), [
                 'hours_heading' => __('Opening hours', 'culvers'),
-                'hours_heading_level' => '2',
                 'hours_subheading' => __('Typical centre hours — confirm before travelling.', 'culvers'),
                 'hours_body' => '',
                 'hours_footnote' => __('Hours may change on bank holidays.', 'culvers'),
@@ -154,7 +149,6 @@ final class ShopSingleFlexibleSeedData
             [
                 'acf_fc_layout' => 'shop_related_shops',
                 'related_heading' => __('More shops you might enjoy', 'culvers'),
-                'related_heading_level' => '2',
                 'related_shop_posts' => $relatedIds,
                 'related_view_all_url' => $archive !== '' ? $archive : '/shops/',
                 'related_view_all_label' => __('View all', 'culvers'),

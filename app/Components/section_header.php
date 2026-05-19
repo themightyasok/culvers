@@ -34,9 +34,10 @@ return [
             ],
         ],
         'header_heading_level' => Component::headingLevelField(
-            __('Default H2 — use H1 only when the page above does not already host one.', 'culvers'),
-            allowH1: true,
-            width: '30',
+            __('Use H1 only when this intro is the page’s primary title (no hero above).', 'culvers'),
+            true,
+            2,
+            '30'
         ),
         'header_body' => [
             'type' => 'textarea',

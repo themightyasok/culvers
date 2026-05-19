@@ -1,5 +1,6 @@
 @php
   use App\Helpers\Component;
+  use App\Helpers\EventMeta;
   use App\Helpers\LayoutShell;
 
   /**
@@ -14,12 +15,11 @@
 
   $rows = [];
   foreach (['date', 'time', 'location'] as $key) {
-      $label = trim((string) ($c['event_meta_' . $key . '_label'] ?? ''));
       $value = trim((string) ($c['event_meta_' . $key . '_value'] ?? ''));
       if ($value === '') {
           continue;
       }
-      $rows[] = ['label' => $label, 'value' => $value];
+      $rows[] = ['label' => EventMeta::rowLabel($key, $c), 'value' => $value];
   }
 
   $accessibilityRaw = trim((string) ($c['event_meta_accessibility_note'] ?? ''));

@@ -90,7 +90,6 @@ final class CptSinglesFlexibleSeedData
                         'career_job_title' => __('Senior Supervisor', 'culvers'),
                         // Image hero above already supplies the page H1 (the brand name);
                         // demote the job title to H2 so we don't ship two H1s.
-                        'career_job_title_level' => '2',
                         'career_meta' => [
                         ['item_label' => __('Contract Type', 'culvers'), 'item_value' => __('Full-Time', 'culvers')],
                         ['item_label' => __('Location', 'culvers'), 'item_value' => __('Culver Square Shopping Centre', 'culvers')],
@@ -98,7 +97,6 @@ final class CptSinglesFlexibleSeedData
                         ],
                         'career_apply_label' => __('Apply Now', 'culvers'),
                         'career_apply_url' => $applyUrl,
-                        'career_section_heading_level' => '2',
                         'career_sections' => [
                         [
                         'item_heading' => __('About the role', 'culvers'),
@@ -173,7 +171,6 @@ final class CptSinglesFlexibleSeedData
             ]),
             array_merge(self::base('info_block'), [
                 'info_heading' => __('Think you’re a good fit?', 'culvers'),
-                'info_heading_level' => '2',
                 'info_subheading' => '',
                 'info_body' => sprintf(
                     '<p>%s</p>',
@@ -218,11 +215,8 @@ final class CptSinglesFlexibleSeedData
                 'hero_title_in_image' => false,
             ]),
             array_merge(self::base('event_meta'), [
-                'event_meta_date_label' => __('Offer valid', 'culvers'),
                 'event_meta_date_value' => __('1 May – 30 June 2026', 'culvers'),
-                'event_meta_time_label' => __('Open today', 'culvers'),
                 'event_meta_time_value' => __('9:00 – 17:30', 'culvers'),
-                'event_meta_location_label' => __('Where', 'culvers'),
                 'event_meta_location_value' => __('Hotel Chocolat — lower level, Culver Square', 'culvers'),
                 'event_meta_accessibility_note' => __(
                     'Step-free access throughout the store. Staff are happy to bring product samples '
@@ -235,7 +229,6 @@ final class CptSinglesFlexibleSeedData
             array_merge(self::base('section_header'), [
                 'header_eyebrow' => '',
                 'header_heading' => __('A treat for every taste', 'culvers'),
-                'header_heading_level' => '2',
                 'header_body' => __(
                     'Indulge your loved one’s sweet tooth with chocolate Valentine’s favourites from '
                     . 'Hotel Chocolat. From heart-shaped boxes to luxurious truffle collections, '
@@ -276,7 +269,6 @@ final class CptSinglesFlexibleSeedData
             array_merge(self::base('section_header'), [
                 'header_eyebrow' => '',
                 'header_heading' => __('Share with a friend', 'culvers'),
-                'header_heading_level' => '2',
                 'header_body' => __(
                     'Spread the love — share this offer on Instagram, Facebook or WhatsApp '
                     . 'so a sweet-toothed friend doesn’t miss out.',
@@ -289,7 +281,6 @@ final class CptSinglesFlexibleSeedData
                 'cards_source' => 'manual',
                 'cards_heading' => __('More Offers', 'culvers'),
                 'cards_subheading' => '',
-                'cards_heading_level' => '2',
                 'cards_body' => sprintf(
                     '<p>%s</p>',
                     esc_html__('See all of the brilliant offers happening at Culver Square.', 'culvers')
@@ -305,7 +296,6 @@ final class CptSinglesFlexibleSeedData
                         ],
                         'card_image_alt' => __('Hotel Chocolat heart selection box', 'culvers'),
                         'card_video' => null,
-                        'card_video_poster' => null,
                     ],
                     [
                         'card_title' => __('Mother’s Day at Culver Square', 'culvers'),
@@ -314,7 +304,6 @@ final class CptSinglesFlexibleSeedData
                         'card_image' => null,
                         'card_image_alt' => '',
                         'card_video' => null,
-                        'card_video_poster' => null,
                     ],
                     [
                         'card_title' => __('Raise a glass to dry January', 'culvers'),
@@ -323,7 +312,6 @@ final class CptSinglesFlexibleSeedData
                         'card_image' => null,
                         'card_image_alt' => '',
                         'card_video' => null,
-                        'card_video_poster' => null,
                     ],
                 ],
             ]),
@@ -407,13 +395,9 @@ final class CptSinglesFlexibleSeedData
             ]),
             array_merge(self::base('shop_store_details'), [
                 'details_heading' => __('Store Details', 'culvers'),
-                'details_heading_level' => '2',
                 'details_show_social_column' => 1,
-                'details_contact_label' => __('Contact Number', 'culvers'),
                 'details_contact_phone' => __('01206 562073', 'culvers'),
-                'details_address_label' => __('Address', 'culvers'),
                 'details_address' => "10B Culver St W,\nColchester CO1 1WF",
-                'details_social_label' => __('Social Media', 'culvers'),
                 'details_instagram_url' => 'https://www.instagram.com/greggs_official/',
                 'details_instagram_handle' => '@greggs_official',
             ]),
@@ -422,7 +406,6 @@ final class CptSinglesFlexibleSeedData
             array_merge(self::base('section_header'), [
                 'header_eyebrow' => '',
                 'header_heading' => __('More flavours to discover', 'culvers'),
-                'header_heading_level' => '2',
                 'header_body' => '',
                 'header_align' => 'center',
                 'header_max_width' => 'medium',
@@ -431,7 +414,6 @@ final class CptSinglesFlexibleSeedData
                 'cards_source' => 'manual',
                 'cards_heading' => '',
                 'cards_subheading' => '',
-                'cards_heading_level' => '2',
                 'cards_body' => '',
                 'cards_items' => [
                     [
@@ -441,7 +423,6 @@ final class CptSinglesFlexibleSeedData
                         'card_image' => null,
                         'card_image_alt' => '',
                         'card_video' => null,
-                        'card_video_poster' => null,
                     ],
                     [
                         'card_title' => __('Subway', 'culvers'),
@@ -450,7 +431,6 @@ final class CptSinglesFlexibleSeedData
                         'card_image' => null,
                         'card_image_alt' => '',
                         'card_video' => null,
-                        'card_video_poster' => null,
                     ],
                     [
                         'card_title' => __('Juicy Bar Vitality', 'culvers'),
@@ -459,7 +439,6 @@ final class CptSinglesFlexibleSeedData
                         'card_image' => null,
                         'card_image_alt' => '',
                         'card_video' => null,
-                        'card_video_poster' => null,
                     ],
                 ],
             ]),
@@ -494,11 +473,8 @@ final class CptSinglesFlexibleSeedData
                 'hero_title_in_image' => false,
             ]),
             array_merge(self::base('event_meta'), [
-                'event_meta_date_label' => __('When', 'culvers'),
                 'event_meta_date_value' => __('Easter weekend, Sat 4 – Mon 6 April 2026', 'culvers'),
-                'event_meta_time_label' => __('Open today', 'culvers'),
                 'event_meta_time_value' => __('10am – 4pm', 'culvers'),
-                'event_meta_location_label' => __('Where', 'culvers'),
                 'event_meta_location_value' => __('Lower Mall, Culver Square', 'culvers'),
                 'event_meta_accessibility_note' => __(
                     'Step-free route between every hunt clue. The Guest Services desk has spare hunt cards '
@@ -511,7 +487,6 @@ final class CptSinglesFlexibleSeedData
             array_merge(self::base('section_header'), [
                 'header_eyebrow' => '',
                 'header_heading' => __('Hop, skip and hunt your way around the centre.', 'culvers'),
-                'header_heading_level' => '2',
                 'header_body' => __(
                     'Pick up a hunt card from Guest Services and follow the clues across our retailers '
                     . 'to claim a chocolatey reward at the finish line. Free for all ages — no booking '
@@ -543,7 +518,6 @@ final class CptSinglesFlexibleSeedData
             array_merge(self::base('section_header'), [
                 'header_eyebrow' => '',
                 'header_heading' => __('Share with friends & family', 'culvers'),
-                'header_heading_level' => '2',
                 'header_body' => __(
                     'Spread the word — bring the kids, grandparents and friends along for a free day out at the centre.',
                     'culvers'
@@ -555,7 +529,6 @@ final class CptSinglesFlexibleSeedData
                 'cards_source' => 'manual',
                 'cards_heading' => __('More events', 'culvers'),
                 'cards_subheading' => '',
-                'cards_heading_level' => '2',
                 'cards_body' => sprintf(
                     '<p>%s</p>',
                     esc_html__('See what else is happening at Culver Square.', 'culvers')
@@ -571,7 +544,6 @@ final class CptSinglesFlexibleSeedData
                         ],
                         'card_image_alt' => __('Easter Egg Hunt at Culver Square', 'culvers'),
                         'card_video' => null,
-                        'card_video_poster' => null,
                     ],
                     [
                         'card_title' => __('Late-night Shopping Thursday', 'culvers'),
@@ -580,7 +552,6 @@ final class CptSinglesFlexibleSeedData
                         'card_image' => null,
                         'card_image_alt' => '',
                         'card_video' => null,
-                        'card_video_poster' => null,
                     ],
                     [
                         'card_title' => __('Live Acoustic Sessions', 'culvers'),
@@ -589,7 +560,6 @@ final class CptSinglesFlexibleSeedData
                         'card_image' => null,
                         'card_image_alt' => '',
                         'card_video' => null,
-                        'card_video_poster' => null,
                     ],
                 ],
             ]),
@@ -623,11 +593,8 @@ final class CptSinglesFlexibleSeedData
                 'hero_title_in_image' => false,
             ]),
             array_merge(self::base('event_meta'), [
-                'event_meta_date_label' => __('Published', 'culvers'),
                 'event_meta_date_value' => __('1 March 2026', 'culvers'),
-                'event_meta_time_label' => __('Reading time', 'culvers'),
                 'event_meta_time_value' => __('4 min read', 'culvers'),
-                'event_meta_location_label' => __('Category', 'culvers'),
                 'event_meta_location_value' => __('Centre news', 'culvers'),
                 'event_meta_accessibility_note' => '',
                 'event_meta_cta_label' => '',
@@ -636,7 +603,6 @@ final class CptSinglesFlexibleSeedData
             array_merge(self::base('section_header'), [
                 'header_eyebrow' => __('Centre news', 'culvers'),
                 'header_heading' => __('Five new openings, one refreshed mall.', 'culvers'),
-                'header_heading_level' => '2',
                 'header_body' => __(
                     'From Easter through to summer, Culver Square will welcome five new retailers and '
                     . 'unveil a refreshed Lower Mall. Read on for opening dates, brand line-up and what '
@@ -668,7 +634,6 @@ final class CptSinglesFlexibleSeedData
             array_merge(self::base('section_header'), [
                 'header_eyebrow' => '',
                 'header_heading' => __('More centre news', 'culvers'),
-                'header_heading_level' => '2',
                 'header_body' => __(
                     'Catch up on sustainability milestones, trading hours and community stories from across Culver Square.',
                     'culvers'
@@ -680,7 +645,6 @@ final class CptSinglesFlexibleSeedData
                 'cards_source' => 'manual',
                 'cards_heading' => __('Latest news', 'culvers'),
                 'cards_subheading' => '',
-                'cards_heading_level' => '2',
                 'cards_body' => sprintf(
                     '<p>%s</p>',
                     esc_html__('Stories from across Culver Square.', 'culvers')
@@ -696,7 +660,6 @@ final class CptSinglesFlexibleSeedData
                         ],
                         'card_image_alt' => __('Spring line-up at Culver Square', 'culvers'),
                         'card_video' => null,
-                        'card_video_poster' => null,
                     ],
                     [
                         'card_title' => __('Solar array switched on', 'culvers'),
@@ -705,7 +668,6 @@ final class CptSinglesFlexibleSeedData
                         'card_image' => null,
                         'card_image_alt' => '',
                         'card_video' => null,
-                        'card_video_poster' => null,
                     ],
                     [
                         'card_title' => __('Essex Centre of the Year', 'culvers'),
@@ -714,7 +676,6 @@ final class CptSinglesFlexibleSeedData
                         'card_image' => null,
                         'card_image_alt' => '',
                         'card_video' => null,
-                        'card_video_poster' => null,
                     ],
                 ],
             ]),

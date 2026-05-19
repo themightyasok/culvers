@@ -12,10 +12,7 @@
    *   • RIGHT map: stylised centre map graphic with the optional zoom-control
    *     pill stack overlaid in the bottom-right corner.
    *
-   * Map is rendered as a flat image — no interactive pins. The historic
-   * `centre_map_pins` repeater is preserved on the ACF schema for backwards
-   * compatibility with any existing post meta but is intentionally not painted
-   * here (Figma references show no pins on the centre map).
+   * Map is rendered as a flat image — no interactive pins (Figma has none).
    *
    * Filter-toggle and zoom controls are live (Alpine) — see the `centreMap`
    * Alpine module in `resources/scripts/alpine/centre-map.js`.
@@ -26,7 +23,7 @@
 
   $eyebrow = trim((string) ($c['centre_map_eyebrow'] ?? ''));
   $heading = trim((string) ($c['centre_map_heading'] ?? ''));
-  $headingTag = Component::headingTag($c['centre_map_heading_level'] ?? 2);
+  $headingTag = Component::headingTagFromComponent($c, 'centre_map_heading_level', 2);
 
   $bodyRaw = trim((string) ($c['centre_map_body'] ?? ''));
   $bodyWithBreaks = preg_replace('/<br\s*\/?>/i', "\n", $bodyRaw);

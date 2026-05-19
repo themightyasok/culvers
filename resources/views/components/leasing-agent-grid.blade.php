@@ -11,7 +11,7 @@
 
   $c = is_array($component ?? null) ? $component : [];
   $root = Component::rootClasses($c);
-  $headingTag = Component::headingTag($c['agents_heading_level'] ?? null);
+  $headingTag = Component::headingTagFromComponent($c, 'agents_heading_level', 2);
 
   $heading = trim((string) ($c['agents_heading'] ?? ''));
   if ($heading === '') {

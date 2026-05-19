@@ -15,7 +15,7 @@
 
   $eyebrow = trim((string) ($c['header_eyebrow'] ?? ''));
   $heading = trim((string) ($c['header_heading'] ?? ''));
-  $headingTag = Component::headingTag($c['header_heading_level'] ?? 2);
+  $headingTag = Component::headingTagFromComponent($c, 'header_heading_level', 2);
 
   $bodyRaw = trim((string) ($c['header_body'] ?? ''));
   $bodyWithBreaks = preg_replace('/<br\s*\/?>/i', "\n", $bodyRaw);

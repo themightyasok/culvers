@@ -18,7 +18,7 @@ return [
                 'wrapper' => ['width' => '70'],
             ],
         ],
-        'related_heading_level' => Component::headingLevelField(width: '30'),
+        'related_heading_level' => Component::headingLevelField(null, false, 2, '30'),
         'related_view_all_url' => [
             'type' => 'url',
             'options' => [

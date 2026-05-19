@@ -60,7 +60,6 @@ final class ArchiveStoriesThreeCard
     private static function defaultsSkeleton(): array
     {
         return [
-            'cards_heading_level' => '2',
             'cards_subheading' => '',
             'cards_body' => '',
             '_grid_classes' => 'relative z-20 w-full text-deep-moss',

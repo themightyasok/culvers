@@ -10,20 +10,20 @@
 
   $c = is_array($component ?? null) ? $component : [];
   $root = Component::rootClasses($c);
-  $headingTag = Component::headingTag($c['details_heading_level'] ?? null);
+  $headingTag = Component::headingTagFromComponent($c, 'details_heading_level', 2);
 
   $sectionHeading = trim((string) ($c['details_heading'] ?? ''));
   if ($sectionHeading === '') {
       $sectionHeading = __('Store Details', 'culvers');
   }
 
-  $contactLabel = trim((string) ($c['details_contact_label'] ?? __('Contact Number', 'culvers')));
+  $contactLabel = __('Contact Number', 'culvers');
   $phone = trim((string) ($c['details_contact_phone'] ?? ''));
-  $addressLabel = trim((string) ($c['details_address_label'] ?? __('Address', 'culvers')));
+  $addressLabel = __('Address', 'culvers');
   $addressRaw = trim((string) ($c['details_address'] ?? ''));
   $addressPlain = trim(wp_strip_all_tags(preg_replace('/<br\s*\/?>/i', ' ', $addressRaw)));
   $addressForDisplay = preg_replace('/\s+/u', ' ', $addressPlain);
-  $socialLabel = trim((string) ($c['details_social_label'] ?? __('Social Media', 'culvers')));
+  $socialLabel = __('Social Media', 'culvers');
   $igUrl = trim((string) ($c['details_instagram_url'] ?? ''));
   $igHandle = trim((string) ($c['details_instagram_handle'] ?? ''));
 

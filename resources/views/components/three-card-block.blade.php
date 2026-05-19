@@ -12,7 +12,7 @@
   $c = is_array($component ?? null) ? $component : [];
   $c = ThreeCardBlock::applyEditorFallback($c);
   $root = Component::rootClasses($c);
-  $headingTag = Component::headingTag($c['cards_heading_level'] ?? null);
+  $headingTag = Component::headingTagFromComponent($c, 'cards_heading_level', 2);
 
   $tabs = ThreeCardBlock::buildTabPanels($c);
   $showTabs = count($tabs) > 1;

@@ -31,6 +31,16 @@ final class Component
     }
 
     /**
+     * Heading tag from saved meta when present (legacy rows), otherwise a theme default.
+     *
+     * @param array<string, mixed> $component
+     */
+    public static function headingTagFromComponent(array $component, string $legacyKey, int $default = 2): string
+    {
+        return self::headingTag($component[$legacyKey] ?? null, $default);
+    }
+
+    /**
      * Canonical ACF select choices for a heading-level dropdown.
      *
      * H1 is omitted by default — only one H1 should exist per page (the hero).

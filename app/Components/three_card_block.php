@@ -36,7 +36,12 @@ return [
                 'wrapper' => ['width' => '70'],
             ],
         ],
-        'cards_heading_level' => Component::headingLevelField(allowH1: true, width: '30'),
+        'cards_heading_level' => Component::headingLevelField(
+            __('Use H1 when this row is the main page title (e.g. homepage strip).', 'culvers'),
+            true,
+            2,
+            '30'
+        ),
         'cards_body' => [
             'type' => 'wysiwyg',
             'options' => [
@@ -257,24 +262,6 @@ return [
                             'instructions' => __('Used when media is Video.', 'culvers'),
                             'mime_types' => 'mp4,webm',
                             'return_format' => 'array',
-                            'library' => 'all',
-                            'conditional_logic' => [[[
-                                'field' => 'card_media_type',
-                                'operator' => '==',
-                                'value' => 'video',
-                            ]]],
-                        ],
-                    ],
-                    'card_video_poster' => [
-                        'type' => 'image',
-                        'options' => [
-                            'label' => __('Video poster (optional)', 'culvers'),
-                            'instructions' => __(
-                                'Not used on the live card — the first frame of the video file is shown until hover.',
-                                'culvers'
-                            ),
-                            'return_format' => 'array',
-                            'preview_size' => 'medium',
                             'library' => 'all',
                             'conditional_logic' => [[[
                                 'field' => 'card_media_type',

@@ -18,7 +18,7 @@ return [
                 'wrapper' => ['width' => '70'],
             ],
         ],
-        'hours_heading_level' => Component::headingLevelField(width: '30'),
+        'hours_heading_level' => Component::headingLevelField(null, false, 2, '30'),
         'hours_subheading' => [
             'type' => 'textarea',
             'options' => [

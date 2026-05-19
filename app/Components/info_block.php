@@ -18,7 +18,7 @@ return [
                 'wrapper' => ['width' => '70'],
             ],
         ],
-        'info_heading_level' => Component::headingLevelField(width: '30'),
+        'info_heading_level' => Component::headingLevelField(null, false, 2, '30'),
         'info_subheading' => [
             'type' => 'textarea',
             'options' => [

@@ -18,7 +18,12 @@ return [
                 'wrapper' => ['width' => '70'],
             ],
         ],
-        'content_heading_level' => Component::headingLevelField(allowH1: true, width: '30'),
+        'content_heading_level' => Component::headingLevelField(
+            __('Use H1 only when this block is the main page title (e.g. a policy page without a hero).', 'culvers'),
+            true,
+            2,
+            '30'
+        ),
         'content_body' => [
             'type' => 'wysiwyg',
             'options' => [

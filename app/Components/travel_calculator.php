@@ -32,53 +32,28 @@ return [
                 ),
             ],
         ],
-        'msg_form' => Component::sectionDivider(__('Form labels', 'culvers')),
-        'tc_destination_label' => [
-            'type' => 'text',
+        'msg_api' => [
+            'type' => 'message',
             'options' => [
-                'label' => __('"Your destination" field label', 'culvers'),
-                'default_value' => __('Your destination', 'culvers'),
-                'wrapper' => ['width' => '50'],
+                'message' => __(
+                    'Live distances and the route map need a Google Maps API key plus destination '
+                    . '(address and Place ID) at <strong>Appearance → Customize → Google Maps</strong>. '
+                    . 'Visitors always travel <em>to</em> that fixed destination; the first field on the '
+                    . 'form is where they are travelling <em>from</em>.',
+                    'culvers'
+                ),
+                'esc_html' => 0,
+                'wrapper' => ['class' => 'culvers-acf-help'],
             ],
         ],
-        'tc_destination_placeholder' => [
-            'type' => 'text',
-            'options' => [
-                'label' => __('"Your destination" placeholder', 'culvers'),
-                'default_value' => __('Type your destination here', 'culvers'),
-                'wrapper' => ['width' => '50'],
-            ],
-        ],
-        'tc_mode_label' => [
-            'type' => 'text',
-            'options' => [
-                'label' => __('"Travel by" field label', 'culvers'),
-                'default_value' => __('Travel by', 'culvers'),
-                'wrapper' => ['width' => '50'],
-            ],
-        ],
-        'tc_mode_placeholder' => [
-            'type' => 'text',
-            'options' => [
-                'label' => __('"Travel by" placeholder', 'culvers'),
-                'default_value' => __('Select', 'culvers'),
-                'wrapper' => ['width' => '50'],
-            ],
-        ],
-        'tc_button_label' => [
-            'type' => 'text',
-            'options' => [
-                'label' => __('Search button label', 'culvers'),
-                'default_value' => __('Search', 'culvers'),
-                'wrapper' => ['width' => '50'],
-            ],
-        ],
+        'msg_options' => Component::sectionDivider(__('Options', 'culvers')),
         'tc_show_map' => [
             'type' => 'true_false',
             'options' => [
                 'label' => __('Show route map', 'culvers'),
                 'instructions' => __(
-                    'Render the Google Maps Embed below the form. Disable to render only the form + result strip.',
+                    'Render the Google Maps Embed below the form (uses the same Customizer → Google Maps settings). '
+                    . 'Disable to render only the form + result strip.',
                     'culvers'
                 ),
                 'default_value' => 1,

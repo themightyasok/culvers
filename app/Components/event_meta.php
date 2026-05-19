@@ -3,6 +3,9 @@
 /**
  * Event meta — compact "When / Where / Tickets" panel for single event pages
  * (date(s), start/end time, venue, accessible-info note, primary CTA).
+ *
+ * Row labels default per directory CPT ({@see \App\Helpers\EventMeta}); values
+ * are authored below.
  */
 
 use App\Helpers\Component;
@@ -15,15 +18,15 @@ return [
         'event_meta_date_label' => [
             'type' => 'text',
             'options' => [
-                'label' => __('Date label', 'culvers'),
-                'default_value' => __('Date', 'culvers'),
+                'label' => __('Date row label (optional)', 'culvers'),
+                'instructions' => __('Leave blank for the default label for this post type.', 'culvers'),
                 'wrapper' => ['width' => '50'],
             ],
         ],
         'event_meta_date_value' => [
             'type' => 'text',
             'options' => [
-                'label' => __('Date value', 'culvers'),
+                'label' => __('Date', 'culvers'),
                 'instructions' => __('e.g. "Thursday 12 June 2026" or "Thu 12 – Sun 15 June 2026".', 'culvers'),
                 'wrapper' => ['width' => '50'],
             ],
@@ -31,15 +34,15 @@ return [
         'event_meta_time_label' => [
             'type' => 'text',
             'options' => [
-                'label' => __('Time label', 'culvers'),
-                'default_value' => __('Time', 'culvers'),
+                'label' => __('Time row label (optional)', 'culvers'),
+                'instructions' => __('Leave blank for the default label for this post type.', 'culvers'),
                 'wrapper' => ['width' => '50'],
             ],
         ],
         'event_meta_time_value' => [
             'type' => 'text',
             'options' => [
-                'label' => __('Time value', 'culvers'),
+                'label' => __('Time', 'culvers'),
                 'instructions' => __('e.g. "10:00–16:00" or "Drop-in all day".', 'culvers'),
                 'wrapper' => ['width' => '50'],
             ],
@@ -48,15 +51,15 @@ return [
         'event_meta_location_label' => [
             'type' => 'text',
             'options' => [
-                'label' => __('Location label', 'culvers'),
-                'default_value' => __('Location', 'culvers'),
+                'label' => __('Location row label (optional)', 'culvers'),
+                'instructions' => __('Leave blank for the default label for this post type.', 'culvers'),
                 'wrapper' => ['width' => '50'],
             ],
         ],
         'event_meta_location_value' => [
             'type' => 'text',
             'options' => [
-                'label' => __('Location value', 'culvers'),
+                'label' => __('Location', 'culvers'),
                 'instructions' => __('e.g. "Centre square" / "Outside Pandora" / "Upper level near M&S".', 'culvers'),
                 'wrapper' => ['width' => '50'],
             ],

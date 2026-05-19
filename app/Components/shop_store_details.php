@@ -19,16 +19,8 @@ return [
                 'wrapper' => ['width' => '70'],
             ],
         ],
-        'details_heading_level' => Component::headingLevelField(width: '30'),
+        'details_heading_level' => Component::headingLevelField(null, false, 2, '30'),
         'msg_contact' => Component::sectionDivider(__('Contact column', 'culvers')),
-        'details_contact_label' => [
-            'type' => 'text',
-            'options' => [
-                'label' => __('Column label', 'culvers'),
-                'default_value' => __('Contact Number', 'culvers'),
-                'wrapper' => ['width' => '50'],
-            ],
-        ],
         'details_contact_phone' => [
             'type' => 'text',
             'options' => [
@@ -37,14 +29,6 @@ return [
             ],
         ],
         'msg_address' => Component::sectionDivider(__('Address column', 'culvers')),
-        'details_address_label' => [
-            'type' => 'text',
-            'options' => [
-                'label' => __('Column label', 'culvers'),
-                'default_value' => __('Address', 'culvers'),
-                'wrapper' => ['width' => '50'],
-            ],
-        ],
         'details_address' => [
             'type' => 'textarea',
             'options' => [
@@ -62,14 +46,6 @@ return [
                 'instructions' => __('Turn off to use two columns even if Instagram URL or handle is filled.', 'culvers'),
                 'ui' => 1,
                 'default_value' => 1,
-            ],
-        ],
-        'details_social_label' => [
-            'type' => 'text',
-            'options' => [
-                'label' => __('Column label', 'culvers'),
-                'instructions' => __('Only shown when Social column is enabled and at least one Instagram field has value.', 'culvers'),
-                'default_value' => __('Social Media', 'culvers'),
             ],
         ],
         'details_instagram_url' => [

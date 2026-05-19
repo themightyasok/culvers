@@ -30,15 +30,25 @@ return [
             'type' => 'text',
             'options' => [
                 'label' => __('Job title', 'culvers'),
-                'instructions' => __('Large serif headline (e.g. Senior Supervisor).', 'culvers'),
+                'instructions' => __(
+                    'Large serif headline (e.g. Senior Supervisor). Renders as the page H1 when the hero '
+                    . 'does not already carry the title.',
+                    'culvers'
+                ),
                 'wrapper' => ['width' => '70'],
             ],
         ],
         'career_job_title_level' => Component::headingLevelField(
-            __('Use H1 only when nothing above hosts the page heading (normally the hero does).', 'culvers'),
-            allowH1: true,
-            default: 1,
-            width: '30',
+            __('Usually H1 for the job title on a career single.', 'culvers'),
+            true,
+            1,
+            '30'
+        ),
+        'career_section_heading_level' => Component::headingLevelField(
+            __('Heading level for each role section in the right column.', 'culvers'),
+            false,
+            2,
+            '50'
         ),
         'msg_meta' => Component::sectionDivider(__('Meta rows', 'culvers')),
         'career_meta' => [
@@ -89,10 +99,6 @@ return [
                 'wrapper' => ['width' => '50'],
             ],
         ],
-        'msg_section_levels' => Component::sectionDivider(__('Role sections — defaults', 'culvers')),
-        'career_section_heading_level' => Component::headingLevelField(
-            __('Default H2 — applies to every role section heading on the right.', 'culvers'),
-        ),
     ],
     'items' => [
         'career_sections' => [

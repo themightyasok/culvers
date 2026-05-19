@@ -15,8 +15,8 @@
   $root = Component::rootClasses($c);
 
   $title = trim((string) ($c['career_job_title'] ?? ''));
-  $titleTag = Component::headingTag($c['career_job_title_level'] ?? 1);
-  $sectionTag = Component::headingTag($c['career_section_heading_level'] ?? 2);
+  $titleTag = Component::headingTagFromComponent($c, 'career_job_title_level', 1);
+  $sectionTag = Component::headingTagFromComponent($c, 'career_section_heading_level', 2);
 
   $applyLabel = trim((string) ($c['career_apply_label'] ?? ''));
   $applyUrl = trim((string) ($c['career_apply_url'] ?? ''));

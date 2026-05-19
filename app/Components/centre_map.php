@@ -1,9 +1,8 @@
 <?php
 
 /**
- * Centre map — interactive "find your way around" panel: a centre-floor map
- * (image / SVG) with a category sidebar. Pins are an ACF repeater of (x%, y%,
- * label, category, link) so layout stays declarative.
+ * Centre map — category filter panel + flat map graphic (PNG or SVG).
+ * Categories can link to directory URLs or highlight matching SVG layers.
  */
 
 use App\Helpers\Component;
@@ -28,7 +27,7 @@ return [
                 'wrapper' => ['width' => '70'],
             ],
         ],
-        'centre_map_heading_level' => Component::headingLevelField(width: '30'),
+        'centre_map_heading_level' => Component::headingLevelField(null, false, 2, '30'),
         'centre_map_body' => [
             'type' => 'textarea',
             'options' => [
@@ -43,7 +42,7 @@ return [
             'options' => [
                 'label' => __('Map image / SVG', 'culvers'),
                 'instructions' => __(
-                    'Upload the centre-floor plan (SVG or PNG). Pins are positioned as a percentage of this image.',
+                    'Upload the centre-floor plan (SVG recommended for per-category highlighting, or PNG).',
                     'culvers'
                 ),
                 'return_format' => 'array',
@@ -137,9 +136,9 @@ return [
                     'category_slug' => [
                         'type' => 'text',
                         'options' => [
-                            'label' => __('Slug (used to link pins)', 'culvers'),
+                            'label' => __('Slug', 'culvers'),
                             'instructions' => __(
-                                'Lowercase, hyphenated. Pins reference this slug to highlight on hover.',
+                                'Lowercase, hyphenated. Used for filter selection and SVG `data-category` matching.',
                                 'culvers'
                             ),
                             'required' => 1,
@@ -151,61 +150,10 @@ return [
                         'options' => [
                             'label' => __('Link URL (optional)', 'culvers'),
                             'instructions' => __(
-                                'e.g. /shops/?category=fashion. Leave blank to make the row a hover-only target.',
+                                'When set, the row navigates to this URL (e.g. /shops/?category=fashion). '
+                                . 'When blank, clicking selects the category for map highlighting only.',
                                 'culvers'
                             ),
-                        ],
-                    ],
-                ],
-            ],
-        ],
-        'msg_pins' => Component::sectionDivider(__('Pins', 'culvers')),
-        'centre_map_pins' => [
-            'type' => 'repeater',
-            'options' => [
-                'label' => __('Pins', 'culvers'),
-                'instructions' => __(
-                    'Pin positions are a percentage of the map image (0–100). Use a category slug from above to group pins.',
-                    'culvers'
-                ),
-                'min' => 0,
-                'max' => 200,
-                'layout' => 'table',
-                'button_label' => __('Add pin', 'culvers'),
-                'collapsed' => 'pin_label',
-                'sub_fields' => [
-                    'pin_x' => [
-                        'type' => 'number',
-                        'options' => [
-                            'label' => __('X (%)', 'culvers'),
-                            'min' => 0,
-                            'max' => 100,
-                            'step' => 0.1,
-                            'default_value' => 50,
-                        ],
-                    ],
-                    'pin_y' => [
-                        'type' => 'number',
-                        'options' => [
-                            'label' => __('Y (%)', 'culvers'),
-                            'min' => 0,
-                            'max' => 100,
-                            'step' => 0.1,
-                            'default_value' => 50,
-                        ],
-                    ],
-                    'pin_label' => [
-                        'type' => 'text',
-                        'options' => [
-                            'label' => __('Label', 'culvers'),
-                            'required' => 0,
-                        ],
-                    ],
-                    'pin_category_slug' => [
-                        'type' => 'text',
-                        'options' => [
-                            'label' => __('Category slug', 'culvers'),
-                            'instructions' => __('Match a slug from the Categories repeater above.', 'culvers'),
                         ],
                     ],
                 ],

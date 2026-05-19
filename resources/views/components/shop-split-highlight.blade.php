@@ -89,7 +89,7 @@
   $ctaUrl = trim((string) ($c['split_cta_url'] ?? ''));
   $showCta = $ctaLabel !== '' && $ctaUrl !== '';
 
-  $centerLists = ! empty($c['split_center_lists']) || ! empty($c['split_center_copy']);
+  $centerLists = ! empty($c['split_center_lists']);
 
   $hasStaticSerifLines = $kicker !== '' || $headline !== '';
   $hasStaticCopy = $hasStaticSerifLines || $bodyPlain !== '';

@@ -165,8 +165,6 @@ final class ThreeCardBlock
             $img = self::normalizeAcfFileField($row['card_image'] ?? null);
             /** @var array<string, mixed>|null $vid */
             $vid = self::normalizeAcfFileField($row['card_video'] ?? null, true);
-            /** @var array<string, mixed>|null $poster */
-            $poster = self::normalizeAcfFileField($row['card_video_poster'] ?? null);
 
             $alt = trim((string) ($row['card_image_alt'] ?? ''));
 
@@ -180,7 +178,7 @@ final class ThreeCardBlock
                 'media_type' => $media,
                 'image' => $img,
                 'video' => $vid,
-                'poster' => $poster,
+                'poster' => null,
                 'alt' => $alt !== '' ? $alt : $title,
             ];
 

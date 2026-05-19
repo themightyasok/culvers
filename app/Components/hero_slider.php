@@ -16,7 +16,9 @@ return [
             'options' => [
                 'message' => __(
                     'Place this block first on the page for the intended full-bleed hero. The site header overlaps '
-                    . 'the imagery (fixed header). Use at least one slide.',
+                    . 'the imagery (fixed header). Use at least one slide. '
+                    . 'Optional per-slide mobile crops are set on each row in the <strong>Items</strong> tab '
+                    . '(<em>Image — mobile (optional)</em>).',
                     'culvers'
                 ),
                 'new_lines' => 'wpautop',
@@ -116,9 +118,4 @@ return [
             ],
         ],
     ],
-    'mobile_empty_message' => __(
-        'Per-slide mobile imagery is set inside each row on the <strong>Items</strong> tab '
-        . '(<em>Image — mobile (optional)</em> on each slide). This block has no other mobile-only overrides.',
-        'culvers'
-    ),
 ];

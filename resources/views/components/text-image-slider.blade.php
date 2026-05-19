@@ -31,7 +31,7 @@
 
   $c = is_array($component ?? null) ? $component : [];
   $root = Component::rootClasses($c);
-  $headingTag = Component::headingTag($c['tis_heading_level'] ?? null);
+  $headingTag = Component::headingTagFromComponent($c, 'tis_heading_level', 2);
 
   $heading = trim((string) ($c['tis_heading'] ?? ''));
   $openMode = ($c['tis_open_mode'] ?? 'single') === 'multi' ? 'multi' : 'single';

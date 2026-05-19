@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Nav;
 
 /**
- * Optional mega-menu hover preview image per submenu item (attachment ID).
+ * Mega-menu hover preview image per submenu item (Media Library attachment).
  */
 final class NavMenuItemMeta
 {
@@ -46,22 +46,57 @@ final class NavMenuItemMeta
             return;
         }
 
-        $value = (int) get_post_meta((int) $item_id, self::META_PREVIEW_ATTACHMENT, true);
+        $itemId = (int) $item_id;
+        $attachmentId = (int) get_post_meta($itemId, self::META_PREVIEW_ATTACHMENT, true);
+        $thumbUrl = $attachmentId > 0 ? wp_get_attachment_image_url($attachmentId, 'medium') : false;
+        $hasImage = is_string($thumbUrl) && $thumbUrl !== '';
         ?>
         <p class="description description-wide culvers-mega-preview-field">
-            <label for="culvers-mega-preview-<?php echo esc_attr((string) $item_id); ?>">
-                <?php esc_html_e('Mega menu preview image (attachment ID)', 'culvers'); ?>
+            <label for="culvers-mega-preview-<?php echo esc_attr((string) $itemId); ?>">
+                <?php esc_html_e('Mega menu preview image', 'culvers'); ?>
             </label>
             <input
-                type="number"
-                min="0"
-                step="1"
-                class="widefat"
-                id="culvers-mega-preview-<?php echo esc_attr((string) $item_id); ?>"
-                name="culvers-mega-preview[<?php echo esc_attr((string) $item_id); ?>]"
-                value="<?php echo $value > 0 ? esc_attr((string) $value) : ''; ?>"
+                type="hidden"
+                class="culvers-mega-preview__input"
+                id="culvers-mega-preview-<?php echo esc_attr((string) $itemId); ?>"
+                name="culvers-mega-preview[<?php echo esc_attr((string) $itemId); ?>]"
+                value="<?php echo $attachmentId > 0 ? esc_attr((string) $attachmentId) : ''; ?>"
             />
-            <span class="description"><?php esc_html_e('Shown when this submenu link is hovered. Falls back to the linked page featured image if empty.', 'culvers'); ?></span>
+            <span class="culvers-mega-preview-field__frame">
+                <span class="culvers-mega-preview-field__thumb">
+                    <img
+                        class="culvers-mega-preview__preview"
+                        src="<?php echo $hasImage ? esc_url($thumbUrl) : ''; ?>"
+                        alt=""
+                        <?php echo $hasImage ? '' : 'hidden'; ?>
+                    />
+                    <span class="culvers-mega-preview__placeholder culvers-mega-preview-field__placeholder"<?php echo $hasImage ? ' hidden' : ''; ?>>
+                        <?php esc_html_e('No image', 'culvers'); ?>
+                    </span>
+                </span>
+                <span class="culvers-mega-preview-field__actions">
+                    <button
+                        type="button"
+                        class="button culvers-mega-preview__select">
+                        <?php echo $hasImage
+                            ? esc_html__('Change image', 'culvers')
+                            : esc_html__('Select image', 'culvers'); ?>
+                    </button>
+                    <button
+                        type="button"
+                        class="button-link button-link-delete culvers-mega-preview__remove"
+                        <?php echo $hasImage ? '' : ' hidden'; ?>>
+                        <?php esc_html_e('Remove image', 'culvers'); ?>
+                    </button>
+                </span>
+            </span>
+            <span class="description">
+                <?php esc_html_e(
+                    'Large image on the right of the mega menu when this submenu link is hovered. '
+                    . 'If empty, the linked page’s featured image is used when available.',
+                    'culvers'
+                ); ?>
+            </span>
         </p>
         <?php
     }
@@ -94,5 +129,6 @@ final class NavMenuItemMeta
         }
 
         update_post_meta($menu_item_db_id, self::META_PREVIEW_ATTACHMENT, $aid);
+        delete_post_meta($menu_item_db_id, self::META_PREVIEW_URL);
     }
 }
