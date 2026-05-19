@@ -21,7 +21,7 @@ final class AcfFlexibleAdmin
         wp_enqueue_style(
             'culvers-acf-flexible-admin',
             get_template_directory_uri() . '/resources/styles/acf-flexible-admin.css',
-            ['acf-input'],
+            ['acf-pro-input'],
             (string) filemtime($path)
         );
     }

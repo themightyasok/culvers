@@ -1,16 +1,191 @@
 /*
- * ACF Flexible Content — admin chrome polish for `page_components`.
+ * ACF Flexible Content — admin chrome for Page Components (`components` field).
  *
- * Strengthens the visual hierarchy of layout tabs, draws clear section
- * dividers inside each tab, and gives the help-message rows a calmer
- * presentation so tabs do not read as a wall of equal-weight inputs.
- *
- * Scoped to `.acf-flexible-content.-block` so we only affect the page builder.
+ * ACF 6.5+ renders layout headers in `.acf-fc-layout-actions-wrap` (not on the
+ * handle alone). The old `.acf-flexible-content.-block` wrapper class is gone,
+ * so selectors must target `[data-name="components"]`.
  */
+
+/* ------- Layout separation + black header bars ------- */
+
+.acf-field-flexible-content[data-name='components'] .acf-flexible-content .layout {
+  margin-bottom: 12px !important;
+  border: 1px solid #c3c4c7 !important;
+  border-radius: 4px !important;
+  overflow: hidden !important;
+  background: #fff !important;
+}
+
+.acf-field-flexible-content[data-name='components']
+  .acf-flexible-content
+  .layout
+  > .acf-fc-layout-actions-wrap {
+  background: #000 !important;
+  border: none !important;
+  min-height: 48px !important;
+  padding: 0 12px !important;
+}
+
+.acf-field-flexible-content[data-name='components']
+  .acf-flexible-content
+  .layout
+  > .acf-fc-layout-actions-wrap
+  .acf-fc-layout-handle,
+.acf-field-flexible-content[data-name='components']
+  .acf-flexible-content
+  .layout
+  > .acf-fc-layout-actions-wrap
+  .acf-fc-layout-title {
+  color: #fff !important;
+  font-weight: 700 !important;
+  font-size: 15px !important;
+  line-height: 1.35 !important;
+}
+
+.acf-field-flexible-content[data-name='components']
+  .acf-flexible-content
+  .layout
+  > .acf-fc-layout-actions-wrap
+  .acf-fc-layout-handle
+  .acf-fc-layout-original-title {
+  color: rgba(255, 255, 255, 0.55) !important;
+}
+
+.acf-field-flexible-content[data-name='components']
+  .acf-flexible-content
+  .layout
+  > .acf-fc-layout-actions-wrap
+  .acf-fc-layout-order,
+.acf-field-flexible-content[data-name='components']
+  .acf-flexible-content
+  .layout
+  > .acf-fc-layout-actions-wrap
+  .acf-fc-layout-draggable-icon {
+  background: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  color: #fff !important;
+}
+
+.acf-field-flexible-content[data-name='components']
+  .acf-flexible-content
+  .layout
+  > .acf-fc-layout-actions-wrap
+  .acf-fc-layout-draggable-icon:before {
+  background: #fff !important;
+}
+
+.acf-field-flexible-content[data-name='components']
+  .acf-flexible-content
+  .layout
+  > .acf-fc-layout-actions-wrap
+  .acf-fc-layout-controls
+  .acf-layout-collapse {
+  border-left-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+.acf-field-flexible-content[data-name='components']
+  .acf-flexible-content
+  .layout
+  > .acf-fc-layout-actions-wrap
+  .acf-fc-layout-controls
+  .acf-icon.-collapse,
+.acf-field-flexible-content[data-name='components']
+  .acf-flexible-content
+  .layout
+  > .acf-fc-layout-actions-wrap
+  .acf-fc-layout-controls
+  .acf-icon.-collapse:hover {
+  color: #fff !important;
+  background: transparent !important;
+}
+
+/* Keep black bars when ACF marks a layout active/selected (default is blue). */
+.acf-field-flexible-content[data-name='components']
+  .acf-flexible-content
+  .layout.active-layout
+  > .acf-fc-layout-actions-wrap,
+body:not(.block-editor-page)
+  .acf-field-flexible-content[data-name='components']
+  .acf-flexible-content
+  .layout.active-layout
+  > .acf-fc-layout-actions-wrap {
+  background: #000 !important;
+  border: none !important;
+}
+
+.acf-field-flexible-content[data-name='components']
+  .acf-flexible-content
+  .layout.active-layout
+  > .acf-fc-layout-actions-wrap
+  .acf-fc-layout-handle,
+.acf-field-flexible-content[data-name='components']
+  .acf-flexible-content
+  .layout.active-layout
+  > .acf-fc-layout-actions-wrap
+  .acf-fc-layout-title {
+  color: #fff !important;
+}
+
+.acf-field-flexible-content[data-name='components']
+  .acf-flexible-content
+  .layout.active-layout
+  > .acf-fc-layout-actions-wrap
+  .acf-fc-layout-controls
+  .acf-icon.-plus-alt,
+.acf-field-flexible-content[data-name='components']
+  .acf-flexible-content
+  .layout.active-layout
+  > .acf-fc-layout-actions-wrap
+  .acf-fc-layout-controls
+  .acf-icon.-duplicate-alt,
+.acf-field-flexible-content[data-name='components']
+  .acf-flexible-content
+  .layout.active-layout
+  > .acf-fc-layout-actions-wrap
+  .acf-fc-layout-controls
+  .acf-icon.-trash-alt,
+.acf-field-flexible-content[data-name='components']
+  .acf-flexible-content
+  .layout.active-layout
+  > .acf-fc-layout-actions-wrap
+  .acf-fc-layout-controls
+  .acf-icon.-more-actions {
+  background: #fff !important;
+  visibility: visible !important;
+}
+
+.acf-field-flexible-content[data-name='components']
+  .acf-flexible-content
+  .layout.active-layout
+  > .acf-fields,
+.acf-field-flexible-content[data-name='components']
+  .acf-flexible-content
+  .layout.active-layout
+  > .acf-table,
+body:not(.block-editor-page)
+  .acf-field-flexible-content[data-name='components']
+  .acf-flexible-content
+  .layout.active-layout
+  > .acf-fields,
+body:not(.block-editor-page)
+  .acf-field-flexible-content[data-name='components']
+  .acf-flexible-content
+  .layout.active-layout
+  > .acf-table {
+  background: #fff !important;
+  border: 1px solid #dcdcde !important;
+}
 
 /* ------- Layout tabs (chrome): bold, prominent ------- */
 
-.acf-flexible-content.-block .layout > .acf-fields > .acf-tab-wrap .acf-tab-group ul li a {
+.acf-field-flexible-content[data-name='components']
+  .layout
+  > .acf-fields
+  > .acf-tab-wrap
+  .acf-tab-group
+  ul
+  li
+  a {
   font-weight: 600 !important;
   font-size: 14px !important;
   line-height: 1.25 !important;
@@ -18,42 +193,23 @@
   letter-spacing: 0.01em !important;
 }
 
-.acf-flexible-content.-block .layout > .acf-fields > .acf-tab-wrap .acf-tab-group ul li.active a {
+.acf-field-flexible-content[data-name='components']
+  .layout
+  > .acf-fields
+  > .acf-tab-wrap
+  .acf-tab-group
+  ul
+  li.active
+  a {
   font-weight: 700 !important;
   color: #1d2327 !important;
 }
 
-.acf-flexible-content.-block .layout .acf-fc-layout-handle {
-  background: #1d2327 !important;
-  color: #fff !important;
-  font-weight: 700 !important;
-  font-size: 15px !important;
-  line-height: 1.35 !important;
-  padding: 10px 14px !important;
-  border: none !important;
-  border-radius: 4px 4px 0 0 !important;
-}
+/* ------- Section dividers inside a tab ------- */
 
-.acf-flexible-content.-block .layout .acf-fc-layout-handle .acf-fc-layout-order {
-  color: #c3c4c7 !important;
-}
-
-.acf-flexible-content.-block .layout .acf-fc-layout-handle .acf-icon {
-  color: #fff !important;
-}
-
-.acf-flexible-content.-block .layout .acf-fc-layout-handle:hover {
-  background: #2c3338 !important;
-  color: #fff !important;
-}
-
-/* ------- Section dividers inside a tab -------
-   Renders as a tracked uppercase pill heading with a hairline above so the
-   four standard chrome sections (Layout / Background / Content / Visibility)
-   inside the Main tab and any per-component sub-sections inside Typography /
-   Items / Mobile read as section breaks, not as field labels. */
-
-.acf-flexible-content.-block .layout .acf-field-message.culvers-acf-section-head {
+.acf-field-flexible-content[data-name='components']
+  .layout
+  .acf-field-message.culvers-acf-section-head {
   background: transparent !important;
   border-top: 1px solid #d2d4d6 !important;
   border-bottom: none !important;
@@ -62,21 +218,31 @@
   padding: 16px 12px 8px !important;
 }
 
-.acf-flexible-content.-block .layout .acf-field-message.culvers-acf-section-head .acf-label {
+.acf-field-flexible-content[data-name='components']
+  .layout
+  .acf-field-message.culvers-acf-section-head
+  .acf-label {
   display: none !important;
 }
 
-.acf-flexible-content.-block .layout .acf-field-message.culvers-acf-section-head .acf-input {
+.acf-field-flexible-content[data-name='components']
+  .layout
+  .acf-field-message.culvers-acf-section-head
+  .acf-input {
   padding: 0 !important;
 }
 
-.acf-flexible-content.-block .layout .acf-field-message.culvers-acf-section-head .acf-input p {
+.acf-field-flexible-content[data-name='components']
+  .layout
+  .acf-field-message.culvers-acf-section-head
+  .acf-input
+  p {
   margin: 0 !important;
   font-size: 13px !important;
   line-height: 1 !important;
 }
 
-.acf-flexible-content.-block
+.acf-field-flexible-content[data-name='components']
   .layout
   .acf-field-message.culvers-acf-section-head
   .culvers-acf-section-head__label {
@@ -91,25 +257,35 @@
 
 /* ------- Inline help / explanatory rows ------- */
 
-.acf-flexible-content.-block .layout .acf-field-message.culvers-acf-help {
+.acf-field-flexible-content[data-name='components'] .layout .acf-field-message.culvers-acf-help {
   background: #f6f7f7 !important;
   border-left: 3px solid #2271b1 !important;
   margin: 8px 0 12px !important;
   padding: 10px 14px !important;
 }
 
-.acf-flexible-content.-block .layout .acf-field-message.culvers-acf-help .acf-label {
+.acf-field-flexible-content[data-name='components']
+  .layout
+  .acf-field-message.culvers-acf-help
+  .acf-label {
   display: none !important;
 }
 
-.acf-flexible-content.-block .layout .acf-field-message.culvers-acf-help .acf-input p {
+.acf-field-flexible-content[data-name='components']
+  .layout
+  .acf-field-message.culvers-acf-help
+  .acf-input
+  p {
   margin: 0 !important;
   font-size: 13px !important;
   line-height: 1.5 !important;
   color: #2c3338 !important;
 }
 
-.acf-flexible-content.-block .layout .acf-field-message.culvers-acf-help code {
+.acf-field-flexible-content[data-name='components']
+  .layout
+  .acf-field-message.culvers-acf-help
+  code {
   background: rgba(34, 113, 177, 0.12);
   color: #1d4f78;
   padding: 1px 6px;
@@ -119,11 +295,16 @@
 
 /* ------- General field hygiene inside a layout ------- */
 
-.acf-flexible-content.-block .layout .acf-fields > .acf-field > .acf-label > label {
+.acf-field-flexible-content[data-name='components']
+  .layout
+  .acf-fields
+  > .acf-field
+  > .acf-label
+  > label {
   font-weight: 600 !important;
 }
 
-.acf-flexible-content.-block .layout .acf-fields .description {
+.acf-field-flexible-content[data-name='components'] .layout .acf-fields .description {
   color: #50575e;
   font-size: 12px;
   line-height: 1.5;
