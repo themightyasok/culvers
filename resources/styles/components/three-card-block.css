@@ -2,6 +2,14 @@
  * Three-card block — mobile Splide pagination (Figma tabbed blog / CPT strip).
  * Unlayered so overrides beat @splidejs/splide/css defaults (see hero-slider note).
  */
+
+/* Figma card hover: Explore pill fills glowleaf with deep-moss label (not glowleaf on yellow). */
+.three-card-block__card:is(:hover, :focus-within) .three-card-block__cta.btn-outline {
+  background-color: var(--color-brand-500);
+  border-color: var(--color-brand-500);
+  color: var(--color-deep-moss);
+}
+
 .three-card-block__splide .splide__pagination {
   position: static;
   display: flex;

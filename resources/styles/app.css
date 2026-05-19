@@ -493,7 +493,8 @@ a.btn-outline {
 }
 
 @media (hover: hover) {
-  a.btn-outline:hover {
+  a.btn-outline:hover,
+  .btn-outline:hover {
     background-color: var(--color-brand-500);
     color: var(--color-deep-moss);
     padding-inline: 2rem;
