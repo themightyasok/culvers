@@ -46,9 +46,18 @@ final class HorizontalScrollerPreset
     {
         $raw = $component['scroller_preset'] ?? '';
         if (is_string($raw) && $raw !== '') {
-            return $raw === self::PRESET_HOMEPAGE_BRANDS
-                ? self::PRESET_HOMEPAGE_BRANDS
-                : self::PRESET_DEFAULT;
+            if ($raw === self::PRESET_HOMEPAGE_BRANDS) {
+                return self::PRESET_HOMEPAGE_BRANDS;
+            }
+
+            // Rows migrated when the preset field was added kept ACF's "default"
+            // value but no longer had per-field colours — that applied 240px logo
+            // gaps and white-on-white header copy on the homepage brand strip.
+            if ($raw === self::PRESET_DEFAULT && self::looksLikeHomepageBrandStrip($component)) {
+                return self::PRESET_HOMEPAGE_BRANDS;
+            }
+
+            return self::PRESET_DEFAULT;
         }
 
         return self::inferLegacyPreset($component);
@@ -67,6 +76,43 @@ final class HorizontalScrollerPreset
         }
 
         return self::PRESET_DEFAULT;
+    }
+
+    /**
+     * Detect homepage logo strips saved before editors chose a preset (field
+     * defaulted to "default" while legacy colour fields were removed from ACF).
+     *
+     * @param array<string, mixed> $component
+     */
+    private static function looksLikeHomepageBrandStrip(array $component): bool
+    {
+        if (self::inferLegacyPreset($component) === self::PRESET_HOMEPAGE_BRANDS) {
+            return true;
+        }
+
+        $color = $component['scroller_header_text_color'] ?? '';
+        $align = $component['scroller_header_text_alignment'] ?? '';
+        if (($color !== '' && $color !== null) || ($align !== '' && $align !== null)) {
+            return false;
+        }
+
+        $items = $component['scroller_items'] ?? [];
+        if (! is_array($items) || count($items) < 3) {
+            return false;
+        }
+
+        foreach ($items as $item) {
+            if (! is_array($item)) {
+                return false;
+            }
+
+            $type = (string) ($item['item_type'] ?? 'image');
+            if ($type !== '' && $type !== 'image') {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

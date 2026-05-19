@@ -147,11 +147,6 @@
                     ])
                   </button>
                 </div>
-                @if($newsletterAction === null && current_user_can('customize'))
-                  <p class="mt-3 text-center font-sans text-xs text-light-cream/55">
-                    {{ __('Connect your ESP URL under Appearance → Customize → Culver Square footer.', 'culvers') }}
-                  </p>
-                @endif
               </form>
             </div>
           </div>

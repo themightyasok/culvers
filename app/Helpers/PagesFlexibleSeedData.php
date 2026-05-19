@@ -50,6 +50,11 @@ final class PagesFlexibleSeedData
 
     private const GUEST_SERVICES_HISTORY_FILE = 'guest-history.jpg';
 
+    /** Text-image slider polaroids (Figma 51:8145 / 51:8144) — shared across Guest Services rows. */
+    private const TIS_POLAROID_LEFT_FILE = 'text-image-slider-polaroid-red.jpg';
+
+    private const TIS_POLAROID_RIGHT_FILE = 'text-image-slider-polaroid-green.jpg';
+
     /** Leasing Opportunities (51:6500) — aerial roof hero, plaza-shoppers split image. */
     private const LEASING_HERO_FILE = 'leasing-hero.jpg';
 
@@ -406,43 +411,7 @@ final class PagesFlexibleSeedData
                 'tis_heading' => '',
                 'tis_open_mode' => 'single',
                 'tis_initial_open_index' => 0,
-                'tis_items' => [
-                    self::tisRow(
-                        __('Click & Collect', 'culvers'),
-                        'Pick up online orders from our concierge desk on the lower level. Open during '
-                        . 'centre hours, no need to book in advance.',
-                    ),
-                    self::tisRow(
-                        __('First Aid', 'culvers'),
-                        'Trained first responders are on duty across opening hours. Approach any security '
-                        . 'team member or speak to staff at the management suite for help.',
-                    ),
-                    self::tisRow(
-                        __('Security', 'culvers'),
-                        'Our 24/7 security team patrols the centre, the car park and the Osborne Street '
-                        . 'frontage. CCTV monitors every walkway and entrance.',
-                    ),
-                    self::tisRow(
-                        __('Parent & Child Facilities', 'culvers'),
-                        'Baby-change facilities are available on every level along with a dedicated '
-                        . 'feeding room near the management suite.',
-                    ),
-                    self::tisRow(
-                        __('Lost Property', 'culvers'),
-                        'If you’ve mislaid something during your visit, drop us a line and we will check '
-                        . 'against the centre’s lost property log. Most items can be collected within 28 days.',
-                    ),
-                    self::tisRow(
-                        __('Access & Mobility', 'culvers'),
-                        'Step-free access throughout the centre, accessible toilets on every level and '
-                        . 'mobility scooter loan via the management suite (please call ahead).',
-                    ),
-                    self::tisRow(
-                        __('Facilities', 'culvers'),
-                        'Public toilets, free Wi-Fi, payphones, ATMs and water-bottle fill stations are '
-                        . 'all available across both levels of Culver Square.',
-                    ),
-                ],
+                'tis_items' => self::guestServicesTisItems(),
             ]),
             array_merge(self::base('faq'), [
                 'faq_heading' => __('Frequently Asked Questions', 'culvers'),
@@ -815,15 +784,84 @@ final class PagesFlexibleSeedData
      *
      * @return array<string, mixed>
      */
-    private static function tisRow(string $label, string $body): array
+    /**
+     * @return list<array<string, mixed>>
+     */
+    private static function guestServicesTisItems(): array
     {
+        $polaroidLeft = [
+            'url' => self::seedAssetUrl(self::TIS_POLAROID_LEFT_FILE),
+            'alt' => '',
+        ];
+        $polaroidRight = [
+            'url' => self::seedAssetUrl(self::TIS_POLAROID_RIGHT_FILE),
+            'alt' => '',
+        ];
+
+        $rows = [
+            [
+                __('Click & Collect', 'culvers'),
+                'Pick up online orders from our concierge desk on the lower level. Open during '
+                . 'centre hours, no need to book in advance.',
+            ],
+            [
+                __('First Aid', 'culvers'),
+                'Trained first responders are on duty across opening hours. Approach any security '
+                . 'team member or speak to staff at the management suite for help.',
+            ],
+            [
+                __('Security', 'culvers'),
+                'Our 24/7 security team patrols the centre, the car park and the Osborne Street '
+                . 'frontage. CCTV monitors every walkway and entrance.',
+            ],
+            [
+                __('Parent & Child Facilities', 'culvers'),
+                'Baby-change facilities are available on every level along with a dedicated '
+                . 'feeding room near the management suite.',
+            ],
+            [
+                __('Lost Property', 'culvers'),
+                'If you’ve mislaid something during your visit, drop us a line and we will check '
+                . 'against the centre’s lost property log. Most items can be collected within 28 days.',
+            ],
+            [
+                __('Access & Mobility', 'culvers'),
+                'Step-free access throughout the centre, accessible toilets on every level and '
+                . 'mobility scooter loan via the management suite (please call ahead).',
+            ],
+            [
+                __('Facilities', 'culvers'),
+                'Public toilets, free Wi-Fi, payphones, ATMs and water-bottle fill stations are '
+                . 'all available across both levels of Culver Square.',
+            ],
+        ];
+
+        $items = [];
+        foreach ($rows as [$label, $body]) {
+            $items[] = self::tisRow($label, $body, $polaroidLeft, $polaroidRight);
+        }
+
+        return $items;
+    }
+
+    /**
+     * @param  array{url: string, alt?: string}|null  $imageLeft
+     * @param  array{url: string, alt?: string}|null  $imageRight
+     * @return array<string, mixed>
+     */
+    private static function tisRow(
+        string $label,
+        string $body,
+        ?array $imageLeft = null,
+        ?array $imageRight = null,
+    ): array {
         return [
             'item_label' => $label,
             'item_body' => sprintf('<p>%s</p>', esc_html($body)),
-            'item_image_left' => null,
-            'item_image_right' => null,
-            'item_image_left_tilt' => -8,
-            'item_image_right_tilt' => 6,
+            'item_image_left' => $imageLeft,
+            'item_image_right' => $imageRight,
+            'item_image_left_tilt' => 7,
+            'item_image_right_tilt' => -6,
         ];
     }
 }
