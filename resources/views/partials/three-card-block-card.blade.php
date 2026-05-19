@@ -68,7 +68,7 @@
       @endif
       <span
         aria-hidden="true"
-        class="three-card-block__cta btn btn-outline px-7 opacity-0 transition-opacity duration-300 ease-out motion-safe:group-hover/card:opacity-100 motion-safe:group-focus-within/card:opacity-100 motion-reduce:hidden max-sm:hidden">
+        class="three-card-block__cta btn btn-outline pointer-events-auto px-7 opacity-0 transition-opacity duration-300 ease-out motion-safe:group-hover/card:opacity-100 motion-safe:group-focus-within/card:opacity-100 motion-reduce:hidden max-sm:hidden">
         {{ __('Explore', 'culvers') }}
       </span>
     </span>
