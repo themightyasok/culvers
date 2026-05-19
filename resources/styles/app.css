@@ -19,6 +19,7 @@
 @import './components/horizontal-scroller.css';
 @import './components/info-block.css';
 @import './components/directory-archive.css';
+@import './components/mega-nav.css';
 @import './components/centre-map.css';
 @import './components/three-card-block.css';
 @layer base {

@@ -82,7 +82,9 @@
           x-on:mouseleave="scheduleCloseMegaHover()">
 
           {{-- Olive bar — fixed chrome width (max-w-8xl parent); scroll only hides the dock, no morph. --}}
-          {{-- Mobile / tablet (<lg, 1024px): Figma "Mobile — Nav" 75px flat bar; burger | centred wordmark | search. Desktop: pill bar. --}}
+          {{-- Mobile / tablet (<lg): Figma Mobile — Nav (51:8865 → component 2:988): 430×75 bar #4F5438;
+               burger 2:1016 = 36×20px glyph @ left 5.58%; search pill 2:990 = 39×39px #D4FF50 @ right 5.58%
+               with 14.512×14.33px magnifier #4F5438 (assets: resources/images/header/mobile-*.svg). --}}
           <div
             class="mega-nav__bar relative z-50 w-full bg-faded-olive max-lg:rounded-none max-lg:border-b max-lg:border-glowleaf lg:rounded-full">
             {{-- No vertical padding on the gutter — Figma pill is exactly 80px tall (matches the
@@ -92,16 +94,13 @@
                 class="mega-nav__bar-row relative flex h-[75px] min-h-[75px] w-full items-center gap-3 px-4 max-lg:gap-2 lg:h-auto lg:min-h-[80px] lg:gap-6 lg:px-5 xl:px-6">
                 <button
                   type="button"
-                  class="mega-nav__burger relative z-20 inline-flex size-12 shrink-0 items-center justify-center text-glowleaf lg:hidden culvers-focus-ring"
+                  class="mega-nav__burger relative z-20 inline-flex h-5 w-9 shrink-0 items-center justify-center self-center text-glowleaf before:absolute before:-inset-3 before:content-[''] max-lg:-ms-0.5 lg:hidden culvers-focus-ring"
                   aria-controls="mega-mobile-drawer"
                   x-bind:aria-expanded="mobileOpen ? 'true' : 'false'"
                   x-on:click="mobileOpen = !mobileOpen">
                   <span class="sr-only" x-show="!mobileOpen" x-cloak>{{ __('Open menu', 'culvers') }}</span>
                   <span class="sr-only" x-show="mobileOpen" x-cloak>{{ __('Close menu', 'culvers') }}</span>
-                  {{-- Figma Mobile — Nav (2:1016): larger menu glyph than search pill icon. --}}
-                  <svg class="size-7" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-                  </svg>
+                  @include('partials.icons.header-mobile-menu')
                 </button>
                 <div
                   class="mega-nav__bar-main pointer-events-none flex min-w-0 flex-1 items-center lg:pointer-events-auto lg:gap-[42px]">
@@ -189,16 +188,12 @@
                 <div class="mega-nav__bar-end relative z-20 flex shrink-0 items-center gap-2 lg:gap-[18px]">
                   <button
                     type="button"
-                    class="relative flex size-[39px] shrink-0 items-center justify-center rounded-full bg-brand-500 px-[18px] py-[5px] text-faded-olive transition-transform hover:scale-[1.03] culvers-focus-ring-compact lg:hidden"
+                    class="mega-nav__search-mobile relative flex shrink-0 items-center justify-center culvers-focus-ring-compact lg:hidden"
                     x-bind:aria-expanded="searchOpen ? 'true' : 'false'"
                     aria-controls="site-header-search"
                     x-on:click="openSearch()">
                     <span class="sr-only">{{ __('Open search', 'culvers') }}</span>
-                    {{-- Figma Mobile — Nav (2:990): ~39px pill, 14.5×14.3 search glyph. --}}
-                    <svg class="size-[14.5px]" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="1.6" />
-                      <path d="m16.5 16.5 4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-                    </svg>
+                    @include('partials.icons.header-mobile-search')
                   </button>
 
                   <div class="mega-nav__utilities hidden shrink-0 items-center lg:flex lg:gap-[18px]">
