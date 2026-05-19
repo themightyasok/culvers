@@ -16,7 +16,7 @@
    * Previous `color-mix(#4f5438 70%, #2e301f)` read as ink-dark on the site — blend faded
    * olive into the tile background instead (~22 % mixes to a subtle warm grey-brown).
    */
-  --info-block-rule: color-mix(in srgb, #4f5438 22%, #fffefa);
+  --info-block-rule: color-mix(in srgb, var(--color-faded-olive) 22%, var(--color-lighter-cream));
   --info-block-rule-h-inset: 17px;
   /** Matches ~17 px / ~243 px row band — scales with differing tile heights */
   --info-block-rule-v-end: 7%;

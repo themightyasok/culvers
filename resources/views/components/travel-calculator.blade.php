@@ -134,7 +134,7 @@
                    This is the one Section H2 in the design system that uses the larger 64 px
                    token rather than the generic 58 px, so we override `sectionHeadingClasses`
                    inline rather than route through it. --}}
-              <h2 class="travel-calculator__heading font-heading text-[36px] leading-[1.1] text-deep-moss md:text-[64px] md:leading-[1.2]">
+              <h2 class="travel-calculator__heading font-heading text-4xl leading-[1.1] text-deep-moss md:text-7xl md:leading-[1.2]">
                 {{ esc_html($heading) }}
               </h2>
             @endif
@@ -177,7 +177,7 @@
             <input
               id="{{ esc_attr($instanceId) }}-origin"
               type="text"
-              class="travel-calculator__input h-[46px] w-full rounded-full border-[1.5px] border-faded-olive bg-transparent px-5 font-sans text-[15px] leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-deep-moss focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-deep-moss"
+              class="travel-calculator__input h-[46px] w-full rounded-full border-[1.5px] border-faded-olive bg-transparent px-5 font-sans text-base leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-deep-moss focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-deep-moss"
               placeholder="{{ esc_attr($destPlaceholder) }}"
               autocomplete="street-address"
               maxlength="200"
@@ -197,7 +197,7 @@
             <div class="relative">
               <select
                 id="{{ esc_attr($instanceId) }}-mode"
-                class="travel-calculator__select h-[46px] w-full appearance-none rounded-full border-[1.5px] border-faded-olive bg-transparent px-5 pr-10 font-sans text-[15px] leading-[1.32] text-deep-moss focus:border-deep-moss focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-deep-moss"
+                class="travel-calculator__select h-[46px] w-full appearance-none rounded-full border-[1.5px] border-faded-olive bg-transparent px-5 pr-10 font-sans text-base leading-[1.32] text-deep-moss focus:border-deep-moss focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-deep-moss"
                 x-model="mode"
                 x-bind:disabled="loading">
                 @foreach($modes as $modeOption)

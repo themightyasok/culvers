@@ -3,10 +3,37 @@
  *
  * @param {import('alpinejs').Alpine} Alpine
  */
+
+/** Mega-menu / seed URLs may use marketing slugs; cards carry taxonomy slugs in data attrs. */
+const FILTER_SLUG_ALIASES = {
+  'grab-go': 'takeaway',
+  'grab-and-go': 'takeaway',
+  cafes: 'cafe',
+  restaurants: 'restaurant',
+  'healthy-options': 'healthy',
+};
+
+/**
+ * @param {string} slug
+ * @returns {string}
+ */
+function normalizeFilterSlug(slug) {
+  if (typeof slug !== 'string' || slug === '') {
+    return '';
+  }
+  const trimmed = slug.trim().toLowerCase();
+  return FILTER_SLUG_ALIASES[trimmed] ?? trimmed;
+}
+
+/** Matches Tailwind `lg` — desktop directory layout with optional open filter column. */
+function isLgViewport() {
+  return window.matchMedia('(min-width: 1024px)').matches;
+}
+
 export default function registerDirectoryArchiveAlpine(Alpine) {
   Alpine.data('directoryArchive', () => ({
-    /** Sidebar + filter groups start open; users can collapse via toolbar pill / section toggles. */
-    filtersVisible: true,
+    /** Collapsed by default on all viewports; deep-linked URLs open the panel on desktop only. */
+    filtersVisible: false,
     retailerOpen: true,
     categoryOpen: true,
     categorySlug: '',
@@ -19,10 +46,13 @@ export default function registerDirectoryArchiveAlpine(Alpine) {
       const hasUrlFilter =
         (typeof cat === 'string' && cat !== '') || (typeof typ === 'string' && typ !== '');
       if (typeof cat === 'string' && cat !== '') {
-        this.categorySlug = cat;
+        this.categorySlug = normalizeFilterSlug(cat);
       }
       if (typeof typ === 'string' && typ !== '') {
-        this.typeSlug = typ;
+        this.typeSlug = normalizeFilterSlug(typ);
+      }
+      if (hasUrlFilter && isLgViewport()) {
+        this.filtersVisible = true;
       }
       this.$nextTick(() => {
         this.applyFilter();

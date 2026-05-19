@@ -120,12 +120,21 @@ export default function registerTextImageSliderAlpine(Alpine) {
       /* Desktop wrappers live inside the panel; mobile wrappers live outside as
          siblings. The two sets are size-class gated (hidden lg:contents / lg:hidden)
          so we animate BOTH — only the visible set actually paints. */
-      const lefts = item.querySelectorAll(
-        '[data-tis-media="left"], [data-tis-media="left-mobile"]'
+      const lefts = item.querySelectorAll('[data-tis-media="left"]');
+      const rights = item.querySelectorAll('[data-tis-media="right"]');
+      const mobileMedias = item.querySelectorAll(
+        '[data-tis-media="left-mobile"], [data-tis-media="right-mobile"]'
       );
-      const rights = item.querySelectorAll(
-        '[data-tis-media="right"], [data-tis-media="right-mobile"]'
-      );
+
+      mobileMedias.forEach((el) => {
+        if (el instanceof HTMLElement) {
+          gsap.set(el, { opacity: 1, clearProps: 'transform,xPercent,yPercent' });
+          const polaroid = el.querySelector('[data-tis-polaroid]');
+          if (polaroid instanceof HTMLElement) {
+            gsap.set(polaroid, { clearProps: 'transform', rotate: 0, scale: 1 });
+          }
+        }
+      });
 
       if (this.reducedMotion) {
         if (body instanceof HTMLElement) {

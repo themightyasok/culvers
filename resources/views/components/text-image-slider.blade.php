@@ -90,7 +90,7 @@
         </{{ $headingTag }}>
       @endif
 
-      <ul class="text-image-slider__list mx-auto flex w-full max-w-[634px] flex-col items-center gap-0" role="list">
+      <ul class="text-image-slider__list mx-auto flex w-full max-w-[382px] flex-col gap-0 lg:max-w-[634px]" role="list">
         @foreach($items as $i => $item)
           @php
               $labelId = $instanceId . '-l-' . $i;
@@ -102,19 +102,28 @@
                   && trim((string) ($item['image_right']['url'] ?? '')) !== '';
           @endphp
           <li
-            class="text-image-slider__item relative w-full"
+            class="text-image-slider__item relative w-full border-b border-deep-moss/45"
             data-tis-item="{{ $i }}">
             <button
               id="{{ esc_attr($labelId) }}"
               type="button"
-              class="text-image-slider__label group block w-full cursor-pointer py-3 text-center font-heading text-5xl leading-[1.1] tracking-tight text-black transition-colors duration-300 ease-out culvers-focus-ring md:text-6xl lg:text-7xl"
+              class="text-image-slider__label group flex w-full cursor-pointer items-center justify-between gap-4 py-2.5 text-left font-heading text-3xl leading-[1.1] text-faded-olive transition-colors duration-300 ease-out culvers-focus-ring lg:justify-center lg:py-3 lg:text-center lg:text-5xl lg:text-black md:text-6xl lg:text-7xl"
               data-tis-label
               aria-controls="{{ esc_attr($panelId) }}"
               aria-expanded="{{ $isOpen ? 'true' : 'false' }}"
               x-on:click="toggle({{ $i }})"
               x-on:keydown.down.prevent="focusSibling({{ $i }}, 1)"
               x-on:keydown.up.prevent="focusSibling({{ $i }}, -1)">
-              {{ esc_html($item['label']) }}
+              <span class="min-w-0 flex-1 lg:flex-none">{{ esc_html($item['label']) }}</span>
+              {{-- Figma 51:9225 / 51:9312 — 16px +/- on mobile only. --}}
+              <span
+                class="relative flex size-4 shrink-0 items-center justify-center text-faded-olive lg:hidden"
+                aria-hidden="true">
+                <span class="absolute inset-x-0 top-1/2 h-[2px] -translate-y-1/2 bg-current"></span>
+                <span
+                  class="absolute inset-y-0 left-1/2 w-[2px] -translate-x-1/2 bg-current transition-transform duration-200 ease-out"
+                  x-bind:class="isOpen({{ $i }}) ? 'scale-y-0' : 'scale-y-100'"></span>
+              </span>
             </button>
 
             {{-- Wrapper that owns the vertical anchor for the desktop side images.
@@ -202,7 +211,7 @@
                   $mobileTisHandle = $hasRightImage ? 'right-mobile' : 'left-mobile';
               @endphp
               <div
-                class="text-image-slider__media text-image-slider__media--mobile mt-2 mb-8 w-full opacity-0 lg:hidden"
+                class="text-image-slider__media text-image-slider__media--mobile mt-2 mb-8 w-full lg:hidden"
                 data-tis-media="{{ $mobileTisHandle }}"
                 data-tilt="0"
                 x-show="isOpen({{ $i }})"

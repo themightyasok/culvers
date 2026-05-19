@@ -31,7 +31,7 @@
 <button
   id="{{ esc_attr($pill_toggle_id) }}"
   type="button"
-  class="directory-archive__filter-pill inline-flex w-max max-w-full items-center gap-[13px] rounded-full bg-brand-500 py-[7.732px] pl-[26px] pr-5 font-label text-[12.887px] font-semibold uppercase leading-[30.928px] tracking-[0.6443px] text-deep-moss transition hover:brightness-95 culvers-focus-ring-deep-moss"
+  class="directory-archive__filter-pill btn btn-primary w-max max-w-full gap-3 py-2 pl-6 pr-5 hover:brightness-95"
   @click="toggleFilters()"
   :aria-expanded="filtersVisible ? 'true' : 'false'"
   aria-controls="{{ esc_attr($pill_controls_id) }}">

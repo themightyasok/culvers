@@ -46,6 +46,8 @@
   --color-light-brown: #beb6aa;
   --color-light-cream: #fdfcf3;
   --color-off-white: #eee9e5;
+  /* Figma “Purelinen” / footer site-by label (#EDEDEB) — distinct from off-white. */
+  --color-purelinen: #ededeb;
   --color-lighter-cream: #fffefa;
   /* Pale sage band (Figma "Light Green") — used by `travel_calculator` and any
      future quiet-card surface that needs an olive tint without going to

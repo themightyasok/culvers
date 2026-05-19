@@ -99,7 +99,7 @@
         </div>
 
         <div class="mt-[72px] flex flex-col gap-[22px] md:mt-[88px]">
-          <div class="directory-archive__toolbar flex justify-start">
+          <div class="directory-archive__toolbar flex justify-center lg:justify-start">
             @include('partials.directory-filter-pill', [
                 'toggle_id' => $filter_toggle_id,
                 'controls_id' => 'directory-archive-filters-careers',
@@ -110,14 +110,10 @@
             <div
               id="directory-archive-filters-careers"
               class="directory-archive__sidebar-shell min-w-0 shrink-0 lg:overflow-visible"
-              :class="
-                filtersVisible
-                  ? 'max-lg:max-h-[1600px] max-lg:overflow-visible'
-                  : 'max-lg:max-h-0 max-lg:overflow-hidden'
-              "
+              :class="filtersVisible ? 'max-lg:max-h-[1600px] max-lg:overflow-visible' : 'max-lg:hidden'"
               role="region"
               aria-label="{{ esc_attr__('Careers filters', 'culvers') }}">
-              <aside class="directory-archive__aside w-[325px] max-w-full rounded-none bg-white px-0 pb-6 pt-0 shadow-none md:px-0 lg:shrink-0">
+              <aside class="directory-archive__aside w-full rounded-none bg-white px-0 pb-6 pt-0 shadow-none lg:w-[325px] lg:shrink-0">
                 <h2 class="sr-only">{{ __('Careers filters', 'culvers') }}</h2>
 
                 @include('partials.directory-filter-group', [

@@ -39,6 +39,33 @@ Body tier keeps Tailwind defaults; display tier (`text-3xl`+) is retuned to Figm
 | 22 px directory cards / mega sublinks | `text-2xl` (24 px) | Mega `.mega-nav__sublink`, directory cards | +2 px |
 | 34 px footer newsletter @ lg | `text-3xl` (32 px) | Footer newsletter heading at lg breakpoint | −2 px |
 | 15 px primary nav | `text-base` (16 px) | Mega-nav top-level branch labels | −1 px |
+| 13 px newsletter email field | `text-xs` (12 px) | Footer newsletter input | −1 px |
+| 14.5 px mobile drawer CTAs | `text-sm` (14 px) + `tracking-widest` | Header mobile bottom actions | −0.5 px size; tracking widened |
+| 36 px mobile nav titles | `text-4xl` (40 px) | Header drawer section links | +4 px |
+| 42 px info-block tile titles | `text-4xl` (40 px) | Info block grid headings | −2 px |
+| 46 px three-card titles @ md | `text-5xl` (48 px) | Three-card block card headings | +2 px |
+
+### Allowed arbitrary display sizes (documented exceptions)
+
+| Arbitrary | Where | Why kept |
+|-----------|-------|----------|
+| `lg:text-[7.75rem]` (124 px) | `image-hero` title @ lg | Between `text-8xl` (84 px) and full-bleed Figma hero; no stock step |
+| `leading-[1.05]` / `leading-none` on hero | `image-hero` | Tight display lockup at lg |
+
+## Pill / label cluster — `.btn` is canonical
+
+All uppercase Commuter pill CTAs share **`.btn`** (+ variant: `btn-primary`, `btn-outline`, `btn-dark`). The only non-stock font size in that cluster is **`text-[13px]`** on `.btn` itself (Figma 12.887 px → 13 px snap). Consumers:
+
+- Directory filter pill (`directory-filter-pill` partial) — `btn btn-primary`
+- Three-card filter tabs — `btn btn-outline` + `aria-[selected=true]:*` paint overrides
+- Card hover CTAs — `btn btn-outline`
+- Form submit rows — `btn` + `btn-form` size modifier
+
+Do **not** add new `text-[11px]` / `text-[12.887px]` / `md:text-[13px]` on pills outside `.btn`.
+
+## Form controls
+
+Text inputs, selects, and textareas in contact / travel-calculator / FAQ answers use **`text-base`** (`16 px`, −1 px vs legacy 15 px Figma body fields) with **`leading-[1.32]`** where the design specified 1.32 line height.
 
 ## Tracking — stock Tailwind utilities
 
@@ -84,5 +111,14 @@ The mega panel uses `max-w-[1348px]` and the page header uses `max-w-[1800px]` �
 | `z-60` | Extension | Mega-nav panel above the bar |
 | `z-70` | Extension | Mobile drawer |
 | `z-80` | Extension | Skip-link (focus-visible) |
+
+## Colour tokens used by type
+
+| Token | Hex | Typical type pairing |
+|-------|-----|----------------------|
+| `text-purelinen` | `#ededeb` | Footer “Site by” label (Figma Off White / Purelinen) |
+| `text-lighter-cream` | `#fffefa` | Footer legal row, column headings |
+
+Hairline rules in component CSS use `color-mix(in srgb, var(--color-*), …)` — no raw hex in stylesheets.
 
 When Figma updates, change **`theme.tokens.css`** first, then refresh this file.

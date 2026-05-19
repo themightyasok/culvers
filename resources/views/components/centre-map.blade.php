@@ -319,10 +319,10 @@
             x-show="activeCategorySlug !== ''"
             x-cloak
             x-transition.opacity.duration.150ms>
-            <span class="font-sans text-[11px] font-semibold uppercase tracking-[0.18em]">
+            <span class="font-sans text-xs font-semibold uppercase tracking-[0.18em]">
               {{ __('Filtered', 'culvers') }}:
             </span>
-            <span class="font-sans text-[11px] font-semibold uppercase tracking-[0.18em]" x-text="activeCategoryLabel"></span>
+            <span class="font-sans text-xs font-semibold uppercase tracking-[0.18em]" x-text="activeCategoryLabel"></span>
             <button
               type="button"
               class="-mr-2 inline-flex size-5 items-center justify-center rounded-full text-deep-moss transition hover:bg-deep-moss/15 culvers-focus-ring-compact"

@@ -230,7 +230,7 @@
               autocomplete="given-name"
               maxlength="100"
               required
-              class="contact__input h-[46px] w-full rounded-full border border-deep-moss/30 bg-white px-5 font-sans text-[15px] font-light leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
+              class="contact__input h-[46px] w-full rounded-full border border-deep-moss/30 bg-white px-5 font-sans text-base font-light leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
               placeholder="{{ esc_attr($firstNamePlaceholder) }}"
               x-model.trim="firstName"
               x-on:input="onFieldInput()"
@@ -250,7 +250,7 @@
               autocomplete="family-name"
               maxlength="100"
               required
-              class="contact__input h-[46px] w-full rounded-full border border-deep-moss/30 bg-white px-5 font-sans text-[15px] font-light leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
+              class="contact__input h-[46px] w-full rounded-full border border-deep-moss/30 bg-white px-5 font-sans text-base font-light leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
               placeholder="{{ esc_attr($lastNamePlaceholder) }}"
               x-model.trim="lastName"
               x-on:input="onFieldInput()"
@@ -271,7 +271,7 @@
               maxlength="200"
               required
               inputmode="email"
-              class="contact__input h-[46px] w-full rounded-full border border-deep-moss/30 bg-white px-5 font-sans text-[15px] font-light leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
+              class="contact__input h-[46px] w-full rounded-full border border-deep-moss/30 bg-white px-5 font-sans text-base font-light leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
               placeholder="{{ esc_attr($emailPlaceholder) }}"
               x-model.trim="email"
               x-on:input="onFieldInput()"
@@ -289,7 +289,7 @@
                 <select
                   id="{{ esc_attr($instanceId) }}-reason"
                   name="reason"
-                  class="contact__select h-[46px] w-full appearance-none rounded-full border border-deep-moss/30 bg-white px-5 pr-10 font-sans text-[15px] font-light leading-[1.32] text-deep-moss focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
+                  class="contact__select h-[46px] w-full appearance-none rounded-full border border-deep-moss/30 bg-white px-5 pr-10 font-sans text-base font-light leading-[1.32] text-deep-moss focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
                   x-model="reason"
                   x-on:change="onFieldInput()"
                   x-bind:disabled="loading">
@@ -310,7 +310,7 @@
                 type="text"
                 name="reason"
                 maxlength="100"
-                class="contact__input h-[46px] w-full rounded-full border border-deep-moss/30 bg-white px-5 font-sans text-[15px] font-light leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
+                class="contact__input h-[46px] w-full rounded-full border border-deep-moss/30 bg-white px-5 font-sans text-base font-light leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
                 placeholder="{{ esc_attr($reasonPlaceholder) }}"
                 x-model.trim="reason"
                 x-on:input="onFieldInput()"
@@ -330,7 +330,7 @@
               rows="6"
               maxlength="5000"
               required
-              class="contact__textarea min-h-[156px] w-full resize-y rounded-[18px] border border-deep-moss/30 bg-white px-5 py-4 font-sans text-[15px] font-light leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
+              class="contact__textarea min-h-[156px] w-full resize-y rounded-[18px] border border-deep-moss/30 bg-white px-5 py-4 font-sans text-base font-light leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
               placeholder="{{ esc_attr($messagePlaceholder) }}"
               x-model.trim="message"
               x-on:input="onFieldInput()"

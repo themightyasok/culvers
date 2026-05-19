@@ -25,6 +25,7 @@ final class ThemeTokens
         'light-brown',
         'light-cream',
         'off-white',
+        'purelinen',
         'lighter-cream',
         'canvas',
         'surface',

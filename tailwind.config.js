@@ -78,11 +78,11 @@ const culversThemePlugin = plugin(({ addBase, addComponents }) => {
     },
     /* Column nav `<a>` — Figma Footer 51:5147: What’s Here / Useful links use Halyard Display Book 18 px / lh 26. */
     '.footer-nav--col li > a': {
-      '@apply font-sans text-[18px] font-normal leading-[26px] text-white transition-colors hover:text-glowleaf':
+      '@apply font-sans text-lg font-normal leading-[26px] text-white transition-colors hover:text-glowleaf':
         {},
     },
     '.footer-nav__link--legal': {
-      '@apply font-label text-[10px] font-normal uppercase tracking-[0.05em] leading-[1.3] text-lighter-cream transition-colors hover:text-glowleaf':
+      '@apply font-label text-xs font-normal uppercase tracking-wider leading-[1.3] text-lighter-cream transition-colors hover:text-glowleaf':
         {},
     },
     '.footer-nav__link-phone': {

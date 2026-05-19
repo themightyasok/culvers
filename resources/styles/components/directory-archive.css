@@ -43,6 +43,15 @@
   .directory-archive__main-row {
     grid-template-columns: minmax(0, 1fr);
   }
+
+  /* Mobile / tablet: filter panel spans the content column when open. */
+  .directory-archive__main-row.directory-archive__main-row--filters-visible
+    .directory-archive__sidebar-shell,
+  .directory-archive__main-row.directory-archive__main-row--filters-visible
+    .directory-archive__aside {
+    width: 100%;
+    max-width: none;
+  }
 }
 
 .directory-archive__grid {
@@ -137,7 +146,7 @@
 
 /* Sidebar panel rules — Figma: dark hairlines above category stack + between Category / Retailer type. */
 .directory-archive__aside {
-  --directory-archive-rule: rgb(46 48 30 / 42%);
+  --directory-archive-rule: color-mix(in srgb, var(--color-deep-moss) 42%, transparent);
   border-top: 1px solid var(--directory-archive-rule);
 }
 
@@ -176,23 +185,11 @@
 
 /* Option stack — MCP 51:7636–51:7643: Commuters SemiBold 12 / lh 24 / tracking 1; flex gap 12; circle 12. */
 .directory-archive__filter-option--on span:last-child {
-  font-family: var(--font-label, ui-sans-serif, system-ui, sans-serif);
-  color: var(--color-deep-moss, #2e301e);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  line-height: 24px;
-  text-transform: uppercase;
+  @apply font-label text-xs font-semibold uppercase leading-6 tracking-wide text-deep-moss;
 }
 
 .directory-archive__filter-option--off span:last-child {
-  font-family: var(--font-label, ui-sans-serif, system-ui, sans-serif);
-  color: var(--color-faded-olive, #4f5438);
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  line-height: 24px;
-  text-transform: uppercase;
+  @apply font-label text-xs font-semibold uppercase leading-6 tracking-wide text-faded-olive;
 }
 
 /* Hover storefront image — stacked gradients (matches H&M tile treatment). */

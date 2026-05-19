@@ -417,7 +417,12 @@ final class PrimaryNav
 
     private static function title(\WP_Post $post): string
     {
-        return $post->post_title !== '' ? $post->post_title : '';
+        if ($post->post_title === '') {
+            return '';
+        }
+
+        // WP nav items often store `&` as `&amp;`; decode once so Blade/Alpine show “Eat & Drink”.
+        return html_entity_decode($post->post_title, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     }
 
     private static function resolvedUrl(\WP_Post $post): string

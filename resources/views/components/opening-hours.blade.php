@@ -81,13 +81,15 @@ $hoursHeadingClass = $isShopSingle
       : 'opening-hours__body mt-6 max-w-none text-left md:text-center font-sans [&_p]:text-xl [&_p]:font-light [&_p]:leading-[1.3] [&_p+p]:mt-4 [&_strong]:font-medium rt-link-prose';
   $hoursListTopBorder = $isShopSingle ? 'border-faded-olive/45' : 'border-deep-moss/20';
   /** Rows: Book 300 + lh 1.3; “today” uses same px as peers — pill is a pseudo-element bleed. */
-  $hoursRowShellShop = 'flex items-center justify-between gap-6 px-1 py-3.5 font-sans text-xl font-light leading-[1.3] text-faded-olive sm:px-2';
-  $hoursRowShellDefault = 'flex items-center justify-between gap-6 px-1 py-3.5 font-sans text-xl font-light leading-[1.3] text-deep-moss sm:px-2';
-  /** Figma (~740px pill vs ~692px rules): widen with before:-inset-x-*; spans get z-[1]. */
+  $hoursRowShellShop = 'flex items-center justify-between gap-6 px-3 py-3.5 font-sans text-xl font-light leading-[1.3] text-faded-olive sm:px-2';
+  $hoursRowShellDefault = 'flex items-center justify-between gap-6 px-3 py-3.5 font-sans text-xl font-light leading-[1.3] text-deep-moss sm:px-2';
+  /** Figma (~740px pill vs ~692px rules): widen with before:-inset-x-* on sm+ only.
+   *  On mobile the section gutter is px-4 (16px); -inset-x-5 bleeds past it and the
+   *  Glowleaf pill touches the viewport — keep inset-x-0 until sm. */
   $hoursTodayBleedShop =
-      'relative isolate overflow-visible font-normal leading-[26px] before:pointer-events-none before:absolute before:inset-y-[-3px] before:z-0 before:-inset-x-5 before:rounded-full before:bg-brand-500 sm:before:-inset-x-[1.875rem]';
+      'relative isolate overflow-visible font-normal leading-[26px] before:pointer-events-none before:absolute before:inset-y-[-3px] before:z-0 before:inset-x-0 before:rounded-full before:bg-brand-500 sm:before:-inset-x-[1.875rem]';
   $hoursTodayBleedDefault =
-      'relative isolate overflow-visible font-normal leading-[26px] before:pointer-events-none before:absolute before:inset-y-[-3px] before:z-0 before:-inset-x-5 before:rounded-full before:bg-brand-500 sm:before:-inset-x-[1.875rem]';
+      'relative isolate overflow-visible font-normal leading-[26px] before:pointer-events-none before:absolute before:inset-y-[-3px] before:z-0 before:inset-x-0 before:rounded-full before:bg-brand-500 sm:before:-inset-x-[1.875rem]';
   $hoursFootClass = $isShopSingle
       ? 'mx-auto mt-8 max-w-[22.5rem] text-center font-sans text-xl font-light leading-[1.3] text-faded-olive'
       : 'mx-auto mt-8 max-w-[22.5rem] text-center font-sans text-xl font-light leading-[1.3] text-deep-moss';

@@ -92,13 +92,14 @@
                 class="mega-nav__bar-row relative flex h-[75px] min-h-[75px] w-full items-center gap-3 px-4 max-lg:gap-2 lg:h-auto lg:min-h-[80px] lg:gap-6 lg:px-5 xl:px-6">
                 <button
                   type="button"
-                  class="mega-nav__burger relative z-20 inline-flex size-11 shrink-0 items-center justify-center text-glowleaf lg:hidden culvers-focus-ring"
+                  class="mega-nav__burger relative z-20 inline-flex size-12 shrink-0 items-center justify-center text-glowleaf lg:hidden culvers-focus-ring"
                   aria-controls="mega-mobile-drawer"
                   x-bind:aria-expanded="mobileOpen ? 'true' : 'false'"
                   x-on:click="mobileOpen = !mobileOpen">
                   <span class="sr-only" x-show="!mobileOpen" x-cloak>{{ __('Open menu', 'culvers') }}</span>
                   <span class="sr-only" x-show="mobileOpen" x-cloak>{{ __('Close menu', 'culvers') }}</span>
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  {{-- Figma Mobile — Nav (2:1016): larger menu glyph than search pill icon. --}}
+                  <svg class="size-7" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                     <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
                   </svg>
                 </button>
@@ -188,13 +189,13 @@
                 <div class="mega-nav__bar-end relative z-20 flex shrink-0 items-center gap-2 lg:gap-[18px]">
                   <button
                     type="button"
-                    class="relative flex size-[43px] shrink-0 items-center justify-center rounded-full bg-brand-500 text-faded-olive transition-transform hover:scale-[1.03] culvers-focus-ring-compact lg:hidden"
+                    class="relative flex size-[39px] shrink-0 items-center justify-center rounded-full bg-brand-500 px-[18px] py-[5px] text-faded-olive transition-transform hover:scale-[1.03] culvers-focus-ring-compact lg:hidden"
                     x-bind:aria-expanded="searchOpen ? 'true' : 'false'"
                     aria-controls="site-header-search"
                     x-on:click="openSearch()">
                     <span class="sr-only">{{ __('Open search', 'culvers') }}</span>
-                    {{-- Sheet feedback row 6: bigger search icon. --}}
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    {{-- Figma Mobile — Nav (2:990): ~39px pill, 14.5×14.3 search glyph. --}}
+                    <svg class="size-[14.5px]" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                       <circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="1.6" />
                       <path d="m16.5 16.5 4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
                     </svg>
@@ -519,7 +520,7 @@
                     @if($branch['children'] !== [])
                       <button
                         type="button"
-                        class="flex w-full items-center justify-between gap-4 py-[26px] text-left font-heading text-[36px] leading-[1.1] text-faded-olive focus-visible:rounded-sm culvers-focus-ring-compact"
+                        class="flex w-full items-center justify-between gap-4 py-[26px] text-left font-heading text-4xl leading-[1.1] text-faded-olive focus-visible:rounded-sm culvers-focus-ring-compact"
                         x-on:click="openMobileSubmenuByIndex({{ (int) $idx }})">
                         <span>{{ $branch['title'] }}</span>
                         <span class="inline-flex size-6 shrink-0 items-center justify-center text-faded-olive" aria-hidden="true">
@@ -535,7 +536,7 @@
                       </button>
                     @else
                       <a
-                        class="flex w-full items-center justify-between gap-4 py-[26px] font-heading text-[36px] leading-[1.1] text-faded-olive focus-visible:rounded-sm culvers-focus-ring-compact"
+                        class="flex w-full items-center justify-between gap-4 py-[26px] font-heading text-4xl leading-[1.1] text-faded-olive focus-visible:rounded-sm culvers-focus-ring-compact"
                         href="{{ esc_url($branch['url']) }}">
                         <span>{{ $branch['title'] }}</span>
                         <span class="inline-flex size-6 shrink-0 items-center justify-center text-faded-olive" aria-hidden="true">
@@ -603,7 +604,7 @@
                 class="flex min-h-[57px] divide-x divide-faded-olive/20 overflow-hidden rounded-[12px] bg-glowleaf/60 text-faded-olive">
                 @if($instagramUrl !== '' && $instagramUrl !== '#')
                   <a
-                    class="flex flex-1 items-center justify-center gap-3 px-4 py-3 text-center font-label text-[14.5px] font-semibold uppercase leading-[29px] tracking-[0.08em] transition-colors hover:bg-faded-olive/[0.07] culvers-focus-ring-compact-faded-olive"
+                    class="flex flex-1 items-center justify-center gap-3 px-4 py-3 text-center font-label text-sm font-semibold uppercase leading-7 tracking-widest transition-colors hover:bg-faded-olive/[0.07] culvers-focus-ring-compact-faded-olive"
                     href="{{ esc_url($instagramUrl) }}"
                     target="_blank"
                     rel="noopener noreferrer">
@@ -615,7 +616,7 @@
                   </a>
                 @else
                   <span
-                    class="flex flex-1 cursor-not-allowed items-center justify-center gap-3 px-4 py-3 text-center font-label text-[14.5px] font-semibold uppercase leading-[29px] tracking-[0.08em] text-faded-olive/45">
+                    class="flex flex-1 cursor-not-allowed items-center justify-center gap-3 px-4 py-3 text-center font-label text-sm font-semibold uppercase leading-7 tracking-widest text-faded-olive/45">
                     @include('partials.figma-social-icon', [
                         'social_icon_variant' => 'instagram',
                         'social_icon_class' => 'size-6 shrink-0 opacity-50 text-faded-olive',
@@ -625,7 +626,7 @@
                 @endif
                 @if($facebookUrl !== '' && $facebookUrl !== '#')
                   <a
-                    class="flex flex-1 items-center justify-center gap-3 px-4 py-3 text-center font-label text-[14.5px] font-semibold uppercase leading-[29px] tracking-[0.08em] transition-colors hover:bg-faded-olive/[0.07] culvers-focus-ring-compact-faded-olive"
+                    class="flex flex-1 items-center justify-center gap-3 px-4 py-3 text-center font-label text-sm font-semibold uppercase leading-7 tracking-widest transition-colors hover:bg-faded-olive/[0.07] culvers-focus-ring-compact-faded-olive"
                     href="{{ esc_url($facebookUrl) }}"
                     target="_blank"
                     rel="noopener noreferrer">
@@ -637,7 +638,7 @@
                   </a>
                 @else
                   <span
-                    class="flex flex-1 cursor-not-allowed items-center justify-center gap-3 px-4 py-3 text-center font-label text-[14.5px] font-semibold uppercase leading-[29px] tracking-[0.08em] text-faded-olive/45">
+                    class="flex flex-1 cursor-not-allowed items-center justify-center gap-3 px-4 py-3 text-center font-label text-sm font-semibold uppercase leading-7 tracking-widest text-faded-olive/45">
                     @include('partials.figma-social-icon', [
                         'social_icon_variant' => 'facebook',
                         'social_icon_class' => 'size-6 shrink-0 opacity-50 text-faded-olive',
@@ -656,54 +657,60 @@
           </div>
         </div>
 
-        {{-- Submenu panel --}}
+        {{-- Submenu panel — Figma 51:9130 (second-level drill-down). --}}
         <div
-          class="flex h-full w-1/2 min-w-[50%] flex-col overflow-y-auto overscroll-contain border-l border-deep-moss/10 px-5 pb-10 pt-2 sm:px-6"
+          class="flex h-full w-1/2 min-w-[50%] flex-col overflow-y-auto overscroll-contain px-4 pb-10 pt-6 sm:px-6"
           id="mega-mobile-panel-sub"
           :aria-hidden="mobileNavDepth === 0">
-          <button
-            type="button"
-            class="mb-4 flex items-center gap-3 py-2 text-left focus-visible:rounded-sm culvers-focus-ring-compact"
-            x-on:click="resetMobileSubmenu()">
-            <span
-              class="inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-glowleaf text-deep-moss"
-              aria-hidden="true">
-              <svg class="size-5" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="m15 6-6 6 6 6"
-                  stroke="currentColor"
-                  stroke-width="1.8"
-                  stroke-linecap="round"
-                  stroke-linejoin="round" />
-              </svg>
-            </span>
-            <span class="font-sans text-xs font-bold uppercase tracking-[0.2em] text-deep-moss">{{ __('Back', 'culvers') }}</span>
-          </button>
+          <div class="border-y border-faded-olive/15">
+            <button
+              type="button"
+              class="flex w-full items-center gap-2.5 py-4 text-left focus-visible:rounded-sm culvers-focus-ring-compact"
+              x-on:click="resetMobileSubmenu()">
+              <span
+                class="inline-flex size-[30px] shrink-0 items-center justify-center rounded-full border border-faded-olive/15 bg-lighter-cream text-faded-olive"
+                aria-hidden="true">
+                <svg class="size-4" viewBox="0 0 24 24" fill="none">
+                  <path
+                    d="m15 6-6 6 6 6"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                    stroke-linecap="round"
+                    stroke-linejoin="round" />
+                </svg>
+              </span>
+              <span class="font-label text-sm font-semibold uppercase leading-6 tracking-widest text-faded-olive">{{ __('Back', 'culvers') }}</span>
+            </button>
+          </div>
 
           <template x-if="mobileActiveBranch">
-            <div class="min-h-0 flex-1">
-              <div class="flex items-start justify-between gap-3 border-b border-deep-moss/10 pb-5">
-                <h3 class="font-heading text-3xl leading-none text-deep-moss sm:text-4xl" x-text="mobileActiveBranch.title"></h3>
-                <a
-                  class="mt-1 inline-flex size-11 shrink-0 items-center justify-center rounded-full bg-glowleaf text-deep-moss culvers-focus-ring-compact-deep-moss"
-                  x-bind:href="mobileActiveBranch.url || '#'"
-                  x-on:click="mobileOpen = false">
-                  <span class="sr-only">{{ __('Open section', 'culvers') }}</span>
-                  <svg class="size-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path
-                      d="m9 6 6 6-6 6"
-                      stroke="currentColor"
-                      stroke-width="1.8"
-                      stroke-linecap="round"
-                      stroke-linejoin="round" />
-                  </svg>
-                </a>
+            <div class="mt-10 flex min-h-0 flex-1 flex-col">
+              <div class="border-b border-deep-moss pb-[26px]">
+                <div class="flex items-center justify-between gap-3">
+                  <h3
+                    class="font-heading text-4xl leading-[1.1] text-faded-olive"
+                    x-text="mobileActiveBranch.title"></h3>
+                  <a
+                    class="inline-flex size-[43px] shrink-0 items-center justify-center rounded-full bg-glowleaf text-deep-moss culvers-focus-ring-compact-deep-moss"
+                    x-bind:href="mobileActiveBranch.url || '#'"
+                    x-on:click="mobileOpen = false">
+                    <span class="sr-only">{{ __('Open section', 'culvers') }}</span>
+                    <svg class="size-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                      <path
+                        d="m9 6 6 6-6 6"
+                        stroke="currentColor"
+                        stroke-width="1.8"
+                        stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    </svg>
+                  </a>
+                </div>
               </div>
-              <ul class="divide-y divide-deep-moss/10">
+              <ul class="mt-6 divide-y divide-faded-olive/15">
                 <template x-for="(child, cIdx) in mobileActiveBranch.children" :key="(child.url || '') + '-' + cIdx">
                   <li class="list-none">
                     <a
-                      class="block py-4 font-sans text-base font-normal leading-snug text-deep-moss focus-visible:rounded-sm culvers-focus-ring-compact"
+                      class="block py-6 font-sans text-2xl font-normal capitalize leading-[1.3] text-faded-olive focus-visible:rounded-sm culvers-focus-ring-compact"
                       x-bind:href="child.url"
                       x-on:click="mobileOpen = false"
                       x-text="child.title"></a>

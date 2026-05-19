@@ -1,7 +1,5 @@
 @php
   use App\Helpers\Component;
-  use App\Helpers\Image;
-  use App\Helpers\LayoutShell;
   use App\Helpers\ThreeCardBlock;
 
   /**
@@ -28,6 +26,7 @@
      only variant that reflows on mobile — blog / CPT carousels keep the
      portrait card so the swipable strip still reads as a stack. */
   $isManualMode = (($c['cards_source'] ?? 'manual') === 'manual');
+  $useMobileSplide = ! $isManualMode;
 
   /* Resolve via helper so CPT mode auto-targets the chosen archive URL
      (e.g. Latest Events strip on /whats-on/ links to /latest-events/
@@ -62,7 +61,7 @@
   data-component-root
   data-three-card-block
   x-data="threeCardBlock()">
-  <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
+  <div class="mx-auto w-full max-w-8xl px-3 sm:px-4 md:px-5 lg:px-6">
     @if($heading !== '' || $sub !== '' || $body !== '')
       <header class="mx-auto max-w-[52rem] text-center">
         @if($heading !== '')
@@ -93,16 +92,9 @@
     @endif
 
     @if($showTabs)
-      {{-- Filter chips — Figma 51:5133/5134/5135.
-           - Font: Commuters Sans SemiBold 12.887px (font-label text-[13px] font-semibold).
-           - Tracking: 0.6443px on 12.887px ≈ 0.05em (tracking-[0.05em]).
-           - Padding: 25.773px × 7.732px (px-[26px] py-[8px]).
-           - Radius: 64.433px → rounded-full.
-           - Active (51:5133): bg-glowleaf, text-deep-moss, NO border.
-           - Inactive (51:5134/5135): 1.5px Dustleaf border + Dustleaf text on
-             transparent fill. (Token: --color-dustleaf #8B8C67.) --}}
+      {{-- Filter chips — Figma 51:5133/5134/5135. Typography matches `.btn` (13px label pill). --}}
       <div
-        class="mt-10 flex flex-wrap items-center justify-center gap-3 md:mt-12 md:gap-4"
+        class="mt-10 flex flex-nowrap items-center justify-center gap-1.5 max-sm:overflow-x-auto max-sm:pb-1 md:mt-12 md:flex-wrap md:gap-4"
         role="tablist"
         aria-label="{{ esc_attr__('Filter stories', 'culvers') }}"
         x-on:keydown.right.prevent="selectTab((activeTab + 1) % {{ count($tabs) }}, true)"
@@ -118,7 +110,7 @@
                and there's no glowleaf flash before Alpine hydrates. --}}
           <button
             type="button"
-            class="three-card-block__tab cursor-pointer rounded-full border-[1.5px] border-dustleaf bg-transparent px-[26px] py-[8px] font-label text-[13px] font-semibold uppercase leading-[1.85] tracking-[0.05em] text-dustleaf transition-colors duration-150 hover:bg-light-cream/60 aria-[selected=true]:border-transparent aria-[selected=true]:bg-glowleaf aria-[selected=true]:text-deep-moss aria-[selected=true]:hover:bg-glowleaf culvers-focus-ring-deep-moss"
+            class="three-card-block__tab btn btn-outline shrink-0 border-dustleaf bg-transparent text-dustleaf hover:bg-light-cream/60 hover:text-dustleaf aria-[selected=true]:border-transparent aria-[selected=true]:bg-glowleaf aria-[selected=true]:text-deep-moss aria-[selected=true]:hover:bg-glowleaf aria-[selected=true]:hover:text-deep-moss"
             id="{{ esc_attr($tid) }}"
             role="tab"
             aria-controls="{{ esc_attr($pid) }}"
@@ -159,109 +151,59 @@
         @if($showTabs) aria-labelledby="{{ 'three-card-tab-' . $index }}" @endif>
         @php $cards = $tab['cards'] ?? []; @endphp
         @if($cards !== [])
-          {{--
-            Figma (three-up strip) artboard ~1198px; layout uses max-w-7xl (1280px) for the stock
-            width ladder + parity with opening-hours. 16px column gutter, ~11px corner radius,
-            390×585 portrait cards (3:2 aspect).
-          --}}
-          <div
-            class="three-card-block__grid mx-auto grid w-full max-w-7xl grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            @foreach($cards as $card)
-              @php
-                $href = trim((string) ($card['url'] ?? ''));
-                $title = trim((string) ($card['title'] ?? ''));
-                $mediaType = (string) ($card['media_type'] ?? 'image');
-                $video = isset($card['video']) && is_array($card['video']) ? $card['video'] : [];
-                $videoUrl = isset($video['url']) ? (string) $video['url'] : '';
-                $mime = isset($video['mime_type']) ? (string) $video['mime_type'] : 'video/mp4';
-                $image = isset($card['image']) && is_array($card['image']) ? $card['image'] : [];
-                $imageUrl = isset($image['url']) ? (string) $image['url'] : '';
-                $alt = trim((string) ($card['alt'] ?? $title));
-              @endphp
-              @php
-                /* Defensive mobile-only override (Figma 51:8214 mobile manual cards).
-                   The base aspect stays `2/3` — desktop is untouched even if a stale CSS
-                   build is loaded — and `max-sm:aspect-[173/100]` only swaps in landscape
-                   below 640 px when manual mode is active. */
-                $cardAspectClass = $isManualMode
-                    ? 'aspect-[2/3] max-sm:aspect-[173/100]'
-                    : 'aspect-[2/3]';
-              @endphp
-              @if($href !== '' && $title !== '')
-                <a
-                  href="{{ esc_url($href) }}"
-                  class="three-card-block__card group/card relative flex {{ $cardAspectClass }} w-full origin-center rounded-[11px] outline-none motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out motion-safe:hover:scale-[1.03] motion-safe:focus-visible:scale-[1.03] motion-reduce:hover:scale-100 motion-reduce:focus-visible:scale-100 focus-visible:ring-2 focus-visible:ring-glowleaf focus-visible:ring-offset-2 focus-visible:ring-offset-light-cream">
-                  <span
-                    class="pointer-events-none absolute inset-0 z-0 overflow-hidden rounded-[inherit]"
-                    aria-hidden="true">
-                    @if($mediaType === 'video' && $videoUrl !== '')
-                      <span class="relative z-0 block h-full min-h-0 w-full">
-                        {{--
-                          Idle state must show decoded frame 0 of the file (not an uploaded poster image).
-                          Hover/focus plays the clip; mouseleave snaps back to frame 0 (see three-card-block.js).
-                        --}}
-                        <video
-                          class="three-card-block__media absolute inset-0 h-full w-full object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:ease-out motion-safe:group-hover/card:scale-[1.08] motion-safe:group-focus-within/card:scale-[1.08] motion-reduce:group-hover/card:scale-100 motion-reduce:group-focus-within/card:scale-100"
-                          data-three-card-video
-                          data-gsap-autoplay="off"
-                          muted
-                          playsinline
-                          loop
-                          preload="auto">
-                          <source src="{{ esc_url($videoUrl) }}" type="{{ esc_attr($mime) }}" />
-                        </video>
-                      </span>
-                    @elseif($imageUrl !== '')
-                      <span class="relative z-0 block h-full min-h-0 w-full">
-                        {!! Image::render($image, [
-                            'class' => 'three-card-block__media absolute inset-0 h-full w-full object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:ease-out motion-safe:group-hover/card:scale-[1.08] motion-safe:group-focus-within/card:scale-[1.08] motion-reduce:group-hover/card:scale-100 motion-reduce:group-focus-within/card:scale-100',
-                            'alt' => $alt,
-                            'width' => 800,
-                            'height' => 1200,
-                        ]) !!}
-                      </span>
-                    @else
-                      <span class="block h-full w-full bg-gradient-to-br from-dustleaf/40 via-deep-moss/25 to-faded-olive/35"></span>
-                    @endif
+          @if($useMobileSplide)
+            {{-- Mobile: single-card Splide (Figma tabbed blog strip). --}}
+            <div
+              class="three-card-block__splide splide sm:hidden"
+              data-three-card-splide
+              role="region"
+              aria-label="{{ esc_attr__('Featured stories', 'culvers') }}">
+              <div class="splide__track overflow-visible">
+                <ul class="splide__list">
+                  @foreach($cards as $card)
+                    <li class="splide__slide">
+                      @include('partials.three-card-block-card', [
+                        'card' => $card,
+                        'cardAspectClass' => 'aspect-[2/3]',
+                        'isManualMode' => false,
+                        'showMobileArrow' => true,
+                      ])
+                    </li>
+                  @endforeach
+                </ul>
+              </div>
+            </div>
 
-                    {{-- Figma uses a single ~25% black scrim, not a 3-stop gradient. --}}
-                    <span
-                      class="pointer-events-none absolute inset-0 z-10 bg-black/25"></span>
-                  </span>
-
-                  {{-- Sheet feedback row 11: hover state. Title turns Glowleaf and an "Explore"
-                       pill button reveals below it (motion-safe only). Stack lives in a flex column
-                       so the centred resting title and the post-hover button form one centred block.
-                       Manual mode adds a `max-sm:`-scoped landscape reflow + inline glowleaf arrow
-                       (Figma 51:8214/8220/8226) — desktop is untouched. --}}
-                  <span
-                    class="relative z-10 flex w-full flex-1 flex-col items-center justify-center gap-5 px-6 py-10 text-center {{ $isManualMode ? 'max-sm:flex-row max-sm:justify-between max-sm:gap-4 max-sm:px-7 max-sm:py-6 max-sm:text-left' : '' }}">
-                    <span
-                      class="font-heading text-[36px] leading-[1.1] text-white transition-colors duration-300 ease-out motion-safe:group-hover/card:text-glowleaf motion-safe:group-focus-within/card:text-glowleaf md:text-[46px] md:leading-none">
-                      {{ esc_html($title) }}
-                    </span>
-                    @if($isManualMode)
-                      {{-- Inline glowleaf arrow — `hidden` by default so desktop is untouched even
-                           with a stale CSS cache, only shown below 640 px via `max-sm:inline-flex`.
-                           Figma 51:8217 etc. (43 × 43 pill on mobile manual cards). --}}
-                      <span
-                        aria-hidden="true"
-                        class="hidden size-[43px] shrink-0 items-center justify-center rounded-full bg-glowleaf text-deep-moss transition-transform duration-300 ease-out motion-safe:group-hover/card:scale-[1.06] motion-safe:group-focus-within/card:scale-[1.06] max-sm:inline-flex">
-                        <svg class="size-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                      </span>
-                    @endif
-                    <span
-                      aria-hidden="true"
-                      class="inline-flex items-center justify-center rounded-full border border-glowleaf bg-transparent px-7 py-2 font-label text-[13px] font-semibold uppercase leading-[28px] tracking-[0.05em] text-glowleaf opacity-0 transition-opacity duration-300 ease-out motion-safe:group-hover/card:opacity-100 motion-safe:group-focus-within/card:opacity-100 motion-reduce:hidden {{ $isManualMode ? 'max-sm:hidden' : '' }}">
-                      {{ __('Explore', 'culvers') }}
-                    </span>
-                  </span>
-                </a>
-              @endif
-            @endforeach
-          </div>
+            {{-- Tablet/desktop: static grid (hidden below sm while Splide handles mobile). --}}
+            <div
+              class="three-card-block__grid three-card-block__grid--desktop mx-auto hidden w-full max-w-7xl grid-cols-2 gap-4 sm:grid lg:grid-cols-3">
+              @foreach($cards as $card)
+                @include('partials.three-card-block-card', [
+                  'card' => $card,
+                  'cardAspectClass' => 'aspect-[2/3]',
+                  'isManualMode' => false,
+                  'showMobileArrow' => false,
+                ])
+              @endforeach
+            </div>
+          @else
+            <div
+              class="three-card-block__grid mx-auto grid w-full max-w-7xl grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              @foreach($cards as $card)
+                @php
+                  $cardAspectClass = $isManualMode
+                      ? 'aspect-[2/3] max-sm:aspect-[173/100]'
+                      : 'aspect-[2/3]';
+                @endphp
+                @include('partials.three-card-block-card', [
+                  'card' => $card,
+                  'cardAspectClass' => $cardAspectClass,
+                  'isManualMode' => $isManualMode,
+                  'showMobileArrow' => $isManualMode,
+                ])
+              @endforeach
+            </div>
+          @endif
         @endif
       </div>
     @endforeach

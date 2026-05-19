@@ -23,7 +23,7 @@
   /* Fixed legal row — always these four pages in this order (menu location is unused here
      so editors cannot ship wrong labels/URLs to production). */
   $footerLegalListClass =
-      'footer-nav__list footer-nav__list--legal flex flex-wrap items-center justify-center gap-x-[18px] gap-y-2 whitespace-normal font-label text-[10px] font-normal uppercase leading-[1.3] tracking-[0.05em] text-lighter-cream [&>li]:flex [&>li]:shrink-0 [&>li]:items-center [&>li>a]:inline-flex [&>li>a]:min-h-[2rem] [&>li>a]:items-center [&>li>a]:px-0.5 [&>li>a]:py-1';
+      'footer-nav__list footer-nav__list--legal flex flex-wrap items-center justify-center gap-x-[18px] gap-y-2 whitespace-normal font-label text-xs font-normal uppercase leading-[1.3] tracking-wider text-lighter-cream [&>li]:flex [&>li]:shrink-0 [&>li]:items-center [&>li>a]:inline-flex [&>li>a]:min-h-[2rem] [&>li>a]:items-center [&>li>a]:px-0.5 [&>li>a]:py-1';
 
   $societyLogoAbs = get_template_directory() . '/resources/images/footer/society-studios-wordmark.svg';
   $societyLogoSvg = '';
@@ -110,7 +110,7 @@
               <div class="w-full max-w-[26rem] text-center md:mx-0">
                 <h2
                   id="footer-newsletter-heading"
-                  class="w-full text-center font-heading text-[1.75rem] font-normal leading-[1.1] text-white md:text-[2.5rem]">
+                  class="w-full text-center font-heading text-3xl font-normal leading-[1.1] text-white md:text-4xl">
                   <span class="block text-glowleaf">{{ __('Get the latest news,', 'culvers') }}</span>
                   <span class="block"><span class="text-glowleaf">{{ __('offers & events', 'culvers') }}</span> <span class="text-white">{{ __('delivered', 'culvers') }}</span></span>
                   <span class="block text-white">{{ __('directly to your inbox', 'culvers') }}</span>
@@ -137,7 +137,7 @@
                     type="email"
                     autocomplete="email"
                     placeholder="{{ esc_attr(FooterCustomizer::newsletterPlaceholder()) }}"
-                    class="min-w-0 flex-1 border-0 bg-transparent font-label text-[13px] font-normal leading-[31px] tracking-normal text-white placeholder:font-semibold placeholder:uppercase placeholder:tracking-[0.05em] placeholder:text-white placeholder:opacity-100 focus:ring-0 focus:outline-none" />
+                    class="min-w-0 flex-1 border-0 bg-transparent font-label text-xs font-normal leading-8 tracking-widest text-white placeholder:font-semibold placeholder:uppercase placeholder:tracking-widest placeholder:text-white placeholder:opacity-100 focus:ring-0 focus:outline-none" />
                   <button
                     type="submit"
                     class="inline-flex shrink-0 cursor-pointer items-center justify-center rounded-full py-2 pl-0.5 pr-1 text-lighter-cream transition-colors hover:bg-white/10 culvers-focus-ring"
@@ -161,7 +161,7 @@
       {{-- Column menus (What’s Here / Useful Links + address blocks). Tight 16-unit padding-top
            on lg — overlaps beneath the newsletter are handled by `.footer-newsletter-band` + spacer
            in `layouts/app.blade.php` (centred straddle), not extra padding here. --}}
-      <div class="relative z-10 grid grid-cols-1 gap-12 pt-20 sm:grid-cols-2 sm:pt-24 lg:grid-cols-4 lg:gap-10 lg:pt-16 xl:gap-14">
+      <div class="relative z-10 grid grid-cols-1 gap-12 pt-20 sm:pt-24 lg:grid-cols-4 lg:gap-10 lg:pt-16 xl:gap-14">
         <div class="flex flex-col">
           <h2 class="font-heading text-3xl text-lighter-cream">
             {{ esc_html(FooterCustomizer::gettingHereTitle()) }}
@@ -243,92 +243,165 @@
           @endif
         </div>
 
-        <div class="contents lg:contents" x-data="footerMenuAccordion()">
-          <div class="flex flex-col border-b border-light-cream/25 pb-8 lg:border-0 lg:pb-0">
-            <h2 class="hidden font-heading text-3xl text-lighter-cream lg:block">
-              {{ esc_html(FooterCustomizer::columnOneTitle()) }}
-            </h2>
-            <button
-              type="button"
-              class="flex w-full items-start justify-between gap-4 border-0 bg-transparent p-0 text-left lg:hidden culvers-focus-ring"
-              x-bind:aria-expanded="isDesktop || openWhatsHere ? 'true' : 'false'"
-              aria-controls="footer-nav-whats-here"
-              id="footer-acc-whats-here-trigger"
-              x-on:click="toggleWhatsHere()">
-              <span class="font-heading text-3xl leading-snug text-lighter-cream">
+        <div class="hidden flex-col lg:flex">
+          <h2 class="font-heading text-3xl text-lighter-cream">
+            {{ esc_html(FooterCustomizer::columnOneTitle()) }}
+          </h2>
+          @if($hasFooterMenuWhatsHere)
+            <nav
+              class="footer-nav footer-nav--col mt-6"
+              aria-label="{{ esc_attr(FooterCustomizer::columnOneTitle()) }}">
+              {!! wp_nav_menu([
+                  'theme_location' => 'footer_column_one',
+                  'container' => false,
+                  'menu_class' => 'footer-nav__list flex flex-col gap-3',
+                  'fallback_cb' => false,
+                  'depth' => 1,
+                  'echo' => false,
+              ]) !!}
+            </nav>
+          @elseif(current_user_can('edit_theme_options'))
+            <p class="mt-6 font-sans text-base text-light-cream/55">
+              {{ __('Assign a menu to Appearance → Menus → “Footer column 3 — What’s Here”.', 'culvers') }}
+            </p>
+          @endif
+        </div>
+
+        <div class="hidden flex-col lg:flex">
+          <h2 class="font-heading text-3xl text-lighter-cream">
+            {{ esc_html(FooterCustomizer::columnTwoTitle()) }}
+          </h2>
+          @if($hasFooterMenuUsefulLinks)
+            <nav
+              class="footer-nav footer-nav--col mt-6"
+              aria-label="{{ esc_attr(FooterCustomizer::columnTwoTitle()) }}">
+              {!! wp_nav_menu([
+                  'theme_location' => 'footer_column_two',
+                  'container' => false,
+                  'menu_class' => 'footer-nav__list flex flex-col gap-3',
+                  'fallback_cb' => false,
+                  'depth' => 1,
+                  'echo' => false,
+              ]) !!}
+            </nav>
+          @elseif(current_user_can('edit_theme_options'))
+            <p class="mt-6 font-sans text-base text-light-cream/55">
+              {{ __('Assign a menu to Appearance → Menus → “Footer column 4 — Useful Links”.', 'culvers') }}
+            </p>
+          @endif
+        </div>
+      </div>
+
+      {{-- Mobile: accordions → legal → wordmark (Figma Footer — Mobile/Default `2:1023`). --}}
+      <div class="relative z-10 mt-10 flex flex-col gap-10 lg:hidden" x-data="footerMenuAccordion()">
+        <div class="flex flex-col">
+          <button
+            type="button"
+            class="flex w-full flex-col gap-0 border-0 bg-transparent p-0 text-left culvers-focus-ring"
+            x-bind:aria-expanded="openWhatsHere ? 'true' : 'false'"
+            aria-controls="footer-nav-whats-here-mobile"
+            id="footer-acc-whats-here-trigger"
+            x-on:click="toggleWhatsHere()">
+            <span class="flex w-full items-start justify-between gap-4">
+              <span class="font-heading text-3xl leading-[1.1] text-lighter-cream">
                 {{ esc_html(FooterCustomizer::columnOneTitle()) }}
               </span>
-              <span class="mt-0.5 inline-flex min-w-[1.75rem] shrink-0 select-none justify-end font-heading text-4xl font-light leading-none tracking-normal text-lighter-cream lg:hidden" x-text="openWhatsHere ? '\u2212' : '+'" aria-hidden="true"></span>
-            </button>
-            @if($hasFooterMenuWhatsHere)
-              <nav
-                id="footer-nav-whats-here"
-                class="footer-nav footer-nav--col mt-6 hidden lg:block"
-                aria-label="{{ esc_attr(FooterCustomizer::columnOneTitle()) }}"
-                x-bind:class="{ '!block': openWhatsHere && !isDesktop }">
-                {!! wp_nav_menu([
-                    'theme_location' => 'footer_column_one',
-                    'container' => false,
-                    'menu_class' => 'footer-nav__list flex flex-col gap-3',
-                    'fallback_cb' => false,
-                    'depth' => 1,
-                    'echo' => false,
-                ]) !!}
-              </nav>
-            @elseif(current_user_can('edit_theme_options'))
-              <p
-                class="mt-6 hidden font-sans text-base text-light-cream/55 lg:block"
-                x-bind:class="{ '!block': openWhatsHere && !isDesktop }">
-                {{ __('Assign a menu to Appearance → Menus → “Footer column 3 — What’s Here”.', 'culvers') }}
-              </p>
-            @endif
-          </div>
+              <span
+                class="mt-0.5 inline-flex min-w-[1.75rem] shrink-0 select-none justify-end font-heading text-4xl font-light leading-none text-lighter-cream"
+                x-text="openWhatsHere ? '\u2212' : '+'"
+                aria-hidden="true"></span>
+            </span>
+            <span class="mt-5 block w-full border-b border-glowleaf" aria-hidden="true"></span>
+          </button>
+          @if($hasFooterMenuWhatsHere)
+            <nav
+              id="footer-nav-whats-here-mobile"
+              class="footer-nav footer-nav--col mt-6 hidden"
+              aria-label="{{ esc_attr(FooterCustomizer::columnOneTitle()) }}"
+              x-bind:class="{ '!block': openWhatsHere }">
+              {!! wp_nav_menu([
+                  'theme_location' => 'footer_column_one',
+                  'container' => false,
+                  'menu_class' => 'footer-nav__list flex flex-col gap-3',
+                  'fallback_cb' => false,
+                  'depth' => 1,
+                  'echo' => false,
+              ]) !!}
+            </nav>
+          @elseif(current_user_can('edit_theme_options'))
+            <p class="mt-6 hidden font-sans text-base text-light-cream/55" x-bind:class="{ '!block': openWhatsHere }">
+              {{ __('Assign a menu to Appearance → Menus → “Footer column 3 — What’s Here”.', 'culvers') }}
+            </p>
+          @endif
+        </div>
 
-          <div class="flex flex-col border-b border-light-cream/25 pb-8 lg:border-0 lg:pb-0">
-            <h2 class="hidden font-heading text-3xl text-lighter-cream lg:block">
-              {{ esc_html(FooterCustomizer::columnTwoTitle()) }}
-            </h2>
-            <button
-              type="button"
-              class="flex w-full items-start justify-between gap-4 border-0 bg-transparent p-0 text-left lg:hidden culvers-focus-ring"
-              x-bind:aria-expanded="isDesktop || openUsefulLinks ? 'true' : 'false'"
-              aria-controls="footer-nav-useful-links"
-              id="footer-acc-useful-links-trigger"
-              x-on:click="toggleUsefulLinks()">
-              <span class="font-heading text-3xl leading-snug text-lighter-cream">
+        <div class="flex flex-col">
+          <button
+            type="button"
+            class="flex w-full flex-col gap-0 border-0 bg-transparent p-0 text-left culvers-focus-ring"
+            x-bind:aria-expanded="openUsefulLinks ? 'true' : 'false'"
+            aria-controls="footer-nav-useful-links-mobile"
+            id="footer-acc-useful-links-trigger"
+            x-on:click="toggleUsefulLinks()">
+            <span class="flex w-full items-start justify-between gap-4">
+              <span class="font-heading text-3xl leading-[1.1] text-lighter-cream">
                 {{ esc_html(FooterCustomizer::columnTwoTitle()) }}
               </span>
-              <span class="mt-0.5 inline-flex min-w-[1.75rem] shrink-0 select-none justify-end font-heading text-4xl font-light leading-none tracking-normal text-lighter-cream lg:hidden" x-text="openUsefulLinks ? '\u2212' : '+'" aria-hidden="true"></span>
-            </button>
-            @if($hasFooterMenuUsefulLinks)
-              <nav
-                id="footer-nav-useful-links"
-                class="footer-nav footer-nav--col mt-6 hidden lg:block"
-                aria-label="{{ esc_attr(FooterCustomizer::columnTwoTitle()) }}"
-                x-bind:class="{ '!block': openUsefulLinks && !isDesktop }">
-                {!! wp_nav_menu([
-                    'theme_location' => 'footer_column_two',
-                    'container' => false,
-                    'menu_class' => 'footer-nav__list flex flex-col gap-3',
-                    'fallback_cb' => false,
-                    'depth' => 1,
-                    'echo' => false,
-                ]) !!}
-              </nav>
-            @elseif(current_user_can('edit_theme_options'))
-              <p
-                class="mt-6 hidden font-sans text-base text-light-cream/55 lg:block"
-                x-bind:class="{ '!block': openUsefulLinks && !isDesktop }">
-                {{ __('Assign a menu to Appearance → Menus → “Footer column 4 — Useful Links”.', 'culvers') }}
-              </p>
-            @endif
+              <span
+                class="mt-0.5 inline-flex min-w-[1.75rem] shrink-0 select-none justify-end font-heading text-4xl font-light leading-none text-lighter-cream"
+                x-text="openUsefulLinks ? '\u2212' : '+'"
+                aria-hidden="true"></span>
+            </span>
+            <span class="mt-5 block w-full border-b border-glowleaf" aria-hidden="true"></span>
+          </button>
+          @if($hasFooterMenuUsefulLinks)
+            <nav
+              id="footer-nav-useful-links-mobile"
+              class="footer-nav footer-nav--col mt-6 hidden"
+              aria-label="{{ esc_attr(FooterCustomizer::columnTwoTitle()) }}"
+              x-bind:class="{ '!block': openUsefulLinks }">
+              {!! wp_nav_menu([
+                  'theme_location' => 'footer_column_two',
+                  'container' => false,
+                  'menu_class' => 'footer-nav__list flex flex-col gap-3',
+                  'fallback_cb' => false,
+                  'depth' => 1,
+                  'echo' => false,
+              ]) !!}
+            </nav>
+          @elseif(current_user_can('edit_theme_options'))
+            <p class="mt-6 hidden font-sans text-base text-light-cream/55" x-bind:class="{ '!block': openUsefulLinks }">
+              {{ __('Assign a menu to Appearance → Menus → “Footer column 4 — Useful Links”.', 'culvers') }}
+            </p>
+          @endif
+        </div>
+
+        <div class="font-label text-xs font-normal uppercase leading-6 tracking-wide text-lighter-cream">
+          <ul class="flex list-none flex-wrap gap-x-[18px] gap-y-2 p-0">
+            <li class="list-none">
+              <a class="footer-nav__link--legal" href="{{ esc_url(home_url('/cookie-policy/')) }}">{{ __('Cookie Policy', 'culvers') }}</a>
+            </li>
+            <li class="list-none">
+              <a class="footer-nav__link--legal" href="{{ esc_url(home_url('/accessible-guide/')) }}">{{ __('Accessibility', 'culvers') }}</a>
+            </li>
+            <li class="list-none">
+              <a class="footer-nav__link--legal" href="{{ esc_url(home_url('/privacy-policy/')) }}">{{ __('Privacy Policy', 'culvers') }}</a>
+            </li>
+          </ul>
+          <div class="mt-6 flex flex-wrap items-center gap-x-[18px] gap-y-2">
+            <a class="footer-nav__link--legal" href="{{ esc_url(home_url('/terms-and-conditions/')) }}">{{ __('Terms & Conditions', 'culvers') }}</a>
+            <span>
+              &copy;
+              {{ esc_html(strtoupper((string) get_bloginfo('name'))) }}
+              {{ wp_date('Y') }}
+            </span>
           </div>
         </div>
       </div>
 
       {{-- Footer banner uses Figma footer wordmark file when present; otherwise Custom Logo or small inline mark (`partials.culver-square-logo`). --}}
       <div
-        class="relative z-10 mt-14 w-full overflow-hidden opacity-70 md:mt-16 lg:mt-20 [&_svg]:mx-auto [&_svg]:block [&_svg]:h-auto [&_svg]:w-full [&_svg]:max-h-[min(30vw,220px)] md:[&_svg]:max-h-[min(26vw,240px)] lg:[&_svg]:max-h-[min(22vw,280px)] [&_svg]:max-w-none [&_svg]:object-contain [&_svg]:text-glowleaf [&_img]:mx-auto [&_img]:block [&_img]:h-auto [&_img]:max-h-[min(30vw,220px)] [&_img]:w-full [&_img]:max-w-none md:[&_img]:max-h-[min(26vw,240px)] lg:[&_img]:max-h-[min(22vw,280px)] [&_img]:object-contain">
+        class="relative z-10 mt-10 w-full overflow-hidden opacity-70 md:mt-14 lg:mt-20 [&_svg]:mx-auto [&_svg]:block [&_svg]:h-auto [&_svg]:w-full [&_svg]:max-h-[min(30vw,220px)] md:[&_svg]:max-h-[min(26vw,240px)] lg:[&_svg]:max-h-[min(22vw,280px)] [&_svg]:max-w-none [&_svg]:object-contain [&_svg]:text-glowleaf [&_img]:mx-auto [&_img]:block [&_img]:h-auto [&_img]:max-h-[min(30vw,220px)] [&_img]:w-full [&_img]:max-w-none md:[&_img]:max-h-[min(26vw,240px)] lg:[&_img]:max-h-[min(22vw,280px)] [&_img]:object-contain">
         <a
           class="site-footer__logo flex w-full justify-center text-glowleaf"
           href="{{ esc_url(home_url('/')) }}"
@@ -365,15 +438,15 @@
       {{-- Avoid overflow-x-auto here: per CSS overflow rules it forces overflow-y away from visible and can clip row text in flex layouts. Stack on small screens instead of horizontal scroll. --}}
       <div class="footer-under-logo relative z-20 mt-10 w-full border-t border-glowleaf md:mt-12">
         <div
-          class="site-footer__legal-band grid w-full grid-cols-1 gap-y-4 py-6 text-center md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:items-center md:gap-x-6 md:gap-y-0 md:py-7">
+          class="site-footer__legal-band grid w-full grid-cols-1 gap-y-4 py-6 text-center max-lg:place-items-center md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:items-center md:gap-x-6 md:gap-y-0 md:py-7">
           <p
-            class="font-label text-[10px] font-normal uppercase leading-[1.3] tracking-[0.05em] text-lighter-cream md:justify-self-start md:text-left">
+            class="hidden font-label text-xs font-normal uppercase leading-[1.3] tracking-wider text-lighter-cream lg:block lg:justify-self-start lg:text-left">
             &copy;
             {{ esc_html(strtoupper((string) get_bloginfo('name'))) }}
             {{ wp_date('Y') }}
           </p>
 
-          <nav class="min-w-0 justify-self-center md:max-w-none" aria-label="{{ esc_attr__('Legal', 'culvers') }}">
+          <nav class="hidden min-w-0 justify-self-center md:max-w-none lg:block" aria-label="{{ esc_attr__('Legal', 'culvers') }}">
             <ul class="{{ esc_attr($footerLegalListClass) }} list-none">
               <li class="list-none">
                 <a class="footer-nav__link--legal" href="{{ esc_url(home_url('/cookie-policy/')) }}">{{ __('Cookie Policy', 'culvers') }}</a>
@@ -393,7 +466,7 @@
           @php $credit = FooterCustomizer::siteCredit(); @endphp
           @if($credit !== '')
             <p
-              class="font-label text-[10px] font-normal leading-[1.3] tracking-[0.05em] text-lighter-cream md:justify-self-end md:text-right">
+              class="font-label text-xs font-normal leading-[1.3] tracking-wider text-lighter-cream md:justify-self-end md:text-right">
               {{ esc_html($credit) }}
             </p>
           @elseif($societyLogoSvg !== '')
@@ -401,7 +474,7 @@
               class="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-left font-label md:justify-self-end md:justify-end">
               {{-- Figma `51:5146`: Off White label + Society Studios wordmark (Layer_1). --}}
               <span
-                class="text-[10px] font-normal uppercase leading-[1.3] tracking-[0.05em] text-[#ededeb]">
+                class="text-xs font-normal uppercase leading-[1.3] tracking-wider text-purelinen">
                 {{ __('Site by', 'culvers') }}
               </span>
               <span class="inline-flex shrink-0 items-center" aria-label="{{ esc_attr__('Society Studios', 'culvers') }}">

@@ -103,7 +103,7 @@
               </div>
             @endif
 
-            <p class="mt-[22px] font-heading text-[32px] leading-[1.1] text-faded-olive">
+            <p class="mt-[22px] font-heading text-3xl leading-[1.1] text-faded-olive">
               {{ esc_html($agent['name']) }}
             </p>
 

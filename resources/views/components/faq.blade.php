@@ -171,7 +171,7 @@
                 <div class="faq__panel-inner overflow-hidden">
                   <div
                     {{-- Figma `51:8027` desktop FAQ answer: Halyard Book 15 / lh 1.32 / Faded Olive. --}}
-                    class="faq__answer pb-6 pr-10 font-sans text-[15px] leading-[1.32] text-faded-olive [&_p+p]:mt-3 [&_strong]:font-medium [&_strong]:text-faded-olive [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6">
+                    class="faq__answer pb-6 pr-10 font-sans text-base leading-[1.32] text-faded-olive [&_p+p]:mt-3 [&_strong]:font-medium [&_strong]:text-faded-olive [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6">
                     {!! $item['answer_html'] !!}
                   </div>
                 </div>
