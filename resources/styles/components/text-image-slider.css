@@ -1,0 +1,23 @@
+/**
+ * Text-image slider — accordion dividers are mobile-only (Figma 51:9225).
+ * Desktop open state (51:8129) has no rules between headline rows.
+ *
+ * Do not rely on `lg:border-b-0` in Blade alone — Tailwind did not emit that
+ * utility in the production bundle, so desktop kept mobile borders.
+ */
+
+.text-image-slider__item {
+  border-bottom-width: 0;
+}
+
+@media (width < 64rem) {
+  .text-image-slider__item {
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: color-mix(in srgb, var(--color-deep-moss) 45%, transparent);
+  }
+
+  .text-image-slider__item:last-child {
+    border-bottom-width: 0;
+  }
+}

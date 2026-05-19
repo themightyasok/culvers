@@ -102,7 +102,7 @@
                   && trim((string) ($item['image_right']['url'] ?? '')) !== '';
           @endphp
           <li
-            class="text-image-slider__item relative w-full border-b border-deep-moss/45 last:border-b-0 lg:border-b-0"
+            class="text-image-slider__item relative w-full"
             data-tis-item="{{ $i }}">
             <button
               id="{{ esc_attr($labelId) }}"

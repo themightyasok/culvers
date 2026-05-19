@@ -17,6 +17,7 @@
 }
 
 @import './components/horizontal-scroller.css';
+@import './components/text-image-slider.css';
 @import './components/info-block.css';
 @import './components/directory-archive.css';
 @import './components/mega-nav.css';
