@@ -22,7 +22,6 @@ final class EatDrinkDirectorySeedData
      *     logo_url: string|null,
      *     logo_theme_file: string|null,
      *     featured_url: string|null,
-     *     category_slug: string,
      *     type_slug: string
      * }>
      */
@@ -35,8 +34,7 @@ final class EatDrinkDirectorySeedData
                 'logo_url' => null,
                 'logo_theme_file' => null,
                 'featured_url' => null,
-                'category_slug' => 'bakery',
-                'type_slug' => 'takeaway',
+                'type_slug' => 'grab-go',
             ],
             [
                 'title' => 'Toast Coffee',
@@ -44,8 +42,7 @@ final class EatDrinkDirectorySeedData
                 'logo_url' => null,
                 'logo_theme_file' => null,
                 'featured_url' => null,
-                'category_slug' => 'coffee-cake',
-                'type_slug' => 'cafe',
+                'type_slug' => 'cafes',
             ],
             [
                 'title' => 'Subway',
@@ -53,8 +50,7 @@ final class EatDrinkDirectorySeedData
                 'logo_url' => null,
                 'logo_theme_file' => 'subway-logo-hero.svg',
                 'featured_url' => null,
-                'category_slug' => 'burgers-grill',
-                'type_slug' => 'takeaway',
+                'type_slug' => 'grab-go',
             ],
             [
                 'title' => 'Juicy Bar Vitality',
@@ -62,8 +58,7 @@ final class EatDrinkDirectorySeedData
                 'logo_url' => null,
                 'logo_theme_file' => null,
                 'featured_url' => null,
-                'category_slug' => 'healthy',
-                'type_slug' => 'takeaway',
+                'type_slug' => 'healthy-options',
             ],
             [
                 'title' => "Godfrey's Creperie",
@@ -71,8 +66,7 @@ final class EatDrinkDirectorySeedData
                 'logo_url' => null,
                 'logo_theme_file' => null,
                 'featured_url' => null,
-                'category_slug' => 'sweet-treats',
-                'type_slug' => 'restaurant',
+                'type_slug' => 'restaurants',
             ],
         ];
     }

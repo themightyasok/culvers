@@ -26,12 +26,12 @@
     /* Filter group expects `list<['slug', 'name']>` so it can stay agnostic to
        whether options come from a taxonomy (Shop / Eat & Drink) or from
        aggregated post meta (Careers). One inline `array_map` per axis. */
-    $shop_category_options = array_map(
-        static fn (\WP_Term $term): array => ['slug' => (string) $term->slug, 'name' => (string) $term->name],
+    $shop_category_options = \App\Directory\DirectoryFilterOptions::fromFigmaOrder(
+        \App\Directory\DirectoryFilterDefinitions::shopCategories(),
         $shop_categories
     );
-    $shop_type_options = array_map(
-        static fn (\WP_Term $term): array => ['slug' => (string) $term->slug, 'name' => (string) $term->name],
+    $shop_type_options = \App\Directory\DirectoryFilterOptions::fromFigmaOrder(
+        \App\Directory\DirectoryFilterDefinitions::shopRetailerTypes(),
         $shop_types
     );
 

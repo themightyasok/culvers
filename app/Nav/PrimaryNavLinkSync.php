@@ -286,9 +286,9 @@ final class PrimaryNavLinkSync
             ],
             'Eat & Drink' => [
                 'Grab & Go' => $home('/eat-drink/?type=grab-go'),
-                'Restaurant' => $home('/eat-drink/?type=restaurant'),
+                'Restaurants' => $home('/eat-drink/?type=restaurants'),
                 'Healthy Options' => $home('/eat-drink/?type=healthy-options'),
-                'Cafe' => $home('/eat-drink/?type=cafe'),
+                'Cafés' => $home('/eat-drink/?type=cafes'),
             ],
             'Plan my visit' => [
                 // All four submenu items live as components on /plan-my-visit/.

@@ -594,9 +594,9 @@ final class CulverSquareFigmaPrimaryMenu
                 'panel_image' => self::IMG_EAT_DRINK,
                 'children' => [
                     ['slug' => 'grab-go', 'title' => __('Grab & Go', 'culvers'), 'preview' => self::IMG_EAT_DRINK],
-                    ['slug' => 'restaurant', 'title' => __('Restaurant', 'culvers'), 'preview' => self::IMG_EAT_DRINK],
+                    ['slug' => 'restaurants', 'title' => __('Restaurants', 'culvers'), 'preview' => self::IMG_EAT_DRINK],
                     ['slug' => 'healthy-options', 'title' => __('Healthy Options', 'culvers'), 'preview' => self::IMG_EAT_DRINK],
-                    ['slug' => 'cafe', 'title' => __('Cafe', 'culvers'), 'preview' => self::IMG_EAT_DRINK],
+                    ['slug' => 'cafes', 'title' => __('Cafés', 'culvers'), 'preview' => self::IMG_EAT_DRINK],
                 ],
             ],
             [

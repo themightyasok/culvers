@@ -261,8 +261,7 @@ $singleDefinitions = [
         'slug' => 'greggs',
         'title' => __('Greggs Bakery', 'culvers'),
         'taxonomies' => [
-            'culvers_eat_drink_category' => [__('Bakery', 'culvers')],
-            'culvers_eat_drink_type' => [__('Takeaway', 'culvers')],
+            'culvers_eat_drink_type' => [__('Grab & Go', 'culvers')],
         ],
         'meta' => [
             'eat_drink_hours_summary' => __('Open Today 9am – 5.30pm', 'culvers'),

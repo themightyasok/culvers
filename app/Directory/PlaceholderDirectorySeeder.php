@@ -211,33 +211,31 @@ final class PlaceholderDirectorySeeder
     // ---------------------------------------------------------------------
 
     /**
-     * @return list<array{title:string,slug:string,category:string,type:string,hours:string}>
+     * @return list<array{title:string,slug:string,type:string,hours:string}>
      */
     private static function eatDrinkRows(): array
     {
         return [
-            ['title' => 'Greggs Bakery', 'slug' => 'greggs', 'category' => 'bakery', 'type' => 'takeaway', 'hours' => EatDrinkDirectorySeedData::DEFAULT_HOURS_LINE],
-            ['title' => 'Toast Coffee', 'slug' => 'toast-coffee', 'category' => 'coffee-cake', 'type' => 'cafe', 'hours' => EatDrinkDirectorySeedData::DEFAULT_HOURS_LINE],
-            ['title' => 'Subway', 'slug' => 'subway', 'category' => 'burgers-grill', 'type' => 'takeaway', 'hours' => EatDrinkDirectorySeedData::DEFAULT_HOURS_LINE],
+            ['title' => 'Greggs Bakery', 'slug' => 'greggs', 'type' => 'grab-go', 'hours' => EatDrinkDirectorySeedData::DEFAULT_HOURS_LINE],
+            ['title' => 'Toast Coffee', 'slug' => 'toast-coffee', 'type' => 'cafes', 'hours' => EatDrinkDirectorySeedData::DEFAULT_HOURS_LINE],
+            ['title' => 'Subway', 'slug' => 'subway', 'type' => 'grab-go', 'hours' => EatDrinkDirectorySeedData::DEFAULT_HOURS_LINE],
             [
                 'title' => 'Juicy Bar Vitality',
                 'slug' => 'juicy-bar-vitality',
-                'category' => 'healthy',
-                'type' => 'takeaway',
+                'type' => 'healthy-options',
                 'hours' => EatDrinkDirectorySeedData::DEFAULT_HOURS_LINE,
             ],
             [
                 'title' => "Godfrey's Creperie",
                 'slug' => 'godfreys-creperie',
-                'category' => 'sweet-treats',
-                'type' => 'restaurant',
+                'type' => 'restaurants',
                 'hours' => EatDrinkDirectorySeedData::DEFAULT_HOURS_LINE,
             ],
         ];
     }
 
     /**
-     * @param array{title:string,slug:string,category:string,type:string,hours:string} $row
+     * @param array{title:string,slug:string,type:string,hours:string} $row
      * @param array{created:int,updated:int} $counter
      */
     private static function upsertEatDrink(array $row, array &$counter): void
@@ -257,8 +255,8 @@ final class PlaceholderDirectorySeeder
             set_post_thumbnail($postId, $photoId);
         }
 
-        self::setSingleTerm($postId, 'culvers_eat_drink_category', $row['category']);
         self::setSingleTerm($postId, 'culvers_eat_drink_type', $row['type']);
+        wp_set_object_terms($postId, [], 'culvers_eat_drink_category', false);
     }
 
     // ---------------------------------------------------------------------

@@ -33,14 +33,14 @@ final class EatDrinkDirectoryPopulate
         $trashed = 0;
 
         self::withDirectoryImportUploadFilters(static function () use (&$created, &$updated, &$trashed, $pruneOrphans): void {
-            EatDrinkTaxonomySeeder::maybeSeed();
+            EatDrinkTaxonomySeeder::syncNow();
 
             foreach (EatDrinkDirectorySeedData::venues() as $row) {
                 $postId = self::upsertVenuePost($row, $created, $updated);
                 if ($postId <= 0) {
                     continue;
                 }
-                self::assignTerms($postId, $row['category_slug'], $row['type_slug']);
+                self::assignTerms($postId, $row['type_slug']);
             }
 
             if ($pruneOrphans) {
@@ -82,7 +82,6 @@ final class EatDrinkDirectoryPopulate
      *     logo_url: string|null,
      *     logo_theme_file: string|null,
      *     featured_url: string|null,
-     *     category_slug: string,
      *     type_slug: string
      * } $row
      */
@@ -229,20 +228,14 @@ final class EatDrinkDirectoryPopulate
         }
     }
 
-    private static function assignTerms(int $postId, string $categorySlug, string $typeSlug): void
+    private static function assignTerms(int $postId, string $typeSlug): void
     {
-        $cat = get_term_by('slug', $categorySlug, 'culvers_eat_drink_category');
-        if ($cat instanceof \WP_Term) {
-            wp_set_object_terms($postId, [(int) $cat->term_id], 'culvers_eat_drink_category', false);
-        } else {
-            self::cliWarning(sprintf('Missing cuisine slug "%s".', $categorySlug));
-        }
-
         $type = get_term_by('slug', $typeSlug, 'culvers_eat_drink_type');
         if ($type instanceof \WP_Term) {
             wp_set_object_terms($postId, [(int) $type->term_id], 'culvers_eat_drink_type', false);
+            wp_set_object_terms($postId, [], 'culvers_eat_drink_category', false);
         } else {
-            self::cliWarning(sprintf('Missing venue type slug "%s".', $typeSlug));
+            self::cliWarning(sprintf('Missing Eat & Drink filter slug "%s".', $typeSlug));
         }
     }
 

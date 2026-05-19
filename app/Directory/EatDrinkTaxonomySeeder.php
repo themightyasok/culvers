@@ -5,14 +5,14 @@ declare(strict_types=1);
 namespace App\Directory;
 
 /**
- * Default cuisine categories / venue types for the Eat & Drink directory.
+ * Eat & Drink directory filters — Figma Food Directory sidebar (frame 51:7657).
  *
- * Seeded once on first init so the CMS isn't empty when an editor opens
- * Eat & Drink → Cuisine categories.
+ * Marketing filters (Grab & Go, Restaurants, …) live on {@see culvers_eat_drink_type}
+ * so mega-menu URLs (`/eat-drink/?type=grab-go`) and card `data-type-slugs` align.
  */
 final class EatDrinkTaxonomySeeder
 {
-    private const OPTION_KEY = 'culvers_eat_drink_terms_seeded';
+    private const OPTION_KEY = 'culvers_eat_drink_terms_seeded_v2';
 
     public static function maybeSeed(): void
     {
@@ -20,50 +20,37 @@ final class EatDrinkTaxonomySeeder
             return;
         }
 
-        foreach (self::cuisineNames() as $name) {
-            if ($name === '' || term_exists($name, 'culvers_eat_drink_category')) {
-                continue;
-            }
-            wp_insert_term($name, 'culvers_eat_drink_category');
-        }
-
-        foreach (self::venueTypeNames() as $name) {
-            if ($name === '' || term_exists($name, 'culvers_eat_drink_type')) {
-                continue;
-            }
-            wp_insert_term($name, 'culvers_eat_drink_type');
-        }
+        DirectoryFilterDefinitions::syncTaxonomyTerms(
+            'culvers_eat_drink_type',
+            DirectoryFilterDefinitions::eatDrinkCategoryPairs()
+        );
 
         update_option(self::OPTION_KEY, '1', true);
     }
 
-    /**
-     * @return list<string>
-     */
-    private static function cuisineNames(): array
+    /** Force re-sync after deploy (CLI / eval). */
+    public static function syncNow(): void
     {
-        return [
-            __('Coffee & Cake', 'culvers'),
-            __('Casual Dining', 'culvers'),
-            __('Italian', 'culvers'),
-            __('Asian', 'culvers'),
-            __('Burgers & Grill', 'culvers'),
-            __('Bakery', 'culvers'),
-            __('Healthy', 'culvers'),
-            __('Sweet Treats', 'culvers'),
-        ];
-    }
+        $pairs = DirectoryFilterDefinitions::eatDrinkCategoryPairs();
+        DirectoryFilterDefinitions::syncTaxonomyTerms('culvers_eat_drink_type', $pairs);
 
-    /**
-     * @return list<string>
-     */
-    private static function venueTypeNames(): array
-    {
-        return [
-            __('Restaurant', 'culvers'),
-            __('Café', 'culvers'),
-            __('Takeaway', 'culvers'),
-            __('Bar', 'culvers'),
-        ];
+        $allowed = array_fill_keys(array_keys($pairs), true);
+        $terms = get_terms([
+            'taxonomy' => 'culvers_eat_drink_type',
+            'hide_empty' => false,
+        ]);
+        if (is_array($terms)) {
+            foreach ($terms as $term) {
+                if (! $term instanceof \WP_Term || isset($allowed[$term->slug])) {
+                    continue;
+                }
+                if ((int) $term->count > 0) {
+                    continue;
+                }
+                wp_delete_term((int) $term->term_id, 'culvers_eat_drink_type');
+            }
+        }
+
+        update_option(self::OPTION_KEY, '1', true);
     }
 }

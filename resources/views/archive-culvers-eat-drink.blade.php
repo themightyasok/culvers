@@ -16,34 +16,24 @@
      */
     global $wp_query;
     $found_venues = isset($wp_query->found_posts) ? (int) $wp_query->found_posts : 0;
-    $eat_drink_categories = get_terms([
-        'taxonomy' => 'culvers_eat_drink_category',
-        'hide_empty' => false,
-        'orderby' => 'name',
-        'order' => 'ASC',
-    ]);
+    \App\Directory\EatDrinkTaxonomySeeder::syncNow();
+
     $eat_drink_types = get_terms([
         'taxonomy' => 'culvers_eat_drink_type',
         'hide_empty' => false,
         'orderby' => 'name',
         'order' => 'ASC',
     ]);
-    if ($eat_drink_categories instanceof \WP_Error) {
-        $eat_drink_categories = [];
-    }
     if ($eat_drink_types instanceof \WP_Error) {
         $eat_drink_types = [];
     }
 
-    /* Filter group expects `list<['slug', 'name']>`. */
-    $eat_drink_category_options = array_map(
-        static fn (\WP_Term $term): array => ['slug' => (string) $term->slug, 'name' => (string) $term->name],
-        $eat_drink_categories
-    );
-    $eat_drink_type_options = array_map(
-        static fn (\WP_Term $term): array => ['slug' => (string) $term->slug, 'name' => (string) $term->name],
+    /* Figma 51:7657 — one “Category” group (Grab & Go, Restaurants, …). */
+    $eat_drink_category_options = \App\Directory\DirectoryFilterOptions::fromFigmaOrder(
+        \App\Directory\DirectoryFilterDefinitions::eatDrinkCategories(),
         $eat_drink_types
     );
+    $eat_drink_type_options = [];
 
     $eatDrinkArchiveHero = \App\Directory\ArchiveHeroComponent::fromOptions(\App\Directory\EatDrinkArchiveFields::FIELD_PREFIX);
     /** @var array<string, mixed> $eatDrinkArchiveHero */
@@ -98,23 +88,13 @@
                 <h2 class="sr-only">{{ __('Eat & Drink filters', 'culvers') }}</h2>
 
                 @include('partials.directory-filter-group', [
-                    'label' => __('Cuisine', 'culvers'),
-                    'aria_label' => __('Cuisine', 'culvers'),
+                    'label' => __('Category', 'culvers'),
+                    'aria_label' => __('Category', 'culvers'),
                     'panel_id' => 'directory-category-panel-eat-drink',
-                    'state_var' => 'categorySlug',
-                    'toggle_var' => 'categoryOpen',
-                    'setter' => 'setCategory',
-                    'options' => $eat_drink_category_options,
-                ])
-
-                @include('partials.directory-filter-group', [
-                    'label' => __('Venue type', 'culvers'),
-                    'aria_label' => __('Venue type', 'culvers'),
-                    'panel_id' => 'directory-type-panel-eat-drink',
                     'state_var' => 'typeSlug',
-                    'toggle_var' => 'retailerOpen',
+                    'toggle_var' => 'categoryOpen',
                     'setter' => 'setType',
-                    'options' => $eat_drink_type_options,
+                    'options' => $eat_drink_category_options,
                 ])
               </aside>
             </div>

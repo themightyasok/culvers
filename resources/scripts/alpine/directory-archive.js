@@ -5,12 +5,13 @@
  */
 
 /** Mega-menu / seed URLs may use marketing slugs; cards carry taxonomy slugs in data attrs. */
+/** Legacy mega-menu / seed URLs that no longer match Figma filter slugs. */
 const FILTER_SLUG_ALIASES = {
-  'grab-go': 'takeaway',
-  'grab-and-go': 'takeaway',
-  cafes: 'cafe',
-  restaurants: 'restaurant',
-  'healthy-options': 'healthy',
+  'grab-and-go': 'grab-go',
+  restaurant: 'restaurants',
+  cafe: 'cafes',
+  takeaway: 'grab-go',
+  healthy: 'healthy-options',
 };
 
 /**
