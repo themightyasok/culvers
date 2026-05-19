@@ -161,6 +161,67 @@ final class Component
     }
 
     /**
+     * Image-hero H1 — Figma `51:9234` / `51:9493` mobile: Canela 46 / lh 1.1 (snaps to
+     * `text-5xl` = 48 px). Desktop ramp: `md:text-9xl`, `lg:text-[7.75rem]`.
+     */
+    public static function imageHeroTitleClasses(
+        string $toneClass = 'text-glowleaf',
+        string $extra = ''
+    ): string {
+        $base = 'font-heading text-5xl leading-[1.1] md:text-9xl md:leading-[1] lg:text-[7.75rem] lg:leading-none ' . $toneClass;
+
+        return trim($extra !== '' ? $base . ' ' . $extra : $base);
+    }
+
+    /**
+     * Image-hero subtitle — Figma `51:9236` / `51:9495`: Commuter SemiBold 16 / lh 24 /
+     * ~1 px tracking, uppercase on the hero band (all breakpoints in the mobile frames).
+     */
+    public static function imageHeroSubtitleClasses(string $extra = ''): string
+    {
+        $base = 'font-label text-base font-semibold uppercase leading-6 tracking-[0.0625em] text-white';
+
+        return trim($extra !== '' ? $base . ' ' . $extra : $base);
+    }
+
+    /**
+     * Hero-slider slide kicker — Figma `51:8206`: Commuter 16 / 24 / ~1 px tracking on mobile;
+     * desktop keeps the wider `text-xl` + `tracking-[0.2em]` ramp from the homepage hero.
+     */
+    public static function heroKickerClasses(string $extra = ''): string
+    {
+        $base = 'font-label text-base font-semibold uppercase leading-6 tracking-[0.0625em] text-white md:text-xl md:tracking-[0.2em]';
+
+        return trim($extra !== '' ? $base . ' ' . $extra : $base);
+    }
+
+    /**
+     * Sidebar / panel subheads that are Halyard on mobile but Canela from `sm` up.
+     *
+     * Figma `51:9546` / `51:8898`: Halyard Medium 20 / lh 24 (sentence case). Tablet+
+     * contact + shop panels revert to Canela 32 (`text-3xl`).
+     */
+    public static function mobilePanelSubheadClasses(
+        string $toneClass = 'text-faded-olive',
+        string $extra = ''
+    ): string {
+        $base = 'font-sans text-xl font-medium leading-6 sm:font-heading sm:text-3xl sm:font-normal sm:leading-[1.1] ' . $toneClass;
+
+        return trim($extra !== '' ? $base . ' ' . $extra : $base);
+    }
+
+    /**
+     * Centre-map category labels on mobile — Figma `51:8961`–`8976`: Halyard Book 20 / lh 24.
+     * Desktop accordion list keeps Commuter uppercase (`lg:` utilities on the element).
+     */
+    public static function centreMapCategoryMobileClasses(string $extra = ''): string
+    {
+        $base = 'max-lg:font-sans max-lg:text-xl max-lg:font-light max-lg:normal-case max-lg:leading-6 max-lg:tracking-normal';
+
+        return trim($extra !== '' ? $base . ' ' . $extra : $base);
+    }
+
+    /**
      * Standard structural classes shared by every component `<section>`.
      *
      * Returns the resolved `_grid_classes` (column span + responsive gutters,

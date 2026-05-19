@@ -122,3 +122,32 @@ The mega panel uses `max-w-[1348px]` and the page header uses `max-w-[1800px]` �
 Hairline rules in component CSS use `color-mix(in srgb, var(--color-*), …)` — no raw hex in stylesheets.
 
 When Figma updates, change **`theme.tokens.css`** first, then refresh this file.
+
+## Mobile frames — Figma → Tailwind (Developer Release)
+
+Canonical helpers live in **`App\Helpers\Component`** (`sectionHeadingClasses`, `imageHeroTitleClasses`, `imageHeroSubtitleClasses`, `heroKickerClasses`, `mobilePanelSubheadClasses`, `centreMapCategoryMobileClasses`). Prefer those over one-off class strings.
+
+| Figma frame | Page | Role | Figma mobile | Tailwind snap | Helper / pattern |
+|-------------|------|------|--------------|---------------|------------------|
+| `51:8196` | Homepage | Hero H1 | Canela 46 / 1.1 | `text-5xl` (48) | `hero-slider` title |
+| `51:8206` | Homepage | Hero kicker | Commuter 16 / 24 / 1 px | `text-base` + `tracking-[0.0625em]` | `heroKickerClasses()` |
+| `51:8211` | Homepage | Section H2 | Canela 46 / 1.1 | `text-5xl` | `sectionHeadingClasses()` |
+| `51:8212` | Homepage | Section intro | Halyard 14 / 20 | `text-sm leading-5` | `max-sm:` on three-card intro |
+| `51:8283` | Homepage | Info tile title | Canela 42 | `text-4xl` (40) | info-block `h3` |
+| `51:9234` | Subpage | Image-hero H1 | Canela 46 / 1.1 | `text-5xl` | `imageHeroTitleClasses()` |
+| `51:9236` | Subpage | Image-hero subtitle | Commuter 16 / 24 / 1 px | `text-base` + `tracking-[0.0625em]` | `imageHeroSubtitleClasses()` |
+| `51:8398` | Career | Job title | Canela 46 / 1.1 | `text-5xl` | career-detail title |
+| `51:8411` | Career | Meta label/value | Halyard 20 / 24 | `text-xl` | `font-sans` meta rows |
+| `51:8449` | Shops | Directory card title | Halyard Med 22 | `text-2xl` (+2 px snap) | directory-card |
+| `51:8857` | Shop single | Store column labels | Halyard Med 20 | `text-xl` | `mobilePanelSubheadClasses()` |
+| `51:8961` | Shop single | Map category row | Halyard 20 / 24 | `text-xl` | `centreMapCategoryMobileClasses()` |
+| `51:9035` | Travel calc | Card H2 | Canela 36 / 1.1 | `text-4xl` | travel-calculator heading |
+| `51:9036` | Travel calc | Intro | Halyard 16 / 1.32 | `text-base` + `leading-[1.32]` | travel-calculator intro |
+| `51:9221` | Travel calc | Result copy | Halyard 20 / 1.3 | `text-xl` | travel-calculator result |
+| `51:9225` | Guest services | Accordion label | Canela 32 | `text-3xl` | text-image-slider label |
+| `51:9484` | Contact | Panel subheads | Halyard 20 / 24 | `text-xl` | contact `font-sans!` panel headings |
+| `51:9546` | Contact | Form labels | Halyard Med 20 | `text-xl` | contact `max-sm:` on labels |
+
+**Section H2 default:** `text-5xl md:text-6xl` (48 → 58 px). Figma often specifies 46 px on mobile; +2 px is an accepted snap (see table above).
+
+**Display accents** (shop split glowleaf lines, opening-hours band title): `text-5xl lg:text-7xl` unless a frame calls for the smaller `text-4xl` mobile step.

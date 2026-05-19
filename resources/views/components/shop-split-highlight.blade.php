@@ -197,12 +197,12 @@
                   @if($tab['kicker'] !== '' || $tab['headline'] !== '')
                     <div class="flex flex-col gap-0">
                       @if($tab['kicker'] !== '')
-                        <p class="font-heading text-7xl text-brand-500">
+                        <p class="font-heading text-5xl leading-[1.1] text-brand-500 lg:text-7xl lg:leading-[1.2]">
                           {{ esc_html($tab['kicker']) }}
                         </p>
                       @endif
                       @if($tab['headline'] !== '')
-                        <p class="font-heading text-7xl text-brand-500 {{ $tab['kicker'] !== '' ? '-mt-1' : '' }}">
+                        <p class="font-heading text-5xl leading-[1.1] text-brand-500 lg:text-7xl lg:leading-[1.2] {{ $tab['kicker'] !== '' ? '-mt-1' : '' }}">
                           {{ esc_html($tab['headline']) }}
                         </p>
                       @endif
@@ -231,12 +231,12 @@
               @if($hasStaticSerifLines)
                 <div>
                   @if($kicker !== '')
-                    <p class="font-heading text-7xl leading-[1.2] text-brand-500">
+                    <p class="font-heading text-5xl leading-[1.1] text-brand-500 lg:text-7xl lg:leading-[1.2]">
                       {{ esc_html($kicker) }}
                     </p>
                   @endif
                   @if($headline !== '')
-                    <p class="font-heading text-7xl leading-[1.2] text-brand-500 {{ $kicker !== '' ? '-mt-1' : '' }}">
+                    <p class="font-heading text-5xl leading-[1.1] text-brand-500 lg:text-7xl lg:leading-[1.2] {{ $kicker !== '' ? '-mt-1' : '' }}">
                       {{ esc_html($headline) }}
                     </p>
                   @endif

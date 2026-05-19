@@ -131,22 +131,18 @@
           {{-- Desktop H1 (md:9xl, lg:7.75rem) kept exactly as shipped — mobile uses
                `max-sm:` overrides to land Figma's H1 Mobile token (Canela 48 / lh 1.1)
                without touching the tablet+ ramp above. --}}
-          <h1 class="image-hero__title mx-auto max-w-[min(100%,68rem)] text-balance break-words font-heading text-6xl leading-[1.05] md:text-9xl md:leading-[1] lg:text-[7.75rem] lg:leading-none max-sm:text-5xl max-sm:leading-[1.1] {{ $titleToneClass }}">
+          <h1 class="image-hero__title mx-auto max-w-[min(100%,68rem)] text-balance break-words {{ Component::imageHeroTitleClasses($titleToneClass) }}">
             {!! nl2br(e($titleSafe)) !!}
           </h1>
         @else
-          <h1 class="image-hero__title mx-auto max-w-[min(100%,68rem)] text-balance break-words font-heading text-6xl leading-[1.05] md:text-9xl md:leading-[1] lg:text-[7.75rem] lg:leading-none max-sm:text-5xl max-sm:leading-[1.1] {{ $titleToneClass }}">
+          <h1 class="image-hero__title mx-auto max-w-[min(100%,68rem)] text-balance break-words {{ Component::imageHeroTitleClasses($titleToneClass) }}">
             {{ esc_html(get_the_title()) }}
           </h1>
         @endif
 
         @if(! $titleInImage && ! empty($subParts))
           {{-- Sheet feedback row 21: page-hero secondary line should be Commuter Sans (Figma 51:9080 etc). --}}
-          {{-- Sheet feedback row 21: page-hero secondary line should be Commuter Sans (Figma 51:9080 etc).
-               Desktop ramp (text-base / md:text-lg / lg:text-xl, 0.2em tracking) is preserved exactly
-               as shipped — only `max-sm:` overrides to Figma 51:9236 / 51:9495 mobile spec (16 / lh 24 /
-               ~1 px tracking, sentence kerning) so the band stays untouched on tablet + desktop. --}}
-          <p class="image-hero__subtitle mt-6 max-w-2xl font-label text-base font-semibold uppercase leading-[1.4] tracking-[0.2em] text-white md:text-lg lg:text-xl max-sm:leading-6 max-sm:tracking-[0.0625em]">
+          <p class="image-hero__subtitle mt-6 max-w-2xl {{ Component::imageHeroSubtitleClasses() }}">
             @foreach($subParts as $i => $line)
               @if($i > 0)
                 <br />

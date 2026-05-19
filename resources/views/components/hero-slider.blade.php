@@ -139,10 +139,7 @@
                       @endif
 
                       @if($kicker !== '')
-                        {{-- Desktop kicker (text-xl + 0.2em tracking) preserved as shipped; `max-sm:`
-                             overrides drop it to Figma 51:8206 mobile spec (text-base + ~1 px tracking)
-                             so only viewports under 640 px change. --}}
-                        <p class="mt-5 font-label text-xl font-semibold uppercase leading-6 tracking-[0.2em] text-white max-sm:text-base max-sm:tracking-[0.0625em]">
+                        <p class="mt-5 {{ Component::heroKickerClasses() }}">
                           {{ esc_html($kicker) }}
                         </p>
                       @endif

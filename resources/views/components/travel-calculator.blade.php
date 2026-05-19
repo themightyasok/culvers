@@ -218,7 +218,7 @@
             </div>
           </div>
 
-          <div class="travel-calculator__submit md:justify-self-start">
+          <div class="travel-calculator__submit flex w-full justify-center md:w-auto md:justify-self-start">
             {{-- Hand-rolled button (not the partial) because the label swaps with Alpine
                  between idle / loading states. Class spine matches the partial — `btn
                  btn-dark btn-form` — so hover stays consistent with every other CTA.

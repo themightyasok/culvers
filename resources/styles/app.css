@@ -22,6 +22,7 @@
 @import './components/mega-nav.css';
 @import './components/centre-map.css';
 @import './components/three-card-block.css';
+@import './components/shop-related-shops.css';
 @layer base {
   /*
    * Anchor underline + focus defaults live in tailwind.config.js (`culversThemePlugin`).

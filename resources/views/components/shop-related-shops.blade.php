@@ -39,13 +39,15 @@
           break;
       }
   }
+
 @endphp
 
 @if($shops !== [])
   <section
     class="shop-related-shops {{ esc_attr($root) }} bg-lighter-cream py-12 text-deep-moss lg:py-16"
     data-component-root
-    data-shop-related-shops>
+    data-shop-related-shops
+    x-data="shopRelatedShops()">
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
       @if($heading !== '')
         {{-- Section H2: 64px desktop / 48px mobile (Component::sectionHeadingClasses). --}}
@@ -54,7 +56,24 @@
         </{{ $headingTag }}>
       @endif
 
-      <div class="shop-related-shops__grid mx-auto grid max-w-7xl grid-cols-1 gap-7 sm:grid-cols-2 lg:grid-cols-4">
+      <div
+        class="shop-related-shops__splide splide block sm:hidden"
+        x-ref="splideRoot"
+        data-splide-manual
+        role="region"
+        aria-label="{{ esc_attr($heading !== '' ? $heading : __('Related shops', 'culvers')) }}">
+        <div class="splide__track overflow-visible">
+          <ul class="splide__list">
+            @foreach($shops as $shopPost)
+              <li class="splide__slide">
+                @include('partials.directory-shop-card', ['directory_card_post_id' => (int) $shopPost->ID])
+              </li>
+            @endforeach
+          </ul>
+        </div>
+      </div>
+
+      <div class="shop-related-shops__grid mx-auto hidden max-w-7xl grid-cols-2 gap-7 sm:grid lg:grid-cols-4">
         @foreach($shops as $shopPost)
           @include('partials.directory-shop-card', ['directory_card_post_id' => (int) $shopPost->ID])
         @endforeach

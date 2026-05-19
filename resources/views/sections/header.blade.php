@@ -657,13 +657,13 @@
           class="flex h-full w-1/2 min-w-[50%] flex-col overflow-y-auto overscroll-contain px-4 pb-10 pt-6 sm:px-6"
           id="mega-mobile-panel-sub"
           :aria-hidden="mobileNavDepth === 0">
-          <div class="border-y border-faded-olive/15">
+          <div>
             <button
               type="button"
-              class="flex w-full items-center gap-2.5 py-4 text-left focus-visible:rounded-sm culvers-focus-ring-compact"
+              class="inline-flex items-center gap-2.5 rounded-full bg-light-green/60 py-1 ps-1 pe-4 text-left text-faded-olive focus-visible:rounded-full culvers-focus-ring-compact-faded-olive"
               x-on:click="resetMobileSubmenu()">
               <span
-                class="inline-flex size-[30px] shrink-0 items-center justify-center rounded-full border border-faded-olive/15 bg-lighter-cream text-faded-olive"
+                class="inline-flex size-[30px] shrink-0 items-center justify-center rounded-full bg-light-green text-faded-olive"
                 aria-hidden="true">
                 <svg class="size-4" viewBox="0 0 24 24" fill="none">
                   <path
@@ -674,7 +674,7 @@
                     stroke-linejoin="round" />
                 </svg>
               </span>
-              <span class="font-label text-sm font-semibold uppercase leading-6 tracking-widest text-faded-olive">{{ __('Back', 'culvers') }}</span>
+              <span class="font-label text-sm font-semibold uppercase leading-6 tracking-widest">{{ __('Back', 'culvers') }}</span>
             </button>
           </div>
 

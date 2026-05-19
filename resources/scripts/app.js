@@ -15,6 +15,7 @@ import registerTravelCalculatorAlpine from './alpine/travel-calculator.js';
 import registerTextImageSliderAlpine from './alpine/text-image-slider.js';
 import registerContactAlpine from './alpine/contact.js';
 import registerCentreMapAlpine from './alpine/centre-map.js';
+import registerShopRelatedShopsAlpine from './alpine/shop-related-shops.js';
 import gsapManager from './utils/gsap-manager.js';
 import backgroundParallaxManager from './utils/background-parallax-manager.js';
 import initSplideCarousels from './utils/splide-init.js';
@@ -32,6 +33,7 @@ registerTravelCalculatorAlpine(Alpine);
 registerTextImageSliderAlpine(Alpine);
 registerContactAlpine(Alpine);
 registerCentreMapAlpine(Alpine);
+registerShopRelatedShopsAlpine(Alpine);
 Alpine.start();
 
 gsapManager.init();

@@ -23,5 +23,18 @@ export default function registerCentreMapAlpine(Alpine) {
     activeCategoryLabel:
       typeof init.activeCategoryLabel === 'string' ? init.activeCategoryLabel : '',
     zoom: typeof init.zoom === 'number' && init.zoom >= 1 ? init.zoom : 1,
+
+    /** Figma mobile (51:8950): pill tabs switch groups; filters stay visible (no panel toggle). */
+    selectGroup(slug) {
+      this.openGroup = slug;
+    },
+
+    isGroupActive(slug) {
+      return this.openGroup === slug;
+    },
+
+    categoryInActiveGroup(groupSlug) {
+      return this.openGroup === groupSlug;
+    },
   }));
 }
