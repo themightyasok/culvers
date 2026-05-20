@@ -186,15 +186,19 @@ final class HomepageFlexibleSeedData
             'scroller_header_text' => sprintf('<p>%s</p>', esc_html__('Home to great brands', 'culvers')),
             'scroller_subheading_text' => '',
             'scroller_body_text' => sprintf(
-                '<p>%s</p>',
+                '<p>%s</p><p>%s</p>',
                 esc_html__(
-                    'We are the home to some of the biggest names in fashion, alongside a range of dining and entertainment options in Colchester.',
+                    'From iconic high-street labels to local independents,',
+                    'culvers'
+                ),
+                esc_html__(
+                    'Culver Square brings the best of Colchester together under one roof.',
                     'culvers'
                 )
             ),
             'scroller_button_text' => __('View all', 'culvers'),
             'scroller_button_link' => [
-                'url' => home_url('/shopping/'),
+                'url' => home_url('/shops/'),
                 'title' => '',
                 'target' => '',
             ],

@@ -143,7 +143,7 @@ final class HorizontalScrollerPreset
                 'scroller_item_spacing' => 80,
                 'scroller_button_variant' => 'primary',
                 'scroller_button_size' => 'md',
-                'scroller_button_show_arrow' => 1,
+                'scroller_button_show_arrow' => 0,
             ],
             default => [
                 'scroller_header_text_color' => 'text-white',
@@ -167,7 +167,7 @@ final class HorizontalScrollerPreset
                 'scroller_item_spacing' => 240,
                 'scroller_button_variant' => 'primary',
                 'scroller_button_size' => 'md',
-                'scroller_button_show_arrow' => 1,
+                'scroller_button_show_arrow' => 0,
             ],
         };
 

@@ -216,7 +216,7 @@
                   rel="noopener noreferrer">
                   @include('partials.figma-social-icon', [
                       'social_icon_variant' => 'instagram',
-                      'social_icon_class' => 'size-6 shrink-0 overflow-visible text-white',
+                      'social_icon_class' => 'size-6 shrink-0 overflow-visible text-current',
                   ])
                   {{ __('Instagram', 'culvers') }}
                 </a>
@@ -229,7 +229,7 @@
                   rel="noopener noreferrer">
                   @include('partials.figma-social-icon', [
                       'social_icon_variant' => 'facebook',
-                      'social_icon_class' => 'size-6 shrink-0 text-white',
+                      'social_icon_class' => 'size-6 shrink-0 text-current',
                   ])
                   {{ __('Facebook', 'culvers') }}
                 </a>
@@ -249,7 +249,7 @@
               {!! wp_nav_menu([
                   'theme_location' => 'footer_column_one',
                   'container' => false,
-                  'menu_class' => 'footer-nav__list flex flex-col gap-3',
+                  'menu_class' => 'footer-nav__list flex flex-col gap-2',
                   'fallback_cb' => false,
                   'depth' => 1,
                   'echo' => false,
@@ -273,7 +273,7 @@
               {!! wp_nav_menu([
                   'theme_location' => 'footer_column_two',
                   'container' => false,
-                  'menu_class' => 'footer-nav__list flex flex-col gap-3',
+                  'menu_class' => 'footer-nav__list flex flex-col gap-2',
                   'fallback_cb' => false,
                   'depth' => 1,
                   'echo' => false,
@@ -288,7 +288,7 @@
       </div>
 
       {{-- Mobile: accordions → legal → wordmark (Figma Footer — Mobile/Default `2:1023`). --}}
-      <div class="relative z-10 mt-10 flex flex-col gap-10 lg:hidden" x-data="footerMenuAccordion()">
+      <div class="relative z-10 mt-8 flex flex-col gap-8 lg:hidden" x-data="footerMenuAccordion()">
         <div class="flex flex-col">
           <button
             type="button"
@@ -311,20 +311,20 @@
           @if($hasFooterMenuWhatsHere)
             <nav
               id="footer-nav-whats-here-mobile"
-              class="footer-nav footer-nav--col mt-6 hidden"
+              class="footer-nav footer-nav--col mt-4 hidden"
               aria-label="{{ esc_attr(FooterCustomizer::columnOneTitle()) }}"
               x-bind:class="{ '!block': openWhatsHere }">
               {!! wp_nav_menu([
                   'theme_location' => 'footer_column_one',
                   'container' => false,
-                  'menu_class' => 'footer-nav__list flex flex-col gap-3',
+                  'menu_class' => 'footer-nav__list flex flex-col gap-2',
                   'fallback_cb' => false,
                   'depth' => 1,
                   'echo' => false,
               ]) !!}
             </nav>
           @elseif(current_user_can('edit_theme_options'))
-            <p class="mt-6 hidden font-sans text-base text-light-cream/55" x-bind:class="{ '!block': openWhatsHere }">
+            <p class="mt-4 hidden font-sans text-base text-light-cream/55" x-bind:class="{ '!block': openWhatsHere }">
               {{ __('Assign a menu to Appearance → Menus → “Footer column 3 — What’s Here”.', 'culvers') }}
             </p>
           @endif
@@ -352,20 +352,20 @@
           @if($hasFooterMenuUsefulLinks)
             <nav
               id="footer-nav-useful-links-mobile"
-              class="footer-nav footer-nav--col mt-6 hidden"
+              class="footer-nav footer-nav--col mt-4 hidden"
               aria-label="{{ esc_attr(FooterCustomizer::columnTwoTitle()) }}"
               x-bind:class="{ '!block': openUsefulLinks }">
               {!! wp_nav_menu([
                   'theme_location' => 'footer_column_two',
                   'container' => false,
-                  'menu_class' => 'footer-nav__list flex flex-col gap-3',
+                  'menu_class' => 'footer-nav__list flex flex-col gap-2',
                   'fallback_cb' => false,
                   'depth' => 1,
                   'echo' => false,
               ]) !!}
             </nav>
           @elseif(current_user_can('edit_theme_options'))
-            <p class="mt-6 hidden font-sans text-base text-light-cream/55" x-bind:class="{ '!block': openUsefulLinks }">
+            <p class="mt-4 hidden font-sans text-base text-light-cream/55" x-bind:class="{ '!block': openUsefulLinks }">
               {{ __('Assign a menu to Appearance → Menus → “Footer column 4 — Useful Links”.', 'culvers') }}
             </p>
           @endif

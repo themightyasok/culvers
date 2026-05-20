@@ -28,7 +28,7 @@
 
   $alignRaw = is_string($c['header_align'] ?? null) ? (string) $c['header_align'] : 'center';
   $isCenter = $alignRaw !== 'left';
-  $alignClass = $isCenter ? 'text-center mx-auto' : 'text-left';
+  $alignClass = $isCenter ? 'text-center mx-auto max-lg:px-4' : 'text-left max-lg:px-4';
 
   $maxRaw = is_string($c['header_max_width'] ?? null) ? (string) $c['header_max_width'] : 'narrow';
   $maxWidthClass = match ($maxRaw) {

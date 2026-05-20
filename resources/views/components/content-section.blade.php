@@ -21,10 +21,10 @@
   class="content-section {{ esc_attr($root) }} relative text-deep-moss"
   data-component-root
   data-content-section>
-  <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
+  <div class="{{ LayoutShell::INNER_MAX_GUTTERED }} max-lg:text-center">
   @if($heading !== '')
     {{-- Section H2: 64px desktop / 48px mobile (Component::sectionHeadingClasses). --}}
-    <{{ $headingTag }} class="content-section__heading {{ Component::sectionHeadingClasses('text-deep-moss', 'mb-4') }}">
+    <{{ $headingTag }} class="content-section__heading {{ Component::sectionHeadingClasses('text-deep-moss', 'mb-4 max-lg:mx-auto') }}">
       {{ esc_html($heading) }}
     </{{ $headingTag }}>
   @endif

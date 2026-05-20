@@ -84,7 +84,7 @@
                Prose plugin defaults force 18px so we render the body with explicit
                utilities — keeps prose for rich text elsewhere intact. --}}
           <div
-            class="three-card-block__intro mx-auto mt-6 max-w-[36.75rem] text-left font-sans text-xl font-light leading-[1.3] text-deep-moss md:text-center max-sm:text-sm max-sm:leading-5 [&_p+p]:mt-4 [&_strong]:font-medium rt-link-olive-surface">
+            class="three-card-block__intro mx-auto mt-6 max-w-[36.75rem] text-center font-sans text-xl font-light leading-[1.3] text-deep-moss max-sm:text-sm max-sm:leading-5 [&_p+p]:mt-4 [&_strong]:font-medium rt-link-olive-surface">
             {!! $body !!}
           </div>
         @endif

@@ -4,6 +4,7 @@
 
 {{-- Map directly under the mobile title (Figma 51:8952); filters follow (51:8960). --}}
 <div
+  x-ref="mapWrap"
   class="centre-map__map-wrap relative w-full overflow-hidden rounded-[10px] bg-deep-moss/60 max-lg:mx-auto max-lg:max-w-[398px] max-lg:aspect-[398/390] lg:max-w-none lg:rounded-2xl lg:aspect-auto"
   :class="panelOpen
     ? '{{ $panelPosition === 'right' ? 'lg:order-1' : 'lg:order-2' }}'
@@ -46,11 +47,20 @@
   @if($imageUrl !== '')
     <div
       class="centre-map__image-stage size-full origin-center transition-transform duration-200 ease-out will-change-transform"
-      :style="`transform: scale(${zoom});`">
+      :class="{
+        'centre-map__image-stage--pannable': zoom > 1,
+        'centre-map__image-stage--dragging': isDragging,
+      }"
+      :style="mapTransformStyle()"
+      @pointerdown="onMapPointerDown($event)"
+      @pointermove="onMapPointerMove($event)"
+      @pointerup="onMapPointerEnd($event)"
+      @pointercancel="onMapPointerEnd($event)">
       <img
         src="{{ esc_url($imageUrl) }}"
         alt="{{ esc_attr($imageAlt) }}"
-        class="block size-full object-contain max-lg:object-cover"
+        class="pointer-events-none block size-full select-none object-contain max-lg:object-cover"
+        draggable="false"
         loading="lazy"
         decoding="async" />
     </div>
@@ -63,7 +73,7 @@
           class="centre-map__zoom-button inline-flex size-[43px] items-center justify-center rounded-full bg-glowleaf text-deep-moss transition hover:bg-lighter-cream culvers-focus-ring-compact disabled:cursor-not-allowed disabled:opacity-40 lg:size-10 xl:size-11"
           aria-label="{{ esc_attr__('Zoom in', 'culvers') }}"
           :disabled="zoom >= 2.5"
-          @click="zoom = Math.min(2.5, Math.round((zoom + 0.25) * 100) / 100)">
+          @click="zoom = Math.min(2.5, Math.round((zoom + 0.25) * 100) / 100); $nextTick(() => clampPan())">
           <svg viewBox="0 0 16 16" class="size-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
             <path d="M8 1v14M1 8h14" />
           </svg>
@@ -73,7 +83,7 @@
           class="centre-map__zoom-button inline-flex size-[43px] items-center justify-center rounded-full bg-glowleaf text-deep-moss transition hover:bg-lighter-cream culvers-focus-ring-compact disabled:cursor-not-allowed disabled:opacity-40 lg:size-10 xl:size-11"
           aria-label="{{ esc_attr__('Zoom out', 'culvers') }}"
           :disabled="zoom <= 1"
-          @click="zoom = Math.max(1, Math.round((zoom - 0.25) * 100) / 100)">
+          @click="zoom = Math.max(1, Math.round((zoom - 0.25) * 100) / 100); $nextTick(() => clampPan())">
           <svg viewBox="0 0 16 16" class="size-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
             <path d="M1 8h14" />
           </svg>

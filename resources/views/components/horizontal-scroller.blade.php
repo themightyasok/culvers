@@ -60,7 +60,7 @@ $button_size = match($c['scroller_button_size'] ?? 'md') {
     'lg', 'md', 'sm' => $c['scroller_button_size'] ?? 'md',
     default => 'md',
 };
-$button_show_arrow = $c['scroller_button_show_arrow'] ?? true;
+$button_show_arrow = ! empty($c['scroller_button_show_arrow']);
 $body_text = $c['scroller_body_text'] ?? '';
 $body_text_color_raw = $c['scroller_body_text_color'] ?? '';
 $scroll_cards = is_array($c['scroller_items'] ?? null) ? $c['scroller_items'] : [];
@@ -86,8 +86,8 @@ $header_alignment_class = match($header_alignment) {
 };
 
 $header_text_align_class = match($header_text_alignment) {
-    'center' => 'text-center',
-    'right' => 'text-right',
+    'center' => 'text-center max-lg:mx-auto',
+    'right' => 'text-right max-lg:ml-auto',
     default => 'text-left'
 };
 

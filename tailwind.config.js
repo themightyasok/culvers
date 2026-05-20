@@ -90,7 +90,7 @@ const culversThemePlugin = plugin(({ addBase, addComponents }) => {
         {},
     },
     '.footer-nav__link-social': {
-      '@apply inline-flex items-center gap-2 font-label text-sm font-semibold uppercase tracking-widest text-light-cream/90 transition-colors hover:text-glowleaf':
+      '@apply inline-flex items-center gap-2 font-label text-sm font-semibold uppercase tracking-widest text-light-cream/90 transition-colors hover:text-glowleaf [&_svg]:text-glowleaf':
         {},
     },
   });

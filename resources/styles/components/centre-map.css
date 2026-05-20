@@ -60,3 +60,13 @@
   filter: brightness(0.78) saturate(0.85);
   transition: filter 0.25s ease-out;
 }
+
+.centre-map__image-stage--pannable {
+  cursor: grab;
+  touch-action: none;
+}
+
+.centre-map__image-stage--pannable.centre-map__image-stage--dragging {
+  cursor: grabbing;
+  transition: none;
+}

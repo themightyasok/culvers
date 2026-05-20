@@ -78,7 +78,7 @@ $hoursHeadingClass = $isShopSingle
       : 'mt-4 font-sans text-xl font-light leading-[1.3] text-deep-moss';
   $hoursIntroBodyBase = $isShopSingle
       ? 'opening-hours__body mt-6 max-w-none text-center font-sans text-xl font-light leading-[1.3] text-faded-olive [&_p+p]:mt-4 [&_strong]:font-medium rt-link-olive-surface'
-      : 'opening-hours__body mt-6 max-w-none text-left md:text-center font-sans [&_p]:text-xl [&_p]:font-light [&_p]:leading-[1.3] [&_p+p]:mt-4 [&_strong]:font-medium rt-link-prose';
+      : 'opening-hours__body mt-6 max-w-none text-center font-sans [&_p]:text-xl [&_p]:font-light [&_p]:leading-[1.3] [&_p+p]:mt-4 [&_strong]:font-medium rt-link-prose';
   $hoursListTopBorder = $isShopSingle ? 'border-faded-olive/45' : 'border-deep-moss/20';
   /** Rows: Book 300 + lh 1.3; “today” uses same px as peers — pill is a pseudo-element bleed. */
   $hoursRowShellShop = 'flex items-center justify-between gap-6 px-3 py-3.5 font-sans text-xl font-light leading-[1.3] text-faded-olive sm:px-2';
