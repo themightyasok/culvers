@@ -3,6 +3,21 @@
  * Unlayered so overrides beat @splidejs/splide/css defaults (see hero-slider note).
  */
 
+/*
+ * Category filter tabs (News / Events / Offers) — keep `.btn` paint but not the
+ * site-wide hover padding-widen; pills must not grow on mouseover.
+ */
+.three-card-block__tab.btn {
+  padding-inline: 1.5rem;
+  padding-block: 0.5rem;
+}
+
+@media (hover: hover) {
+  .three-card-block__tab.btn:hover {
+    padding-inline: 1.5rem;
+  }
+}
+
 .three-card-block__splide .splide__pagination {
   position: static;
   display: flex;

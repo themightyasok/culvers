@@ -184,12 +184,9 @@ final class CptSinglesFlexibleSeedData
     }
 
     /* -----------------------------------------------------------------
-     * Hotel Chocolat Valentine's offer event single (Figma 51:6386)
-     * Stack: image_hero (heart chocolate box) → event_meta (offer dates) →
-     *        section_header (A treat for every taste) →
-     *        shop_split_highlight (One gift, a thousand words, no tabs) →
-     *        section_header (Share with a friend) →
-     *        three_card_block (More Offers)
+     * Hotel Chocolat Valentine's offer single (Figma 51:6386)
+     * Stack: image_hero → section_header → shop_split_highlight →
+     *        social_share → three_card_block (latest events + View all)
      * --------------------------------------------------------------- */
 
     /**
@@ -197,8 +194,6 @@ final class CptSinglesFlexibleSeedData
      */
     public static function hotelChocolatOffer(): array
     {
-        $whatsOnUrl = function_exists('home_url') ? home_url('/whats-on/') : '/whats-on/';
-
         return [
             array_merge(self::base('image_hero'), [
                 'hero_image' => [
@@ -207,32 +202,18 @@ final class CptSinglesFlexibleSeedData
                 ],
                 'hero_image_mobile' => null,
                 'hero_logo' => null,
-                'hero_title_line' => __('Hotel Chocolat', 'culvers'),
+                'hero_title_line' => '',
                 'hero_title_tone' => 'white',
-                'hero_subtitle_line' => __('Valentine’s at Culver Square', 'culvers'),
-                'hero_overlay_opacity' => 25,
-                // Photo is product-only (no baked-in title) — render title via component.
+                'hero_subtitle_line' => '',
+                'hero_overlay_opacity' => 40,
                 'hero_title_in_image' => false,
-            ]),
-            array_merge(self::base('event_meta'), [
-                'event_meta_date_value' => __('1 May – 30 June 2026', 'culvers'),
-                'event_meta_time_value' => __('9:00 – 17:30', 'culvers'),
-                'event_meta_location_value' => __('Hotel Chocolat — lower level, Culver Square', 'culvers'),
-                'event_meta_accessibility_note' => __(
-                    'Step-free access throughout the store. Staff are happy to bring product samples '
-                    . 'to you if browsing the displays is difficult.',
-                    'culvers'
-                ),
-                'event_meta_cta_label' => __('Shop Hotel Chocolat', 'culvers'),
-                'event_meta_cta_url' => 'https://www.hotelchocolat.com',
             ]),
             array_merge(self::base('section_header'), [
                 'header_eyebrow' => '',
                 'header_heading' => __('A treat for every taste', 'culvers'),
                 'header_body' => __(
-                    'Indulge your loved one’s sweet tooth with chocolate Valentine’s favourites from '
-                    . 'Hotel Chocolat. From heart-shaped boxes to luxurious truffle collections, '
-                    . 'there’s a treat for every taste.',
+                    'Indulge your loved one’s sweet tooth with decadent Valentine’s chocolates from Hotel Chocolat. '
+                    . 'From heart-shaped boxes to luxurious truffle collections, there’s a treat for every taste.',
                     'culvers'
                 ),
                 'header_align' => 'center',
@@ -241,6 +222,7 @@ final class CptSinglesFlexibleSeedData
             array_merge(self::base('shop_split_highlight'), [
                 'split_ratio' => '50-50',
                 'split_use_tabs' => false,
+                'split_center_lists' => 1,
                 'split_image' => [
                     'url' => PagesFlexibleSeedData::seedAssetUrl(self::EVENT_OFFER_IMAGE_FILE),
                     'alt' => __('Open heart-shaped chocolate box with rose petals', 'culvers'),
@@ -249,8 +231,7 @@ final class CptSinglesFlexibleSeedData
                 'split_headline' => __('One gift, a thousand words', 'culvers'),
                 'split_body' => '<p>'
                     . esc_html__(
-                        'Show them what they mean to you with an imaginatively crafted gift. Special '
-                        . 'offers available in store.',
+                        'Show them what they mean to you with an imaginatively crafted gift. Special offers available in store.',
                         'culvers'
                     )
                     . '</p>'
@@ -258,62 +239,28 @@ final class CptSinglesFlexibleSeedData
                     . '<li>' . esc_html__('Gift packages available', 'culvers') . '</li>'
                     . '<li>' . esc_html__('Valentine’s Selection box', 'culvers') . '</li>'
                     . '<li>' . esc_html__('Chocolate hearts', 'culvers') . '</li>'
-                    . '<li>' . esc_html__('Buy one get one free on selected chocolates', 'culvers') . '</li>'
+                    . '<li>' . esc_html__('Buy one get one free on selected chocolates*', 'culvers') . '</li>'
                     . '</ul>'
-                    . '<p><strong>'
-                    . esc_html__('Offer valid between: 01.05.26 – 30.06.26', 'culvers')
-                    . '</strong></p>',
+                    . '<p class="font-label text-xs font-semibold uppercase tracking-widest text-glowleaf">'
+                    . esc_html__('Offer valid between: 01.02.26 - 30.06.26', 'culvers')
+                    . '</p>',
                 'split_cta_label' => '',
                 'split_cta_url' => '',
             ]),
-            array_merge(self::base('section_header'), [
-                'header_eyebrow' => '',
-                'header_heading' => __('Share with a friend', 'culvers'),
-                'header_body' => __(
-                    'Spread the love — share this offer on Instagram, Facebook or WhatsApp '
-                    . 'so a sweet-toothed friend doesn’t miss out.',
-                    'culvers'
-                ),
-                'header_align' => 'center',
-                'header_max_width' => 'medium',
+            array_merge(self::base('social_share'), [
+                'share_heading' => __('Share with a friend', 'culvers'),
             ]),
             array_merge(self::base('three_card_block'), [
-                'cards_source' => 'manual',
-                'cards_heading' => __('More Offers', 'culvers'),
+                'cards_source' => 'cpt',
+                'cards_cpt_post_type' => ['culvers_event'],
+                'cards_cpt_count' => 3,
+                'cards_heading' => __('More events', 'culvers'),
                 'cards_subheading' => '',
                 'cards_body' => sprintf(
                     '<p>%s</p>',
-                    esc_html__('See all of the brilliant offers happening at Culver Square.', 'culvers')
+                    esc_html__('See what else is happening at Culver Square.', 'culvers')
                 ),
-                'cards_items' => [
-                    [
-                        'card_title' => __('Valentine’s at Hotel Chocolat', 'culvers'),
-                        'card_url' => $whatsOnUrl,
-                        'card_media_type' => 'image',
-                        'card_image' => [
-                            'url' => PagesFlexibleSeedData::seedAssetUrl(self::EVENT_HERO_FILE),
-                            'alt' => __('Hotel Chocolat heart selection box', 'culvers'),
-                        ],
-                        'card_image_alt' => __('Hotel Chocolat heart selection box', 'culvers'),
-                        'card_video' => null,
-                    ],
-                    [
-                        'card_title' => __('Mother’s Day at Culver Square', 'culvers'),
-                        'card_url' => $whatsOnUrl,
-                        'card_media_type' => 'image',
-                        'card_image' => null,
-                        'card_image_alt' => '',
-                        'card_video' => null,
-                    ],
-                    [
-                        'card_title' => __('Raise a glass to dry January', 'culvers'),
-                        'card_url' => $whatsOnUrl,
-                        'card_media_type' => 'image',
-                        'card_image' => null,
-                        'card_image_alt' => '',
-                        'card_video' => null,
-                    ],
-                ],
+                'cards_view_all_label' => __('View all', 'culvers'),
             ]),
         ];
     }

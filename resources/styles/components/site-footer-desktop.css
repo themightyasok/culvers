@@ -1,0 +1,19 @@
+/*
+ * Desktop footer — social icon default/hover only (Figma 51:5147).
+ *
+ * ROLLBACK: delete this file + remove @import from app.css.
+ * Layout/spacing lives in footer.blade.php; newsletter band is not styled here.
+ */
+
+@layer components {
+  @media (width >= 1024px) {
+    .site-footer .footer-nav__link-social svg {
+      color: currentColor;
+    }
+
+    .site-footer .footer-nav__link-social:hover,
+    .site-footer .footer-nav__link-social:focus-visible {
+      color: var(--color-glowleaf);
+    }
+  }
+}

@@ -20,18 +20,6 @@ final class HomepageFlexibleSeedData
 
     private const FIGMA_VIDEO_POSTER = 'https://www.figma.com/api/mcp/asset/477b40bd-356a-45e4-a1ba-e7fc2049cbd7';
 
-    private const FIGMA_SCROLL_LOGO_1 = 'https://www.figma.com/api/mcp/asset/2e9aa2d9-812b-454e-a10a-5c4c9e96bdee';
-
-    private const FIGMA_SCROLL_LOGO_2 = 'https://www.figma.com/api/mcp/asset/02822726-b0f9-456d-9042-44dd97100251';
-
-    private const FIGMA_SCROLL_LOGO_3 = 'https://www.figma.com/api/mcp/asset/83fa5c88-3a16-4abe-8574-17eea9d8fa05';
-
-    private const FIGMA_SCROLL_LOGO_4 = 'https://www.figma.com/api/mcp/asset/7b8adf7b-c320-42fe-806d-7753616c4f38';
-
-    private const FIGMA_SCROLL_LOGO_5 = 'https://www.figma.com/api/mcp/asset/3db7345a-0a33-4931-a12a-b330530c9cf6';
-
-    private const FIGMA_SCROLL_LOGO_6 = 'https://www.figma.com/api/mcp/asset/8ba40165-250b-4f43-8f8a-d4a4cdbc4fb6';
-
     private const FIGMA_POST_EASTER = 'https://www.figma.com/api/mcp/asset/8732e173-c4a0-40a4-9132-a0e855137225';
 
     private const FIGMA_POST_SANTA = 'https://www.figma.com/api/mcp/asset/b2c711f4-f628-4baf-8d52-fe5c860c3f0f';
@@ -41,6 +29,11 @@ final class HomepageFlexibleSeedData
     private const FIGMA_HOURS_GRAPHIC_LEFT = 'https://www.figma.com/api/mcp/asset/0fdbac2d-b291-4f77-95db-c2389a0f98c5';
 
     private const FIGMA_HOURS_GRAPHIC_RIGHT = 'https://www.figma.com/api/mcp/asset/76420588-4f2c-4e56-a519-5532a0f303f4';
+
+    private static function brandLogoUrl(string $relative): string
+    {
+        return rtrim(get_template_directory_uri(), '/') . '/resources/images/' . ltrim($relative, '/');
+    }
 
     /**
      * Ordered layouts: hero → three video cards → scroller → video → info grid → three posts → hours.
@@ -161,12 +154,11 @@ final class HomepageFlexibleSeedData
     private static function horizontalScrollerRow(): array
     {
         $logos = [
-            ['alt' => __('Schuh', 'culvers'), 'url' => self::FIGMA_SCROLL_LOGO_1],
-            ['alt' => __('Accessorize London', 'culvers'), 'url' => self::FIGMA_SCROLL_LOGO_2],
-            ['alt' => __('H&M', 'culvers'), 'url' => self::FIGMA_SCROLL_LOGO_3],
-            ['alt' => __('Pandora', 'culvers'), 'url' => self::FIGMA_SCROLL_LOGO_4],
-            ['alt' => __('Brand', 'culvers'), 'url' => self::FIGMA_SCROLL_LOGO_5],
-            ['alt' => __('TK Maxx', 'culvers'), 'url' => self::FIGMA_SCROLL_LOGO_6],
+            ['alt' => __('Schuh', 'culvers'), 'file' => 'homepage-brands/schuh.svg'],
+            ['alt' => __('Accessorize London', 'culvers'), 'file' => 'homepage-brands/accessorize-london.svg'],
+            ['alt' => __('H&M', 'culvers'), 'file' => 'homepage-brands/hm.svg'],
+            ['alt' => __('Pandora', 'culvers'), 'file' => 'homepage-brands/pandora.svg'],
+            ['alt' => __('TK Maxx', 'culvers'), 'file' => 'homepage-brands/tk-maxx.svg'],
         ];
 
         $scrollCards = [];
@@ -176,7 +168,7 @@ final class HomepageFlexibleSeedData
                 'item_size' => 'medium',
                 'item_vertical_offset' => 'center',
                 'item_aspect_ratio' => 'landscape',
-                'item_image' => ['url' => $logo['url'], 'alt' => $logo['alt']],
+                'item_image' => ['url' => self::brandLogoUrl($logo['file']), 'alt' => $logo['alt']],
                 'item_image_alt' => $logo['alt'],
             ];
         }

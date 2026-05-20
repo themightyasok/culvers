@@ -1,0 +1,29 @@
+/*
+ * Footer — mobile / below-lg only (Figma 2:1023, 2:1105).
+ * Desktop band straddle and column layout stay in footer.blade.php `lg:` utilities.
+ */
+
+@media (width < 1024px) {
+  .site-footer__columns {
+    overflow-x: clip;
+  }
+
+  .footer-newsletter-band {
+    width: 100vw;
+    max-width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+  }
+
+  /* Mobile legal row: 12px type; copyright matches link labels (not larger inherited size). */
+  .site-footer__mobile-legal .footer-nav__link--legal {
+    font-size: 12px;
+    line-height: 24px;
+    letter-spacing: 0.5px;
+  }
+
+  /* Second legal row — tight stack under cookie/accessibility/privacy (was mt-6 + inherited gap). */
+  .site-footer__mobile-legal > div {
+    margin-top: 12px;
+  }
+}

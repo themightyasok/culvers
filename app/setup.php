@@ -173,7 +173,11 @@ add_filter(
             return $atts;
         }
 
-        $extra = $loc === 'footer_brand_subnav' ? 'footer-nav__link--legal' : 'footer-nav__link';
+        $extra = match ($loc) {
+            'footer_brand_subnav' => 'footer-nav__link--legal',
+            'footer_column_one', 'footer_column_two' => 'footer-nav__link-col',
+            default => 'footer-nav__link',
+        };
 
         $existingClass = isset($atts['class']) && is_string($atts['class']) ? $atts['class'] : '';
         $atts['class'] = $existingClass !== '' ? trim($existingClass . ' ' . $extra) : $extra;

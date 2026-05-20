@@ -1,0 +1,19 @@
+<svg width="1440" height="875" viewBox="0 0 1440 875" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_footer_bg_desktop)">
+<rect width="1440" height="875" fill="#4F5438"/>
+<g opacity="0.1">
+<mask id="mask0_footer_bg_desktop" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="1440" height="875">
+<rect width="1440" height="875" fill="#4F5438"/>
+</mask>
+<g mask="url(#mask0_footer_bg_desktop)">
+<rect x="1029.62" y="335.719" width="744.893" height="744.893" transform="rotate(-45 1029.62 335.719)" fill="#8B8C67"/>
+<rect x="-24" y="335.719" width="744.893" height="744.893" transform="rotate(-45 -24 335.719)" fill="#8B8C67"/>
+</g>
+</g>
+</g>
+<defs>
+<clipPath id="clip0_footer_bg_desktop">
+<rect width="1440" height="875" fill="white"/>
+</clipPath>
+</defs>
+</svg>

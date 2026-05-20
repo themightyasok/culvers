@@ -1,0 +1,29 @@
+/*
+ * Footer background — Figma SVG exports (2:1024+2:1025 mobile, 51:5147 desktop).
+ * Assets: resources/images/footer/footer-background-{mobile,desktop}.svg
+ */
+
+.site-footer__columns {
+  isolation: isolate;
+  background-color: var(--color-faded-olive);
+}
+
+.site-footer__pattern {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.site-footer__pattern picture,
+.site-footer__pattern img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.site-footer__pattern img {
+  object-fit: cover;
+  object-position: top center;
+}

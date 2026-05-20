@@ -3,7 +3,7 @@
   use App\Helpers\LayoutShell;
 
   /**
-   * Video block — contained 16:9 video with branded brand-500 frame. Hover uses a light
+   * Video block — contained video (742px stage at lg+) with branded brand-500 frame. Hover uses a light
    * scale on the framed stage (clipped) plus in-frame video zoom — capped a bit wider
    * than the site 8xl shell but well under the old 112rem full-bleed width.
    */
@@ -37,7 +37,7 @@
           role="region"
           aria-label="{{ esc_attr__('Video', 'culvers') }}">
         <div
-          class="relative aspect-video w-full min-h-[240px] overflow-hidden rounded-[1.15rem] sm:min-h-[320px] md:min-h-[400px] lg:min-h-[min(52vw,760px)] sm:rounded-[1.25rem]"
+          class="relative aspect-video w-full min-h-[240px] overflow-hidden rounded-[1.15rem] sm:min-h-[320px] md:min-h-[400px] lg:aspect-auto lg:h-[742px] sm:rounded-[1.25rem]"
           data-background-parallax-trigger>
           <div class="absolute inset-0 z-0 size-full" data-background-parallax-image="1">
             <video

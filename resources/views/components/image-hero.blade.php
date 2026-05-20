@@ -135,9 +135,8 @@
             {!! nl2br(e($titleSafe)) !!}
           </h1>
         @else
-          <h1 class="image-hero__title mx-auto max-w-[min(100%,68rem)] text-balance break-words {{ Component::imageHeroTitleClasses($titleToneClass) }}">
-            {{ esc_html(get_the_title()) }}
-          </h1>
+          {{-- Product-only heroes (e.g. Figma 51:6394) leave the title line blank. --}}
+          <h1 class="sr-only">{{ esc_html(get_the_title()) }}</h1>
         @endif
 
         @if(! $titleInImage && ! empty($subParts))

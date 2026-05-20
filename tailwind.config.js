@@ -72,25 +72,31 @@ const culversThemePlugin = plugin(({ addBase, addComponents }) => {
       '@apply [&_a]:text-inherit [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 hover:[&_a]:opacity-90':
         {},
     },
+    '.footer-sans-book': {
+      fontFamily:
+        "'halyard-display', 'halyard-display-extralight', ui-sans-serif, system-ui, sans-serif",
+      fontWeight: '400',
+      fontStyle: 'normal',
+    },
     '.footer-nav__link': {
       '@apply font-sans text-base leading-snug text-light-cream/85 transition-colors hover:text-glowleaf':
         {},
     },
-    /* Column nav `<a>` — Figma Footer 51:5147: What’s Here / Useful links use Halyard Display Book 18 px / lh 26. */
-    '.footer-nav--col li > a': {
-      '@apply font-sans text-lg font-normal leading-[26px] text-white transition-colors hover:text-glowleaf':
+    /* Column nav — Figma 51:5147: Halyard Book 18px / lh 26 (desktop trim in site-footer-desktop.css). */
+    '.footer-nav--col li > a.footer-nav__link-col': {
+      '@apply footer-sans-book text-[18px] leading-[26px] text-white transition-colors hover:text-glowleaf':
         {},
     },
     '.footer-nav__link--legal': {
-      '@apply font-label text-xs font-normal uppercase tracking-wider leading-[1.3] text-lighter-cream transition-colors hover:text-glowleaf':
+      '@apply font-label text-[10px] font-normal uppercase tracking-[0.5px] leading-[24px] text-lighter-cream transition-colors hover:text-glowleaf':
         {},
     },
     '.footer-nav__link-phone': {
-      '@apply font-sans text-xl leading-tight text-lighter-cream transition-colors hover:text-glowleaf':
+      '@apply footer-sans-book text-[20px] leading-[30px] text-white transition-colors hover:text-glowleaf':
         {},
     },
     '.footer-nav__link-social': {
-      '@apply inline-flex items-center gap-2 font-label text-sm font-semibold uppercase tracking-widest text-light-cream/90 transition-colors hover:text-glowleaf [&_svg]:text-glowleaf':
+      '@apply inline-flex items-center gap-[7px] font-label text-[14px] font-semibold uppercase tracking-[1.165px] leading-[28px] text-light-cream/90 transition-colors hover:text-glowleaf':
         {},
     },
   });

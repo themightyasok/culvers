@@ -1,0 +1,24 @@
+<svg width="430" height="971" viewBox="0 0 430 971" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g clip-path="url(#clip0_footer_bg_mobile)">
+<rect width="430" height="971" fill="#4F5438"/>
+<mask id="mask0_footer_bg_mobile" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="0" width="430" height="971">
+<rect width="430" height="971" fill="#4F5438"/>
+</mask>
+<g mask="url(#mask0_footer_bg_mobile)">
+<g opacity="0.1">
+<mask id="mask1_footer_bg_mobile" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="0" y="-103" width="931" height="1580">
+<rect y="1476.08" width="1578.13" height="930.295" transform="rotate(-90 0 1476.08)" fill="#4F5438"/>
+</mask>
+<g mask="url(#mask1_footer_bg_mobile)">
+<rect width="804.249" height="804.249" transform="matrix(-0.696307 -0.717744 0.696307 -0.717744 356.935 347.695)" fill="#8B8C67"/>
+<rect width="804.249" height="804.249" transform="matrix(-0.696307 -0.717744 0.696307 -0.717744 356.935 1502.39)" fill="#8B8C67"/>
+</g>
+</g>
+</g>
+</g>
+<defs>
+<clipPath id="clip0_footer_bg_mobile">
+<rect width="430" height="971" fill="white"/>
+</clipPath>
+</defs>
+</svg>

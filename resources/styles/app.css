@@ -24,6 +24,9 @@
 @import './components/centre-map.css';
 @import './components/three-card-block.css';
 @import './components/shop-related-shops.css';
+@import './components/site-footer-desktop.css';
+@import './components/site-footer-mobile.css';
+@import './components/site-footer-pattern.css';
 @layer base {
   /*
    * Anchor underline + focus defaults live in tailwind.config.js (`culversThemePlugin`).
