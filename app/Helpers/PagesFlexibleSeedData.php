@@ -822,8 +822,10 @@ final class PagesFlexibleSeedData
             ],
             [
                 __('Lost Property', 'culvers'),
-                'If you’ve mislaid something during your visit, drop us a line and we will check '
-                . 'against the centre’s lost property log. Most items can be collected within 28 days.',
+                'Lost or found an item at Culver Square? Don’t stress! Get in touch via the link below '
+                . 'and we’ll do our best to get you reunited with your belongings.',
+                __('Contact us', 'culvers'),
+                function_exists('home_url') ? home_url('/contact/') : '/contact/',
             ],
             [
                 __('Access & Mobility', 'culvers'),
@@ -838,8 +840,19 @@ final class PagesFlexibleSeedData
         ];
 
         $items = [];
-        foreach ($rows as [$label, $body]) {
-            $items[] = self::tisRow($label, $body, $polaroidLeft, $polaroidRight);
+        foreach ($rows as $row) {
+            $label = $row[0];
+            $body = $row[1];
+            $ctaLabel = $row[2] ?? null;
+            $ctaUrl = $row[3] ?? null;
+            $items[] = self::tisRow(
+                $label,
+                $body,
+                $polaroidLeft,
+                $polaroidRight,
+                is_string($ctaLabel) ? $ctaLabel : null,
+                is_string($ctaUrl) ? $ctaUrl : null,
+            );
         }
 
         return $items;
@@ -855,8 +868,10 @@ final class PagesFlexibleSeedData
         string $body,
         ?array $imageLeft = null,
         ?array $imageRight = null,
+        ?string $ctaLabel = null,
+        ?string $ctaUrl = null,
     ): array {
-        return [
+        $row = [
             'item_label' => $label,
             'item_body' => sprintf('<p>%s</p>', esc_html($body)),
             'item_image_left' => $imageLeft,
@@ -864,5 +879,11 @@ final class PagesFlexibleSeedData
             'item_image_left_tilt' => 7,
             'item_image_right_tilt' => -6,
         ];
+        if ($ctaLabel !== null && $ctaLabel !== '') {
+            $row['item_cta_label'] = $ctaLabel;
+            $row['item_cta_url'] = $ctaUrl ?? '';
+        }
+
+        return $row;
     }
 }

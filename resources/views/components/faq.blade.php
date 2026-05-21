@@ -76,7 +76,7 @@
 
 @if($items !== [])
   <section
-    class="faq {{ esc_attr($root) }} relative bg-lighter-cream text-deep-moss"
+    class="faq {{ esc_attr($root) }} relative text-deep-moss"
     data-component-root
     data-faq
     x-data='faq({{ $alpineConfig }})'>

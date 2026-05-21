@@ -50,9 +50,13 @@
           $bodyHtml = trim((string) ($row['item_body'] ?? ''));
           $left = isset($row['item_image_left']) && is_array($row['item_image_left']) ? $row['item_image_left'] : null;
           $right = isset($row['item_image_right']) && is_array($row['item_image_right']) ? $row['item_image_right'] : null;
+          $ctaLabel = trim((string) ($row['item_cta_label'] ?? ''));
+          $ctaUrl = trim((string) ($row['item_cta_url'] ?? ''));
           $items[] = [
               'label' => $label,
               'body_html' => $bodyHtml,
+              'cta_label' => $ctaLabel,
+              'cta_url' => $ctaUrl,
               'image_left' => $left,
               'image_right' => $right,
               // Figma 51:8144 (right polaroid, -5.99°) and 51:8145 (left polaroid, +7.24°).
@@ -78,7 +82,7 @@
 
 @if($items !== [])
   <section
-    class="text-image-slider {{ esc_attr($root) }} relative bg-lighter-cream text-deep-moss"
+    class="text-image-slider {{ esc_attr($root) }} relative text-deep-moss"
     data-component-root
     data-text-image-slider
     x-data='textImageSlider({{ $alpineConfig }})'>
@@ -145,10 +149,18 @@
                 x-bind:inert="!isOpen({{ $i }})">
                 <div class="text-image-slider__panel-inner overflow-hidden">
                   <div
-                    class="text-image-slider__body mx-auto max-w-[44rem] px-2 py-6 text-center font-sans text-base font-light leading-7 text-deep-moss/90 opacity-0 lg:py-10 lg:text-lg rt-link-faded [&_p+p]:mt-3 [&_strong]:font-medium"
+                    class="text-image-slider__body mx-auto max-w-[44rem] px-2 py-6 text-left font-sans text-base font-light leading-7 text-deep-moss/90 lg:py-10 lg:text-center lg:text-lg rt-link-faded [&_p+p]:mt-3 [&_strong]:font-medium"
                     data-tis-body>
                     {!! $item['body_html'] !!}
                   </div>
+                  @if($item['cta_label'] !== '' && $item['cta_url'] !== '')
+                    <div class="text-image-slider__cta mx-auto flex max-w-[44rem] justify-start px-2 pb-2 lg:justify-center lg:pb-4">
+                      @include('components.button', [
+                          'label' => $item['cta_label'],
+                          'href' => $item['cta_url'],
+                      ])
+                    </div>
+                  @endif
                 </div>
               </div>
 
@@ -159,17 +171,14 @@
                 <div class="hidden lg:contents" x-show="isOpen({{ $i }})" x-cloak>
                   @if($hasLeftImage)
                     {{-- Figma 51:8145 — LEFT polaroid is the smaller of the pair
-                         (~247×290 in the 1500px frame), tilted +7.24° clockwise.
-                         Vertical centering is owned by GSAP via `yPercent: -50`
-                         (see text-image-slider.js) — don't add a CSS translate
-                         here, it conflicts with the inline GSAP transform. --}}
+                         (~247×290 in the 1500px frame), tilted +7.24° clockwise. --}}
                     <div
-                      class="text-image-slider__media text-image-slider__media--left pointer-events-none absolute left-[-20rem] top-1/2 w-[15rem] opacity-0 xl:left-[-22rem] xl:w-[16.5rem]"
-                      data-tis-media="left"
-                      data-tilt="{{ esc_attr((string) $item['tilt_left']) }}">
+                      class="text-image-slider__media text-image-slider__media--left pointer-events-none absolute left-[-20rem] top-1/2 w-[15rem] -translate-y-1/2 xl:left-[-22rem] xl:w-[16.5rem]"
+                      data-tis-media="left">
                       <div
-                        class="text-image-slider__polaroid relative aspect-[4/5] w-full overflow-hidden rounded-[6px] shadow-2xl shadow-deep-moss/30 ring-1 ring-deep-moss/10"
-                        data-tis-polaroid>
+                        class="text-image-slider__polaroid relative aspect-[4/5] w-full overflow-hidden rounded-[6px] ring-1 ring-deep-moss/10"
+                        data-tis-polaroid
+                        style="transform: rotate({{ (int) $item['tilt_left'] }}deg)">
                         {!! Image::render($item['image_left'], [
                             'class' => 'absolute inset-0 size-full object-cover',
                             'alt' => '',
@@ -183,12 +192,12 @@
                     {{-- Figma 51:8144 — RIGHT polaroid is the larger of the pair
                          (~327×384 in the 1500px frame), tilted -5.99° CCW. --}}
                     <div
-                      class="text-image-slider__media text-image-slider__media--right pointer-events-none absolute right-[-22rem] top-1/2 w-[20rem] opacity-0 xl:right-[-24rem] xl:w-[22rem]"
-                      data-tis-media="right"
-                      data-tilt="{{ esc_attr((string) $item['tilt_right']) }}">
+                      class="text-image-slider__media text-image-slider__media--right pointer-events-none absolute right-[-22rem] top-1/2 w-[20rem] -translate-y-1/2 xl:right-[-24rem] xl:w-[22rem]"
+                      data-tis-media="right">
                       <div
-                        class="text-image-slider__polaroid relative aspect-[4/5] w-full overflow-hidden rounded-[6px] shadow-2xl shadow-deep-moss/30 ring-1 ring-deep-moss/10"
-                        data-tis-polaroid>
+                        class="text-image-slider__polaroid relative aspect-[4/5] w-full overflow-hidden rounded-[6px] ring-1 ring-deep-moss/10"
+                        data-tis-polaroid
+                        style="transform: rotate({{ (int) $item['tilt_right'] }}deg)">
                         {!! Image::render($item['image_right'], [
                             'class' => 'absolute inset-0 size-full object-cover',
                             'alt' => '',
@@ -213,7 +222,6 @@
               <div
                 class="text-image-slider__media text-image-slider__media--mobile mt-2 mb-8 w-full lg:hidden"
                 data-tis-media="{{ $mobileTisHandle }}"
-                data-tilt="0"
                 x-show="isOpen({{ $i }})"
                 x-cloak>
                 <div

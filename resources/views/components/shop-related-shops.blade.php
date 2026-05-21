@@ -44,7 +44,7 @@
 
 @if($shops !== [])
   <section
-    class="shop-related-shops {{ esc_attr($root) }} bg-lighter-cream py-12 text-deep-moss lg:py-16"
+    class="shop-related-shops {{ esc_attr($root) }} py-12 text-deep-moss lg:py-16"
     data-component-root
     data-shop-related-shops
     x-data="shopRelatedShops()">

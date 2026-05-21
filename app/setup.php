@@ -97,8 +97,7 @@ add_filter('culvers_full_width_components', static function (array $layouts): ar
     return $layouts;
 });
 
-// Authoritative chrome defaults: see App\Helpers\ComponentLayoutChrome. Shop singles
-// need a white full-bleed band on opening_hours only (matches directory single defaults).
+// Authoritative chrome defaults: see App\Helpers\ComponentLayoutChrome.
 add_filter('culvers_component_layout_chrome', static function (array $chrome, string $layout, array $component): array {
     unset($component);
 

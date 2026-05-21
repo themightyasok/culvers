@@ -7,8 +7,9 @@
  *   - After a short grace period: scrolling down (past a threshold) starts a delayed hide; the bar
  *     slides up. Scrolling up or returning near the top shows it again. Layout stays the pill /
  *     max-w-8xl chrome — no full-width morph on scroll (width is static Tailwind only).
- *   - Sync `--site-header-offset` on `<html>` so `#smooth-wrapper` padding clears the fixed bar
- *     (0 when the dock is hidden).
+ *   - Sync `--site-header-offset` for `.site-header-scroll-spacer` (inside `#smooth-content`).
+ *     Offset stays at full chrome height when the dock hides (translate only) so page background
+ *     and ScrollSmoother scroll bounds do not jump — do not zero the offset on hide.
  *
  * @param {import('alpinejs').Alpine} Alpine
  */
@@ -374,14 +375,10 @@ export default function registerSiteHeaderAlpine(Alpine) {
       const measureEl = chrome instanceof HTMLElement ? chrome : root;
       window.requestAnimationFrame(() => {
         window.requestAnimationFrame(() => {
-          if (this.headerDockHidden) {
-            document.documentElement.style.setProperty('--site-header-offset', '0px');
-
-            return;
-          }
           const h = Math.ceil(measureEl.getBoundingClientRect().height);
           const px = `${Math.max(Math.round(h), 0)}px`;
           document.documentElement.style.setProperty('--site-header-offset', px);
+          window.dispatchEvent(new CustomEvent('culvers:header-offset'));
         });
       });
     },

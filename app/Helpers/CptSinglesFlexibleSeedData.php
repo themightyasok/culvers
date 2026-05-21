@@ -10,7 +10,8 @@ namespace App\Helpers;
  *
  * Pages built here:
  *   - culvers_career   → "Senior Supervisor" (Figma 51:6450)
- *   - culvers_event    → "Valentine's at Hotel Chocolat" offer (Figma 51:6386)
+ *   - culvers_event    → "Easter Egg Hunt" (Figma 51:6386 layout — same stack as offer single)
+ *   - culvers_offer    → "Valentine's at Hotel Chocolat" (Figma 51:6386)
  *   - culvers_eat_drink → "Greggs" venue page (Figma 51:6679)
  *
  * Image references are wrapped as `['url' => …]` so {@see HomepageFlexibleAcfAttach}
@@ -43,6 +44,77 @@ final class CptSinglesFlexibleSeedData
     private const GREGGS_HERO_FILE = 'greggs-hero-frame.jpg';
 
     private const GREGGS_FESTIVE_BAKE_FILE = 'greggs-festive-bake.jpg';
+
+    /** Figma 51:6386 — "More Offers" card 1 (Valentine's chocolates). */
+    private const FIGMA_6386_CARD_VALENTINES = 'https://www.figma.com/api/mcp/asset/3538a27a-d7f6-4e92-88c9-0205896a5491';
+
+    /** Figma 51:6386 — card 2 (Mother's Day tea). */
+    private const FIGMA_6386_CARD_MOTHERS = 'https://www.figma.com/api/mcp/asset/c3f35e41-2846-4cc4-8f3d-370cd81b13dc';
+
+    /** Figma 51:6386 — card 3 (dry January smoothie). */
+    private const FIGMA_6386_CARD_DRY_JAN = 'https://www.figma.com/api/mcp/asset/610912a9-6022-4e09-9a99-4ce75e6f27e3';
+
+    /**
+     * Figma 51:6386 — manual three-up with authored card art (not CPT thumbnails).
+     *
+     * @return array<string, mixed>
+     */
+    private static function figma6386MoreStoriesBlock(string $heading, ?string $viewAllUrl = null): array
+    {
+        $eventsUrl = function_exists('home_url') ? home_url('/latest-events/') : '/latest-events/';
+        $offersUrl = function_exists('home_url') ? home_url('/latest-offers/') : '/latest-offers/';
+        $valentinesUrl = function_exists('home_url')
+            ? home_url('/latest-offers/valentines-at-hotel-chocolat/')
+            : '/latest-offers/valentines-at-hotel-chocolat/';
+        $viewAll = $viewAllUrl ?? $offersUrl;
+        $bodyCopy = $viewAll === $eventsUrl
+            ? __('See what else is happening at Culver Square.', 'culvers')
+            : __('See all of the brilliant offers happening at Culver Square', 'culvers');
+
+        return array_merge(self::base('three_card_block'), [
+            'cards_source' => 'manual',
+            'cards_heading' => $heading,
+            'cards_subheading' => '',
+            'cards_body' => sprintf('<p>%s</p>', esc_html($bodyCopy)),
+            'cards_view_all_label' => __('View all', 'culvers'),
+            'cards_view_all_url' => $viewAll,
+            'cards_items' => [
+                [
+                    'card_title' => __("Valentine's at Hotel Chocolat", 'culvers'),
+                    'card_url' => $valentinesUrl,
+                    'card_media_type' => 'image',
+                    'card_image' => [
+                        'url' => self::FIGMA_6386_CARD_VALENTINES,
+                        'alt' => __("Valentine's at Hotel Chocolat", 'culvers'),
+                    ],
+                    'card_image_alt' => __("Valentine's at Hotel Chocolat", 'culvers'),
+                    'card_video' => null,
+                ],
+                [
+                    'card_title' => __('Mothers Day at Culver Square', 'culvers'),
+                    'card_url' => $eventsUrl,
+                    'card_media_type' => 'image',
+                    'card_image' => [
+                        'url' => self::FIGMA_6386_CARD_MOTHERS,
+                        'alt' => __('Mothers Day at Culver Square', 'culvers'),
+                    ],
+                    'card_image_alt' => __('Mothers Day at Culver Square', 'culvers'),
+                    'card_video' => null,
+                ],
+                [
+                    'card_title' => __('Raise a glass to dry January', 'culvers'),
+                    'card_url' => $offersUrl,
+                    'card_media_type' => 'image',
+                    'card_image' => [
+                        'url' => self::FIGMA_6386_CARD_DRY_JAN,
+                        'alt' => __('Raise a glass to dry January', 'culvers'),
+                    ],
+                    'card_image_alt' => __('Raise a glass to dry January', 'culvers'),
+                    'card_video' => null,
+                ],
+            ],
+        ]);
+    }
 
     /**
      * @return array<string, mixed>
@@ -217,11 +289,14 @@ final class CptSinglesFlexibleSeedData
                     'culvers'
                 ),
                 'header_align' => 'center',
+                'header_background' => 'white',
                 'header_max_width' => 'medium',
             ]),
             array_merge(self::base('shop_split_highlight'), [
                 'split_ratio' => '50-50',
                 'split_use_tabs' => false,
+                'split_copy_align' => 'center',
+                'split_copy_background' => 'olive',
                 'split_center_lists' => 1,
                 'split_image' => [
                     'url' => PagesFlexibleSeedData::seedAssetUrl(self::EVENT_OFFER_IMAGE_FILE),
@@ -250,18 +325,7 @@ final class CptSinglesFlexibleSeedData
             array_merge(self::base('social_share'), [
                 'share_heading' => __('Share with a friend', 'culvers'),
             ]),
-            array_merge(self::base('three_card_block'), [
-                'cards_source' => 'cpt',
-                'cards_cpt_post_type' => ['culvers_event'],
-                'cards_cpt_count' => 3,
-                'cards_heading' => __('More events', 'culvers'),
-                'cards_subheading' => '',
-                'cards_body' => sprintf(
-                    '<p>%s</p>',
-                    esc_html__('See what else is happening at Culver Square.', 'culvers')
-                ),
-                'cards_view_all_label' => __('View all', 'culvers'),
-            ]),
+            self::figma6386MoreStoriesBlock(__('More Offers', 'culvers')),
         ];
     }
 
@@ -393,9 +457,9 @@ final class CptSinglesFlexibleSeedData
     }
 
     /* -----------------------------------------------------------------
-     * Easter Egg Hunt — representative `culvers_event` single (Figma "Latest
-     * Events" three-card on the What's On landing). Stack mirrors the
-     * Hotel Chocolat offer single so the two CPTs read as siblings.
+     * Easter Egg Hunt — representative `culvers_event` single (Figma 51:6386).
+     * Stack: image_hero → section_header (white, centred) → shop_split_highlight
+     *        → social_share → three_card_block (Figma card art).
      * --------------------------------------------------------------- */
 
     /**
@@ -403,8 +467,6 @@ final class CptSinglesFlexibleSeedData
      */
     public static function easterEggHunt(): array
     {
-        $eventsUrl = function_exists('home_url') ? home_url('/latest-events/') : '/latest-events/';
-
         return [
             array_merge(self::base('image_hero'), [
                 'hero_image' => [
@@ -419,21 +481,9 @@ final class CptSinglesFlexibleSeedData
                 'hero_overlay_opacity' => 35,
                 'hero_title_in_image' => false,
             ]),
-            array_merge(self::base('event_meta'), [
-                'event_meta_date_value' => __('Easter weekend, Sat 4 – Mon 6 April 2026', 'culvers'),
-                'event_meta_time_value' => __('10am – 4pm', 'culvers'),
-                'event_meta_location_value' => __('Lower Mall, Culver Square', 'culvers'),
-                'event_meta_accessibility_note' => __(
-                    'Step-free route between every hunt clue. The Guest Services desk has spare hunt cards '
-                    . 'and accessible pencils on request.',
-                    'culvers'
-                ),
-                'event_meta_cta_label' => __('Add to calendar', 'culvers'),
-                'event_meta_cta_url' => '#',
-            ]),
             array_merge(self::base('section_header'), [
                 'header_eyebrow' => '',
-                'header_heading' => __('Hop, skip and hunt your way around the centre.', 'culvers'),
+                'header_heading' => __('Hop, skip and hunt your way around the centre', 'culvers'),
                 'header_body' => __(
                     'Pick up a hunt card from Guest Services and follow the clues across our retailers '
                     . 'to claim a chocolatey reward at the finish line. Free for all ages — no booking '
@@ -441,75 +491,47 @@ final class CptSinglesFlexibleSeedData
                     'culvers'
                 ),
                 'header_align' => 'center',
+                'header_background' => 'white',
                 'header_max_width' => 'medium',
             ]),
             array_merge(self::base('shop_split_highlight'), [
                 'split_ratio' => '50-50',
                 'split_use_tabs' => false,
+                'split_copy_align' => 'center',
+                'split_copy_background' => 'olive',
+                'split_center_lists' => 1,
                 'split_image' => [
-                    'url' => PagesFlexibleSeedData::seedAssetUrl(self::EVENT_HERO_FILE),
+                    'url' => PagesFlexibleSeedData::seedAssetUrl(self::EVENT_OFFER_IMAGE_FILE),
                     'alt' => __('Children following Easter hunt clues in the mall', 'culvers'),
                 ],
                 'split_kicker' => '',
-                'split_headline' => __('Free hunt cards at Guest Services.', 'culvers'),
+                'split_headline' => __('One hunt, a thousand smiles', 'culvers'),
                 'split_body' => '<p>'
                     . esc_html__(
-                        'Collect your map, follow the trail past participating stores and '
-                        . 'redeem a chocolate reward when you complete every clue.',
+                        'Collect your map from Guest Services, follow the trail past participating stores '
+                        . 'and redeem a chocolate reward when you complete every clue.',
                         'culvers'
                     )
+                    . '</p>'
+                    . '<ul>'
+                    . '<li>' . esc_html__('Free hunt cards for all ages', 'culvers') . '</li>'
+                    . '<li>' . esc_html__('Clues across both mall levels', 'culvers') . '</li>'
+                    . '<li>' . esc_html__('Chocolate reward at the finish line', 'culvers') . '</li>'
+                    . '<li>' . esc_html__('No booking required', 'culvers') . '</li>'
+                    . '</ul>'
+                    . '<p class="font-label text-xs font-semibold uppercase tracking-widest text-glowleaf">'
+                    . esc_html__('Running: Sat 4 – Mon 6 April 2026 · 10am – 4pm · Lower Mall', 'culvers')
                     . '</p>',
                 'split_cta_label' => '',
                 'split_cta_url' => '',
             ]),
-            array_merge(self::base('section_header'), [
-                'header_eyebrow' => '',
-                'header_heading' => __('Share with friends & family', 'culvers'),
-                'header_body' => __(
-                    'Spread the word — bring the kids, grandparents and friends along for a free day out at the centre.',
-                    'culvers'
-                ),
-                'header_align' => 'center',
-                'header_max_width' => 'medium',
+            array_merge(self::base('social_share'), [
+                'share_heading' => __('Share with a friend', 'culvers'),
             ]),
-            array_merge(self::base('three_card_block'), [
-                'cards_source' => 'manual',
-                'cards_heading' => __('More events', 'culvers'),
-                'cards_subheading' => '',
-                'cards_body' => sprintf(
-                    '<p>%s</p>',
-                    esc_html__('See what else is happening at Culver Square.', 'culvers')
-                ),
-                'cards_items' => [
-                    [
-                        'card_title' => __('Culver Square Easter Egg Hunt', 'culvers'),
-                        'card_url' => $eventsUrl,
-                        'card_media_type' => 'image',
-                        'card_image' => [
-                            'url' => PagesFlexibleSeedData::seedAssetUrl(self::EVENT_HERO_FILE),
-                            'alt' => __('Easter Egg Hunt at Culver Square', 'culvers'),
-                        ],
-                        'card_image_alt' => __('Easter Egg Hunt at Culver Square', 'culvers'),
-                        'card_video' => null,
-                    ],
-                    [
-                        'card_title' => __('Late-night Shopping Thursday', 'culvers'),
-                        'card_url' => $eventsUrl,
-                        'card_media_type' => 'image',
-                        'card_image' => null,
-                        'card_image_alt' => '',
-                        'card_video' => null,
-                    ],
-                    [
-                        'card_title' => __('Live Acoustic Sessions', 'culvers'),
-                        'card_url' => $eventsUrl,
-                        'card_media_type' => 'image',
-                        'card_image' => null,
-                        'card_image_alt' => '',
-                        'card_video' => null,
-                    ],
-                ],
-            ]),
+            self::figma6386MoreStoriesBlock(
+                __('More events', 'culvers'),
+                function_exists('home_url') ? home_url('/latest-events/') : '/latest-events/'
+            ),
         ];
     }
 

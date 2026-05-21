@@ -37,7 +37,7 @@
   </div>
 </section>
 
-<div class="policy-page__surface relative bg-lighter-cream text-deep-moss">
+<div class="policy-page__surface relative text-deep-moss">
   <div class="relative z-10 {{ LayoutShell::INNER_MAX_GUTTERED }} py-12 md:py-16 lg:py-20">
     <div class="policy-page__stack flex flex-col gap-12 md:gap-14 lg:gap-16">
       @foreach($sections as $section)

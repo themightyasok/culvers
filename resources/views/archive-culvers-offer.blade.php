@@ -30,7 +30,7 @@
 
   @include('components.image-hero', ['component' => $offersArchiveHero])
 
-  <section class="bg-lighter-cream pb-16 pt-10 md:pb-28 md:pt-12">
+  <section class="pb-16 pt-10 md:pb-28 md:pt-12">
     <div class="px-4 md:px-12">
       <div class="mx-auto w-full max-w-8xl">
         <div class="archive-intro mx-auto max-w-[802px] text-center font-sans text-xl font-light text-deep-moss">

@@ -52,7 +52,7 @@
     data-component-root
     data-event-meta>
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
-      <div class="event-meta__panel mx-auto max-w-3xl rounded-2xl bg-white p-8 md:p-10">
+      <div class="event-meta__panel mx-auto max-w-3xl rounded-2xl p-8 md:p-10">
         @if($rows !== [])
           <dl class="event-meta__rows flex flex-col">
             @foreach($rows as $row)

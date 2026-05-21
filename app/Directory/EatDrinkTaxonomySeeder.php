@@ -41,7 +41,7 @@ final class EatDrinkTaxonomySeeder
         ]);
         if (is_array($terms)) {
             foreach ($terms as $term) {
-                if (! $term instanceof \WP_Term || isset($allowed[$term->slug])) {
+                if (isset($allowed[$term->slug])) {
                     continue;
                 }
                 if ((int) $term->count > 0) {

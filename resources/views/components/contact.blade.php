@@ -74,7 +74,7 @@
 @endphp
 
 <section
-  class="contact {{ esc_attr($root) }} bg-lighter-cream text-deep-moss"
+  class="contact {{ esc_attr($root) }} text-deep-moss"
   data-component-root
   data-contact
   x-data='contactForm({{ $alpineConfig }})'

@@ -68,7 +68,7 @@
 
 @if($count > 0)
   <section
-    class="leasing-agent-grid {{ esc_attr($root) }} bg-lighter-cream py-12 text-deep-moss lg:py-16"
+    class="leasing-agent-grid {{ esc_attr($root) }} py-12 text-deep-moss lg:py-16"
     data-component-root
     data-leasing-agent-grid>
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">

@@ -1,7 +1,7 @@
 @php
   use App\Nav\PrimaryNav;
 
-  /** @var list<array{id:int,title:string,url:string,children:list<array{title:string,url:string,preview:string}>}> $navTree */
+  /** @var list<array{id:int,title:string,url:string,is_current:bool,children:list<array{title:string,url:string,preview:string}>}> $navTree */
   $navTree = PrimaryNav::tree('primary_navigation');
 
   // Theme mods (Appearance → Customize).
@@ -18,7 +18,7 @@
       if ($headerWordmarkRaw !== '') {
           $headerWordmarkSvg = (string) preg_replace(
               '/<svg\b/',
-              '<svg class="block h-[22px] w-auto max-w-[min(100%,178px)] max-lg:h-[20px] shrink-0 text-current [&_svg]:max-h-full" aria-hidden="true" focusable="false"',
+              '<svg class="block h-[22px] w-auto max-w-[min(100%,178px)] max-lg:h-[40px] shrink-0 text-current [&_svg]:max-h-full" aria-hidden="true" focusable="false"',
               $headerWordmarkRaw,
               1,
           );
@@ -97,6 +97,8 @@
                   class="mega-nav__burger relative z-20 inline-flex h-5 w-9 shrink-0 items-center justify-center self-center text-glowleaf before:absolute before:-inset-3 before:content-[''] max-lg:-ms-0.5 lg:hidden culvers-focus-ring"
                   aria-controls="mega-mobile-drawer"
                   x-bind:aria-expanded="mobileOpen ? 'true' : 'false'"
+                  x-show="!searchOpen"
+                  x-cloak
                   x-on:click="mobileOpen = !mobileOpen">
                   <span class="sr-only" x-show="!mobileOpen" x-cloak>{{ __('Open menu', 'culvers') }}</span>
                   <span class="sr-only" x-show="mobileOpen" x-cloak>{{ __('Close menu', 'culvers') }}</span>
@@ -108,15 +110,17 @@
                     class="mega-nav__logo shrink-0 text-glowleaf max-lg:pointer-events-auto max-lg:absolute max-lg:left-1/2 max-lg:top-1/2 max-lg:z-10 max-lg:-translate-x-1/2 max-lg:-translate-y-1/2 lg:static lg:translate-x-0 lg:translate-y-0"
                     href="{{ esc_url(home_url('/')) }}"
                     rel="home"
-                    aria-label="{{ esc_attr(get_bloginfo('name')) }}">
+                    aria-label="{{ esc_attr(get_bloginfo('name')) }}"
+                    x-show="!searchOpen"
+                    x-cloak>
                     @if($headerWordmarkSvg !== '')
-                      <span class="flex max-h-[28px] w-[178px] max-w-[min(100%,178px)] items-center max-lg:max-h-[24px] [&_svg]:max-h-full [&_svg]:max-w-full [&_svg]:object-contain max-lg:[&_svg]:object-center lg:[&_svg]:object-left">{!! $headerWordmarkSvg !!}</span>
+                      <span class="flex max-h-[28px] w-[178px] max-w-[min(100%,178px)] items-center max-lg:max-h-[44px] [&_svg]:max-h-full [&_svg]:max-w-full [&_svg]:object-contain max-lg:[&_svg]:object-center lg:[&_svg]:object-left">{!! $headerWordmarkSvg !!}</span>
                     @elseif(has_custom_logo())
-                      <span class="block max-h-[28px] w-[178px] max-lg:max-h-[24px] [&_img]:h-full [&_img]:w-auto [&_img]:max-h-[28px] max-lg:[&_img]:max-h-[24px] [&_img]:object-contain [&_img]:object-left max-lg:[&_img]:object-center">
+                      <span class="block max-h-[28px] w-[178px] max-lg:max-h-[44px] [&_img]:h-full [&_img]:w-auto [&_img]:max-h-[28px] max-lg:[&_img]:max-h-[44px] [&_img]:object-contain [&_img]:object-left max-lg:[&_img]:object-center">
                         {!! get_custom_logo() !!}
                       </span>
                     @else
-                      @include('partials.culver-square-logo', ['class' => 'block h-[22px] w-[178px] max-w-[min(100%,178px)] shrink-0 text-glowleaf max-lg:h-[20px] lg:max-w-full [&_svg]:max-h-full'])
+                      @include('partials.culver-square-logo', ['class' => 'block h-[22px] w-[178px] max-w-[min(100%,178px)] shrink-0 text-glowleaf max-lg:h-[40px] lg:max-w-full [&_svg]:max-h-full'])
                     @endif
                   </a>
 
@@ -124,57 +128,54 @@
                     <nav class="mega-nav__primary hidden flex-1 justify-start lg:flex" aria-label="{{ esc_attr__('Primary', 'culvers') }}">
                       <ul class="flex flex-wrap items-center gap-x-[30px] gap-y-2">
                         @foreach($navTree as $branch)
-                          @php $hasMega = $branch['children'] !== []; @endphp
+                          @php
+                            $hasMega = $branch['children'] !== [];
+                            $isCurrent = ! empty($branch['is_current']);
+                          @endphp
                           <li
-                            class="mega-nav__top-item list-none"
+                            class="group/top-item mega-nav__top-item list-none{{ $isCurrent ? ' mega-nav__top-item--current' : '' }}"
                             @if($hasMega)
                               x-on:mouseenter="openMegaFromHover({{ $branch['id'] }})"
                             @endif>
                             @if($hasMega)
                               <button
                                 type="button"
-                                class="mega-nav__trigger inline-flex items-center gap-2 capitalize transition-colors hover:text-glowleaf culvers-focus-ring"
-                                x-bind:class="megaOpenId === {{ $branch['id'] }} ? 'text-glowleaf' : 'text-white'"
+                                class="mega-nav__trigger inline-flex items-center gap-2 capitalize text-white transition-colors group-hover/top-item:text-glowleaf group-focus-within/top-item:text-glowleaf culvers-focus-ring{{ $isCurrent ? ' !text-glowleaf' : '' }}"
+                                x-bind:class="megaOpenId === {{ $branch['id'] }} ? '!text-glowleaf' : ''"
                                 x-on:click.prevent="toggleMega({{ $branch['id'] }})"
                                 x-bind:aria-expanded="megaOpenId === {{ $branch['id'] }} ? 'true' : 'false'"
+                                @if($isCurrent) aria-current="page" @endif
                                 aria-haspopup="true"
                                 aria-controls="mega-panel-{{ $branch['id'] }}">
-                                {{-- Sheet feedback row 4: primary nav font should be Halyard Display, not Canela.
-                                     Figma menu spec: Halyard Display Book 16 / lh 1.4 / White on the olive band. --}}
+                                {{-- Figma Menu: default = white + ▼ (`2:94` + rotate-90). Hover + open/current = glowleaf + diamond (`2:262`). --}}
                                 <span class="font-sans font-medium text-base leading-6">{{ $branch['title'] }}</span>
-                                <span class="mega-nav__chevron relative ms-0.5 inline-flex size-3 shrink-0 items-center justify-center" aria-hidden="true">
-                                  <svg
-                                    class="size-3"
-                                    viewBox="0 0 12 12"
-                                    fill="none"
-                                    x-show="megaOpenId !== {{ $branch['id'] }}"
-                                    x-cloak>
-                                    <path
-                                      d="M2.5 4.25 6 8 9.5 4.25"
-                                      stroke="currentColor"
-                                      stroke-width="1.2"
-                                      stroke-linecap="round"
-                                      stroke-linejoin="round" />
-                                  </svg>
-                                  <svg
-                                    class="size-3"
-                                    viewBox="0 0 12 12"
-                                    fill="none"
-                                    x-show="megaOpenId === {{ $branch['id'] }}"
-                                    x-cloak>
-                                    <path
-                                      d="M2.5 7.75 6 4 9.5 7.75"
-                                      stroke="currentColor"
-                                      stroke-width="1.2"
-                                      stroke-linecap="round"
-                                      stroke-linejoin="round" />
-                                  </svg>
+                                <span
+                                  class="mega-nav__marker relative ms-0.5 inline-flex size-2 shrink-0 items-center justify-center"
+                                  aria-hidden="true">
+                                  <span
+                                    class="mega-nav__marker-chevron absolute inset-0 flex items-center justify-center opacity-100 transition-opacity duration-150 group-hover/top-item:opacity-0 group-focus-within/top-item:opacity-0{{ $isCurrent ? ' opacity-0' : '' }}"
+                                    x-bind:class="megaOpenId === {{ $branch['id'] }} ? 'opacity-0' : ''">
+                                    <span class="inline-flex h-1 w-[7px] items-center justify-center">
+                                      <span class="inline-flex rotate-90">
+                                        @include('partials.icons.figma-header-icon', [
+                                            'header_icon_variant' => 'nav-chevron',
+                                            'header_icon_class' => 'block h-[7px] w-1 shrink-0',
+                                        ])
+                                      </span>
+                                    </span>
+                                  </span>
+                                  <span
+                                    class="mega-nav__marker-diamond absolute inset-0 flex items-center justify-center opacity-0 transition-opacity duration-150 group-hover/top-item:opacity-100 group-focus-within/top-item:opacity-100{{ $isCurrent ? ' opacity-100' : '' }}"
+                                    x-bind:class="megaOpenId === {{ $branch['id'] }} ? 'opacity-100' : ''">
+                                    <span class="size-[5.657px] shrink-0 rotate-45 bg-glowleaf" aria-hidden="true"></span>
+                                  </span>
                                 </span>
                               </button>
                             @else
                               <a
-                                class="inline-flex items-center gap-2 font-sans font-medium text-base capitalize leading-6 text-white transition-colors hover:text-glowleaf culvers-focus-ring"
-                                href="{{ esc_url($branch['url']) }}">
+                                class="inline-flex items-center gap-2 font-sans font-medium text-base capitalize leading-6 transition-colors culvers-focus-ring{{ $isCurrent ? ' text-glowleaf' : ' text-white hover:text-glowleaf' }}"
+                                href="{{ esc_url($branch['url']) }}"
+                                @if($isCurrent) aria-current="page" @endif>
                                 {{ $branch['title'] }}
                               </a>
                             @endif
@@ -191,38 +192,30 @@
                     class="mega-nav__search-mobile relative flex shrink-0 items-center justify-center culvers-focus-ring-compact lg:hidden"
                     x-bind:aria-expanded="searchOpen ? 'true' : 'false'"
                     aria-controls="site-header-search"
+                    x-show="!searchOpen"
+                    x-cloak
                     x-on:click="openSearch()">
                     <span class="sr-only">{{ __('Open search', 'culvers') }}</span>
                     @include('partials.icons.header-mobile-search')
                   </button>
 
                   <div class="mega-nav__utilities hidden shrink-0 items-center lg:flex lg:gap-[18px]">
-                  {{-- Sheet feedback rows 4 + 6: utility icons should be bigger per Figma
-                       (Centre Map / Getting Here pictograms read at ~20 px on the desktop band). --}}
                   <a
                     class="inline-flex items-center gap-2 text-white transition-opacity hover:opacity-90 focus-visible:rounded-sm culvers-focus-ring"
                     href="{{ esc_url($mapUrl) }}">
-                    <svg class="shrink-0" width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <path
-                        d="M9 3 3 8v12h6V3Zm6 0 6 5v12h-6V3Z"
-                        stroke="currentColor"
-                        stroke-width="1.4"
-                        stroke-linejoin="round" />
-                      <circle cx="12" cy="10" r="2.25" stroke="currentColor" stroke-width="1.4" />
-                    </svg>
+                    @include('partials.icons.figma-header-icon', [
+                        'header_icon_variant' => 'centre-map-desktop',
+                        'header_icon_class' => 'size-[15px] shrink-0',
+                    ])
                     <span class="font-sans text-sm font-medium leading-[22px] text-white">{{ __('Centre Map', 'culvers') }}</span>
                   </a>
                   <a
                     class="inline-flex items-center gap-2 text-white transition-opacity hover:opacity-90 focus-visible:rounded-sm culvers-focus-ring"
                     href="{{ esc_url($hereUrl) }}">
-                    <svg class="shrink-0" width="18" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <path
-                        d="M12 21s7-4.35 7-11a7 7 0 1 0-14 0c0 6.65 7 11 7 11Z"
-                        stroke="currentColor"
-                        stroke-width="1.4"
-                        stroke-linejoin="round" />
-                      <circle cx="12" cy="10" r="2.25" stroke="currentColor" stroke-width="1.4" />
-                    </svg>
+                    @include('partials.icons.figma-header-icon', [
+                        'header_icon_variant' => 'getting-here-desktop',
+                        'header_icon_class' => 'h-4 w-[13px] shrink-0',
+                    ])
                     <span class="font-sans text-sm font-medium leading-[22px] text-white">{{ __('Getting Here', 'culvers') }}</span>
                   </a>
                   <button
@@ -232,11 +225,10 @@
                     aria-controls="site-header-search"
                     x-on:click="openSearch()">
                     <span class="sr-only">{{ __('Open search', 'culvers') }}</span>
-                    {{-- Sheet feedback row 6: bigger search icon, tighter spacing inside pill. --}}
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <circle cx="11" cy="11" r="6.5" stroke="currentColor" stroke-width="1.6" />
-                      <path d="m16.5 16.5 4 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-                    </svg>
+                    @include('partials.icons.figma-header-icon', [
+                        'header_icon_variant' => 'search-magnifier-desktop',
+                        'header_icon_class' => 'size-[20px] shrink-0',
+                    ])
                   </button>
                   </div>
                 </div>
@@ -292,14 +284,10 @@
                               class="flex size-[43px] shrink-0 items-center justify-center rounded-full bg-brand-500 text-deep-moss transition-transform hover:scale-[1.03] culvers-focus-ring-compact-faded-olive"
                               href="{{ esc_url($branch['url']) }}"
                               aria-label="{{ esc_attr(sprintf(/* translators: %s nav section title */ __('Explore %s', 'culvers'), $branch['title'])) }}">
-                              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <path
-                                  d="M5 12h14m-6-6 6 6-6 6"
-                                  stroke="currentColor"
-                                  stroke-width="1.8"
-                                  stroke-linecap="round"
-                                  stroke-linejoin="round" />
-                              </svg>
+                              @include('partials.icons.figma-header-icon', [
+                                  'header_icon_variant' => 'explore-arrow',
+                                  'header_icon_class' => 'size-4 shrink-0',
+                              ])
                             </a>
                           @endif
                         </div>
@@ -333,7 +321,7 @@
                             rel="noopener noreferrer">
                             @include('partials.figma-social-icon', [
                                 'social_icon_variant' => 'instagram',
-                                'social_icon_class' => 'size-[14px] shrink-0 overflow-visible text-faded-olive',
+                                'social_icon_class' => 'size-[14px] shrink-0 overflow-visible text-current transition-colors',
                             ])
                             {{ __('Instagram', 'culvers') }}
                           </a>
@@ -343,7 +331,7 @@
                             rel="noopener noreferrer">
                             @include('partials.figma-social-icon', [
                                 'social_icon_variant' => 'facebook',
-                                'social_icon_class' => 'size-[15px] shrink-0 text-faded-olive',
+                                'social_icon_class' => 'size-[15px] shrink-0 text-current transition-colors',
                             ])
                             {{ __('Facebook', 'culvers') }}
                           </a>
@@ -386,19 +374,19 @@
           x-on:click.outside="closeSearch()"
           aria-label="{{ esc_attr__('Site search', 'culvers') }}">
           <div
-            class="site-header__search-bar border-brand-500 bg-light-cream max-lg:rounded-none max-lg:border-0 max-lg:border-b-4 max-lg:border-glowleaf lg:rounded-full lg:border-4">
+            class="site-header__search-bar w-full border-brand-500 bg-light-cream max-lg:min-h-[75px] max-lg:rounded-none max-lg:border-0 max-lg:border-b-4 max-lg:border-glowleaf lg:rounded-full lg:border-4">
             <div class="site-header__search-gutter w-full max-lg:py-0 lg:py-0">
               <div
-                class="site-header__search-row flex min-h-[75px] items-center gap-4 px-4 py-2 lg:min-h-[80px] lg:gap-8 lg:px-5 xl:px-6">
+                class="site-header__search-row flex min-h-[75px] w-full items-center gap-3 px-4 py-2 max-lg:gap-4 lg:min-h-[80px] lg:gap-8 lg:px-5 xl:px-6">
                 <a class="shrink-0 text-deep-moss" href="{{ esc_url(home_url('/')) }}" rel="home" aria-label="{{ esc_attr(get_bloginfo('name')) }}">
                   @if($headerWordmarkSvg !== '')
-                    <span class="flex max-h-[28px] w-[178px] max-w-full items-center [&_svg]:max-h-full [&_svg]:max-w-full [&_svg]:object-contain [&_svg]:object-left">{!! $headerWordmarkSvg !!}</span>
+                    <span class="flex max-h-[28px] w-[178px] max-w-full items-center max-lg:max-h-[40px] [&_svg]:max-h-full [&_svg]:max-w-full [&_svg]:object-contain [&_svg]:object-left">{!! $headerWordmarkSvg !!}</span>
                   @elseif(has_custom_logo())
-                    <span class="block max-h-[28px] w-[178px] [&_img]:h-full [&_img]:w-auto [&_img]:object-contain [&_img]:object-left">
+                    <span class="block max-h-[28px] w-[178px] max-lg:max-h-[40px] [&_img]:h-full [&_img]:w-auto [&_img]:max-h-[28px] max-lg:[&_img]:max-h-[40px] [&_img]:object-contain [&_img]:object-left">
                       {!! get_custom_logo() !!}
                     </span>
                   @else
-                    @include('partials.culver-square-logo', ['class' => 'block h-[22px] w-[178px] max-w-full text-deep-moss'])
+                    @include('partials.culver-square-logo', ['class' => 'block h-[22px] w-[178px] max-w-full text-deep-moss max-lg:h-[40px]'])
                   @endif
                 </a>
                 <svg class="shrink-0 text-faded-olive" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -509,40 +497,35 @@
             @if($navTree !== [])
               <ul class="divide-y divide-faded-olive/15">
                 @foreach($navTree as $idx => $branch)
+                  @php $mobileCurrent = ! empty($branch['is_current']); @endphp
                   <li class="list-none">
                     {{-- Figma `51:9052`: Canela Regular 36 / lh 1.1 / Faded Olive (H2 Mobile token);
                          rows separated by 1 px Faded Olive 15% dividers (matches `divide-y` above). --}}
                     @if($branch['children'] !== [])
                       <button
                         type="button"
-                        class="flex w-full items-center justify-between gap-4 py-[26px] text-left font-heading text-4xl leading-[1.1] text-faded-olive focus-visible:rounded-sm culvers-focus-ring-compact"
-                        x-on:click="openMobileSubmenuByIndex({{ (int) $idx }})">
+                        class="flex w-full items-center justify-between gap-4 py-[26px] text-left font-heading text-4xl leading-[1.1] focus-visible:rounded-sm culvers-focus-ring-compact{{ $mobileCurrent ? ' text-glowleaf' : ' text-faded-olive' }}"
+                        x-on:click="openMobileSubmenuByIndex({{ (int) $idx }})"
+                        @if($mobileCurrent) aria-current="page" @endif>
                         <span>{{ $branch['title'] }}</span>
-                        <span class="inline-flex size-6 shrink-0 items-center justify-center text-faded-olive" aria-hidden="true">
-                          <svg class="h-[14px] w-2" viewBox="0 0 8 14" fill="none">
-                            <path
-                              d="m1 1 6 6-6 6"
-                              stroke="currentColor"
-                              stroke-width="1.5"
-                              stroke-linecap="round"
-                              stroke-linejoin="round" />
-                          </svg>
+                        <span class="inline-flex shrink-0 items-center justify-center text-faded-olive" aria-hidden="true">
+                          @include('partials.icons.figma-header-icon', [
+                              'header_icon_variant' => 'mobile-drawer-chevron',
+                              'header_icon_class' => 'h-[14px] w-2 shrink-0',
+                          ])
                         </span>
                       </button>
                     @else
                       <a
-                        class="flex w-full items-center justify-between gap-4 py-[26px] font-heading text-4xl leading-[1.1] text-faded-olive focus-visible:rounded-sm culvers-focus-ring-compact"
-                        href="{{ esc_url($branch['url']) }}">
+                        class="flex w-full items-center justify-between gap-4 py-[26px] font-heading text-4xl leading-[1.1] focus-visible:rounded-sm culvers-focus-ring-compact{{ $mobileCurrent ? ' text-glowleaf' : ' text-faded-olive' }}"
+                        href="{{ esc_url($branch['url']) }}"
+                        @if($mobileCurrent) aria-current="page" @endif>
                         <span>{{ $branch['title'] }}</span>
-                        <span class="inline-flex size-6 shrink-0 items-center justify-center text-faded-olive" aria-hidden="true">
-                          <svg class="h-[14px] w-2" viewBox="0 0 8 14" fill="none">
-                            <path
-                              d="m1 1 6 6-6 6"
-                              stroke="currentColor"
-                              stroke-width="1.5"
-                              stroke-linecap="round"
-                              stroke-linejoin="round" />
-                          </svg>
+                        <span class="inline-flex shrink-0 items-center justify-center text-faded-olive" aria-hidden="true">
+                          @include('partials.icons.figma-header-icon', [
+                              'header_icon_variant' => 'mobile-drawer-chevron',
+                              'header_icon_class' => 'h-[14px] w-2 shrink-0',
+                          ])
                         </span>
                       </a>
                     @endif
@@ -556,8 +539,8 @@
                "They also need to always remain at the bottom of the menu"). `mt-auto` shoves the
                whole footer block down when the nav list is shorter than the viewport. --}}
           <div class="mt-auto pt-8">
-            {{-- Figma `51:9059`: Commuters SemiBold 16 / lh 24 / 1 px tracking / Faded Olive / centred. --}}
-            <p class="text-center font-label text-base font-semibold uppercase leading-6 tracking-[0.0625em] text-faded-olive">
+            {{-- Figma `51:9059`: Commuters SemiBold 16 / lh 24 / 1 px tracking / Faded Olive / left-aligned. --}}
+            <p class="text-left font-label text-base font-semibold uppercase leading-6 tracking-[0.0625em] text-faded-olive">
               {{ __('Useful links', 'culvers') }}
             </p>
             <div class="mt-5 flex flex-col gap-3">
@@ -568,27 +551,19 @@
                 <a
                   class="flex flex-1 items-center gap-3 px-5 py-3 text-left font-sans text-xl font-light leading-[1.3] transition-colors hover:bg-faded-olive/[0.06] culvers-focus-ring-compact-faded-olive"
                   href="{{ esc_url($mapUrl) }}">
-                  <svg class="size-6 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path
-                      d="M4 6.75 12 3l8 3.75v8.5L12 21l-8-5.75v-8.5Z"
-                      stroke="currentColor"
-                      stroke-width="1.35"
-                      stroke-linejoin="round" />
-                    <path d="m9 9 2.25 2.25L15 7.5" stroke="currentColor" stroke-width="1.35" stroke-linecap="round" />
-                  </svg>
+                  @include('partials.icons.figma-header-icon', [
+                      'header_icon_variant' => 'centre-map-mobile',
+                      'header_icon_class' => 'size-[21px] shrink-0',
+                  ])
                   <span class="min-w-0">{{ __('Centre Map', 'culvers') }}</span>
                 </a>
                 <a
                   class="flex flex-1 items-center gap-3 px-5 py-3 text-left font-sans text-xl font-light leading-[1.3] transition-colors hover:bg-faded-olive/[0.06] culvers-focus-ring-compact-faded-olive"
                   href="{{ esc_url($hereUrl) }}">
-                  <svg class="size-6 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path
-                      d="M12 20s7-4.35 7-11a7 7 0 1 0-14 0c0 6.65 7 11 7 11Z"
-                      stroke="currentColor"
-                      stroke-width="1.35"
-                      stroke-linejoin="round" />
-                    <circle cx="12" cy="9" r="2.25" stroke="currentColor" stroke-width="1.35" />
-                  </svg>
+                  @include('partials.icons.figma-header-icon', [
+                      'header_icon_variant' => 'getting-here-mobile',
+                      'header_icon_class' => 'h-[22px] w-[18px] shrink-0',
+                  ])
                   <span class="min-w-0">{{ __('Getting Here', 'culvers') }}</span>
                 </a>
               </div>
@@ -605,7 +580,7 @@
                     rel="noopener noreferrer">
                     @include('partials.figma-social-icon', [
                         'social_icon_variant' => 'instagram',
-                        'social_icon_class' => 'size-6 shrink-0 text-faded-olive',
+                        'social_icon_class' => 'size-[16.917px] shrink-0 text-faded-olive',
                     ])
                     <span class="min-w-0">{{ __('Instagram', 'culvers') }}</span>
                   </a>
@@ -614,7 +589,7 @@
                     class="flex flex-1 cursor-not-allowed items-center justify-center gap-3 px-4 py-3 text-center font-label text-sm font-semibold uppercase leading-7 tracking-widest text-faded-olive/45">
                     @include('partials.figma-social-icon', [
                         'social_icon_variant' => 'instagram',
-                        'social_icon_class' => 'size-6 shrink-0 opacity-50 text-faded-olive',
+                        'social_icon_class' => 'size-[16.917px] shrink-0 opacity-50 text-faded-olive',
                     ])
                     <span class="min-w-0">{{ __('Instagram', 'culvers') }}</span>
                   </span>
@@ -627,7 +602,7 @@
                     rel="noopener noreferrer">
                     @include('partials.figma-social-icon', [
                         'social_icon_variant' => 'facebook',
-                        'social_icon_class' => 'size-6 shrink-0 text-faded-olive',
+                        'social_icon_class' => 'size-[18.125px] shrink-0 text-faded-olive',
                     ])
                     <span class="min-w-0">{{ __('Facebook', 'culvers') }}</span>
                   </a>
@@ -636,19 +611,13 @@
                     class="flex flex-1 cursor-not-allowed items-center justify-center gap-3 px-4 py-3 text-center font-label text-sm font-semibold uppercase leading-7 tracking-widest text-faded-olive/45">
                     @include('partials.figma-social-icon', [
                         'social_icon_variant' => 'facebook',
-                        'social_icon_class' => 'size-6 shrink-0 opacity-50 text-faded-olive',
+                        'social_icon_class' => 'size-[18.125px] shrink-0 opacity-50 text-faded-olive',
                     ])
                     <span class="min-w-0">{{ __('Facebook', 'culvers') }}</span>
                   </span>
                 @endif
               </div>
             </div>
-            <button
-              type="button"
-              class="mt-6 font-sans text-sm font-semibold uppercase tracking-widest text-faded-olive/70 underline decoration-glowleaf decoration-2 underline-offset-4 hover:text-faded-olive focus-visible:rounded-sm culvers-focus-ring"
-              x-on:click="openSearchFromMobile()">
-              {{ __('Search', 'culvers') }}
-            </button>
           </div>
         </div>
 
@@ -660,7 +629,7 @@
           <div>
             <button
               type="button"
-              class="inline-flex items-center gap-2.5 rounded-full bg-light-green/60 py-1 ps-1 pe-4 text-left text-faded-olive focus-visible:rounded-full culvers-focus-ring-compact-faded-olive"
+              class="inline-flex items-center gap-2.5 text-left text-faded-olive culvers-focus-ring-compact-faded-olive"
               x-on:click="resetMobileSubmenu()">
               <span
                 class="inline-flex size-[30px] shrink-0 items-center justify-center rounded-full bg-light-green text-faded-olive"
@@ -690,14 +659,10 @@
                     x-bind:href="mobileActiveBranch.url || '#'"
                     x-on:click="mobileOpen = false">
                     <span class="sr-only">{{ __('Open section', 'culvers') }}</span>
-                    <svg class="size-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <path
-                        d="m9 6 6 6-6 6"
-                        stroke="currentColor"
-                        stroke-width="1.8"
-                        stroke-linecap="round"
-                        stroke-linejoin="round" />
-                    </svg>
+                    @include('partials.icons.figma-header-icon', [
+                        'header_icon_variant' => 'explore-arrow',
+                        'header_icon_class' => 'size-4 shrink-0',
+                    ])
                   </a>
                 </div>
               </div>

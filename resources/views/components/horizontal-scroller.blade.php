@@ -66,19 +66,13 @@ $body_text_color_raw = $c['scroller_body_text_color'] ?? '';
 $scroll_cards = is_array($c['scroller_items'] ?? null) ? $c['scroller_items'] : [];
 $scroll_speed = $c['scroller_speed'] ?? 'medium';
 $disable_scroll = !empty($c['scroller_disabled']);
-// Horizontal gap between row items (logos/cards). Set on the flex container so it cannot be lost to inheritance.
-$raw_strip_spacing = $c['scroller_item_spacing'] ?? null;
-if ($raw_strip_spacing === null || $raw_strip_spacing === '' || $raw_strip_spacing === false) {
-    $strip_item_spacing = 32;
-} elseif (is_numeric($raw_strip_spacing)) {
-    $strip_item_spacing = (int) round((float) $raw_strip_spacing);
-} elseif (is_string($raw_strip_spacing) && preg_match('/\d+/', $raw_strip_spacing, $strip_spacing_match)) {
-    $strip_item_spacing = (int) $strip_spacing_match[0];
-} else {
-    $strip_item_spacing = 32;
-}
-$strip_item_spacing = max(12, min(6000, $strip_item_spacing));
+// Horizontal gap between strip items — hard-coded per style preset (not editor-tunable).
+$scroller_preset_key = is_string($c['scroller_preset'] ?? null) ? (string) $c['scroller_preset'] : '';
+$strip_item_spacing = HorizontalScrollerPreset::itemGapPx($scroller_preset_key);
 $horizontal_scroller_gap_css = '--hs-item-gap:' . $strip_item_spacing . 'px';
+$intro_body_layout_class = $scroller_preset_key === HorizontalScrollerPreset::PRESET_HOMEPAGE_BRANDS
+    ? 'mx-auto w-full max-w-[588px] text-center [&_p]:m-0'
+    : 'max-w-none';
 $header_alignment_class = match($header_alignment) {
     'middle' => 'lg:justify-center',
     'bottom' => 'lg:justify-end',
@@ -343,7 +337,7 @@ $root = $gridClasses;
                         @endif
 
                         @if($hasBodyText)
-                            <div class="{{ $body_classes }} {{ $intro_body_color_class }} prose prose-neutral max-w-none {{ $scroller_typography_padding_class }}">
+                            <div class="{{ $body_classes }} {{ $intro_body_color_class }} prose prose-neutral {{ $intro_body_layout_class }} {{ $scroller_typography_padding_class }}">
                                 {!! TextFormatter::rich((string) $body_text) !!}
                             </div>
                         @endif

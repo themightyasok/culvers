@@ -9,7 +9,7 @@
     @endphp
   </head>
 
-  {{-- Figma site surface: Lighter Cream (#FFFEFA) — sheet feedback row 7. --}}
+  {{-- Figma site surface: Off white (#EEE9E5) — solid fill behind page diamond pattern. --}}
   <body @php body_class('bg-lighter-cream text-deep-moss font-sans antialiased'); @endphp>
     @php wp_body_open(); @endphp
 
@@ -20,15 +20,24 @@
 
     @include('sections.header')
 
-    {{-- Fixed header clearance: `--site-header-offset` is set by `site-header.js` (ResizeObserver). No per-component padding. --}}
+    {{-- ScrollSmoother viewport is `#smooth-wrapper` (no padding — padding here clips the footer).
+         Header clearance is the spacer inside `#smooth-content`; height from `--site-header-offset`. --}}
     <div id="smooth-wrapper">
       <div id="smooth-content">
+        <div class="site-header-scroll-spacer" aria-hidden="true"></div>
+        @php
+          use App\View\SitePageSurface;
+          $pageSurface = SitePageSurface::config();
+        @endphp
         {{--
           Do not use min-h-screen here: when main + footer are shorter than the viewport (e.g. /shops/),
-          min-height would extend #app below the footer and show empty bg-white — misread as a “footer gap”.
+          min-height would extend #app below the footer and show empty cream — misread as a “footer gap”.
           Homepage flexible rows are tall enough that this rarely appears.
         --}}
-        <div id="app" class="bg-lighter-cream">
+        <div
+          id="app"
+          class="relative site-page-surface {{ esc_attr($pageSurface['modifier']) }}"
+          style="--culvers-page-tile: url('{{ esc_url(SitePageSurface::tileUri()) }}'); --culvers-page-tile-ratio: {{ esc_attr(SitePageSurface::tileHeightRatio()) }};">
           <main id="main" tabindex="-1">
             @yield('content')
           </main>
@@ -42,7 +51,7 @@
             300 / 380 / 420 → halves 150 / 190 / 210. We add ~90 / 130 / 150 px of clean whitespace
             on top so the rhythm matches the rest of the page-to-section spacing.
           --}}
-          <div aria-hidden="true" class="site-footer-spacer h-[240px] w-full bg-lighter-cream md:h-[320px] lg:h-[360px]"></div>
+          <div aria-hidden="true" class="site-footer-spacer h-[240px] w-full md:h-[320px] lg:h-[360px]"></div>
 
           @include('sections.footer')
         </div>

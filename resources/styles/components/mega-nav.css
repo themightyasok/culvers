@@ -1,4 +1,10 @@
 /**
+ * Desktop primary nav — Figma Menu `2:63` / open variants (`2:231`, `72:4974`):
+ * default white label + ▼; hover and open/active = glowleaf label + 8px diamond (`2:262`).
+ * Marker swap is driven in Blade via `group/top-item` + `megaOpenId` (see header.blade.php).
+ */
+
+/**
  * Mobile header chrome — Figma Mobile — Nav (51:8865 / component 2:988), 430×75 bar.
  * Search pill 2:990: 39×39px @ inset 24% vertical, 85.35% / 5.58% horizontal.
  * Search icon 2:991: 14.512×14.33px #4F5438 on #D4FF50.
@@ -16,8 +22,8 @@
 
   .mega-nav__search-icon {
     display: block;
-    width: 14.512px;
-    height: 14.33px;
+    width: 20px;
+    height: 20px;
     flex-shrink: 0;
   }
 

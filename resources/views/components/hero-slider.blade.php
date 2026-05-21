@@ -97,21 +97,16 @@
                 <div
                   class="relative min-h-[100svh] w-full overflow-hidden"
                   data-background-parallax-trigger>
-                  <picture class="absolute inset-0 block size-full">
-                    @if($mobUrl !== '')
-                      <source media="(max-width: 767px)" srcset="{{ esc_url($mobUrl) }}" />
-                    @endif
-                    {!! Image::render($desk, [
-                        'class' => 'absolute inset-0 size-full object-cover',
-                        'alt' => $alt,
-                        'width' => isset($desk['width']) ? (int) $desk['width'] : 1920,
-                        'height' => isset($desk['height']) ? (int) $desk['height'] : 1080,
-                        'loading' => $idx === 0 ? 'eager' : 'lazy',
-                        'decoding' => 'async',
-                        'fetchpriority' => $idx === 0 ? 'high' : 'low',
-                        'data' => ['background-parallax-image' => '1'],
-                    ]) !!}
-                  </picture>
+                  {!! Image::renderResponsiveCover($desk, $mobUrl !== '' ? $mob : null, [
+                      'class' => 'absolute inset-0 size-full object-cover',
+                      'alt' => $alt,
+                      'width' => isset($desk['width']) ? (int) $desk['width'] : 1920,
+                      'height' => isset($desk['height']) ? (int) $desk['height'] : 1080,
+                      'loading' => $idx === 0 ? 'eager' : 'lazy',
+                      'decoding' => 'async',
+                      'fetchpriority' => $idx === 0 ? 'high' : 'low',
+                      'data' => ['background-parallax-image' => '1'],
+                  ]) !!}
 
                   {{-- Soft-light rotated white square decoration (Figma `51:4920`).
                        1048px diamond, 28% white, mix-blend soft-light, anchored to the

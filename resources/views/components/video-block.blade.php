@@ -69,10 +69,12 @@
             x-transition.opacity.duration.200ms>
             <button
               type="button"
-              class="pointer-events-auto inline-flex items-center gap-3 rounded-full border border-brand-500 bg-transparent px-8 py-3 font-sans text-xs font-semibold uppercase tracking-wider text-brand-500 shadow-none outline-none transition-[transform,background-color,color] duration-150 hover:bg-brand-500/15 focus-visible:scale-[1.02] focus-visible:ring-2 focus-visible:ring-brand-500 focus-visible:ring-offset-2 focus-visible:ring-offset-deep-moss motion-safe:active:scale-[0.99]"
+              class="btn btn-outline pointer-events-auto inline-flex items-center gap-3 px-7"
               x-on:click="play()"
               aria-label="{{ esc_attr(sprintf(__('Play: %s', 'culvers'), $playLabel)) }}">
-              <span class="inline-flex size-0 shrink-0 border-y-[7px] border-l-[12px] border-y-transparent border-l-brand-500" aria-hidden="true"></span>
+              <span
+                class="inline-flex size-0 shrink-0 border-y-[7px] border-l-[12px] border-y-transparent border-l-current"
+                aria-hidden="true"></span>
               <span>{{ esc_html($playLabel) }}</span>
             </button>
           </div>

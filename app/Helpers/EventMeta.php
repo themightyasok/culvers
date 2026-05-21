@@ -42,7 +42,7 @@ final class EventMeta
             },
             'culvers_event' => match ($key) {
                 'date' => __('When', 'culvers'),
-                'time' => __('Open today', 'culvers'),
+                'time' => __('Time', 'culvers'),
                 'location' => __('Where', 'culvers'),
                 default => '',
             },

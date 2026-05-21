@@ -61,6 +61,42 @@ return [
                 'wrapper' => ['width' => '50'],
             ],
         ],
+        'split_copy_align' => [
+            'type' => 'select',
+            'options' => [
+                'label' => __('Copy column alignment', 'culvers'),
+                'instructions' => __(
+                    'Center matches Figma 51:6386 offer / event split (headline, body, lists).',
+                    'culvers'
+                ),
+                'choices' => [
+                    'left' => __('Left (default)', 'culvers'),
+                    'center' => __('Center', 'culvers'),
+                ],
+                'default_value' => 'left',
+                'allow_null' => 0,
+                'wrapper' => ['width' => '50'],
+                'conditional_logic' => $staticOnly,
+            ],
+        ],
+        'split_copy_background' => [
+            'type' => 'select',
+            'options' => [
+                'label' => __('Copy column background', 'culvers'),
+                'instructions' => __(
+                    'Olive column with white type is the Figma 51:6386 default. White column uses deep-moss type.',
+                    'culvers'
+                ),
+                'choices' => [
+                    'olive' => __('Faded olive + white text (default)', 'culvers'),
+                    'white' => __('White + deep moss text', 'culvers'),
+                ],
+                'default_value' => 'olive',
+                'allow_null' => 0,
+                'wrapper' => ['width' => '50'],
+                'conditional_logic' => $staticOnly,
+            ],
+        ],
         'msg_static' => Component::sectionDivider(__('Static copy (when tabs are off)', 'culvers')),
         'split_kicker' => [
             'type' => 'text',

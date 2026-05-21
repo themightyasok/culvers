@@ -19,7 +19,8 @@ return [
             'options' => [
                 'label' => __('Style preset', 'culvers'),
                 'instructions' => __(
-                    'Controls colours, typography scale, header alignment, strip spacing, and button styling. '
+                    'Controls colours, typography scale, header alignment, and button styling. '
+                    . 'Strip item gap is fixed in the theme per preset. '
                     . 'Use “Homepage brand strip” for the logo row on the home page.',
                     'culvers'
                 ),

@@ -20,7 +20,7 @@
 
 @if($bodyPlain !== '')
   <section
-    class="shop-intro-block {{ esc_attr($root) }} bg-lighter-cream py-12 text-deep-moss lg:py-16"
+    class="shop-intro-block {{ esc_attr($root) }} py-12 text-deep-moss lg:py-16"
     data-component-root
     data-shop-intro-block>
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">

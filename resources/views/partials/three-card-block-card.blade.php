@@ -61,9 +61,10 @@
         <span
           aria-hidden="true"
           class="hidden size-[43px] shrink-0 items-center justify-center rounded-full bg-glowleaf text-deep-moss transition-transform duration-300 ease-out motion-safe:group-hover/card:scale-[1.06] motion-safe:group-focus-within/card:scale-[1.06] max-sm:inline-flex">
-          <svg class="size-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-            <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
+          @include('partials.icons.figma-header-icon', [
+              'header_icon_variant' => 'explore-arrow',
+              'header_icon_class' => 'size-4 shrink-0',
+          ])
         </span>
       @endif
       <span

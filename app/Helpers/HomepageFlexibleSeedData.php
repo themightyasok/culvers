@@ -178,13 +178,9 @@ final class HomepageFlexibleSeedData
             'scroller_header_text' => sprintf('<p>%s</p>', esc_html__('Home to great brands', 'culvers')),
             'scroller_subheading_text' => '',
             'scroller_body_text' => sprintf(
-                '<p>%s</p><p>%s</p>',
+                '<p>%s</p>',
                 esc_html__(
-                    'From iconic high-street labels to local independents,',
-                    'culvers'
-                ),
-                esc_html__(
-                    'Culver Square brings the best of Colchester together under one roof.',
+                    'From iconic high-street labels to local independents, Culver Square brings the best of Colchester together under one roof.',
                     'culvers'
                 )
             ),

@@ -12,37 +12,17 @@ use App\Constants\ComponentTypes;
  * change the front end. The ACF **Background** UI was removed — surfaces are fixed
  * in code ({@see \App\ComponentRegistry} Main tab).
  *
- * **Rule:** almost every layout gets a **white** (#ffffff) full-bleed flex wrapper
- * ({@see resources/views/partials/flexible-components.blade.php}). Layouts whose
- * Blade root already paints the full band (cream, deep moss, light green, etc.)
- * stay **`background_type: none`** so we do not stack a second surface or double
- * vertical padding.
+ * **Rule:** default flex chrome is **transparent** so Figma page diamonds
+ * ({@see resources/styles/components/site-page-pattern.css} viewport layer) show on the
+ * off-white `#app` surface. Layouts whose Blade root already paints the full
+ * band (hero, travel calculator, split highlight card, …) stay **`none`**.
+ * Only layouts that need a true white band (e.g. horizontal scroller with
+ * `text-white` header copy) opt in via filter or {@see whiteBackgroundPayload()}.
  *
  * Adjust per-context values with the **`culvers_component_layout_chrome`** filter.
  */
 final class ComponentLayoutChrome
 {
-    /**
-     * Layouts that own their outer surface in the Blade template (`bg-lighter-cream`,
-     * `bg-deep-moss`, `bg-light-green` on the section/card). Flex chrome must stay "none".
-     *
-     * @var list<string>
-     */
-    private const LAYOUTS_OWN_OUTER_SURFACE = [
-        'image_hero',
-        'hero_slider',
-        'centre_map',
-        'shop_intro_block',
-        'shop_store_details',
-        'shop_related_shops',
-        'info_block',
-        'text_image_slider',
-        'leasing_agent_grid',
-        'contact',
-        'faq',
-        'travel_calculator',
-    ];
-
     /**
      * Neutral background payload — clears image/video/gradient/overlay inputs.
      *
@@ -89,9 +69,7 @@ final class ComponentLayoutChrome
     public static function baseChromeForLayout(string $layout): array
     {
         $width = Grid::validateComponentWidth(Grid::getDefaultComponentWidth($layout));
-        $background = in_array($layout, self::LAYOUTS_OWN_OUTER_SURFACE, true)
-            ? self::neutralBackgroundPayload()
-            : self::whiteBackgroundPayload();
+        $background = self::neutralBackgroundPayload();
 
         return array_merge(
             [

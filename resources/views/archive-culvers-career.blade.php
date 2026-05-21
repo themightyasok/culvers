@@ -87,7 +87,7 @@
   @include('components.image-hero', ['component' => $careersArchiveHero])
 
   {{-- Match header/footer: gutter padding outside, `max-w-8xl` inner only. --}}
-  <section class="directory-archive bg-lighter-cream pb-16 pt-10 md:pb-28 md:pt-12" x-data="directoryArchive">
+  <section class="directory-archive pb-16 pt-10 md:pb-28 md:pt-12" x-data="directoryArchive">
     <div class="px-4 md:px-12">
       <div class="mx-auto w-full max-w-8xl">
         {{-- <div> wrapper (not <p>) so cascading text-center / typography

@@ -102,6 +102,8 @@ window.addEventListener('gsap:smoother:ready', (event) => {
   window.setTimeout(() => scheduleScrollLayoutRefresh(true), 480);
 });
 
+window.addEventListener('culvers:header-offset', () => scheduleScrollLayoutRefresh(true));
+
 if (
   typeof document !== 'undefined' &&
   document.fonts &&

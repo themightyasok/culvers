@@ -37,10 +37,9 @@ final class DirectoryFlexibleDefaults
         ],
         'culvers_event' => [
             'image_hero',
-            'event_meta',
             'section_header',
             'shop_split_highlight',
-            'section_header',
+            'social_share',
             'three_card_block',
         ],
         'culvers_offer' => [

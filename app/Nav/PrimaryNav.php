@@ -9,7 +9,7 @@ namespace App\Nav;
  * Uses menu-item post meta so static analysis understands the data shape.
  *
  * @phpstan-type NavChild array{title: string, url: string, preview: string}
- * @phpstan-type NavBranch array{id: int, title: string, url: string, children: list<NavChild>}
+ * @phpstan-type NavBranch array{id: int, title: string, url: string, children: list<NavChild>, is_current: bool}
  */
 final class PrimaryNav
 {
@@ -147,12 +147,12 @@ final class PrimaryNav
             ];
         }
 
-        $shopBranch = [
+        $shopBranch = self::withCurrentFlag([
             'id' => $shopBranch['id'],
             'title' => $shopBranch['title'],
             'url' => $shopBranch['url'],
             'children' => self::orderShopMegaChildren($mergedChildren),
-        ];
+        ]);
 
         $out = [];
         foreach ($tree as $i => $branch) {
@@ -285,12 +285,12 @@ final class PrimaryNav
             if (count($kids) > 1) {
                 $kids = self::fillDistinctMegaPreviews($kids);
             }
-            $out[] = [
+            $out[] = self::withCurrentFlag([
                 'id' => $branch['id'],
                 'title' => $branch['title'],
                 'url' => $branch['url'],
                 'children' => $kids,
-            ];
+            ]);
         }
 
         return $out;
@@ -402,12 +402,136 @@ final class PrimaryNav
             ];
         }
 
-        return [
+        return self::withCurrentFlag([
             'id' => $parentPost->ID,
             'title' => self::title($parentPost),
             'url' => self::resolvedUrl($parentPost),
             'children' => $children,
+        ]);
+    }
+
+    /**
+     * @param array{id: int, title: string, url: string, children: list<NavChild>} $branch
+     *
+     * @return NavBranch
+     */
+    private static function withCurrentFlag(array $branch): array
+    {
+        return [
+            'id' => $branch['id'],
+            'title' => $branch['title'],
+            'url' => $branch['url'],
+            'children' => $branch['children'],
+            'is_current' => self::branchIsCurrent($branch['title'], $branch['url'], $branch['children']),
         ];
+    }
+
+    /**
+     * @param list<NavChild> $children
+     */
+    private static function branchIsCurrent(string $title, string $branchUrl, array $children): bool
+    {
+        if (self::branchMatchesQueriedSection($title)) {
+            return true;
+        }
+
+        if (self::requestMatchesUrl($branchUrl)) {
+            return true;
+        }
+
+        foreach ($children as $child) {
+            if (self::requestMatchesUrl($child['url'])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static function branchMatchesQueriedSection(string $title): bool
+    {
+        if (CulverSquareFigmaPrimaryMenu::menuTitlesMatch($title, __('Shop', 'culvers'))) {
+            return is_post_type_archive('culvers_shop') || is_singular('culvers_shop');
+        }
+
+        if (CulverSquareFigmaPrimaryMenu::menuTitlesMatch($title, __('Eat & Drink', 'culvers'))) {
+            return is_post_type_archive('culvers_eat_drink') || is_singular('culvers_eat_drink');
+        }
+
+        if (CulverSquareFigmaPrimaryMenu::menuTitlesMatch($title, __('Careers', 'culvers'))) {
+            return is_post_type_archive('culvers_career') || is_singular('culvers_career');
+        }
+
+        if (CulverSquareFigmaPrimaryMenu::menuTitlesMatch($title, __("what's on", 'culvers'))) {
+            return is_page('whats-on')
+                || is_post_type_archive(['culvers_event', 'culvers_offer', 'culvers_news'])
+                || is_singular(['culvers_event', 'culvers_offer', 'culvers_news']);
+        }
+
+        if (CulverSquareFigmaPrimaryMenu::menuTitlesMatch($title, __('Plan my visit', 'culvers'))) {
+            return is_page(['plan-my-visit', 'accessible-guide']);
+        }
+
+        if (CulverSquareFigmaPrimaryMenu::menuTitlesMatch($title, __('Guest Services', 'culvers'))) {
+            return is_page(['guest-services', 'contact']);
+        }
+
+        return false;
+    }
+
+    private static function requestMatchesUrl(string $url): bool
+    {
+        $url = trim($url);
+        if ($url === '' || $url === '#') {
+            return false;
+        }
+
+        $parsed = wp_parse_url($url);
+        if (! is_array($parsed)) {
+            return false;
+        }
+
+        $wantPath = isset($parsed['path']) ? untrailingslashit((string) $parsed['path']) : '';
+        if ($wantPath === '') {
+            $wantPath = '/';
+        }
+
+        /** @var array<string, string> $wantQuery */
+        $wantQuery = [];
+        if (! empty($parsed['query'])) {
+            parse_str((string) $parsed['query'], $wantQuery);
+        }
+
+        $currentPath = self::currentRequestPath();
+        if ($wantPath !== $currentPath) {
+            return false;
+        }
+
+        foreach ($wantQuery as $key => $value) {
+            if (! isset($_GET[$key]) || (string) $_GET[$key] !== (string) $value) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static function currentRequestPath(): string
+    {
+        global $wp;
+        if (isset($wp) && $wp instanceof \WP) {
+            $request = trim((string) $wp->request, '/');
+            if ($request === '') {
+                return '/';
+            }
+
+            return untrailingslashit('/' . $request);
+        }
+
+        $path = (string) wp_parse_url(home_url(add_query_arg([])), PHP_URL_PATH);
+        $path = untrailingslashit($path);
+
+        return $path === '' ? '/' : $path;
     }
 
     private static function parentId(int $menuItemPostId): int

@@ -27,6 +27,7 @@
 @import './components/site-footer-desktop.css';
 @import './components/site-footer-mobile.css';
 @import './components/site-footer-pattern.css';
+@import './components/site-page-pattern.css';
 @layer base {
   /*
    * Anchor underline + focus defaults live in tailwind.config.js (`culversThemePlugin`).
@@ -37,12 +38,18 @@
   }
 
   /*
-   * Fixed `.site-header` sits above the document flow. Reserve space on the scroll wrapper so
-   * flexible components never render underneath it. `--site-header-offset` is maintained by
-   * `resources/scripts/alpine/site-header.js` (ResizeObserver + layout watches).
+   * Fixed `.site-header` sits above `#smooth-wrapper` (not inside ScrollSmoother content).
+   * Do NOT pad `#smooth-wrapper` — ScrollSmoother treats wrapper height as the viewport and
+   * footer content is clipped by that many px at max scroll. Clearance lives in
+   * `.site-header-scroll-spacer` inside `#smooth-content` (`--site-header-offset` from
+   * `site-header.js`; never zeroed when the dock hides — translate only).
    */
-  #smooth-wrapper {
-    padding-top: var(--site-header-offset, 11.25rem);
+  .site-header-scroll-spacer {
+    display: block;
+    width: 100%;
+    height: var(--site-header-offset, 11.25rem);
+    flex-shrink: 0;
+    pointer-events: none;
   }
 
   /*

@@ -27,8 +27,8 @@ between them; do not invent a third.
 
 | Field | Type | Default | Notes |
 | --- | --- | --- | --- |
-| `hero_image` | image | — | Wide lifestyle / storefront shot. Figma band is 1440×646. |
-| `hero_image_mobile` | image | — | Optional tighter crop for small screens. |
+| `hero_image` | image | — | Tablet / desktop (md+). Figma band is 1440×646. |
+| `hero_image_mobile` | image | — | Optional crop shown below md only; falls back to desktop when empty. Both fields sit on the **Main** tab. |
 | `hero_logo` | image | — | Optional centre lockup over the hero (white artwork preferred). When set, the title/subtitle are hidden. |
 | `hero_title_line` | text | — | Large Canela headline when no logo is set (96 px on desktop). |
 | `hero_title_tone` | select (`glowleaf`, `white`, `lighter-cream`) | `glowleaf` | Tone for the title — keep glowleaf unless contrast on a busy photo demands white. |

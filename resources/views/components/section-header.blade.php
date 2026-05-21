@@ -37,6 +37,10 @@
       default => 'max-w-3xl',
   };
 
+  $bgRaw = is_string($c['header_background'] ?? null) ? (string) $c['header_background'] : 'inherit';
+  $useWhiteBand = $bgRaw === 'white';
+  $sectionSurfaceClass = $useWhiteBand ? 'bg-white' : '';
+
   $hasContent = $eyebrow !== '' || $heading !== '' || $bodyLines !== [];
 @endphp
 
@@ -53,7 +57,7 @@
        is reserved for callout bands (Travel Calculator) which set their own
        heading colour inline. --}}
   <section
-    class="section-header {{ esc_attr($root) }} text-faded-olive"
+    class="section-header {{ esc_attr($root) }} {{ $sectionSurfaceClass }} text-faded-olive"
     data-component-root
     data-section-header>
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">

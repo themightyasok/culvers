@@ -38,7 +38,7 @@
   @include('components.image-hero', ['component' => $eventsArchiveHero])
 
   {{-- Match header/footer: gutter padding outside, `max-w-8xl` inner only. --}}
-  <section class="bg-lighter-cream pb-16 pt-10 md:pb-28 md:pt-12">
+  <section class="pb-16 pt-10 md:pb-28 md:pt-12">
     <div class="px-4 md:px-12">
       <div class="mx-auto w-full max-w-8xl">
         {{-- <div> wrapper (not <p>) so cascading text-center / typography

@@ -14,6 +14,23 @@ final class HorizontalScrollerPreset
 
     public const PRESET_HOMEPAGE_BRANDS = 'homepage_brands';
 
+    /** Figma `51:5005` — intro body copy width (natural wrap, not manual `<p>` breaks). */
+    public const HOMEPAGE_BRANDS_INTRO_BODY_MAX_W_PX = 588;
+
+    /** Figma `51:5007` uses `gap-[133px]` on a ~1494px frame; tightened in code for the live strip. */
+    public const HOMEPAGE_BRANDS_ITEM_GAP_PX = 48;
+
+    /** Generic horizontal scroller rows (mixed cards, not the homepage logo strip). */
+    public const DEFAULT_ITEM_GAP_PX = 80;
+
+    public static function itemGapPx(string $preset): int
+    {
+        return match ($preset) {
+            self::PRESET_HOMEPAGE_BRANDS => self::HOMEPAGE_BRANDS_ITEM_GAP_PX,
+            default => self::DEFAULT_ITEM_GAP_PX,
+        };
+    }
+
     /**
      * @param array<string, mixed> $component
      * @return array<string, mixed>
@@ -90,9 +107,9 @@ final class HorizontalScrollerPreset
             return true;
         }
 
-        $color = $component['scroller_header_text_color'] ?? '';
-        $align = $component['scroller_header_text_alignment'] ?? '';
-        if (($color !== '' && $color !== null) || ($align !== '' && $align !== null)) {
+        $color = (string) ($component['scroller_header_text_color'] ?? '');
+        $align = (string) ($component['scroller_header_text_alignment'] ?? '');
+        if ($color !== '' || $align !== '') {
             return false;
         }
 
@@ -140,7 +157,6 @@ final class HorizontalScrollerPreset
                 'scroller_header_text_alignment' => 'center',
                 'scroller_header_alignment' => 'middle',
                 'scroller_intro_flush' => 1,
-                'scroller_item_spacing' => 80,
                 'scroller_button_variant' => 'primary',
                 'scroller_button_size' => 'md',
                 'scroller_button_show_arrow' => 0,
@@ -164,7 +180,6 @@ final class HorizontalScrollerPreset
                 'scroller_header_text_alignment' => 'left',
                 'scroller_header_alignment' => 'top',
                 'scroller_intro_flush' => 0,
-                'scroller_item_spacing' => 240,
                 'scroller_button_variant' => 'primary',
                 'scroller_button_size' => 'md',
                 'scroller_button_show_arrow' => 0,

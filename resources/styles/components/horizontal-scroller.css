@@ -12,8 +12,8 @@
 
 .horizontal-scroller {
   @apply flex flex-col overflow-visible;
-  /* Fallback gap before CMS inline `--hs-item-gap`; Blade sets px from range slider */
-  --hs-item-gap: 1rem;
+  /* Fallback before Blade inline `--hs-item-gap` (preset constants in HorizontalScrollerPreset) */
+  --hs-item-gap: 3rem;
 }
 
 /* Full-bleed scrolling row (viewport width); header above stays in main grid */

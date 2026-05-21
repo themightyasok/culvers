@@ -3,7 +3,7 @@
 /**
  * Text-image slider — vertical stack of large Canela headlines that expand
  * in place to reveal a body paragraph plus two polaroid-style images that
- * pop in (left + right) with a staggered scale/rotate animation.
+ * beside the body when a row is open (desktop: tilted polaroids; mobile: one flat image).
  */
 
 use App\Helpers\Component;
@@ -82,12 +82,30 @@ return [
                             'media_upload' => 0,
                         ],
                     ],
+                    'item_cta_label' => [
+                        'type' => 'text',
+                        'options' => [
+                            'label' => __('CTA label', 'culvers'),
+                            'instructions' => __(
+                                'Optional button below the body (e.g. Contact us). Shown on mobile and desktop when the row is open.',
+                                'culvers'
+                            ),
+                            'wrapper' => ['width' => '50'],
+                        ],
+                    ],
+                    'item_cta_url' => [
+                        'type' => 'url',
+                        'options' => [
+                            'label' => __('CTA URL', 'culvers'),
+                            'wrapper' => ['width' => '50'],
+                        ],
+                    ],
                     'item_image_left' => [
                         'type' => 'image',
                         'options' => [
                             'label' => __('Left image', 'culvers'),
                             'instructions' => __(
-                                'Polaroid-style crop. Pops in from the left when the row opens.',
+                                'Polaroid-style crop shown to the left of the body when the row is open (desktop).',
                                 'culvers'
                             ),
                             'return_format' => 'array',
@@ -100,7 +118,7 @@ return [
                         'options' => [
                             'label' => __('Right image', 'culvers'),
                             'instructions' => __(
-                                'Polaroid-style crop. Pops in from the right when the row opens.',
+                                'Polaroid-style crop shown to the right of the body when the row is open (desktop).',
                                 'culvers'
                             ),
                             'return_format' => 'array',

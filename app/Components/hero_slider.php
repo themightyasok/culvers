@@ -17,8 +17,9 @@ return [
                 'message' => __(
                     'Place this block first on the page for the intended full-bleed hero. The site header overlaps '
                     . 'the imagery (fixed header). Use at least one slide. '
-                    . 'Optional per-slide mobile crops are set on each row in the <strong>Items</strong> tab '
-                    . '(<em>Image — mobile (optional)</em>).',
+                    . 'Each slide row has <strong>Image — desktop / tablet</strong> and '
+                    . '<strong>Image — mobile (optional)</strong> side by side on the <strong>Items</strong> tab; '
+                    . 'mobile replaces desktop below the md breakpoint (768px) when set.',
                     'culvers'
                 ),
                 'new_lines' => 'wpautop',

@@ -30,9 +30,11 @@ foreach ($rows as $index => $row) {
 
     $row['scroller_preset'] = 'homepage_brands';
     $row['scroller_body_text'] = sprintf(
-        '<p>%s</p><p>%s</p>',
-        esc_html__('From iconic high-street labels to local independents,', 'culvers'),
-        esc_html__('Culver Square brings the best of Colchester together under one roof.', 'culvers')
+        '<p>%s</p>',
+        esc_html__(
+            'From iconic high-street labels to local independents, Culver Square brings the best of Colchester together under one roof.',
+            'culvers'
+        )
     );
     $row['scroller_button_text'] = __('View all', 'culvers');
     $row['scroller_button_show_arrow'] = 0;

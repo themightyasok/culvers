@@ -91,6 +91,12 @@
 
   $centerLists = ! empty($c['split_center_lists']);
 
+  $copyAlignRaw = is_string($c['split_copy_align'] ?? null) ? (string) $c['split_copy_align'] : 'left';
+  $copyCentered = $copyAlignRaw === 'center' || $centerLists;
+
+  $copyBgRaw = is_string($c['split_copy_background'] ?? null) ? (string) $c['split_copy_background'] : 'olive';
+  $copyOnWhite = $copyBgRaw === 'white';
+
   $hasStaticSerifLines = $kicker !== '' || $headline !== '';
   $hasStaticCopy = $hasStaticSerifLines || $bodyPlain !== '';
   $hasCopy = $hasTabs || $hasStaticCopy;
@@ -105,7 +111,7 @@
   $bodyListClassesCentered = ' [&_ul]:mt-9 [&_ul]:w-full [&_ul]:list-inside [&_ul]:list-disc [&_ul]:p-0 [&_ul]:text-center [&_ul]:leading-[1.8]'
       . ' [&_ul>li+li]:mt-0';
 
-  $bodyListClasses = $centerLists ? $bodyListClassesCentered : $bodyListClassesLeft;
+  $bodyListClasses = $copyCentered ? $bodyListClassesCentered : $bodyListClassesLeft;
 
   $bodyClasses = 'max-w-[34.625rem] w-full font-sans text-xl font-light text-lighter-cream rt-link-brand'
       . ' [&_p+p]:mt-4 [&_strong]:font-medium [&_strong]:text-lighter-cream'
@@ -113,14 +119,26 @@
       . $bodyListClasses
       . ' [&_ul>li]:marker:text-lighter-cream';
 
-  $bodyClassesStatic = 'w-full max-w-[34.625rem] font-sans text-xl font-light text-white rt-link-brand'
-      . ' [&_p+p]:mt-4 [&_strong]:font-medium [&_strong]:text-white [&>*:first-child]:mt-0'
-      . $bodyListClasses
-      . ' [&_ul>li]:marker:text-white';
+  $bodyClassesStatic = $copyOnWhite
+      ? 'w-full max-w-[34.625rem] font-sans text-xl font-light text-deep-moss/90 rt-link-faded'
+          . ' [&_p+p]:mt-4 [&_strong]:font-medium [&_strong]:text-deep-moss [&>*:first-child]:mt-0'
+          . $bodyListClasses
+          . ' [&_ul>li]:marker:text-deep-moss'
+      : 'w-full max-w-[34.625rem] font-sans text-xl font-light text-white rt-link-brand'
+          . ' [&_p+p]:mt-4 [&_strong]:font-medium [&_strong]:text-white [&>*:first-child]:mt-0'
+          . $bodyListClasses
+          . ' [&_ul>li]:marker:text-white';
+
+  $staticSerifTone = $copyOnWhite ? 'text-faded-olive' : 'text-brand-500';
 
   $staticCopyColumnClasses = $hasTabs
       ? 'flex flex-col items-center justify-center gap-6 px-8 pb-12 pt-12 text-center lg:gap-8 lg:px-10 xl:px-14 xl:pt-12'
-      : 'px-8 pb-12 pt-12 lg:px-10 xl:px-14';
+      : ($copyCentered
+          ? 'flex flex-col items-center justify-center px-8 pb-12 pt-12 text-center lg:px-10 xl:px-14'
+          : 'px-8 pb-12 pt-12 lg:px-10 xl:px-14');
+
+  $copyColumnBgClass = $copyOnWhite ? 'bg-white' : 'bg-faded-olive';
+  $gridSurfaceClass = $copyOnWhite ? '' : 'bg-faded-olive';
 
   $tablistId = 'split-highlight-tabs-' . uniqid();
 @endphp
@@ -135,10 +153,10 @@
       {{-- Grid (not flex row) so the image column matches the copy column height even when the
            <img> is absolutely positioned (out of flow). Flex would leave the media cell at min-height only. --}}
       <div
-        class="grid overflow-hidden rounded-[10px] bg-faded-olive shadow-sm lg:min-h-[597px] lg:grid-cols-12 lg:items-stretch">
+        class="grid overflow-hidden rounded-[10px] {{ $gridSurfaceClass }} shadow-sm lg:min-h-[597px] lg:grid-cols-12 lg:items-stretch">
         {{-- Copy column: tabbed decks centred (Figma 51:7158). Static copy uses standard padding; list alignment is editor-controlled. --}}
         <div
-          class="max-lg:order-1 lg:order-none {{ $staticCopyColumnClasses }} {{ $ratio === '50-50' ? 'lg:col-span-6' : 'lg:col-span-7' }}">
+          class="max-lg:order-1 lg:order-none {{ $copyColumnBgClass }} {{ $staticCopyColumnClasses }} {{ $ratio === '50-50' ? 'lg:col-span-6' : 'lg:col-span-7' }}">
           @if($hasTabs)
             {{-- Tab list — Figma 51:7171 gaps 32px and is centre-justified. The border-b sits on
                  this row so its width MUST match the body block below (Figma's wrapper 51:7170 is
@@ -227,16 +245,16 @@
               @endforeach
             </div>
           @else
-            <div class="w-full max-w-[34.625rem]">
+            <div class="flex w-full max-w-[34.625rem] flex-col gap-6 lg:gap-8 {{ $copyCentered ? 'items-center' : '' }}">
               @if($hasStaticSerifLines)
-                <div>
+                <div class="{{ $copyCentered ? 'text-center' : '' }}">
                   @if($kicker !== '')
-                    <p class="font-heading text-5xl leading-[1.1] text-brand-500 lg:text-7xl lg:leading-[1.2]">
+                    <p class="font-heading text-5xl leading-[1.1] {{ $staticSerifTone }} lg:text-7xl lg:leading-[1.2]">
                       {{ esc_html($kicker) }}
                     </p>
                   @endif
                   @if($headline !== '')
-                    <p class="font-heading text-5xl leading-[1.1] text-brand-500 lg:text-7xl lg:leading-[1.2] {{ $kicker !== '' ? '-mt-1' : '' }}">
+                    <p class="font-heading text-5xl leading-[1.1] {{ $staticSerifTone }} lg:text-7xl lg:leading-[1.2] {{ $kicker !== '' ? '-mt-1' : '' }}">
                       {{ esc_html($headline) }}
                     </p>
                   @endif
@@ -250,7 +268,7 @@
               @endif
 
               @if($showCta)
-                <div class="mt-6 flex justify-start pt-2">
+                <div class="pt-2 {{ $copyCentered ? 'flex justify-center' : 'flex justify-start' }}">
                   @include('components.button', ['label' => $ctaLabel, 'href' => $ctaUrl])
                 </div>
               @endif

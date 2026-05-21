@@ -18,7 +18,8 @@
  *
  * Singles built (one per CPT — like Accessorize is for shops):
  *   - culvers_career    → senior-supervisor                (Figma 51:6450)
- *   - culvers_event     → valentines-at-hotel-chocolat     (Figma 51:6386)
+ *   - culvers_event     → easter-egg-hunt                  (Figma 51:6386 layout)
+ *   - culvers_offer     → valentines-at-hotel-chocolat     (Figma 51:6386)
  *   - culvers_eat_drink → greggs                           (Figma 51:6679)
  *
  * Re-running the script is idempotent — existing entries are updated in

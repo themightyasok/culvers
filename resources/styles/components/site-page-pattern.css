@@ -1,0 +1,25 @@
+/*
+ * Page background diamonds — Figma SVG tessellation (Group 16 + Group 12638).
+ *
+ * Tile SVGs: resources/images/page/page-background-tile-*.svg
+ * URL + ratio on `#app` via {@see App\View\SitePageSurface} (theme path, not Vite dist).
+ *
+ * One repeat unit = top + bottom export stacked; repeat-y tiles down the document
+ * with normal scroll (same layer as page content inside `#smooth-content`).
+ */
+
+.site-page-surface {
+  /* Figma page canvas: Lighter Cream (#FFFEFA) — solid fill behind diamond SVG tiles. */
+  background-color: var(--color-lighter-cream);
+  background-image: var(--culvers-page-tile);
+  background-repeat: repeat-y;
+  background-position: center top;
+  background-attachment: scroll;
+  background-size: 100% calc(100vw * var(--culvers-page-tile-ratio));
+}
+
+#app > .site-footer-spacer,
+#app > .site-footer {
+  position: relative;
+  z-index: 1;
+}

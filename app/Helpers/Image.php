@@ -126,4 +126,43 @@ final class Image
 
         return $html;
     }
+
+    /**
+     * Desktop + optional mobile cover images (below md shows mobile when set).
+     *
+     * @param array<string, mixed>|null $desktop
+     * @param array<string, mixed>|null $mobile
+     * @param array<string, mixed> $args Passed to {@see render()} for both images.
+     */
+    public static function renderResponsiveCover(?array $desktop, ?array $mobile, array $args = []): string
+    {
+        $deskUrl = isset($desktop['url']) ? trim((string) $desktop['url']) : '';
+        $mobUrl = isset($mobile['url']) ? trim((string) $mobile['url']) : '';
+
+        if ($deskUrl === '' && $mobUrl === '') {
+            return '';
+        }
+
+        $baseClass = trim((string) ($args['class'] ?? 'absolute inset-0 size-full object-cover'));
+        $html = '';
+
+        if ($mobUrl !== '') {
+            $mobArgs = $args;
+            $mobArgs['class'] = trim($baseClass . ' md:hidden');
+            $html .= self::render($mobile, $mobArgs);
+        }
+
+        $deskArgs = $args;
+        $deskArgs['class'] = $mobUrl !== ''
+            ? trim($baseClass . ' max-md:hidden')
+            : $baseClass;
+        if ($deskUrl !== '') {
+            $html .= self::render($desktop, $deskArgs);
+        } elseif ($mobUrl !== '') {
+            $deskArgs['class'] = $baseClass;
+            $html .= self::render($mobile, $deskArgs);
+        }
+
+        return $html;
+    }
 }

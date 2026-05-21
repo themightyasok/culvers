@@ -77,19 +77,14 @@
     data-image-hero>
     <div class="relative {{ $heroBandMin }} w-full overflow-hidden" data-background-parallax-trigger>
       @if($hasHero)
-        <picture class="absolute inset-0 block size-full">
-          @if($mobUrl !== '')
-            <source media="(max-width: 767px)" srcset="{{ esc_url($mobUrl) }}" />
-          @endif
-          {!! Image::render($desk, [
-              'class' => 'absolute inset-0 size-full object-cover',
-              'alt' => '',
-              'loading' => 'eager',
-              'decoding' => 'async',
-              'fetchpriority' => 'high',
-              'data' => ['background-parallax-image' => '1'],
-          ]) !!}
-        </picture>
+        {!! Image::renderResponsiveCover($desk, $mobUrl !== '' ? $mob : null, [
+            'class' => 'absolute inset-0 size-full object-cover',
+            'alt' => '',
+            'loading' => 'eager',
+            'decoding' => 'async',
+            'fetchpriority' => 'high',
+            'data' => ['background-parallax-image' => '1'],
+        ]) !!}
 
         <div
           class="pointer-events-none absolute inset-0 z-10 bg-black"

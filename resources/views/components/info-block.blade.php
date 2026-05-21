@@ -52,7 +52,7 @@
 
 @if($hasIntro || $hasGrid)
   <section
-    class="info-block {{ esc_attr($root) }} relative bg-lighter-cream py-12 text-deep-moss lg:py-16"
+    class="info-block {{ esc_attr($root) }} relative py-12 text-deep-moss lg:py-16"
     data-component-root
     data-info-block>
     <div class="relative z-10 {{ LayoutShell::INNER_MAX_GUTTERED }}">
@@ -94,14 +94,14 @@
       @endif
 
       @if($hasGrid)
-        <div class="{{ $hasIntro ? 'mt-12 md:mt-14' : '' }} info-block__grid mx-auto w-full bg-lighter-cream">
+        <div class="{{ $hasIntro ? 'mt-12 md:mt-14' : '' }} info-block__grid mx-auto w-full">
           @foreach($cells as $cell)
             {{--
               Divider geometry still follows Figma `51:5066` metadata (`--info-block-rule-h-inset: 17px`, `--info-block-rule-v-end: 7%`).
               Cell interior: fixed **icon band** (7.125 rem, icons `object-bottom`) lines up **h3** baselines per row; **`mt-4` + `gap-1.5`** tightens headline↔sub; **`md/lg` fixed tile heights** (248/252 px) budgets space so the bottom rule doesn’t sit far under the label.
             --}}
             <article
-              class="info-block__cell flex min-h-[220px] flex-col items-center bg-lighter-cream px-4 pt-5 text-center max-md:pb-14 sm:px-6 md:box-border md:h-[248px] md:max-h-[248px] md:min-h-[248px] md:justify-start md:px-8 md:pb-4 md:pt-5 lg:h-[252px] lg:max-h-[252px] lg:min-h-[252px]">
+              class="info-block__cell flex min-h-[220px] flex-col items-center px-4 pt-5 text-center max-md:pb-14 sm:px-6 md:box-border md:h-[248px] md:max-h-[248px] md:min-h-[248px] md:justify-start md:px-8 md:pb-4 md:pt-5 lg:h-[252px] lg:max-h-[252px] lg:min-h-[252px]">
               <div
                 class="info-block__flex-icon-band flex w-full shrink-0 flex-col justify-end [min-block-size:7.125rem] [max-block-size:7.125rem]">
                 @if($cell['image'] !== null)

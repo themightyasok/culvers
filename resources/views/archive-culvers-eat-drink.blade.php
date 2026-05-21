@@ -58,7 +58,7 @@
 
   {{-- Match header/footer: gutter padding outside, `max-w-8xl` inner only. --}}
   {{-- Sheet feedback row 21: same intro-padding trim as shop archive. --}}
-  <section class="directory-archive bg-lighter-cream pb-16 pt-6 md:pb-28 md:pt-8" x-data="directoryArchive">
+  <section class="directory-archive pb-16 pt-6 md:pb-28 md:pt-8" x-data="directoryArchive">
     <div class="px-4 md:px-12">
       <div class="mx-auto w-full max-w-8xl">
         {{-- `wpautop()` wraps the intro in its own <p>, so we use a <div> here.
@@ -122,8 +122,6 @@
   {{-- Same News / Events / Offers strip as Shops — Eat & Drink has its own options under Appearance → Eat & Drink directory. --}}
   @php $eatDrinkArchiveStories = \App\Directory\EatDrinkArchiveThreeCard::componentOrNull(); @endphp
   @if ($eatDrinkArchiveStories !== null)
-    <div class="bg-lighter-cream">
-      @include('components.three-card-block', ['component' => $eatDrinkArchiveStories])
-    </div>
+    @include('components.three-card-block', ['component' => $eatDrinkArchiveStories])
   @endif
 @endsection

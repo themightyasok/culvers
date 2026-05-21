@@ -36,7 +36,7 @@
 
 @if($hasDetails)
   <section
-    class="shop-store-details {{ esc_attr($root) }} bg-lighter-cream py-12 text-deep-moss lg:py-16"
+    class="shop-store-details {{ esc_attr($root) }} py-12 text-deep-moss lg:py-16"
     data-component-root
     data-shop-store-details>
     <div class="{{ LayoutShell::INNER_READABLE_960 }}">
