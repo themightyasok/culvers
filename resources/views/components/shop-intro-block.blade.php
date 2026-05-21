@@ -20,14 +20,14 @@
 
 @if($bodyPlain !== '')
   <section
-    class="shop-intro-block {{ esc_attr($root) }} py-12 text-deep-moss lg:py-16"
+    class="shop-intro-block {{ esc_attr($root) }} text-deep-moss"
     data-component-root
     data-shop-intro-block>
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
       {{-- Figma shop intro copy: Desktop/Body Copy/Large body copy — 20px / lh 1.3 Book (≈886px column). --}}
-      <div class="shop-intro-block__column mx-auto max-w-[886px] text-center">
+      <div class="shop-intro-block__column mx-auto max-w-[886px] py-12 text-center md:py-16">
         <div
-          class="shop-intro-block__body max-w-none font-sans text-xl font-light [&_p+p]:mt-[1.25em] [&_strong]:font-medium {{ esc_attr($tone) }}">
+          class="shop-intro-block__body max-w-none font-sans text-xl font-light [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_p+p]:mt-[1.25em] [&_strong]:font-medium {{ esc_attr($tone) }}">
           {!! $body !!}
         </div>
 

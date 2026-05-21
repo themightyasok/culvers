@@ -11,6 +11,25 @@
   --directory-archive-gap: 22px;
 }
 
+/* Archive / directory intro copy — equal space above and below the paragraph band. */
+.archive-intro {
+  padding-block: 3rem;
+}
+
+@media (width >= 48rem) {
+  .archive-intro {
+    padding-block: 4rem;
+  }
+}
+
+.archive-intro > :first-child {
+  margin-top: 0;
+}
+
+.archive-intro > :last-child {
+  margin-bottom: 0;
+}
+
 /*
  * Toolbar + sidebar must paint above the card grid so hit-testing always targets filters first.
  * (Sibling grid column uses z-index: 0; never set sidebar to z-index: auto when visible — it loses to 1fr column.)
@@ -144,10 +163,12 @@
   min-width: 0;
 }
 
-/* Sidebar panel rules — Figma: dark hairlines above category stack + between Category / Retailer type. */
+/* Sidebar panel rules — Figma 51:7443 / 51:7657: 325px panel, ~23px horizontal inset (matches shop card copy). */
 .directory-archive__aside {
   --directory-archive-rule: color-mix(in srgb, var(--color-deep-moss) 42%, transparent);
   border-top: 1px solid var(--directory-archive-rule);
+  padding-left: 23px;
+  padding-right: 23px;
 }
 
 /* Hairline blocks — Figma 51:7443 sidebar 325 px wide (`imgLine2` stack). Heading row caps its label with a

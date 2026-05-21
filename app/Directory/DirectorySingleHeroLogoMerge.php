@@ -13,14 +13,15 @@ namespace App\Directory;
  * Editors can still override via the hero row Logo field — we only merge when
  * `hero_logo` resolves empty and `hero_title_in_image` is unset.
  *
- * Runs after {@see DirectoryFlexibleDefaults} on the same `acf/load_value` pipeline
- * (priority 21).
+ * Runs after {@see DirectoryFlexibleDefaults}. Must hook `acf/format_value` — flexible
+ * content rehydrates subfields after `load_value`, so a `load_value`-only merge never
+ * reaches `get_field()` / the front end.
  */
 final class DirectorySingleHeroLogoMerge
 {
     public static function register(): void
     {
-        add_filter('acf/load_value/name=components', [self::class, 'mergeIntoFirstHero'], 21, 3);
+        add_filter('acf/format_value/name=components', [self::class, 'mergeIntoFirstHero'], 20, 3);
     }
 
     /**

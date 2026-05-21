@@ -43,9 +43,7 @@
       }, preg_split('/\r\n|\r|\n/', wp_strip_all_tags($subWithBreaks)))));
   }
 
-  $opRaw = $c['hero_overlay_opacity'] ?? null;
-  $opPct = is_numeric($opRaw) ? (int) $opRaw : 20;
-  $opPct = max(0, min(85, $opPct));
+  $opPct = \App\Helpers\Component::overlayOpacityPercent($c['hero_overlay_opacity'] ?? null, 20);
   $overlayAlpha = $opPct / 100;
 
   /**
@@ -78,7 +76,7 @@
     <div class="relative {{ $heroBandMin }} w-full overflow-hidden" data-background-parallax-trigger>
       @if($hasHero)
         {!! Image::renderResponsiveCover($desk, $mobUrl !== '' ? $mob : null, [
-            'class' => 'absolute inset-0 size-full object-cover',
+            'class' => 'absolute inset-0 size-full object-cover object-top',
             'alt' => '',
             'loading' => 'eager',
             'decoding' => 'async',

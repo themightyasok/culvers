@@ -57,8 +57,7 @@
   @include('components.image-hero', ['component' => $eatDrinkArchiveHero])
 
   {{-- Match header/footer: gutter padding outside, `max-w-8xl` inner only. --}}
-  {{-- Sheet feedback row 21: same intro-padding trim as shop archive. --}}
-  <section class="directory-archive pb-16 pt-6 md:pb-28 md:pt-8" x-data="directoryArchive">
+  <section class="directory-archive pb-16 md:pb-28" x-data="directoryArchive">
     <div class="px-4 md:px-12">
       <div class="mx-auto w-full max-w-8xl">
         {{-- `wpautop()` wraps the intro in its own <p>, so we use a <div> here.
@@ -69,7 +68,7 @@
           {!! wp_kses_post(wpautop($introHtml)) !!}
         </div>
 
-        <div class="mt-[72px] flex flex-col gap-[22px] md:mt-[88px]">
+        <div class="flex flex-col gap-[22px]">
           <div class="directory-archive__toolbar flex justify-center lg:justify-start">
             @include('partials.directory-filter-pill', [
                 'toggle_id' => $filter_toggle_id,
@@ -84,7 +83,7 @@
               :class="filtersVisible ? 'max-lg:max-h-[1600px] max-lg:overflow-visible' : 'max-lg:hidden'"
               role="region"
               aria-label="{{ esc_attr__('Eat & Drink filters', 'culvers') }}">
-              <aside class="directory-archive__aside w-full rounded-none bg-white px-0 pb-6 pt-0 shadow-none lg:w-[325px] lg:shrink-0">
+              <aside class="directory-archive__aside w-full rounded-none bg-white pb-6 pt-0 shadow-none lg:w-[325px] lg:shrink-0">
                 <h2 class="sr-only">{{ __('Eat & Drink filters', 'culvers') }}</h2>
 
                 @include('partials.directory-filter-group', [

@@ -1,0 +1,20 @@
+/**
+ * Travel calculator — map chrome + form submit (no CTA hover-widen on this row).
+ */
+
+.travel-calculator__submit .btn-dark:hover {
+  padding-inline: 1.5rem;
+}
+
+.travel-calculator__map-frame {
+  isolation: isolate;
+}
+
+.travel-calculator__map-iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: calc(100% + 80px);
+  margin-bottom: -80px;
+  border: 0;
+}

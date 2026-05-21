@@ -30,14 +30,14 @@
 
   @include('components.image-hero', ['component' => $offersArchiveHero])
 
-  <section class="pb-16 pt-10 md:pb-28 md:pt-12">
+  <section class="pb-16 md:pb-28">
     <div class="px-4 md:px-12">
       <div class="mx-auto w-full max-w-8xl">
         <div class="archive-intro mx-auto max-w-[802px] text-center font-sans text-xl font-light text-deep-moss">
           {!! wp_kses_post(wpautop($introHtml)) !!}
         </div>
 
-        <div class="mt-[72px] md:mt-[88px]">
+        <div>
           @if ($found_offers <= 0)
             <p class="rounded-[11px] border border-light-brown/25 bg-white px-6 py-12 text-center font-sans text-xl text-faded-olive">
               {{ __('No offers running right now — check back soon.', 'culvers') }}

@@ -38,7 +38,7 @@
   @include('components.image-hero', ['component' => $eventsArchiveHero])
 
   {{-- Match header/footer: gutter padding outside, `max-w-8xl` inner only. --}}
-  <section class="pb-16 pt-10 md:pb-28 md:pt-12">
+  <section class="pb-16 md:pb-28">
     <div class="px-4 md:px-12">
       <div class="mx-auto w-full max-w-8xl">
         {{-- <div> wrapper (not <p>) so cascading text-center / typography
@@ -49,7 +49,7 @@
           {!! wp_kses_post(wpautop($introHtml)) !!}
         </div>
 
-        <div class="mt-[72px] md:mt-[88px]">
+        <div>
           @if ($found_events <= 0)
             <p class="rounded-[11px] border border-light-brown/25 bg-white px-6 py-12 text-center font-sans text-xl text-faded-olive">
               {{ __('Nothing on the calendar yet — check back soon, or sign up to the newsletter to be the first to hear.', 'culvers') }}
