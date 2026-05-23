@@ -18,6 +18,17 @@
   background-size: 100% calc(100vw * var(--culvers-page-tile-ratio));
 }
 
+/*
+ * Below the Figma frame width, scaling the tile to 100vw shrinks the diamonds and
+ * repeat-y stacks them too tightly — reads as a busy zig-zag on the viewport edges.
+ * Keep the authored 1440px tile width (center-cropped) so the motif stays large and sparse.
+ */
+@media (max-width: 1023px) {
+  .site-page-surface {
+    background-size: 1440px calc(1440px * var(--culvers-page-tile-ratio));
+  }
+}
+
 #app > .site-footer-spacer,
 #app > .site-footer {
   position: relative;

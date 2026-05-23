@@ -167,23 +167,30 @@
               @if($hasLeftImage || $hasRightImage)
                 {{-- Desktop-only positioned images. `lg:contents` collapses the
                      wrapper so each absolute child anchors directly to the
-                     `lg:relative` parent above (the anchor) — no clipping. --}}
-                <div class="hidden lg:contents" x-show="isOpen({{ $i }})" x-cloak>
+                     `lg:relative` parent above (the anchor) — no clipping.
+                     Visibility is driven by GSAP on `[data-tis-media-motion]`, not
+                     x-show, so polaroids can bounce in/out when rows switch. --}}
+                <div class="hidden lg:contents">
                   @if($hasLeftImage)
                     {{-- Figma 51:8145 — LEFT polaroid is the smaller of the pair
                          (~247×290 in the 1500px frame), tilted +7.24° clockwise. --}}
                     <div
-                      class="text-image-slider__media text-image-slider__media--left pointer-events-none absolute left-[-20rem] top-1/2 w-[15rem] -translate-y-1/2 xl:left-[-22rem] xl:w-[16.5rem]"
+                      class="text-image-slider__media text-image-slider__media--left pointer-events-none absolute{{ $isOpen ? ' is-active' : '' }}"
                       data-tis-media="left">
                       <div
-                        class="text-image-slider__polaroid relative aspect-[4/5] w-full overflow-hidden rounded-[6px] ring-1 ring-deep-moss/10"
-                        data-tis-polaroid
-                        style="transform: rotate({{ (int) $item['tilt_left'] }}deg)">
-                        {!! Image::render($item['image_left'], [
-                            'class' => 'absolute inset-0 size-full object-cover',
-                            'alt' => '',
-                            'role' => 'presentation',
-                        ]) !!}
+                        class="text-image-slider__media-motion"
+                        data-tis-media-motion
+                        @if($isOpen) style="opacity:1;visibility:visible" @endif>
+                        <div
+                          class="text-image-slider__polaroid relative aspect-[4/5] w-full overflow-hidden rounded-[6px] ring-1 ring-deep-moss/10"
+                          data-tis-polaroid
+                          style="transform: rotate({{ (int) $item['tilt_left'] }}deg)">
+                          {!! Image::render($item['image_left'], [
+                              'class' => 'absolute inset-0 size-full object-cover',
+                              'alt' => '',
+                              'role' => 'presentation',
+                          ]) !!}
+                        </div>
                       </div>
                     </div>
                   @endif
@@ -192,17 +199,22 @@
                     {{-- Figma 51:8144 — RIGHT polaroid is the larger of the pair
                          (~327×384 in the 1500px frame), tilted -5.99° CCW. --}}
                     <div
-                      class="text-image-slider__media text-image-slider__media--right pointer-events-none absolute right-[-22rem] top-1/2 w-[20rem] -translate-y-1/2 xl:right-[-24rem] xl:w-[22rem]"
+                      class="text-image-slider__media text-image-slider__media--right pointer-events-none absolute{{ $isOpen ? ' is-active' : '' }}"
                       data-tis-media="right">
                       <div
-                        class="text-image-slider__polaroid relative aspect-[4/5] w-full overflow-hidden rounded-[6px] ring-1 ring-deep-moss/10"
-                        data-tis-polaroid
-                        style="transform: rotate({{ (int) $item['tilt_right'] }}deg)">
-                        {!! Image::render($item['image_right'], [
-                            'class' => 'absolute inset-0 size-full object-cover',
-                            'alt' => '',
-                            'role' => 'presentation',
-                        ]) !!}
+                        class="text-image-slider__media-motion"
+                        data-tis-media-motion
+                        @if($isOpen) style="opacity:1;visibility:visible" @endif>
+                        <div
+                          class="text-image-slider__polaroid relative aspect-[4/5] w-full overflow-hidden rounded-[6px] ring-1 ring-deep-moss/10"
+                          data-tis-polaroid
+                          style="transform: rotate({{ (int) $item['tilt_right'] }}deg)">
+                          {!! Image::render($item['image_right'], [
+                              'class' => 'absolute inset-0 size-full object-cover',
+                              'alt' => '',
+                              'role' => 'presentation',
+                          ]) !!}
+                        </div>
                       </div>
                     </div>
                   @endif
@@ -220,18 +232,21 @@
                   $mobileTisHandle = $hasRightImage ? 'right-mobile' : 'left-mobile';
               @endphp
               <div
-                class="text-image-slider__media text-image-slider__media--mobile mt-2 mb-8 w-full lg:hidden"
-                data-tis-media="{{ $mobileTisHandle }}"
-                x-show="isOpen({{ $i }})"
-                x-cloak>
+                class="text-image-slider__media text-image-slider__media--mobile mt-2 mb-8 w-full lg:hidden{{ $isOpen ? ' is-active' : '' }}"
+                data-tis-media="{{ $mobileTisHandle }}">
                 <div
-                  class="text-image-slider__polaroid relative aspect-[7/5] w-full overflow-hidden rounded-[10px]"
-                  data-tis-polaroid>
-                  {!! Image::render($mobileImage, [
-                      'class' => 'absolute inset-0 size-full object-cover',
-                      'alt' => '',
-                      'role' => 'presentation',
-                  ]) !!}
+                  class="text-image-slider__media-motion"
+                  data-tis-media-motion
+                  @if($isOpen) style="opacity:1;visibility:visible" @endif>
+                  <div
+                    class="text-image-slider__polaroid relative aspect-[7/5] w-full overflow-hidden rounded-[10px]"
+                    data-tis-polaroid>
+                    {!! Image::render($mobileImage, [
+                        'class' => 'absolute inset-0 size-full object-cover',
+                        'alt' => '',
+                        'role' => 'presentation',
+                    ]) !!}
+                  </div>
                 </div>
               </div>
             @endif

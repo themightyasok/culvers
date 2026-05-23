@@ -107,6 +107,10 @@ export default function registerCentreMapAlpine(Alpine) {
 
     /** Figma mobile (51:8950): pill tabs switch groups; filters stay visible (no panel toggle). */
     selectGroup(slug) {
+      if (this.openGroup !== slug) {
+        this.activeCategorySlug = '';
+        this.activeCategoryLabel = '';
+      }
       this.openGroup = slug;
     },
 

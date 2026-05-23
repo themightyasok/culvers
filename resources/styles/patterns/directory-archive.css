@@ -11,23 +11,34 @@
   --directory-archive-gap: 22px;
 }
 
-/* Archive / directory intro copy — equal space above and below the paragraph band. */
-.archive-intro {
-  padding-block: 3rem;
+/*
+ * Moss-tile card grid shared by directory archives (4-up, filters closed) and
+ * related rows (`shop_related_shops`, `shop_related_eat_drink`). Keeps tile
+ * width/height parity with `/shops/` and `/eat-drink/` directory grids.
+ */
+.directory-card-grid {
+  display: grid;
+  gap: var(--directory-archive-gap);
+  align-items: start;
+  grid-template-columns: minmax(0, 1fr);
 }
 
-@media (width >= 48rem) {
-  .archive-intro {
-    padding-block: 4rem;
+.directory-card-grid > [data-directory-card] {
+  justify-self: stretch;
+  width: 100%;
+  min-width: 0;
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  .directory-card-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-.archive-intro > :first-child {
-  margin-top: 0;
-}
-
-.archive-intro > :last-child {
-  margin-bottom: 0;
+@media (min-width: 1024px) {
+  .directory-card-grid--four-up {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 /*
@@ -166,9 +177,14 @@
 /* Sidebar panel rules — Figma 51:7443 / 51:7657: 325px panel, ~23px horizontal inset (matches shop card copy). */
 .directory-archive__aside {
   --directory-archive-rule: color-mix(in srgb, var(--color-deep-moss) 42%, transparent);
+}
+
+/* Top hairline must sit inside the horizontal inset — not on the aside border box (which spans full 325px). */
+.directory-archive__aside::before {
+  content: '';
+  display: block;
+  width: 100%;
   border-top: 1px solid var(--directory-archive-rule);
-  padding-left: 23px;
-  padding-right: 23px;
 }
 
 /* Hairline blocks — Figma 51:7443 sidebar 325 px wide (`imgLine2` stack). Heading row caps its label with a
@@ -199,18 +215,9 @@
 }
 
 .directory-archive__radio--checked {
-  border-color: var(--color-glowleaf, #d4ff50);
+  border-color: var(--color-deep-moss, #2e301e);
   background-color: var(--color-glowleaf, #d4ff50);
   box-shadow: inset 0 0 0 2px var(--color-white, #fff);
-}
-
-/* Option stack — MCP 51:7636–51:7643: Commuters SemiBold 12 / lh 24 / tracking 1; flex gap 12; circle 12. */
-.directory-archive__filter-option--on span:last-child {
-  @apply font-label text-xs font-semibold uppercase leading-6 tracking-wide text-deep-moss;
-}
-
-.directory-archive__filter-option--off span:last-child {
-  @apply font-label text-xs font-semibold uppercase leading-6 tracking-wide text-faded-olive;
 }
 
 /* Hover storefront image — stacked gradients (matches H&M tile treatment). */
@@ -226,4 +233,9 @@
   .directory-shop-card__logo-slot {
     transition-duration: 0.01ms !important;
   }
+}
+
+/* Pagination — Figma `51:8828` (43 px Glowleaf active pill, centred row). */
+.directory-archive__pagination-page {
+  min-width: 2.6875rem;
 }

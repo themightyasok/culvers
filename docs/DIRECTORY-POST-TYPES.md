@@ -32,7 +32,7 @@ app/Directory/
 ├── ShopFields.php                ← ACF "listing fields" (logo, hours line) for shop cards
 ├── ShopArchiveFields.php         ← ACF options page for the /shops/ archive customisation
 ├── ShopArchiveThreeCard.php      ← optional "stories" strip below the shops archive
-├── ShopFlexibleDefaults.php      ← editor-only defaults for new shop pages
+├── DirectoryFlexibleDefaults.php ← editor-only defaults for new directory singles
 ├── ShopSingleFlexibleSeedData.php
 ├── ShopDirectoryPopulate.php     ← one-shot CLI populate from Figma assets
 ├── ShopDirectorySeedData.php
@@ -198,7 +198,7 @@ And register the listing fields in
 ```php
 private function registerComponentFields(): void
 {
-    Directory\ShopFlexibleDefaults::register();
+    Directory\DirectoryFlexibleDefaults::register();
     $flexibleContent = $this->componentRegistry->registerFlexibleContent();
     acf_add_local_field_group($flexibleContent->build());
     Directory\ShopFields::register();

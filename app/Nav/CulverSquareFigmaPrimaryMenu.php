@@ -254,9 +254,75 @@ final class CulverSquareFigmaPrimaryMenu
         return (int) $created;
     }
 
+    /**
+     * Wipe and rebuild the menu assigned to {@see primary_navigation} so Appearance → Menus
+     * matches the live mega nav (Shop + nested categories, not flat top-level categories).
+     *
+     * @return array{menu_id: int, deleted: int, dry_run: bool, top_level: int, children: int}
+     */
+    public static function rebuildAssignedPrimaryMenu(bool $dryRun = false): array
+    {
+        $locations = get_nav_menu_locations();
+        $menuId = isset($locations['primary_navigation']) ? (int) $locations['primary_navigation'] : 0;
+        if ($menuId <= 0) {
+            $menuId = self::resolveMenuId();
+        }
+
+        if ($menuId <= 0) {
+            return [
+                'menu_id' => 0,
+                'deleted' => 0,
+                'dry_run' => $dryRun,
+                'top_level' => 0,
+                'children' => 0,
+            ];
+        }
+
+        if (! $dryRun) {
+            $locations['primary_navigation'] = $menuId;
+            set_theme_mod('nav_menu_locations', $locations);
+            update_option(self::OPTION_TERM_ID, (string) $menuId, true);
+        }
+
+        $items = wp_get_nav_menu_items($menuId);
+        $deleted = 0;
+        if (is_array($items)) {
+            $deleted = count($items);
+            if (! $dryRun) {
+                foreach ($items as $item) {
+                    if ($item instanceof \WP_Post) {
+                        wp_delete_post((int) $item->ID, true);
+                    }
+                }
+            }
+        }
+
+        $topLevel = 0;
+        $children = 0;
+        foreach (self::branches() as $branch) {
+            ++$topLevel;
+            $children += count($branch['children']);
+        }
+
+        if (! $dryRun) {
+            self::populateItems($menuId);
+            PrimaryNavLinkSync::syncAssignedPrimaryMenu();
+            self::hydrateAttachmentPreviewsForMenu($menuId);
+        }
+
+        return [
+            'menu_id' => $menuId,
+            'deleted' => $deleted,
+            'dry_run' => $dryRun,
+            'top_level' => $topLevel,
+            'children' => $children,
+        ];
+    }
+
     private static function populateItems(int $menuId): void
     {
         $shopArchive = self::shopArchiveUrl();
+        $position = 1;
 
         foreach (self::branches() as $branch) {
             $parentResult = wp_update_nav_menu_item($menuId, 0, [
@@ -264,7 +330,9 @@ final class CulverSquareFigmaPrimaryMenu
                 'menu-item-url' => $branch['url'],
                 'menu-item-status' => 'publish',
                 'menu-item-type' => 'custom',
+                'menu-item-position' => $position,
             ]);
+            ++$position;
 
             if (is_wp_error($parentResult)) {
                 continue;
@@ -569,7 +637,6 @@ final class CulverSquareFigmaPrimaryMenu
     private static function branches(): array
     {
         $shopArchive = self::shopArchiveUrl();
-        $careersArchive = self::careerArchiveUrl();
 
         return [
             [
@@ -646,19 +713,6 @@ final class CulverSquareFigmaPrimaryMenu
                     ['slug' => 'facilities', 'title' => __('Facilities', 'culvers'), 'preview' => self::IMG_GUEST_SERVICES],
                     ['slug' => 'faqs', 'title' => __("FAQ's", 'culvers'), 'preview' => self::IMG_GUEST_SERVICES],
                     ['slug' => 'contact-us', 'title' => __('Contact Us', 'culvers'), 'preview' => self::IMG_GUEST_SERVICES],
-                ],
-            ],
-            [
-                'title' => __('Careers', 'culvers'),
-                'url' => $careersArchive,
-                'parent_slug' => 'careers',
-                'panel_image' => self::IMG_PLAN_VISIT,
-                'children' => [
-                    [
-                        'slug' => 'open-roles',
-                        'title' => __('Open roles', 'culvers'),
-                        'preview' => self::IMG_PLAN_VISIT,
-                    ],
                 ],
             ],
         ];

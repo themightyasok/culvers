@@ -29,8 +29,9 @@ final class PrimaryNavLinkSync
      *     is a landing page, not an archive parent).
      * v4: append missing Careers mega branch (parent + Open roles) targeting
      *     the `culvers_career` archive and wire URLs.
+     * v5: Careers removed from primary bar (footer only); Figma order enforced in {@see PrimaryNav}.
      */
-    public const CURRENT_VER = 4;
+    public const CURRENT_VER = 5;
 
     public static function maybeSync(): void
     {
@@ -46,94 +47,6 @@ final class PrimaryNavLinkSync
     }
 
     /**
-     * Idempotent: inserts the Careers mega branch if the primary menu lacks a
-     * top-level "Careers" item (Figma bootstrap predates v4).
-     */
-    private static function ensureCareersMegaBranch(int $menuId): void
-    {
-        if ($menuId <= 0) {
-            return;
-        }
-
-        $items = wp_get_nav_menu_items($menuId);
-        if (! is_array($items)) {
-            return;
-        }
-
-        $careersTitle = __('Careers', 'culvers');
-
-        foreach ($items as $item) {
-            if (! $item instanceof \WP_Post) {
-                continue;
-            }
-            $parentDbId = (int) get_post_meta((int) $item->ID, '_menu_item_menu_item_parent', true);
-            if ($parentDbId !== 0) {
-                continue;
-            }
-            if (CulverSquareFigmaPrimaryMenu::menuTitlesMatch((string) $item->post_title, $careersTitle)) {
-                return;
-            }
-        }
-
-        $archive = CulverSquareFigmaPrimaryMenu::careerArchiveUrl();
-
-        /* Parent trigger — `#` survives until resolver pass below. */
-        $parentDbIdWrapped = wp_update_nav_menu_item($menuId, 0, [
-            'menu-item-title' => $careersTitle,
-            'menu-item-url' => '#',
-            'menu-item-status' => 'publish',
-            'menu-item-type' => 'custom',
-        ]);
-
-        if ($parentDbIdWrapped instanceof \WP_Error) {
-            return;
-        }
-
-        $parentDbId = (int) $parentDbIdWrapped;
-
-        $childWrapped = wp_update_nav_menu_item($menuId, 0, [
-            'menu-item-title' => __('Open roles', 'culvers'),
-            'menu-item-url' => '#',
-            'menu-item-status' => 'publish',
-            'menu-item-type' => 'custom',
-            'menu-item-parent-id' => $parentDbId,
-        ]);
-
-        if ($childWrapped instanceof \WP_Error) {
-            return;
-        }
-
-        $childId = (int) $childWrapped;
-
-        delete_post_meta($childId, NavMenuItemMeta::META_PREVIEW_ATTACHMENT);
-        update_post_meta(
-            $childId,
-            NavMenuItemMeta::META_PREVIEW_URL,
-            esc_url_raw(CulverSquareFigmaPrimaryMenu::careersMegaPreviewSourceUrl())
-        );
-
-        /* Parent URL resolves from resolver in the sync loop — still run one
-         * explicit patch so Careers doesn't stay on `#` if resolver misses. */
-        wp_update_nav_menu_item($menuId, $parentDbId, [
-            'menu-item-db-id' => $parentDbId,
-            'menu-item-title' => $careersTitle,
-            'menu-item-url' => esc_url_raw($archive),
-            'menu-item-status' => 'publish',
-            'menu-item-type' => 'custom',
-            'menu-item-parent-id' => 0,
-        ]);
-
-        wp_update_nav_menu_item($menuId, $childId, [
-            'menu-item-db-id' => $childId,
-            'menu-item-title' => __('Open roles', 'culvers'),
-            'menu-item-url' => esc_url_raw($archive),
-            'menu-item-status' => 'publish',
-            'menu-item-type' => 'custom',
-            'menu-item-parent-id' => $parentDbId,
-        ]);
-    }
-
-    /**
      * Patch the primary navigation menu in place.
      *
      * Returns true if a menu was found and processed; false if no primary
@@ -146,8 +59,6 @@ final class PrimaryNavLinkSync
         if ($menuId <= 0) {
             return false;
         }
-
-        self::ensureCareersMegaBranch($menuId);
 
         $items = wp_get_nav_menu_items($menuId);
         if (! is_array($items) || $items === []) {

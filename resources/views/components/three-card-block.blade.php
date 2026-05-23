@@ -3,10 +3,8 @@
   use App\Helpers\ThreeCardBlock;
 
   /**
-   * Three card block — manual cards or category-tabbed blog cards (1–3 cells).
-   * First-frame video preview swaps to playback on hover; reduced-motion safe.
-   * Heading defaults to H2 but the editor can promote to H1 when used as the
-   * page heading on a long-form landing.
+   * Three card block — directory CPT or blog category tabs (1–3 cells per tab).
+   * Card title, image, and link always come from the selected posts.
    */
 
   $c = is_array($component ?? null) ? $component : [];
@@ -21,23 +19,19 @@
   $sub = trim((string) ($c['cards_subheading'] ?? ''));
   $body = (string) ($c['cards_body'] ?? '');
 
-  /* Figma `51:8214 / 8220 / 8226` (homepage mobile manual cards): landscape
-     ≈1.73:1 with title + glowleaf arrow rendered inline. Manual mode is the
-     only variant that reflows on mobile — blog / CPT carousels keep the
-     portrait card so the swipable strip still reads as a stack. */
-  $isManualMode = (($c['cards_source'] ?? 'manual') === 'manual');
-  $useMobileSplide = ! $isManualMode;
-
   /* Resolve via helper so CPT mode auto-targets the chosen archive URL
      (e.g. Latest Events strip on /whats-on/ links to /latest-events/
-     with no editor wiring). Manual + blog modes still honour the explicit URL. */
+     with no editor wiring). */
   $viewAllUrl = ThreeCardBlock::viewAllUrl($c);
+  $mediaOverlayOpacity = ThreeCardBlock::mediaOverlayOpacity($c);
   $viewAllLabel = trim((string) ($c['cards_view_all_label'] ?? ''));
   if ($viewAllLabel === '') {
       $viewAllLabel = __('View all', 'culvers');
   }
 
   $hasIntro = $heading !== '' || $sub !== '' || trim(strip_tags($body)) !== '';
+  $mobilePromoStack = ThreeCardBlock::usesMobilePromoStack($c);
+  $mobilePromoOverlay = max($mediaOverlayOpacity, 30);
   $hasCards = false;
   foreach ($tabs as $tab) {
       $tabCards = $tab['cards'] ?? [];
@@ -94,7 +88,7 @@
     @if($showTabs)
       {{-- Filter chips — Figma 51:5133/5134/5135. Typography matches `.btn` (13px label pill). --}}
       <div
-        class="mt-10 flex flex-nowrap items-center justify-center gap-1.5 max-sm:overflow-x-auto max-sm:pb-1 md:mt-12 md:flex-wrap md:gap-4"
+        class="mt-6 flex flex-nowrap items-center justify-center gap-1.5 max-sm:overflow-x-auto max-sm:pb-1 md:mt-8 md:flex-wrap md:gap-4"
         role="tablist"
         aria-label="{{ esc_attr__('Filter stories', 'culvers') }}"
         x-on:keydown.right.prevent="selectTab((activeTab + 1) % {{ count($tabs) }}, true)"
@@ -110,7 +104,7 @@
                and there's no glowleaf flash before Alpine hydrates. --}}
           <button
             type="button"
-            class="three-card-block__tab btn btn-outline shrink-0 border-dustleaf bg-transparent text-dustleaf hover:bg-light-cream/60 hover:text-dustleaf aria-[selected=true]:border-transparent aria-[selected=true]:bg-glowleaf aria-[selected=true]:text-deep-moss aria-[selected=true]:hover:bg-glowleaf aria-[selected=true]:hover:text-deep-moss"
+            class="btn btn-filter-tab btn-outline shrink-0 cursor-pointer border-dustleaf bg-transparent text-dustleaf hover:bg-light-cream/60 hover:text-dustleaf aria-[selected=true]:border-glowleaf aria-[selected=true]:bg-glowleaf aria-[selected=true]:text-deep-moss aria-[selected=true]:hover:border-glowleaf aria-[selected=true]:hover:bg-glowleaf aria-[selected=true]:hover:text-deep-moss"
             id="{{ esc_attr($tid) }}"
             role="tab"
             aria-controls="{{ esc_attr($pid) }}"
@@ -151,10 +145,24 @@
         @if($showTabs) aria-labelledby="{{ 'three-card-tab-' . $index }}" @endif>
         @php $cards = $tab['cards'] ?? []; @endphp
         @if($cards !== [])
-          @if($useMobileSplide)
-            {{-- Mobile: single-card Splide (Figma tabbed blog strip). --}}
+          @if($mobilePromoStack)
+            {{-- Figma `51:8214` — stacked landscape promo tiles (Fun for the whole family). --}}
+            <div class="three-card-block__mobile-promo-stack flex flex-col gap-4 sm:hidden">
+              @foreach($cards as $card)
+                @include('partials.three-card-block-card', [
+                  'card' => $card,
+                  'cardAspectClass' => 'aspect-[398/230]',
+                  'isManualMode' => false,
+                  'showMobileArrow' => true,
+                  'mobileArrowLayout' => 'inline',
+                  'mediaOverlayOpacity' => $mobilePromoOverlay,
+                ])
+              @endforeach
+            </div>
+          @else
+            {{-- Mobile: portrait Splide (`51:8345`). Tablet/desktop: static three-up grid. --}}
             <div
-              class="three-card-block__splide splide sm:hidden"
+              class="three-card-block__splide splide culvers-splide-dots culvers-splide-dots--pagination-mt-5 sm:hidden"
               data-three-card-splide
               role="region"
               aria-label="{{ esc_attr__('Featured stories', 'culvers') }}">
@@ -167,43 +175,28 @@
                         'cardAspectClass' => 'aspect-[2/3]',
                         'isManualMode' => false,
                         'showMobileArrow' => true,
+                        'mobileArrowLayout' => 'stack',
+                        'mediaOverlayOpacity' => $mediaOverlayOpacity,
                       ])
                     </li>
                   @endforeach
                 </ul>
               </div>
             </div>
-
-            {{-- Tablet/desktop: static grid (hidden below sm while Splide handles mobile). --}}
-            <div
-              class="three-card-block__grid three-card-block__grid--desktop mx-auto hidden w-full max-w-7xl grid-cols-2 gap-4 sm:grid lg:grid-cols-3">
-              @foreach($cards as $card)
-                @include('partials.three-card-block-card', [
-                  'card' => $card,
-                  'cardAspectClass' => 'aspect-[2/3]',
-                  'isManualMode' => false,
-                  'showMobileArrow' => false,
-                ])
-              @endforeach
-            </div>
-          @else
-            <div
-              class="three-card-block__grid mx-auto grid w-full max-w-7xl grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              @foreach($cards as $card)
-                @php
-                  $cardAspectClass = $isManualMode
-                      ? 'aspect-[2/3] max-sm:aspect-[173/100]'
-                      : 'aspect-[2/3]';
-                @endphp
-                @include('partials.three-card-block-card', [
-                  'card' => $card,
-                  'cardAspectClass' => $cardAspectClass,
-                  'isManualMode' => $isManualMode,
-                  'showMobileArrow' => $isManualMode,
-                ])
-              @endforeach
-            </div>
           @endif
+
+          <div
+            class="three-card-block__grid three-card-block__grid--desktop mx-auto hidden w-full max-w-7xl grid-cols-2 gap-4 sm:grid lg:grid-cols-3">
+            @foreach($cards as $card)
+              @include('partials.three-card-block-card', [
+                'card' => $card,
+                'cardAspectClass' => 'aspect-[2/3]',
+                'isManualMode' => false,
+                'showMobileArrow' => false,
+                'mediaOverlayOpacity' => $mediaOverlayOpacity,
+              ])
+            @endforeach
+          </div>
         @endif
       </div>
     @endforeach

@@ -13,7 +13,7 @@ use App\Constants\ComponentTypes;
  * in code ({@see \App\ComponentRegistry} Main tab).
  *
  * **Rule:** default flex chrome is **transparent** so Figma page diamonds
- * ({@see resources/styles/components/site-page-pattern.css} viewport layer) show on the
+ * ({@see resources/styles/patterns/site-page-pattern.css} viewport layer) show on the
  * off-white `#app` surface. Layouts whose Blade root already paints the full
  * band (hero, travel calculator, split highlight card, …) stay **`none`**.
  * Only layouts that need a true white band (e.g. horizontal scroller with
@@ -47,8 +47,8 @@ final class ComponentLayoutChrome
     }
 
     /**
-     * Solid white band — default flex wrapper surface for editorial blocks that do
-     * not set their own outer `bg-*` (content_section, section_header, scroller, …).
+     * Solid white band — for layouts that need an explicit white surface
+     * (e.g. horizontal scroller with `text-white` header copy).
      *
      * @return array<string, mixed>
      */

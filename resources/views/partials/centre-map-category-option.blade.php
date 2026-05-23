@@ -13,11 +13,12 @@
   $catSlugJson = (string) ($catSlugJson ?? '""');
   $catLabelJson = (string) ($catLabelJson ?? '""');
   $isAll = ! empty($isAll);
+  $filterOnly = ! empty($filterOnly);
   $catUrl = trim((string) ($cat['url'] ?? ''));
-  $rowClass = 'centre-map__category group flex w-full items-start gap-3 text-left font-label text-xs font-semibold uppercase leading-6 tracking-wide text-light-green transition hover:text-glowleaf culvers-focus-ring-compact ' . Component::centreMapCategoryMobileClasses() . ' max-lg:items-center max-lg:gap-3 lg:items-center lg:rounded-md lg:px-1 lg:py-1.5 lg:font-sans lg:text-sm lg:font-semibold lg:uppercase lg:tracking-[0.18em]';
+  $rowClass = 'centre-map__category group flex w-full cursor-pointer items-start gap-3 text-left font-label text-xs font-semibold uppercase leading-6 tracking-wide text-light-green transition hover:text-glowleaf culvers-focus-ring-compact ' . Component::centreMapCategoryMobileClasses() . ' max-lg:items-center max-lg:gap-3 lg:items-center lg:rounded-md lg:px-1 lg:py-1.5 lg:font-sans lg:text-sm lg:font-semibold lg:uppercase lg:tracking-[0.18em]';
   $bulletClass = 'centre-map__category-bullet mt-0.5 inline-flex size-3 shrink-0 items-center justify-center rounded-full border border-lighter-cream/60 transition max-lg:mt-0 lg:mt-0';
 @endphp
-@if($catUrl !== '')
+@if($catUrl !== '' && ! $filterOnly)
   <a
     href="{{ esc_url($catUrl) }}"
     class="{{ $rowClass }}">
@@ -32,7 +33,7 @@
     @click="@if($isAll)activeCategorySlug = ''; activeCategoryLabel = '';@else activeCategorySlug = activeCategorySlug === {{ $catSlugJson }} ? '' : {{ $catSlugJson }}; activeCategoryLabel = activeCategorySlug === {{ $catSlugJson }} ? {{ $catLabelJson }} : '';@endif">
     <span
       class="{{ $bulletClass }}"
-      :class="activeCategorySlug === {{ $catSlugJson }} ? 'centre-map__category-bullet--active border-glowleaf bg-glowleaf' : ''"
+      :class="activeCategorySlug === {{ $catSlugJson }} ? 'centre-map__category-bullet--active border-deep-moss bg-glowleaf' : ''"
       aria-hidden="true">
     </span>
     <span class="min-w-0 text-pretty">{{ esc_html($cat['label'] ?? '') }}</span>

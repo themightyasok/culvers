@@ -31,6 +31,9 @@ For the rules every component file follows, read
 | **Shop singles** | `shop_intro_block` | [SHOP-INTRO-BLOCK.md](SHOP-INTRO-BLOCK.md) | Centred intro copy + optional CTA on a cream band. |
 | **Shop singles** | `shop_store_details` | [SHOP-STORE-DETAILS.md](SHOP-STORE-DETAILS.md) | Contact / address / social columns. |
 | **Shop singles** | `shop_related_shops` | [SHOP-RELATED-SHOPS.md](SHOP-RELATED-SHOPS.md) | "More shops you might enjoy" row using directory cards. |
+| **Shop singles** | `shop_related_eat_drink` | [SHOP-RELATED-EAT-DRINK.md](SHOP-RELATED-EAT-DRINK.md) | "More flavours to discover" row on eat & drink singles. |
+| **Leasing** | `leasing_agent_grid` | [LEASING-AGENT-GRID.md](LEASING-AGENT-GRID.md) | Three-up lettings agent columns. |
+| **Singles** | `social_share` | [SOCIAL-SHARE.md](SOCIAL-SHARE.md) | Share-with-a-friend icon row. |
 
 ## How to add a new component
 

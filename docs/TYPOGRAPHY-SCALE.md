@@ -49,8 +49,8 @@ Body tier keeps Tailwind defaults; display tier (`text-3xl`+) is retuned to Figm
 
 | Arbitrary | Where | Why kept |
 |-----------|-------|----------|
-| `lg:text-[7.75rem]` (124 px) | `image-hero` title @ lg | Between `text-8xl` (84 px) and full-bleed Figma hero; no stock step |
-| `leading-[1.05]` / `leading-none` on hero | `image-hero` | Tight display lockup at lg |
+| `leading-[1.05]` / `leading-none` on hero | `hero-slider` | Tight display lockup at lg |
+| `leading-[0.7]` on hero | `image-hero` | Static subpage hero title lockup |
 
 ## Pill / label cluster — `.btn` is canonical
 
@@ -134,7 +134,8 @@ Canonical helpers live in **`App\Helpers\Component`** (`sectionHeadingClasses`, 
 | `51:8211` | Homepage | Section H2 | Canela 46 / 1.1 | `text-5xl` | `sectionHeadingClasses()` |
 | `51:8212` | Homepage | Section intro | Halyard 14 / 20 | `text-sm leading-5` | `max-sm:` on three-card intro |
 | `51:8283` | Homepage | Info tile title | Canela 42 | `text-4xl` (40) | info-block `h3` |
-| `51:9234` | Subpage | Image-hero H1 | Canela 46 / 1.1 | `text-5xl` | `imageHeroTitleClasses()` |
+| `51:9234` | Subpage | Image-hero H1 mobile | Canela 46 / lh 0.7 | `text-[46px] leading-[0.7]` | `imageHeroTitleClasses()` |
+| `51:9364` | Subpage | Image-hero H1 desktop | Canela 96 / lh 0.7 | `md:text-9xl leading-[0.7]` | `imageHeroTitleClasses()` |
 | `51:9236` | Subpage | Image-hero subtitle | Commuter 16 / 24 / 1 px | `text-base` + `tracking-[0.0625em]` | `imageHeroSubtitleClasses()` |
 | `51:8398` | Career | Job title | Canela 46 / 1.1 | `text-5xl` | career-detail title |
 | `51:8411` | Career | Meta label/value | Halyard 20 / 24 | `text-xl` | `font-sans` meta rows |

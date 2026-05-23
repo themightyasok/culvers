@@ -20,12 +20,6 @@ final class HomepageFlexibleSeedData
 
     private const FIGMA_VIDEO_POSTER = 'https://www.figma.com/api/mcp/asset/477b40bd-356a-45e4-a1ba-e7fc2049cbd7';
 
-    private const FIGMA_POST_EASTER = 'https://www.figma.com/api/mcp/asset/8732e173-c4a0-40a4-9132-a0e855137225';
-
-    private const FIGMA_POST_SANTA = 'https://www.figma.com/api/mcp/asset/b2c711f4-f628-4baf-8d52-fe5c860c3f0f';
-
-    private const FIGMA_POST_MOTHERS = 'https://www.figma.com/api/mcp/asset/ead4bdb3-8fc5-4c5d-9a54-4e97e72dfb13';
-
     private const FIGMA_HOURS_GRAPHIC_LEFT = 'https://www.figma.com/api/mcp/asset/0fdbac2d-b291-4f77-95db-c2389a0f98c5';
 
     private const FIGMA_HOURS_GRAPHIC_RIGHT = 'https://www.figma.com/api/mcp/asset/76420588-4f2c-4e56-a519-5532a0f303f4';
@@ -106,10 +100,9 @@ final class HomepageFlexibleSeedData
      */
     private static function threeColVideoRow(): array
     {
-        $demoUrl = self::DEMO_VIDEO_MP4;
-
         return array_merge(self::base('three_card_block'), [
-            'cards_source' => 'manual',
+            'cards_source' => 'cpt',
+            'cards_media_overlay_opacity' => 25,
             'cards_heading' => __('Fun for the whole family', 'culvers'),
             'cards_subheading' => '',
             'cards_body' => sprintf(
@@ -119,32 +112,10 @@ final class HomepageFlexibleSeedData
                     'culvers'
                 )
             ),
-            'cards_items' => [
-                [
-                    'card_title' => __('Shop', 'culvers'),
-                    'card_url' => home_url('/shopping/'),
-                    'card_media_type' => 'video',
-                    'card_video' => ['url' => $demoUrl, 'mime_type' => 'video/mp4'],
-                    'card_image' => null,
-                    'card_image_alt' => '',
-                ],
-                [
-                    'card_title' => __('Eat & Drink', 'culvers'),
-                    'card_url' => home_url('/dining/'),
-                    'card_media_type' => 'video',
-                    'card_video' => ['url' => $demoUrl, 'mime_type' => 'video/mp4'],
-                    'card_image' => null,
-                    'card_image_alt' => '',
-                ],
-                [
-                    'card_title' => __('Plan My Visit', 'culvers'),
-                    'card_url' => home_url('/visit/'),
-                    'card_media_type' => 'video',
-                    'card_video' => ['url' => $demoUrl, 'mime_type' => 'video/mp4'],
-                    'card_image' => null,
-                    'card_image_alt' => '',
-                ],
-            ],
+            'cards_cpt_post_type' => ['culvers_shop'],
+            'cards_cpt_count' => 3,
+            'cards_view_all_url' => home_url('/shops/'),
+            'cards_view_all_label' => __('View all', 'culvers'),
         ]);
     }
 
@@ -257,42 +228,13 @@ final class HomepageFlexibleSeedData
      */
     private static function threeColBlogRow(): array
     {
-        $blogArchive = get_post_type_archive_link('post');
-        $fallbackUrl = is_string($blogArchive) && $blogArchive !== ''
-            ? $blogArchive
-            : home_url('/');
-
         return array_merge(self::base('three_card_block'), [
-            'cards_source' => 'manual',
+            'cards_source' => 'cpt',
             'cards_heading' => __('What are you looking for today?', 'culvers'),
             'cards_subheading' => '',
             'cards_body' => '',
-            'cards_items' => [
-                [
-                    'card_title' => __('Culver Square Easter Egg hunt', 'culvers'),
-                    'card_url' => $fallbackUrl,
-                    'card_media_type' => 'image',
-                    'card_image' => ['url' => self::FIGMA_POST_EASTER, 'alt' => __('Culver Square Easter Egg hunt', 'culvers')],
-                    'card_image_alt' => __('Culver Square Easter Egg hunt', 'culvers'),
-                    'card_video' => null,
-                ],
-                [
-                    'card_title' => __('Santa’s Grotto at Culver Square', 'culvers'),
-                    'card_url' => $fallbackUrl,
-                    'card_media_type' => 'image',
-                    'card_image' => ['url' => self::FIGMA_POST_SANTA, 'alt' => __('Santa’s Grotto at Culver Square', 'culvers')],
-                    'card_image_alt' => __('Santa’s Grotto at Culver Square', 'culvers'),
-                    'card_video' => null,
-                ],
-                [
-                    'card_title' => __('Mothers Day at Culver Square', 'culvers'),
-                    'card_url' => $fallbackUrl,
-                    'card_media_type' => 'image',
-                    'card_image' => ['url' => self::FIGMA_POST_MOTHERS, 'alt' => __('Mothers Day at Culver Square', 'culvers')],
-                    'card_image_alt' => __('Mothers Day at Culver Square', 'culvers'),
-                    'card_video' => null,
-                ],
-            ],
+            'cards_cpt_post_type' => ['culvers_news', 'culvers_event', 'culvers_offer'],
+            'cards_cpt_count' => 3,
         ]);
     }
 

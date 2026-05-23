@@ -33,6 +33,7 @@ class Fields
     private function registerComponentFields(): void
     {
         Directory\DirectoryFlexibleDefaults::register();
+        Directory\EatDrinkSingleFlexiblePopulate::registerAcfLoadSanitizer();
         Directory\DirectorySingleHeroLogoMerge::register();
         $flexibleContent = $this->componentRegistry->registerFlexibleContent();
         acf_add_local_field_group($flexibleContent->build());

@@ -18,7 +18,7 @@
       if ($headerWordmarkRaw !== '') {
           $headerWordmarkSvg = (string) preg_replace(
               '/<svg\b/',
-              '<svg class="block h-[22px] w-auto max-w-[min(100%,178px)] max-lg:h-[40px] shrink-0 text-current [&_svg]:max-h-full" aria-hidden="true" focusable="false"',
+              '<svg class="block h-[22px] w-auto max-w-[min(100%,178px)] max-lg:h-[56px] max-lg:max-w-[min(100%,249px)] shrink-0 text-current [&_svg]:max-h-full" aria-hidden="true" focusable="false"',
               $headerWordmarkRaw,
               1,
           );
@@ -52,15 +52,18 @@
     child of `<header>` so `position:fixed` resolves to the viewport (transform ancestors would clip it).
   --}}
   <div
-    class="site-header__chrome will-change-transform transition-transform duration-700 ease-[cubic-bezier(0.33,1,0.68,1)] motion-reduce:transition-none"
+    class="site-header__chrome will-change-transform motion-reduce:transition-none"
     x-ref="headerChrome"
-    x-bind:class="headerDockHidden ? '-translate-y-full pointer-events-none' : 'translate-y-0'">
+    x-bind:class="[
+      headerDockHidden ? '-translate-y-full pointer-events-none' : 'translate-y-0',
+      headerDockTransitionEnabled ? 'transition-transform duration-700 ease-[cubic-bezier(0.33,1,0.68,1)]' : '',
+    ]">
   {{-- Shell: full width; content width matches footer (`lg:px-12` + inner `max-w-8xl`). --}}
   <div class="site-header__shell w-full overflow-visible">
     {{-- Entrance animation once the header intersects the viewport. --}}
     <div
-      class="site-header__reveal transition-all duration-700 ease-out"
-      x-bind:class="headerRevealed ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'">
+      class="site-header__reveal max-lg:translate-y-0 max-lg:opacity-100 lg:transition-all lg:duration-700 lg:ease-out"
+      x-bind:class="headerRevealed ? 'translate-y-0 opacity-100' : 'lg:translate-y-8 lg:opacity-0'">
       {{-- Figma: pill sits inside `pt-[46px] px-[46px] pb-[10px]` from the frame edge.
            `lg:px-12` (48px) is +2px, kept stock; the top is the visible spec. --}}
       <div
@@ -114,13 +117,13 @@
                     x-show="!searchOpen"
                     x-cloak>
                     @if($headerWordmarkSvg !== '')
-                      <span class="flex max-h-[28px] w-[178px] max-w-[min(100%,178px)] items-center max-lg:max-h-[44px] [&_svg]:max-h-full [&_svg]:max-w-full [&_svg]:object-contain max-lg:[&_svg]:object-center lg:[&_svg]:object-left">{!! $headerWordmarkSvg !!}</span>
+                      <span class="flex max-h-[28px] w-[178px] max-w-[min(100%,178px)] items-center max-lg:max-h-[56px] max-lg:w-[249px] max-lg:max-w-[min(100%,249px)] [&_svg]:max-h-full [&_svg]:max-w-full [&_svg]:object-contain max-lg:[&_svg]:object-center lg:[&_svg]:object-left">{!! $headerWordmarkSvg !!}</span>
                     @elseif(has_custom_logo())
-                      <span class="block max-h-[28px] w-[178px] max-lg:max-h-[44px] [&_img]:h-full [&_img]:w-auto [&_img]:max-h-[28px] max-lg:[&_img]:max-h-[44px] [&_img]:object-contain [&_img]:object-left max-lg:[&_img]:object-center">
+                      <span class="block max-h-[28px] w-[178px] max-lg:max-h-[56px] max-lg:w-[249px] max-lg:max-w-[min(100%,249px)] [&_img]:h-full [&_img]:w-auto [&_img]:max-h-[28px] max-lg:[&_img]:max-h-[56px] [&_img]:object-contain [&_img]:object-left max-lg:[&_img]:object-center">
                         {!! get_custom_logo() !!}
                       </span>
                     @else
-                      @include('partials.culver-square-logo', ['class' => 'block h-[22px] w-[178px] max-w-[min(100%,178px)] shrink-0 text-glowleaf max-lg:h-[40px] lg:max-w-full [&_svg]:max-h-full'])
+                      @include('partials.culver-square-logo', ['class' => 'block h-[22px] w-[178px] max-w-[min(100%,178px)] shrink-0 text-glowleaf max-lg:h-[56px] max-lg:w-[249px] max-lg:max-w-[min(100%,249px)] lg:max-w-full [&_svg]:max-h-full'])
                     @endif
                   </a>
 
@@ -189,7 +192,7 @@
                 <div class="mega-nav__bar-end relative z-20 flex shrink-0 items-center gap-2 lg:gap-[18px]">
                   <button
                     type="button"
-                    class="mega-nav__search-mobile relative flex shrink-0 items-center justify-center culvers-focus-ring-compact lg:hidden"
+                    class="mega-nav__search-mobile relative flex size-[39px] shrink-0 items-center justify-center rounded-[45.349px] bg-glowleaf p-0 culvers-focus-ring-compact lg:hidden"
                     x-bind:aria-expanded="searchOpen ? 'true' : 'false'"
                     aria-controls="site-header-search"
                     x-show="!searchOpen"
@@ -376,17 +379,21 @@
           <div
             class="site-header__search-bar w-full border-brand-500 bg-light-cream max-lg:min-h-[75px] max-lg:rounded-none max-lg:border-0 max-lg:border-b-4 max-lg:border-glowleaf lg:rounded-full lg:border-4">
             <div class="site-header__search-gutter w-full max-lg:py-0 lg:py-0">
-              <div
-                class="site-header__search-row flex min-h-[75px] w-full items-center gap-3 px-4 py-2 max-lg:gap-4 lg:min-h-[80px] lg:gap-8 lg:px-5 xl:px-6">
+              <form
+                method="get"
+                action="{{ esc_url(home_url('/')) }}"
+                role="search"
+                class="site-header__search-row flex min-h-[75px] w-full items-center gap-3 px-4 py-2 max-lg:gap-4 lg:min-h-[80px] lg:gap-8 lg:px-5 xl:px-6"
+                x-on:submit="closeSearch()">
                 <a class="shrink-0 text-deep-moss" href="{{ esc_url(home_url('/')) }}" rel="home" aria-label="{{ esc_attr(get_bloginfo('name')) }}">
                   @if($headerWordmarkSvg !== '')
-                    <span class="flex max-h-[28px] w-[178px] max-w-full items-center max-lg:max-h-[40px] [&_svg]:max-h-full [&_svg]:max-w-full [&_svg]:object-contain [&_svg]:object-left">{!! $headerWordmarkSvg !!}</span>
+                    <span class="flex max-h-[28px] w-[178px] max-w-full items-center max-lg:max-h-[56px] max-lg:w-[249px] max-lg:max-w-[min(100%,249px)] [&_svg]:max-h-full [&_svg]:max-w-full [&_svg]:object-contain [&_svg]:object-left">{!! $headerWordmarkSvg !!}</span>
                   @elseif(has_custom_logo())
-                    <span class="block max-h-[28px] w-[178px] max-lg:max-h-[40px] [&_img]:h-full [&_img]:w-auto [&_img]:max-h-[28px] max-lg:[&_img]:max-h-[40px] [&_img]:object-contain [&_img]:object-left">
+                    <span class="block max-h-[28px] w-[178px] max-lg:max-h-[56px] max-lg:w-[249px] max-lg:max-w-[min(100%,249px)] [&_img]:h-full [&_img]:w-auto [&_img]:max-h-[28px] max-lg:[&_img]:max-h-[56px] [&_img]:object-contain [&_img]:object-left">
                       {!! get_custom_logo() !!}
                     </span>
                   @else
-                    @include('partials.culver-square-logo', ['class' => 'block h-[22px] w-[178px] max-w-full text-deep-moss max-lg:h-[40px]'])
+                    @include('partials.culver-square-logo', ['class' => 'block h-[22px] w-[178px] max-w-full text-deep-moss max-lg:h-[56px] max-lg:w-[249px] max-lg:max-w-[min(100%,249px)]'])
                   @endif
                 </a>
                 <svg class="shrink-0 text-faded-olive" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -412,7 +419,7 @@
                     <path d="M6 6 18 18M18 6 6 18" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
                   </svg>
                 </button>
-              </div>
+              </form>
             </div>
           </div>
           <div
@@ -443,11 +450,8 @@
     x-show="mobileOpen"
     x-cloak
     x-transition:enter="transition ease-out duration-300 motion-reduce:transition-none"
-    x-transition:enter-start="-translate-x-full opacity-0"
-    x-transition:enter-end="translate-x-0 opacity-100"
-    x-transition:leave="transition ease-in duration-200 motion-reduce:transition-none"
-    x-transition:leave-start="translate-x-0 opacity-100"
-    x-transition:leave-end="-translate-x-full opacity-0"
+    x-transition:enter-start="-translate-x-full"
+    x-transition:enter-end="translate-x-0"
     role="dialog"
     aria-modal="true"
     aria-labelledby="mega-mobile-drawer-title">
@@ -485,8 +489,11 @@
 
     <div class="relative min-h-0 flex-1 overflow-hidden">
       <div
-        class="flex h-full min-h-0 w-[200%] transition-transform duration-300 ease-[cubic-bezier(0.33,1,0.68,1)] motion-reduce:transition-none"
-        :class="mobileNavDepth === 0 ? 'translate-x-0' : '-translate-x-1/2'">
+        class="flex h-full min-h-0 w-[200%] ease-[cubic-bezier(0.33,1,0.68,1)] motion-reduce:transition-none"
+        x-bind:class="[
+          mobileNavDepth === 0 ? 'translate-x-0' : '-translate-x-1/2',
+          mobileNavAnimate ? 'transition-transform duration-300' : 'transition-none',
+        ]">
         {{-- Root panel — sheet feedback row 5: tighter horizontal padding (text closer to edges)
              + bottom block pinned to bottom of the panel (Useful Links + socials). --}}
         <div
@@ -519,6 +526,7 @@
                       <a
                         class="flex w-full items-center justify-between gap-4 py-[26px] font-heading text-4xl leading-[1.1] focus-visible:rounded-sm culvers-focus-ring-compact{{ $mobileCurrent ? ' text-glowleaf' : ' text-faded-olive' }}"
                         href="{{ esc_url($branch['url']) }}"
+                        x-on:click.prevent="followMobileNavLink('{{ esc_url($branch['url']) }}')"
                         @if($mobileCurrent) aria-current="page" @endif>
                         <span>{{ $branch['title'] }}</span>
                         <span class="inline-flex shrink-0 items-center justify-center text-faded-olive" aria-hidden="true">
@@ -550,7 +558,8 @@
                 class="flex min-h-[61px] divide-x divide-faded-olive/15 overflow-hidden rounded-[12px] bg-light-green/60 text-faded-olive">
                 <a
                   class="flex flex-1 items-center gap-3 px-5 py-3 text-left font-sans text-xl font-light leading-[1.3] transition-colors hover:bg-faded-olive/[0.06] culvers-focus-ring-compact-faded-olive"
-                  href="{{ esc_url($mapUrl) }}">
+                  href="{{ esc_url($mapUrl) }}"
+                  x-on:click.prevent="followMobileNavLink('{{ esc_url($mapUrl) }}')">
                   @include('partials.icons.figma-header-icon', [
                       'header_icon_variant' => 'centre-map-mobile',
                       'header_icon_class' => 'size-[21px] shrink-0',
@@ -559,7 +568,8 @@
                 </a>
                 <a
                   class="flex flex-1 items-center gap-3 px-5 py-3 text-left font-sans text-xl font-light leading-[1.3] transition-colors hover:bg-faded-olive/[0.06] culvers-focus-ring-compact-faded-olive"
-                  href="{{ esc_url($hereUrl) }}">
+                  href="{{ esc_url($hereUrl) }}"
+                  x-on:click.prevent="followMobileNavLink('{{ esc_url($hereUrl) }}')">
                   @include('partials.icons.figma-header-icon', [
                       'header_icon_variant' => 'getting-here-mobile',
                       'header_icon_class' => 'h-[22px] w-[18px] shrink-0',
@@ -657,7 +667,7 @@
                   <a
                     class="inline-flex size-[43px] shrink-0 items-center justify-center rounded-full bg-glowleaf text-deep-moss culvers-focus-ring-compact-deep-moss"
                     x-bind:href="mobileActiveBranch.url || '#'"
-                    x-on:click="mobileOpen = false">
+                    x-on:click.prevent="followMobileNavLink(mobileActiveBranch.url)">
                     <span class="sr-only">{{ __('Open section', 'culvers') }}</span>
                     @include('partials.icons.figma-header-icon', [
                         'header_icon_variant' => 'explore-arrow',
@@ -672,7 +682,7 @@
                     <a
                       class="block py-6 font-sans text-2xl font-normal capitalize leading-[1.3] text-faded-olive focus-visible:rounded-sm culvers-focus-ring-compact"
                       x-bind:href="child.url"
-                      x-on:click="mobileOpen = false"
+                      x-on:click.prevent="followMobileNavLink(child.url)"
                       x-text="child.title"></a>
                   </li>
                 </template>

@@ -4,7 +4,37 @@
  *
  * @param {import('alpinejs').Alpine} Alpine
  */
+const EMBED_BASE = 'https://www.google.com/maps/embed/v1/place';
+
 export default function registerContactAlpine(Alpine) {
+  Alpine.data('contactMapEmbed', (config = {}) => ({
+    apiKey: typeof config.apiKey === 'string' ? config.apiKey : '',
+    embedQuery: typeof config.embedQuery === 'string' ? config.embedQuery : '',
+    zoom: typeof config.initialZoom === 'number' ? config.initialZoom : 14,
+    minZoom: 10,
+    maxZoom: 19,
+
+    get embedSrc() {
+      if (this.apiKey === '' || this.embedQuery === '') {
+        return '';
+      }
+      const params = new URLSearchParams({
+        key: this.apiKey,
+        q: this.embedQuery,
+        zoom: String(this.zoom),
+      });
+      return `${EMBED_BASE}?${params.toString()}`;
+    },
+
+    zoomIn() {
+      this.zoom = Math.min(this.maxZoom, this.zoom + 1);
+    },
+
+    zoomOut() {
+      this.zoom = Math.max(this.minZoom, this.zoom - 1);
+    },
+  }));
+
   Alpine.data('contactForm', (config = {}) => ({
     endpoint: typeof config.endpoint === 'string' ? config.endpoint : '',
     nonce: typeof config.nonce === 'string' ? config.nonce : '',

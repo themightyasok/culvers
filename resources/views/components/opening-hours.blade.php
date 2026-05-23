@@ -67,11 +67,10 @@
   $hasRows = $normalizedRows !== [];
 
   $isShopSingle = get_post_type() === 'culvers_shop';
-/** Default: canonical section H2 (Component::sectionHeadingClasses → 58px desktop / 48px mobile). */
-/** Shop-single: deliberately a touch smaller — sub-section heading inside the single page layout. */
-$hoursHeadingClass = $isShopSingle
-    ? 'font-heading text-5xl text-faded-olive'
-    : Component::sectionHeadingClasses('text-faded-olive');
+  $hoursHeadingClass = Component::sectionHeadingClasses('text-faded-olive');
+  $hoursHeaderShellClass = $isShopSingle
+      ? 'mb-10 text-center md:mb-12'
+      : 'mx-auto mb-10 max-w-[40rem] text-center md:mb-12';
   // Plan / landing (Figma 51:4918): sub + body = Halyard Book 20px / lh 1.3; shop single unchanged.
   $hoursSubClass = $isShopSingle
       ? 'mt-4 font-sans text-xl font-light leading-[1.3] text-faded-olive'
@@ -100,9 +99,9 @@ $hoursHeadingClass = $isShopSingle
 @if($hasIntro || $hasRows || $footnote !== '' || $leftUrl !== '' || $rightUrl !== '')
   {{-- Same inner cap + horizontal gutters as three-card strip (max-w-7xl + LayoutShell gutters). --}}
   <section class="opening-hours {{ esc_attr($root) }} text-deep-moss" id="opening-hours" data-component-root data-opening-hours>
-    <div class="mx-auto w-full max-w-7xl {{ LayoutShell::GUTTER_X }}">
+    <div class="{{ LayoutShell::INNER_SECTION_7XL }}">
       @if($hasIntro)
-        <header class="mx-auto mb-10 max-w-[40rem] text-center md:mb-12">
+        <header class="{{ esc_attr($hoursHeaderShellClass) }}">
           @if($heading !== '')
             <{{ $headingTag }} class="{{ esc_attr(trim($hoursHeadingClass)) }}">
               {{ esc_html($heading) }}

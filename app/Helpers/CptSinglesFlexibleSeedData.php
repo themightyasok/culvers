@@ -45,74 +45,31 @@ final class CptSinglesFlexibleSeedData
 
     private const GREGGS_FESTIVE_BAKE_FILE = 'greggs-festive-bake.jpg';
 
-    /** Figma 51:6386 — "More Offers" card 1 (Valentine's chocolates). */
-    private const FIGMA_6386_CARD_VALENTINES = 'https://www.figma.com/api/mcp/asset/3538a27a-d7f6-4e92-88c9-0205896a5491';
-
-    /** Figma 51:6386 — card 2 (Mother's Day tea). */
-    private const FIGMA_6386_CARD_MOTHERS = 'https://www.figma.com/api/mcp/asset/c3f35e41-2846-4cc4-8f3d-370cd81b13dc';
-
-    /** Figma 51:6386 — card 3 (dry January smoothie). */
-    private const FIGMA_6386_CARD_DRY_JAN = 'https://www.figma.com/api/mcp/asset/610912a9-6022-4e09-9a99-4ce75e6f27e3';
-
     /**
-     * Figma 51:6386 — manual three-up with authored card art (not CPT thumbnails).
+     * Related stories strip — latest items from the matching directory CPT.
      *
+     * @param  non-empty-string  $heading
+     * @param  non-empty-string  $postType
      * @return array<string, mixed>
      */
-    private static function figma6386MoreStoriesBlock(string $heading, ?string $viewAllUrl = null): array
+    private static function relatedStoriesThreeCardBlock(string $heading, string $postType): array
     {
-        $eventsUrl = function_exists('home_url') ? home_url('/latest-events/') : '/latest-events/';
-        $offersUrl = function_exists('home_url') ? home_url('/latest-offers/') : '/latest-offers/';
-        $valentinesUrl = function_exists('home_url')
-            ? home_url('/latest-offers/valentines-at-hotel-chocolat/')
-            : '/latest-offers/valentines-at-hotel-chocolat/';
-        $viewAll = $viewAllUrl ?? $offersUrl;
-        $bodyCopy = $viewAll === $eventsUrl
-            ? __('See what else is happening at Culver Square.', 'culvers')
-            : __('See all of the brilliant offers happening at Culver Square', 'culvers');
+        $archiveUrl = get_post_type_archive_link($postType);
+        $bodyCopy = match ($postType) {
+            'culvers_event' => __('See what else is happening at Culver Square.', 'culvers'),
+            'culvers_news' => __('Stories from across Culver Square.', 'culvers'),
+            default => __('See all of the brilliant offers happening at Culver Square', 'culvers'),
+        };
 
         return array_merge(self::base('three_card_block'), [
-            'cards_source' => 'manual',
+            'cards_source' => 'cpt',
             'cards_heading' => $heading,
             'cards_subheading' => '',
             'cards_body' => sprintf('<p>%s</p>', esc_html($bodyCopy)),
             'cards_view_all_label' => __('View all', 'culvers'),
-            'cards_view_all_url' => $viewAll,
-            'cards_items' => [
-                [
-                    'card_title' => __("Valentine's at Hotel Chocolat", 'culvers'),
-                    'card_url' => $valentinesUrl,
-                    'card_media_type' => 'image',
-                    'card_image' => [
-                        'url' => self::FIGMA_6386_CARD_VALENTINES,
-                        'alt' => __("Valentine's at Hotel Chocolat", 'culvers'),
-                    ],
-                    'card_image_alt' => __("Valentine's at Hotel Chocolat", 'culvers'),
-                    'card_video' => null,
-                ],
-                [
-                    'card_title' => __('Mothers Day at Culver Square', 'culvers'),
-                    'card_url' => $eventsUrl,
-                    'card_media_type' => 'image',
-                    'card_image' => [
-                        'url' => self::FIGMA_6386_CARD_MOTHERS,
-                        'alt' => __('Mothers Day at Culver Square', 'culvers'),
-                    ],
-                    'card_image_alt' => __('Mothers Day at Culver Square', 'culvers'),
-                    'card_video' => null,
-                ],
-                [
-                    'card_title' => __('Raise a glass to dry January', 'culvers'),
-                    'card_url' => $offersUrl,
-                    'card_media_type' => 'image',
-                    'card_image' => [
-                        'url' => self::FIGMA_6386_CARD_DRY_JAN,
-                        'alt' => __('Raise a glass to dry January', 'culvers'),
-                    ],
-                    'card_image_alt' => __('Raise a glass to dry January', 'culvers'),
-                    'card_video' => null,
-                ],
-            ],
+            'cards_view_all_url' => is_string($archiveUrl) ? $archiveUrl : '',
+            'cards_cpt_post_type' => [$postType],
+            'cards_cpt_count' => 3,
         ]);
     }
 
@@ -224,7 +181,6 @@ final class CptSinglesFlexibleSeedData
             array_merge(self::base('shop_split_highlight'), [
                 'split_ratio' => '50-50',
                 'split_use_tabs' => false,
-                'split_center_lists' => 1,
                 'split_image' => [
                     'url' => PagesFlexibleSeedData::seedAssetUrl(self::CAREER_PERKS_FILE),
                     'alt' => __('Subway team in a happy group hug', 'culvers'),
@@ -289,15 +245,12 @@ final class CptSinglesFlexibleSeedData
                     'culvers'
                 ),
                 'header_align' => 'center',
-                'header_background' => 'white',
                 'header_max_width' => 'medium',
             ]),
             array_merge(self::base('shop_split_highlight'), [
                 'split_ratio' => '50-50',
                 'split_use_tabs' => false,
-                'split_copy_align' => 'center',
                 'split_copy_background' => 'olive',
-                'split_center_lists' => 1,
                 'split_image' => [
                     'url' => PagesFlexibleSeedData::seedAssetUrl(self::EVENT_OFFER_IMAGE_FILE),
                     'alt' => __('Open heart-shaped chocolate box with rose petals', 'culvers'),
@@ -325,7 +278,7 @@ final class CptSinglesFlexibleSeedData
             array_merge(self::base('social_share'), [
                 'share_heading' => __('Share with a friend', 'culvers'),
             ]),
-            self::figma6386MoreStoriesBlock(__('More Offers', 'culvers')),
+            self::relatedStoriesThreeCardBlock(__('More Offers', 'culvers'), 'culvers_offer'),
         ];
     }
 
@@ -333,8 +286,8 @@ final class CptSinglesFlexibleSeedData
      * Greggs venue eat & drink single (Figma 51:6679)
      * Stack: image_hero (Greggs storefront) → shop_intro_block →
      *        shop_split_highlight (Festive Bake, no tabs, no CTA) →
-     *        shop_store_details → opening_hours →
-     *        section_header (More flavours to discover)
+     *        shop_store_details → opening_hours → centre_map →
+     *        shop_related_eat_drink (More flavours to discover)
      * --------------------------------------------------------------- */
 
     /**
@@ -414,53 +367,39 @@ final class CptSinglesFlexibleSeedData
             ]),
             PagesFlexibleSeedData::openingHoursRow(),
             PagesFlexibleSeedData::centreMapRow(),
-            array_merge(self::base('section_header'), [
-                'header_eyebrow' => '',
-                'header_heading' => __('More flavours to discover', 'culvers'),
-                'header_body' => '',
-                'header_align' => 'center',
-                'header_max_width' => 'medium',
-            ]),
-            array_merge(self::base('three_card_block'), [
-                'cards_source' => 'manual',
-                'cards_heading' => '',
-                'cards_subheading' => '',
-                'cards_body' => '',
-                'cards_items' => [
-                    [
-                        'card_title' => __('Toast Coffee', 'culvers'),
-                        'card_url' => function_exists('home_url') ? home_url('/eat-drink/') : '/eat-drink/',
-                        'card_media_type' => 'image',
-                        'card_image' => null,
-                        'card_image_alt' => '',
-                        'card_video' => null,
-                    ],
-                    [
-                        'card_title' => __('Subway', 'culvers'),
-                        'card_url' => function_exists('home_url') ? home_url('/eat-drink/') : '/eat-drink/',
-                        'card_media_type' => 'image',
-                        'card_image' => null,
-                        'card_image_alt' => '',
-                        'card_video' => null,
-                    ],
-                    [
-                        'card_title' => __('Juicy Bar Vitality', 'culvers'),
-                        'card_url' => function_exists('home_url') ? home_url('/eat-drink/') : '/eat-drink/',
-                        'card_media_type' => 'image',
-                        'card_image' => null,
-                        'card_image_alt' => '',
-                        'card_video' => null,
-                    ],
-                ],
+            array_merge(self::base('shop_related_eat_drink'), [
+                'eat_drink_related_heading' => __('More flavours to discover', 'culvers'),
+                'eat_drink_related_view_all_url' => function_exists('get_post_type_archive_link')
+                    ? (string) get_post_type_archive_link('culvers_eat_drink')
+                    : '/eat-drink/',
+                'eat_drink_related_view_all_label' => __('View all', 'culvers'),
+                'eat_drink_related_posts' => [],
             ]),
         ];
     }
 
     /* -----------------------------------------------------------------
      * Easter Egg Hunt — representative `culvers_event` single (Figma 51:6386).
-     * Stack: image_hero → section_header (white, centred) → shop_split_highlight
+     * Stack: image_hero → section_header (centred) → shop_split_highlight
      *        → social_share → three_card_block (Figma card art).
      * --------------------------------------------------------------- */
+
+    /**
+     * Canonical flexible stack for every single in a What's On CPT.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public static function canonicalRowsForPostType(string $postType): array
+    {
+        return match ($postType) {
+            'culvers_event' => self::easterEggHunt(),
+            'culvers_offer' => self::hotelChocolatOffer(),
+            'culvers_news' => self::spring2026Lineup(),
+            default => throw new \InvalidArgumentException(
+                sprintf('No canonical flexible seed for post type "%s".', $postType)
+            ),
+        };
+    }
 
     /**
      * @return list<array<string, mixed>>
@@ -491,15 +430,12 @@ final class CptSinglesFlexibleSeedData
                     'culvers'
                 ),
                 'header_align' => 'center',
-                'header_background' => 'white',
                 'header_max_width' => 'medium',
             ]),
             array_merge(self::base('shop_split_highlight'), [
                 'split_ratio' => '50-50',
                 'split_use_tabs' => false,
-                'split_copy_align' => 'center',
                 'split_copy_background' => 'olive',
-                'split_center_lists' => 1,
                 'split_image' => [
                     'url' => PagesFlexibleSeedData::seedAssetUrl(self::EVENT_OFFER_IMAGE_FILE),
                     'alt' => __('Children following Easter hunt clues in the mall', 'culvers'),
@@ -528,16 +464,13 @@ final class CptSinglesFlexibleSeedData
             array_merge(self::base('social_share'), [
                 'share_heading' => __('Share with a friend', 'culvers'),
             ]),
-            self::figma6386MoreStoriesBlock(
-                __('More events', 'culvers'),
-                function_exists('home_url') ? home_url('/latest-events/') : '/latest-events/'
-            ),
+            self::relatedStoriesThreeCardBlock(__('More events', 'culvers'), 'culvers_event'),
         ];
     }
 
     /* -----------------------------------------------------------------
-     * Spring 2026 line-up — representative `culvers_news` single. Mirrors
-     * the offer single shape so news / offers / events all share a layout.
+     * Spring 2026 line-up — representative `culvers_news` single (no event_meta
+     * panel — published / reading-time rows are not shown on news singles).
      * --------------------------------------------------------------- */
 
     /**
@@ -545,8 +478,6 @@ final class CptSinglesFlexibleSeedData
      */
     public static function spring2026Lineup(): array
     {
-        $newsUrl = function_exists('home_url') ? home_url('/latest-news/') : '/latest-news/';
-
         return [
             array_merge(self::base('image_hero'), [
                 'hero_image' => [
@@ -560,14 +491,6 @@ final class CptSinglesFlexibleSeedData
                 'hero_subtitle_line' => __('Centre news', 'culvers'),
                 'hero_overlay_opacity' => 35,
                 'hero_title_in_image' => false,
-            ]),
-            array_merge(self::base('event_meta'), [
-                'event_meta_date_value' => __('1 March 2026', 'culvers'),
-                'event_meta_time_value' => __('4 min read', 'culvers'),
-                'event_meta_location_value' => __('Centre news', 'culvers'),
-                'event_meta_accessibility_note' => '',
-                'event_meta_cta_label' => '',
-                'event_meta_cta_url' => '',
             ]),
             array_merge(self::base('section_header'), [
                 'header_eyebrow' => __('Centre news', 'culvers'),
@@ -610,44 +533,7 @@ final class CptSinglesFlexibleSeedData
                 'header_align' => 'center',
                 'header_max_width' => 'medium',
             ]),
-            array_merge(self::base('three_card_block'), [
-                'cards_source' => 'manual',
-                'cards_heading' => __('Latest news', 'culvers'),
-                'cards_subheading' => '',
-                'cards_body' => sprintf(
-                    '<p>%s</p>',
-                    esc_html__('Stories from across Culver Square.', 'culvers')
-                ),
-                'cards_items' => [
-                    [
-                        'card_title' => __('Spring 2026 line-up', 'culvers'),
-                        'card_url' => $newsUrl,
-                        'card_media_type' => 'image',
-                        'card_image' => [
-                            'url' => PagesFlexibleSeedData::seedAssetUrl(self::EVENT_OFFER_IMAGE_FILE),
-                            'alt' => __('Spring line-up at Culver Square', 'culvers'),
-                        ],
-                        'card_image_alt' => __('Spring line-up at Culver Square', 'culvers'),
-                        'card_video' => null,
-                    ],
-                    [
-                        'card_title' => __('Solar array switched on', 'culvers'),
-                        'card_url' => $newsUrl,
-                        'card_media_type' => 'image',
-                        'card_image' => null,
-                        'card_image_alt' => '',
-                        'card_video' => null,
-                    ],
-                    [
-                        'card_title' => __('Essex Centre of the Year', 'culvers'),
-                        'card_url' => $newsUrl,
-                        'card_media_type' => 'image',
-                        'card_image' => null,
-                        'card_image_alt' => '',
-                        'card_video' => null,
-                    ],
-                ],
-            ]),
+            self::relatedStoriesThreeCardBlock(__('Latest news', 'culvers'), 'culvers_news'),
         ];
     }
 }

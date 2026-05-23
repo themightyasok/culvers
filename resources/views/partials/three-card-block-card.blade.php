@@ -13,6 +13,13 @@
   $cardAspectClass = $cardAspectClass ?? 'aspect-[2/3]';
   $isManualMode = ! empty($isManualMode);
   $showMobileArrow = ! empty($showMobileArrow);
+  /** @var 'inline'|'stack' $mobileArrowLayout Figma `51:8216` inline vs `51:8347` stacked. */
+  $mobileArrowLayout = in_array($mobileArrowLayout ?? 'stack', ['inline', 'stack'], true)
+      ? (string) ($mobileArrowLayout ?? 'stack')
+      : 'stack';
+  $mediaOverlayOpacity = isset($mediaOverlayOpacity) && is_numeric($mediaOverlayOpacity)
+      ? max(0, min(100, (int) $mediaOverlayOpacity))
+      : 25;
 @endphp
 
 @if($href !== '' && $title !== '')
@@ -48,29 +55,44 @@
         <span class="block h-full w-full bg-gradient-to-br from-dustleaf/40 via-deep-moss/25 to-faded-olive/35"></span>
       @endif
 
-      <span class="pointer-events-none absolute inset-0 z-10 bg-black/25"></span>
+      @if($mediaOverlayOpacity > 0)
+        <span
+          class="pointer-events-none absolute inset-0 z-10"
+          style="background-color: rgba(0,0,0,{{ $mediaOverlayOpacity / 100 }})"
+          aria-hidden="true"></span>
+      @endif
     </span>
 
     <span
-      class="relative z-10 flex w-full flex-1 flex-col items-center justify-center gap-5 px-6 py-10 text-center {{ $isManualMode ? 'max-sm:flex-row max-sm:justify-between max-sm:gap-4 max-sm:px-7 max-sm:py-6 max-sm:text-left' : '' }}">
+      class="relative z-10 flex w-full flex-1 items-center justify-center px-6 py-10 text-center max-sm:px-7 max-sm:py-6">
       <span
-        class="font-heading text-4xl leading-[1.1] text-white transition-colors duration-300 ease-out motion-safe:group-hover/card:text-glowleaf motion-safe:group-focus-within/card:text-glowleaf md:text-5xl md:leading-none">
-        {{ esc_html($title) }}
-      </span>
-      @if($showMobileArrow)
+        @class([
+            'three-card-block__hover-stack relative flex max-w-full flex-col items-center text-center',
+            'max-sm:inline-flex max-sm:flex-row max-sm:items-center max-sm:justify-center max-sm:gap-4' => $showMobileArrow && $mobileArrowLayout === 'inline',
+            'max-sm:flex max-sm:flex-col max-sm:items-center max-sm:justify-center max-sm:gap-4' => $showMobileArrow && $mobileArrowLayout === 'stack',
+        ])>
+        <span
+          @class([
+              'three-card-block__title font-heading text-4xl leading-[1.1] text-white transition-colors duration-300 ease-out motion-safe:group-hover/card:text-glowleaf motion-safe:group-focus-within/card:text-glowleaf md:text-5xl md:leading-none',
+              'sm:max-w-[13.25rem] sm:block sm:text-balance' => ! $showMobileArrow,
+          ])>
+          {{ esc_html($title) }}
+        </span>
+        @if($showMobileArrow)
+          <span
+            aria-hidden="true"
+            class="hidden size-[43px] shrink-0 items-center justify-center rounded-full bg-glowleaf text-deep-moss transition-transform duration-300 ease-out motion-safe:group-hover/card:scale-[1.06] motion-safe:group-focus-within/card:scale-[1.06] max-sm:inline-flex">
+            @include('partials.icons.figma-header-icon', [
+                'header_icon_variant' => 'explore-arrow',
+                'header_icon_class' => 'size-4 shrink-0',
+            ])
+          </span>
+        @endif
         <span
           aria-hidden="true"
-          class="hidden size-[43px] shrink-0 items-center justify-center rounded-full bg-glowleaf text-deep-moss transition-transform duration-300 ease-out motion-safe:group-hover/card:scale-[1.06] motion-safe:group-focus-within/card:scale-[1.06] max-sm:inline-flex">
-          @include('partials.icons.figma-header-icon', [
-              'header_icon_variant' => 'explore-arrow',
-              'header_icon_class' => 'size-4 shrink-0',
-          ])
+          class="three-card-block__cta btn btn-outline pointer-events-none whitespace-nowrap opacity-0 transition-opacity duration-300 ease-out motion-safe:group-hover/card:pointer-events-auto motion-safe:group-hover/card:opacity-100 motion-safe:group-focus-within/card:pointer-events-auto motion-safe:group-focus-within/card:opacity-100 motion-reduce:hidden max-sm:hidden">
+          {{ __('Explore', 'culvers') }}
         </span>
-      @endif
-      <span
-        aria-hidden="true"
-        class="three-card-block__cta btn btn-outline pointer-events-auto px-7 opacity-0 transition-opacity duration-300 ease-out motion-safe:group-hover/card:opacity-100 motion-safe:group-focus-within/card:opacity-100 motion-reduce:hidden max-sm:hidden">
-        {{ __('Explore', 'culvers') }}
       </span>
     </span>
   </a>

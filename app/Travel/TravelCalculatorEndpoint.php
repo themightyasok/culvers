@@ -139,7 +139,7 @@ final class TravelCalculatorEndpoint
 
         return sprintf(
             /* translators: 1: travel mode label (car/public transport/foot/bicycle), 2: distance, 3: duration */
-            __('Your journey by %1$s is %2$s and it will take approximately %3$s.', 'culvers'),
+            __('Your journey via %1$s is %2$s and it will take approximately %3$s.', 'culvers'),
             $modeLabel,
             $distance,
             $duration

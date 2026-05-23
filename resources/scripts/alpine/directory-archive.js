@@ -14,6 +14,9 @@ const FILTER_SLUG_ALIASES = {
   healthy: 'healthy-options',
 };
 
+/** Cards shown per page — Figma `51:8828` paginated grid (client-side; full catalog stays in DOM for filters). */
+const CARDS_PER_PAGE = 12;
+
 /**
  * @param {string} slug
  * @returns {string}
@@ -39,11 +42,15 @@ export default function registerDirectoryArchiveAlpine(Alpine) {
     categoryOpen: true,
     categorySlug: '',
     typeSlug: '',
+    currentPage: 1,
+    totalPages: 1,
+    pageNumbers: [1],
 
     init() {
       const params = new URLSearchParams(window.location.search);
       const cat = params.get('category');
       const typ = params.get('type');
+      const page = params.get('page');
       const hasUrlFilter =
         (typeof cat === 'string' && cat !== '') || (typeof typ === 'string' && typ !== '');
       if (typeof cat === 'string' && cat !== '') {
@@ -51,6 +58,12 @@ export default function registerDirectoryArchiveAlpine(Alpine) {
       }
       if (typeof typ === 'string' && typ !== '') {
         this.typeSlug = normalizeFilterSlug(typ);
+      }
+      if (typeof page === 'string' && page !== '') {
+        const parsed = parseInt(page, 10);
+        if (Number.isFinite(parsed) && parsed > 0) {
+          this.currentPage = parsed;
+        }
       }
       if (hasUrlFilter && isLgViewport()) {
         this.filtersVisible = true;
@@ -79,15 +92,34 @@ export default function registerDirectoryArchiveAlpine(Alpine) {
     },
 
     setCategory(slug) {
+      this.currentPage = 1;
       this.categorySlug = typeof slug === 'string' ? slug : '';
       this.applyFilter();
       this.syncUrl();
     },
 
     setType(slug) {
+      this.currentPage = 1;
       this.typeSlug = typeof slug === 'string' ? slug : '';
       this.applyFilter();
       this.syncUrl();
+    },
+
+    goToPage(page) {
+      const next = typeof page === 'number' ? page : parseInt(String(page), 10);
+      if (!Number.isFinite(next) || next < 1 || next > this.totalPages) {
+        return;
+      }
+      this.currentPage = next;
+      this.applyFilter();
+      this.syncUrl();
+      this.$nextTick(() => {
+        const grid = this.$refs.grid;
+        if (grid instanceof HTMLElement) {
+          const top = grid.getBoundingClientRect().top + window.scrollY - 96;
+          window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+        }
+      });
     },
 
     syncUrl() {
@@ -101,6 +133,11 @@ export default function registerDirectoryArchiveAlpine(Alpine) {
         params.set('type', this.typeSlug);
       } else {
         params.delete('type');
+      }
+      if (this.currentPage > 1) {
+        params.set('page', String(this.currentPage));
+      } else {
+        params.delete('page');
       }
       const qs = params.toString();
       const next = `${window.location.pathname}${qs ? `?${qs}` : ''}${window.location.hash}`;
@@ -133,9 +170,10 @@ export default function registerDirectoryArchiveAlpine(Alpine) {
         const typeOk = !this.typeSlug || types.includes(this.typeSlug);
         const show = catOk && typeOk;
 
-        card.toggleAttribute('hidden', !show);
         if (show) {
           visible.push(card);
+        } else {
+          card.toggleAttribute('hidden', true);
         }
       }
 
@@ -146,6 +184,18 @@ export default function registerDirectoryArchiveAlpine(Alpine) {
       );
 
       visible.forEach((el) => grid.appendChild(el));
+
+      const pages = Math.max(1, Math.ceil(visible.length / CARDS_PER_PAGE));
+      if (this.currentPage > pages) {
+        this.currentPage = pages;
+      }
+      this.totalPages = pages;
+      this.pageNumbers = Array.from({ length: pages }, (_, index) => index + 1);
+
+      visible.forEach((card, index) => {
+        const pageIndex = Math.floor(index / CARDS_PER_PAGE) + 1;
+        card.toggleAttribute('hidden', pageIndex !== this.currentPage);
+      });
 
       grid.classList.add('directory-archive__grid--animating');
       requestAnimationFrame(() => {

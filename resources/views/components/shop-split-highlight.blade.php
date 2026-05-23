@@ -89,11 +89,6 @@
   $ctaUrl = trim((string) ($c['split_cta_url'] ?? ''));
   $showCta = $ctaLabel !== '' && $ctaUrl !== '';
 
-  $centerLists = ! empty($c['split_center_lists']);
-
-  $copyAlignRaw = is_string($c['split_copy_align'] ?? null) ? (string) $c['split_copy_align'] : 'left';
-  $copyCentered = $copyAlignRaw === 'center' || $centerLists;
-
   $copyBgRaw = is_string($c['split_copy_background'] ?? null) ? (string) $c['split_copy_background'] : 'olive';
   $copyOnWhite = $copyBgRaw === 'white';
 
@@ -101,17 +96,9 @@
   $hasStaticCopy = $hasStaticSerifLines || $bodyPlain !== '';
   $hasCopy = $hasTabs || $hasStaticCopy;
 
-  /** Left-aligned disc list (default). */
-  $bodyListClassesLeft = ' [&_ul]:mt-9 [&_ul]:w-full [&_ul]:list-outside [&_ul]:list-disc [&_ul]:p-0 [&_ul]:text-left [&_ul]:leading-[1.8]'
-      . ' [&_ul>li]:ms-[1.875rem] [&_ul>li+li]:mt-0';
-
-  /**
-   * Figma 51:6490 — centre-aligned lines; list-inside so bullets follow each line.
-   */
-  $bodyListClassesCentered = ' [&_ul]:mt-9 [&_ul]:w-full [&_ul]:list-inside [&_ul]:list-disc [&_ul]:p-0 [&_ul]:text-center [&_ul]:leading-[1.8]'
+  /** Centre-aligned disc list (Figma shop / venue detail). */
+  $bodyListClasses = ' [&_ul]:mt-9 [&_ul]:w-full [&_ul]:list-inside [&_ul]:list-disc [&_ul]:p-0 [&_ul]:text-center [&_ul]:leading-[1.8]'
       . ' [&_ul>li+li]:mt-0';
-
-  $bodyListClasses = $copyCentered ? $bodyListClassesCentered : $bodyListClassesLeft;
 
   $bodyClasses = 'max-w-[34.625rem] w-full font-sans text-xl font-light text-lighter-cream rt-link-brand'
       . ' [&_p+p]:mt-4 [&_strong]:font-medium [&_strong]:text-lighter-cream'
@@ -132,10 +119,8 @@
   $staticSerifTone = $copyOnWhite ? 'text-faded-olive' : 'text-brand-500';
 
   $staticCopyColumnClasses = $hasTabs
-      ? 'flex flex-col items-center justify-center gap-6 px-8 pb-12 pt-12 text-center lg:gap-8 lg:px-10 xl:px-14 xl:pt-12'
-      : ($copyCentered
-          ? 'flex flex-col items-center justify-center px-8 pb-12 pt-12 text-center lg:px-10 xl:px-14'
-          : 'px-8 pb-12 pt-12 lg:px-10 xl:px-14');
+      ? 'flex min-h-0 flex-col items-center justify-center gap-6 px-8 pb-12 pt-12 text-center lg:min-h-full lg:gap-8 lg:px-10 xl:px-14 xl:pt-12'
+      : 'flex min-h-0 flex-col items-center justify-center px-8 pb-12 pt-12 text-center lg:min-h-full lg:px-10 xl:px-14';
 
   $copyColumnBgClass = $copyOnWhite ? 'bg-white' : 'bg-faded-olive';
   $gridSurfaceClass = $copyOnWhite ? '' : 'bg-faded-olive';
@@ -154,7 +139,7 @@
            <img> is absolutely positioned (out of flow). Flex would leave the media cell at min-height only. --}}
       <div
         class="grid overflow-hidden rounded-[10px] {{ $gridSurfaceClass }} shadow-sm lg:min-h-[597px] lg:grid-cols-12 lg:items-stretch">
-        {{-- Copy column: tabbed decks centred (Figma 51:7158). Static copy uses standard padding; list alignment is editor-controlled. --}}
+        {{-- Copy column: always centre-aligned (horizontal + vertical). --}}
         <div
           class="max-lg:order-1 lg:order-none {{ $copyColumnBgClass }} {{ $staticCopyColumnClasses }} {{ $ratio === '50-50' ? 'lg:col-span-6' : 'lg:col-span-7' }}">
           @if($hasTabs)
@@ -245,9 +230,9 @@
               @endforeach
             </div>
           @else
-            <div class="flex w-full max-w-[34.625rem] flex-col gap-6 lg:gap-8 {{ $copyCentered ? 'items-center' : '' }}">
+            <div class="flex w-full max-w-[34.625rem] flex-col items-center gap-6 text-center lg:gap-8">
               @if($hasStaticSerifLines)
-                <div class="{{ $copyCentered ? 'text-center' : '' }}">
+                <div class="text-center">
                   @if($kicker !== '')
                     <p class="font-heading text-5xl leading-[1.1] {{ $staticSerifTone }} lg:text-7xl lg:leading-[1.2]">
                       {{ esc_html($kicker) }}
@@ -268,7 +253,7 @@
               @endif
 
               @if($showCta)
-                <div class="pt-2 {{ $copyCentered ? 'flex justify-center' : 'flex justify-start' }}">
+                <div class="flex justify-center pt-2">
                   @include('components.button', ['label' => $ctaLabel, 'href' => $ctaUrl])
                 </div>
               @endif

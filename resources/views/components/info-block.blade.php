@@ -52,31 +52,32 @@
 
 @if($hasIntro || $hasGrid)
   <section
-    class="info-block {{ esc_attr($root) }} relative py-12 text-deep-moss lg:py-16"
+    class="info-block {{ esc_attr($root) }} relative text-deep-moss"
     data-component-root
     data-info-block>
     <div class="relative z-10 {{ LayoutShell::INNER_MAX_GUTTERED }}">
       @if($hasIntro)
-        <header class="mx-auto max-w-[52rem] text-center">
+        <header class="info-block__intro mx-auto flex max-w-[52rem] flex-col items-center gap-4 text-center md:gap-6">
           @if($heading !== '')
-            {{-- Section H2: 64px desktop / 48px mobile (Component::sectionHeadingClasses). --}}
-            <{{ $headingTag }} class="{{ Component::sectionHeadingClasses('text-faded-olive') }}">
+            {{-- Figma mobile `51:8211`: Canela 46 / lh 1.1 — {@see Component::sectionHeadingClasses()}. --}}
+            <{{ $headingTag }} class="{{ Component::sectionHeadingClasses('text-faded-olive', 'leading-[1.1]') }}">
               {{ esc_html($heading) }}
             </{{ $headingTag }}>
           @endif
           @if($subheading !== '')
-            <p class="mt-4 font-sans text-xl font-light text-deep-moss md:text-2xl">
+            <p class="font-sans text-base font-light leading-snug text-deep-moss md:text-xl md:leading-normal">
               {!! nl2br(e($subheading)) !!}
             </p>
           @endif
           @if(trim(strip_tags($body)) !== '')
+            {{-- Match horizontal-scroller / three-card intro body (Halyard Light 20 / lh 1.3 desktop; 14 / 20 mobile). --}}
             <div
-              class="info-block__body prose prose-lg mx-auto mt-4 max-w-[36.75rem] text-center font-light text-deep-moss prose-headings:text-deep-moss prose-p:font-sans prose-p:text-xl prose-p:font-light prose-li:text-deep-moss prose-strong:text-deep-moss rt-link-prose {{ esc_attr($tone) }}">
+              class="info-block__body mx-auto w-full max-w-[36.75rem] text-center font-sans text-xl font-light leading-[1.3] text-deep-moss max-sm:text-sm max-sm:leading-5 [&_p+p]:mt-4 [&_strong]:font-medium rt-link-prose {{ esc_attr($tone) }}">
               {!! $body !!}
             </div>
           @endif
           @if($ctaLabel !== '' && $ctaUrl !== '')
-            <div class="mt-7 flex justify-center md:mt-9">
+            <div class="flex justify-center">
               {{-- Banner-scale CTA: `size=large` keeps the canonical Figma hover-widen
                    (40px → 56px on hover) instead of being killed by an inline `px-*`. --}}
               @include('components.button', [
@@ -94,14 +95,14 @@
       @endif
 
       @if($hasGrid)
-        <div class="{{ $hasIntro ? 'mt-12 md:mt-14' : '' }} info-block__grid mx-auto w-full">
+        <div class="{{ $hasIntro ? 'mt-10 md:mt-14' : '' }} info-block__grid mx-auto w-full">
           @foreach($cells as $cell)
             {{--
               Divider geometry still follows Figma `51:5066` metadata (`--info-block-rule-h-inset: 17px`, `--info-block-rule-v-end: 7%`).
-              Cell interior: fixed **icon band** (7.125 rem, icons `object-bottom`) lines up **h3** baselines per row; **`mt-4` + `gap-1.5`** tightens headline↔sub; **`md/lg` fixed tile heights** (248/252 px) budgets space so the bottom rule doesn’t sit far under the label.
+              Mobile stack `51:8283`: 50px between cells; 16px icon→copy; 14px title→label (flex gap).
             --}}
             <article
-              class="info-block__cell flex min-h-[220px] flex-col items-center px-4 pt-5 text-center max-md:pb-14 sm:px-6 md:box-border md:h-[248px] md:max-h-[248px] md:min-h-[248px] md:justify-start md:px-8 md:pb-4 md:pt-5 lg:h-[252px] lg:max-h-[252px] lg:min-h-[252px]">
+              class="info-block__cell flex flex-col items-center px-4 pt-0 text-center max-md:pb-0 sm:px-6 md:box-border md:h-[248px] md:max-h-[248px] md:min-h-[248px] md:justify-start md:px-8 md:pb-4 md:pt-5 lg:h-[252px] lg:max-h-[252px] lg:min-h-[252px]">
               <div
                 class="info-block__flex-icon-band flex w-full shrink-0 flex-col justify-end [min-block-size:7.125rem] [max-block-size:7.125rem]">
                 @if($cell['image'] !== null)
@@ -113,16 +114,14 @@
                   </div>
                 @endif
               </div>
-              <div class="mt-4 flex w-full max-w-[19rem] flex-col items-center gap-1.5">
-                {{-- Figma 51:8283 tile heading: Canela 42 / Faded Olive. Tile uses fixed heights
-                     (`md:h-[248px]`) so we keep `leading-none` for single-line titles — the airy
-                     "lh 84" feel comes from the surrounding mt-4 + tile padding, not the lh value. --}}
+              <div class="mt-4 flex w-full max-w-[19rem] flex-col items-center gap-3.5 md:gap-1.5">
+                {{-- Figma 51:8283 / 51:8295: Canela 42 mobile tile title. --}}
                 <h3 class="m-0 w-full font-heading text-4xl font-normal leading-none tracking-normal text-faded-olive lg:whitespace-nowrap">
                   {{ esc_html($cell['title']) }}
                 </h3>
                 @if($cell['description'] !== '')
                   <p
-                    class="m-0 w-full font-label text-xs font-semibold uppercase leading-tight tracking-[1px] text-faded-olive md:leading-snug [&_br]:leading-snug [&_br]:block">
+                    class="m-0 w-full font-label text-xs font-semibold uppercase leading-6 tracking-[1px] text-faded-olive md:leading-snug [&_br]:block [&_br]:leading-snug">
                     {!! nl2br(e($cell['description'])) !!}
                   </p>
                 @endif

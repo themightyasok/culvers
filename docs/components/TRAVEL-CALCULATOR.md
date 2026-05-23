@@ -140,7 +140,7 @@ Success (200):
     "address": "Culver Square, Colchester CO1 1JG, UK",
     "label": "Culver Square"
   },
-  "message": "Your journey by public transport is 62.4 mi and it will take approximately 1 hour 38 mins."
+  "message": "Your journey via public transport is 62.4 mi and it will take approximately 1 hour 38 mins."
 }
 ```
 

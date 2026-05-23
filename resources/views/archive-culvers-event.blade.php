@@ -45,7 +45,7 @@
              utilities survive `wpautop()` injecting its own inner <p> — a
              <p>…<p></p>…</p> nesting is invalid HTML and browsers auto-
              close the outer paragraph on the inner one. --}}
-        <div class="archive-intro mx-auto max-w-[802px] text-center font-sans text-xl font-light text-deep-moss">
+        <div class="{{ \App\Helpers\LayoutShell::ARCHIVE_INTRO }}">
           {!! wp_kses_post(wpautop($introHtml)) !!}
         </div>
 

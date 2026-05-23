@@ -62,10 +62,9 @@ $templateResolver = TemplateResolver::getInstance();
             ? trim($gridClasses['column'] . ' ' . $gridClasses['padding'])
             : $gridClasses['column'];
 
-        // Inter-section rhythm: the *previous* component decides how much
-        // space sits above the current one (Standard 96 / Hugged 60 / Flush 0).
-        // First row gets no top margin — see App\Helpers\Rhythm for the model.
-        $spaceAboveClass = Rhythm::spaceAboveClass($previousLayout, $previousComponent);
+        // Inter-section rhythm: uniform `gap-y-24` on this grid; optional negative
+        // `mt-*` on the current row only for flush / breathed / hugged exceptions.
+        $spaceAboveClass = Rhythm::spaceAboveClass($previousLayout, $previousComponent, $layout);
         if ($spaceAboveClass !== '') {
             $component['_grid_classes'] = trim($spaceAboveClass . ' ' . $component['_grid_classes']);
         }
@@ -90,12 +89,10 @@ $templateResolver = TemplateResolver::getInstance();
       @if($templatePath)
         @if($hasBackground)
           {{-- ACF-set background wrapper. The wrapper paints the bg / image / video
-               edge-to-edge across the viewport (full-bleed), so it owns the visual
-               surface and the internal breathing room above / below the content.
-               `py-12 lg:py-16` (48 / 64 px) provides intra-section padding; the
-               inter-section gap above is the `mt-*` rhythm utility from
-               {@see App\Helpers\Rhythm}. The inner grid uses `gap-y-0` so the
-               nested component placement does not introduce phantom rhythm. --}}
+               edge-to-edge across the viewport (full-bleed). Inter-section spacing
+               is only the parent grid `gap-y-24`; optional negative `mt-*` from
+               {@see App\Helpers\Rhythm} adjusts flush/breathed rows. Intra-band
+               padding lives inside each component template, not on this wrapper. --}}
           @php
             // Inner component sits in a nested grid; the outer wrapper carries
             // the inter-section `mt-*`. Strip it from the inner classes so the
@@ -106,7 +103,7 @@ $templateResolver = TemplateResolver::getInstance();
                 (string) ($component['_grid_classes'] ?? '')
             ));
           @endphp
-          <div class="relative col-span-full w-full min-w-0 py-12 lg:py-16 {{ esc_attr(trim($spaceAboveClass . ' ' . ($backgroundData['classes'] ?? ''))) }}"
+          <div class="relative col-span-full w-full min-w-0 {{ esc_attr(trim($spaceAboveClass . ' ' . ($backgroundData['classes'] ?? ''))) }}"
                data-component-background-wrapper="1"
                data-component-layout="{{ esc_attr($layout) }}"
                data-background-parallax="{{ ! empty($backgroundData['parallax']) ? '1' : '0' }}"

@@ -21,3 +21,49 @@
     border-bottom-width: 0;
   }
 }
+
+/* Side polaroids — default hidden; GSAP animates `[data-tis-media-motion]`. */
+.text-image-slider__media-motion {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.text-image-slider__media.is-active .text-image-slider__media-motion {
+  visibility: visible;
+}
+
+.text-image-slider__media--mobile:not(.is-active) {
+  display: none;
+}
+
+@media (width >= 64rem) {
+  /*
+   * Subtle asymmetry: left sits slightly higher and inset; right sits lower
+   * and a touch larger — matches Figma proportions without wild offsets.
+   */
+  .text-image-slider__media--left {
+    top: 46%;
+    left: -19.5rem;
+    width: 14.75rem;
+    transform: translateY(-50%);
+  }
+
+  .text-image-slider__media--right {
+    top: 54%;
+    right: -18rem;
+    width: 17rem;
+    transform: translateY(-50%);
+  }
+
+  @media (width >= 80rem) {
+    .text-image-slider__media--left {
+      left: -21.5rem;
+      width: 16.25rem;
+    }
+
+    .text-image-slider__media--right {
+      right: -20rem;
+      width: 18.5rem;
+    }
+  }
+}

@@ -120,6 +120,54 @@ final class Component
     }
 
     /**
+     * ACF range slider for a black media overlay (0–100%).
+     *
+     * @return array<string, mixed>
+     */
+    public static function overlayOpacityRangeField(
+        string $label,
+        ?string $instructions = null,
+        int $default = 25,
+        ?string $width = null,
+    ): array {
+        $instructions ??= __(
+            'Solid black overlay on the image or video (0% = none). Helps light text stay readable.',
+            'culvers'
+        );
+
+        $options = [
+            'label' => $label,
+            'instructions' => $instructions,
+            'default_value' => $default,
+            'min' => 0,
+            'max' => 100,
+            'step' => 1,
+            'append' => '%',
+        ];
+
+        if ($width !== null && $width !== '') {
+            $options['wrapper'] = ['width' => $width];
+        }
+
+        return [
+            'type' => 'range',
+            'options' => $options,
+        ];
+    }
+
+    /**
+     * Clamp a saved overlay opacity to 0–100 (percent).
+     */
+    public static function overlayOpacityPercent(mixed $raw, int $default = 25): int
+    {
+        if (! is_numeric($raw)) {
+            return $default;
+        }
+
+        return max(0, min(100, (int) $raw));
+    }
+
+    /**
      * Resolve the body-text tone for a component.
      *
      * `$variant === 'light-band'` defends light backgrounds (intro, store details,
@@ -171,14 +219,15 @@ final class Component
     }
 
     /**
-     * Image-hero H1 — Figma `51:9234` / `51:9493` mobile: Canela 46 / lh 1.1 (snaps to
-     * `text-5xl` = 48 px). Desktop ramp: `md:text-9xl`, `lg:text-[7.75rem]`.
+     * Image-hero H1 — mobile `51:9234`: Canela 46; desktop `51:9364`: Canela 96.
+     * Line-height 0.7 on the display lockup (sheet / brand direction). Homepage slider
+     * uses its own ramp in hero-slider.blade.php — not this helper.
      */
     public static function imageHeroTitleClasses(
         string $toneClass = 'text-glowleaf',
         string $extra = ''
     ): string {
-        $base = 'font-heading text-5xl leading-[1.1] md:text-9xl md:leading-[1] lg:text-[7.75rem] lg:leading-none ' . $toneClass;
+        $base = 'font-heading text-[46px] leading-[0.7] md:text-9xl ' . $toneClass;
 
         return trim($extra !== '' ? $base . ' ' . $extra : $base);
     }
@@ -240,14 +289,11 @@ final class Component
      * inset horizontal gutters optionally stripped for components that render
      * their own inner shell.
      *
-     * Outer vertical padding (`pt-*` / `pb-*`) is **never** emitted from a
-     * component — the inter-section gap is owned centrally by
-     * {@see \App\Helpers\Rhythm} (Standard 96 / Hugged 60 / Flush 0 px) and
-     * applied by the renderer. Components with their own painted background
-     * (`bg-white`, `bg-deep-moss`, …) apply *internal* `py-*` directly inside
-     * the template (canonical baseline `py-12 lg:py-16`) so the bg has
-     * breathing room around its content — that concern is intentionally
-     * separate from the inter-section gap.
+     * Outer vertical padding (`pt-*` / `pb-*` / `py-*` on the section root) is
+     * **never** emitted — inter-section spacing is the parent grid `gap-y-24`
+     * ({@see \App\Helpers\Grid::getMainGridContainerClasses()}), with optional
+     * negative `mt-*` from {@see \App\Helpers\Rhythm} for flush/breathed rows.
+     * Painted bands apply *internal* padding inside their own shells only.
      *
      * @param array<string, mixed> $component
      */

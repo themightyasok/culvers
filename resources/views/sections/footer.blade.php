@@ -62,7 +62,7 @@
 --}}
 <footer class="site-footer">
   <div
-    class="site-footer__columns relative overflow-visible bg-faded-olive px-4 pb-4 pt-0 text-light-cream md:px-12 md:pb-5 lg:pb-5">
+    class="site-footer__columns relative overflow-visible bg-faded-olive px-4 pb-4 pt-0 text-light-cream max-lg:overflow-x-clip md:px-12 md:pb-5 lg:pb-5">
     <div class="site-footer__pattern" aria-hidden="true">
       <picture>
         <source
@@ -83,7 +83,7 @@
            phantom layout gap (transform does not affect flow). Spacer in `layouts/app.blade.php`
            matches these halves so main content is not overlapped. --}}
       <section
-        class="footer-newsletter-band relative z-20 max-lg:mb-0 max-lg:translate-y-0 -mb-[150px] -translate-y-1/2 md:-mb-[190px] lg:-mb-[210px]"
+        class="footer-newsletter-band relative z-20 max-lg:mb-0 max-lg:translate-y-0 {{ \App\Helpers\LayoutShell::BREAKOUT_X_MOBILE }} -mb-[150px] -translate-y-1/2 md:-mb-[190px] lg:-mb-[210px]"
         aria-labelledby="footer-newsletter-heading">
         <div
           class="footer-newsletter relative overflow-hidden max-lg:min-h-[604px] max-lg:rounded-none min-h-[300px] rounded-lg md:min-h-[380px] md:rounded-[10px] lg:min-h-[420px]"
@@ -382,7 +382,7 @@
           @endif
         </div>
 
-        <div class="site-footer__mobile-legal font-label text-[12px] font-normal uppercase leading-[24px] tracking-[0.5px] text-lighter-cream">
+        <div class="site-footer__mobile-legal font-label text-[12px] font-normal uppercase leading-[24px] tracking-[0.5px] text-lighter-cream [&_.footer-nav__link--legal]:text-xs [&_.footer-nav__link--legal]:leading-6 [&_.footer-nav__link--legal]:tracking-wide">
           <ul class="flex list-none flex-nowrap gap-x-[12px] gap-y-2 p-0 max-lg:flex-nowrap lg:flex-wrap lg:gap-x-[18px]">
             <li class="list-none">
               <a class="footer-nav__link--legal" href="{{ esc_url(home_url('/cookie-policy/')) }}">{{ __('Cookie Policy', 'culvers') }}</a>
@@ -394,7 +394,7 @@
               <a class="footer-nav__link--legal" href="{{ esc_url(home_url('/privacy-policy/')) }}">{{ __('Privacy Policy', 'culvers') }}</a>
             </li>
           </ul>
-          <div class="mt-6 flex flex-wrap items-center gap-x-[12px] gap-y-2 max-lg:mt-0 max-lg:gap-x-[12px] max-lg:gap-y-0 lg:gap-x-[18px]">
+          <div class="mt-3 flex flex-wrap items-center gap-x-[12px] gap-y-2 lg:mt-6 lg:gap-x-[18px]">
             <a class="footer-nav__link--legal" href="{{ esc_url(home_url('/terms-and-conditions/')) }}">{{ __('Terms & Conditions', 'culvers') }}</a>
             <span class="footer-nav__link--legal">
               &copy;

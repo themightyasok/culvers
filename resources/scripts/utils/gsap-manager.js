@@ -102,7 +102,7 @@ class GSAPManager {
         this.smoother = ScrollSmoother.create({
           smooth: 1,
           effects: false,
-          /* Keep off — normalizer can steal taps; directory hit order is fixed in directory-archive.css (z-index). */
+          /* Keep off — normalizer can steal taps; directory hit order is fixed in patterns/directory-archive.css (z-index). */
           normalizeScroll: false,
           ignoreMobileResize: true,
         });

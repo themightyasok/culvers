@@ -17,8 +17,8 @@ final class HorizontalScrollerPreset
     /** Figma `51:5005` — intro body copy width (natural wrap, not manual `<p>` breaks). */
     public const HOMEPAGE_BRANDS_INTRO_BODY_MAX_W_PX = 588;
 
-    /** Figma `51:5007` uses `gap-[133px]` on a ~1494px frame; tightened in code for the live strip. */
-    public const HOMEPAGE_BRANDS_ITEM_GAP_PX = 48;
+    /** Figma `51:5007` — `gap-[133px]` on the ~1494px homepage brand row. */
+    public const HOMEPAGE_BRANDS_ITEM_GAP_PX = 133;
 
     /** Generic horizontal scroller rows (mixed cards, not the homepage logo strip). */
     public const DEFAULT_ITEM_GAP_PX = 80;

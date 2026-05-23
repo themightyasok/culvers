@@ -11,7 +11,7 @@ deck whose panels cross-fade inside the olive column.
 | ACF schema | [`app/Components/shop_split_highlight.php`](../../app/Components/shop_split_highlight.php) |
 | Blade view | [`resources/views/components/shop-split-highlight.blade.php`](../../resources/views/components/shop-split-highlight.blade.php) |
 | CSS partial | _(none)_ |
-| Alpine module | [`resources/scripts/alpine/split-highlight.js`](../../resources/scripts/alpine/split-highlight.js) — drives tab cross-fade |
+| Alpine module | [`resources/scripts/alpine/shop-split-highlight.js`](../../resources/scripts/alpine/shop-split-highlight.js) — drives tab cross-fade |
 | BEM root | `.shop-split-highlight` |
 
 ## When to use
@@ -33,9 +33,11 @@ component.
 
 ### Static copy mode (`split_use_tabs = false`)
 
+Copy is always centre-aligned horizontally and vertically in the theme. Use **`split_copy_background`** to switch olive/white type treatment.
+
 | Field | Type | Default | Notes |
 | --- | --- | --- | --- |
-| `split_center_lists` | true_false | off | Centre-aligns list lines in the copy column (`list-inside` + `text-center`). Does not move headline or paragraphs. |
+| `split_copy_background` | select (`olive`, `white`) | `olive` | Olive + white text, or white + deep moss text. |
 | `split_kicker` | text | | Glowleaf Canela first line. |
 | `split_headline` | text | | Second Canela line. |
 | `split_body` | wysiwyg (`toolbar: basic`, `media_upload: 0`) | Halyard (body) copy. |

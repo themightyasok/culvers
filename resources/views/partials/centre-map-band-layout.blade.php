@@ -149,8 +149,7 @@
           <ul
             class="centre-map__mobile-category-grid m-0 grid list-none grid-cols-2 gap-x-6 gap-y-3 p-0"
             x-show="openGroup === {{ e($groupSlugJson) }}"
-            x-cloak
-            x-transition.opacity.duration.150ms>
+            x-cloak>
             @foreach($group['items'] as $cat)
               @php($catSlugJson = json_encode($cat['slug'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES))
               @php($catLabelJson = json_encode($cat['label'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES))
@@ -161,6 +160,7 @@
                     'catSlugJson' => $catSlugJson,
                     'catLabelJson' => $catLabelJson,
                     'isAll' => $isAll,
+                    'filterOnly' => true,
                 ])
               </li>
             @endforeach

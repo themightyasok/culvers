@@ -79,7 +79,12 @@ final class ShopSingleFlexibleSeedData
             ? (string) get_post_type_archive_link('culvers_shop')
             : '/shops/';
 
-        $brandUrl = self::demoBrandWebsiteUrl($shopSlug);
+        $brandCta = ShopIntroCta::resolve(
+            $shopSlug,
+            ShopIntroCta::liveSlugForLocal($shopSlug),
+            $title
+        );
+        $brandUrl = $brandCta['url'] ?? '';
 
         $rows = [
             [
@@ -95,9 +100,7 @@ final class ShopSingleFlexibleSeedData
             [
                 'acf_fc_layout' => 'shop_intro_block',
                 'intro_body' => self::introWysiwyg($title, $shopSlug),
-                'intro_cta_label' => $brandUrl !== ''
-                    ? sprintf(__('Visit %s online', 'culvers'), $title)
-                    : '',
+                'intro_cta_label' => $brandCta['label'] ?? '',
                 'intro_cta_url' => $brandUrl,
             ],
         ];
@@ -148,10 +151,10 @@ final class ShopSingleFlexibleSeedData
             PagesFlexibleSeedData::centreMapRow(),
             [
                 'acf_fc_layout' => 'shop_related_shops',
-                'related_heading' => __('More shops you might enjoy', 'culvers'),
-                'related_shop_posts' => $relatedIds,
-                'related_view_all_url' => $archive !== '' ? $archive : '/shops/',
-                'related_view_all_label' => __('View all', 'culvers'),
+                'shops_related_heading' => __('More shops you might enjoy', 'culvers'),
+                'shops_related_posts' => $relatedIds,
+                'shops_related_view_all_url' => $archive !== '' ? $archive : '/shops/',
+                'shops_related_view_all_label' => __('View all', 'culvers'),
             ],
         ]);
 
@@ -222,14 +225,6 @@ final class ShopSingleFlexibleSeedData
         );
 
         return '<p>' . $lead . '</p>';
-    }
-
-    private static function demoBrandWebsiteUrl(string $shopSlug): string
-    {
-        return match ($shopSlug) {
-            'accessorize-london' => 'https://www.accessorize.com/',
-            default => '',
-        };
     }
 
     /**

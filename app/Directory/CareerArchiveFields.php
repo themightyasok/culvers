@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Directory;
 
 use App\Admin\AdminMenu;
+use StoutLogic\AcfBuilder\FieldsBuilder;
 
 /**
  * Theme options + archive wiring for `/careers/`.
@@ -42,6 +43,9 @@ final class CareerArchiveFields
                 'Centered below the hero. Leave blank to use the default Careers line.',
                 'culvers'
             ),
+            'extra' => static function (FieldsBuilder $group): void {
+                CareerArchiveContactCta::appendFields($group);
+            },
         ]);
     }
 }

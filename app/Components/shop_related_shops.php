@@ -10,7 +10,7 @@ return [
     'label' => __('Shop — related shops', 'culvers'),
     'display' => 'block',
     'main' => [
-        'related_heading' => [
+        'shops_related_heading' => [
             'type' => 'text',
             'options' => [
                 'label' => __('Heading', 'culvers'),
@@ -18,8 +18,8 @@ return [
                 'wrapper' => ['width' => '70'],
             ],
         ],
-        'related_heading_level' => Component::headingLevelField(null, false, 2, '30'),
-        'related_view_all_url' => [
+        'shops_related_heading_level' => Component::headingLevelField(null, false, 2, '30'),
+        'shops_related_view_all_url' => [
             'type' => 'url',
             'options' => [
                 'label' => __('View all URL', 'culvers'),
@@ -27,7 +27,7 @@ return [
                 'wrapper' => ['width' => '50'],
             ],
         ],
-        'related_view_all_label' => [
+        'shops_related_view_all_label' => [
             'type' => 'text',
             'options' => [
                 'label' => __('View all label', 'culvers'),
@@ -37,7 +37,7 @@ return [
         ],
     ],
     'items' => [
-        'related_shop_posts' => [
+        'shops_related_posts' => [
             'type' => 'post_object',
             'options' => [
                 'label' => __('Shops', 'culvers'),

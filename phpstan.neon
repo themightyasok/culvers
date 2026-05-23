@@ -7,3 +7,5 @@ parameters:
     paths:
         - app
     treatPhpDocTypesAsCertain: true
+    bootstrapFiles:
+        - phpstan/acf-wpcli-stubs.php

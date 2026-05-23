@@ -82,7 +82,7 @@ const culversThemePlugin = plugin(({ addBase, addComponents }) => {
       '@apply font-sans text-base leading-snug text-light-cream/85 transition-colors hover:text-glowleaf':
         {},
     },
-    /* Column nav — Figma 51:5147: Halyard Book 18px / lh 26 (desktop trim in site-footer-desktop.css). */
+    /* Column nav — Figma 51:5147: Halyard Book 18px / lh 26. */
     '.footer-nav--col li > a.footer-nav__link-col': {
       '@apply footer-sans-book text-[18px] leading-[26px] text-white transition-colors hover:text-glowleaf':
         {},
@@ -98,6 +98,23 @@ const culversThemePlugin = plugin(({ addBase, addComponents }) => {
     '.footer-nav__link-social': {
       '@apply inline-flex items-center gap-[7px] font-label text-[14px] font-semibold uppercase tracking-[1.165px] leading-[28px] text-light-cream/90 transition-colors hover:text-glowleaf':
         {},
+    },
+    /*
+     * Full-bleed horizontal breakout — escapes the 12-col / max-w-8xl grid to 100vw.
+     * Pair with {@see App\Helpers\LayoutShell::BREAKOUT_X} in Blade.
+     */
+    '.culvers-breakout-x': {
+      width: '100vw',
+      maxWidth: '100vw',
+      marginLeft: 'calc(50% - 50vw)',
+      marginRight: 'calc(50% - 50vw)',
+    },
+    /*
+     * Filter / tab pills built on `.btn` — keep geometry fixed on hover (no widen).
+     * Used by three-card-block category tabs.
+     */
+    '.btn-filter-tab': {
+      '@apply px-6 py-2 hover:px-6': {},
     },
   });
 });

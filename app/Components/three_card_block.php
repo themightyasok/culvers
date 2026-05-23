@@ -2,6 +2,7 @@
 
 /**
  * Three card block — hero-style row with optional blog category tabs + View all.
+ * Cards always come from published posts (directory CPTs or blog categories).
  */
 
 use App\Helpers\Component;
@@ -14,6 +15,7 @@ $onlyWhenAny = static function (array $values): array {
     foreach ($values as $v) {
         $groups[] = [['field' => 'cards_source', 'operator' => '==', 'value' => $v]];
     }
+
     return $groups;
 };
 
@@ -52,23 +54,31 @@ return [
                 'media_upload' => 1,
             ],
         ],
+        'cards_media_overlay_opacity' => Component::overlayOpacityRangeField(
+            __('Card media overlay darkness', 'culvers'),
+            __(
+                'Black overlay on each card image (0% = none). '
+                    . 'Helps white title text stay readable over bright photography.',
+                'culvers'
+            ),
+            25,
+            '50'
+        ),
         'msg_source' => Component::sectionDivider(__('Card source', 'culvers')),
         'cards_source' => [
             'type' => 'radio',
             'options' => [
                 'label' => __('Card source', 'culvers'),
                 'instructions' => __(
-                    'Manual entries, blog posts grouped by category tabs, '
-                        . 'or the latest items from a single directory CPT '
-                        . '(events, offers, news, shops, eat & drink, careers).',
+                    'Pick published posts from directory CPTs (events, offers, news, shops, eat & drink, careers) '
+                        . 'or from blog categories. Card title, image, and link always come from the post.',
                     'culvers'
                 ),
                 'choices' => [
-                    'manual' => __('Manual (up to three cards)', 'culvers'),
+                    'cpt' => __('Directory posts (latest items)', 'culvers'),
                     'blog' => __('Blog posts (category tabs)', 'culvers'),
-                    'cpt' => __('Directory CPT (latest items)', 'culvers'),
                 ],
-                'default_value' => 'manual',
+                'default_value' => 'cpt',
                 'layout' => 'horizontal',
                 'return_format' => 'value',
             ],
@@ -150,8 +160,8 @@ return [
             'options' => [
                 'label' => __('View all URL', 'culvers'),
                 'instructions' => __(
-                    'Typically your blog index, the matching CPT archive, or any landing page. '
-                        . 'Leave blank when source is "Directory CPT" to auto-link to that CPT\'s archive.',
+                    'Typically the matching CPT archive or blog index. '
+                        . 'Leave blank for directory CPT mode to auto-link to that CPT\'s archive.',
                     'culvers'
                 ),
                 'default_value' => '',
@@ -166,111 +176,6 @@ return [
                 'default_value' => __('View all', 'culvers'),
                 'conditional_logic' => $onlyWhenAny(['blog', 'cpt']),
                 'wrapper' => ['width' => '50'],
-            ],
-        ],
-    ],
-    'items' => [
-        'cards_items_help' => [
-            'type' => 'message',
-            'options' => [
-                'message' => __(
-                    'These manual cards are only rendered when <strong>Card source</strong> on the '
-                    . '<em>Main</em> tab is set to <strong>Manual</strong>. For blog or directory CPT '
-                    . 'sources, the row builds itself from those queries and ignores this list.',
-                    'culvers'
-                ),
-                'esc_html' => 0,
-                'wrapper' => ['class' => 'culvers-acf-help'],
-            ],
-        ],
-        'cards_items' => [
-            'type' => 'repeater',
-            'options' => [
-                'label' => __('Cards (manual)', 'culvers'),
-                'instructions' => __(
-                    'Exactly three cards recommended. Video plays while hovered (respects reduced motion). '
-                        . 'Only used when source is "Manual".',
-                    'culvers'
-                ),
-                'min' => 0,
-                'max' => 3,
-                'layout' => 'block',
-                'button_label' => __('Add card', 'culvers'),
-                'collapsed' => 'card_title',
-                'conditional_logic' => $onlyWhen('manual'),
-                'sub_fields' => [
-                    'card_title' => [
-                        'type' => 'text',
-                        'options' => [
-                            'label' => __('Card title', 'culvers'),
-                            'required' => 1,
-                            'wrapper' => ['width' => '70'],
-                        ],
-                    ],
-                    'card_media_type' => [
-                        'type' => 'radio',
-                        'options' => [
-                            'label' => __('Media', 'culvers'),
-                            'choices' => [
-                                'image' => __('Image', 'culvers'),
-                                'video' => __('Video', 'culvers'),
-                            ],
-                            'default_value' => 'image',
-                            'layout' => 'horizontal',
-                            'return_format' => 'value',
-                            'wrapper' => ['width' => '30'],
-                        ],
-                    ],
-                    'card_url' => [
-                        'type' => 'url',
-                        'options' => [
-                            'label' => __('Link URL', 'culvers'),
-                            'required' => 1,
-                        ],
-                    ],
-                    'card_image' => [
-                        'type' => 'image',
-                        'options' => [
-                            'label' => __('Image', 'culvers'),
-                            'instructions' => __('Used when media is Image.', 'culvers'),
-                            'return_format' => 'array',
-                            'preview_size' => 'medium',
-                            'library' => 'all',
-                            'conditional_logic' => [[[
-                                'field' => 'card_media_type',
-                                'operator' => '==',
-                                'value' => 'image',
-                            ]]],
-                        ],
-                    ],
-                    'card_image_alt' => [
-                        'type' => 'text',
-                        'options' => [
-                            'label' => __('Image alt text', 'culvers'),
-                            'instructions' => __('Important for screen readers when using an image.', 'culvers'),
-                            'conditional_logic' => [[[
-                                'field' => 'card_media_type',
-                                'operator' => '==',
-                                'value' => 'image',
-                            ]]],
-                        ],
-                    ],
-                    'card_video' => [
-                        'type' => 'file',
-                        'options' => [
-                            'label' => __('Video file', 'culvers'),
-                            'instructions' => __('Used when media is Video.', 'culvers'),
-                            'mime_types' => 'mp4,webm',
-                            'return_format' => 'array',
-                            'library' => 'all',
-                            'conditional_logic' => [[[
-                                'field' => 'card_media_type',
-                                'operator' => '==',
-                                'value' => 'video',
-                            ]]],
-                        ],
-                    ],
-                ],
             ],
         ],
     ],

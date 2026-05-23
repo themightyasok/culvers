@@ -24,16 +24,25 @@
     data-component-root
     data-shop-intro-block>
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
-      {{-- Figma shop intro copy: Desktop/Body Copy/Large body copy — 20px / lh 1.3 Book (≈886px column). --}}
-      <div class="shop-intro-block__column mx-auto max-w-[886px] py-12 text-center md:py-16">
+      {{-- Figma 51:6154 / 51:6679 (shop + food singles): intro at y=746 after 646px hero
+           → 100px top; split at y≈1016 with 174px copy → 96px below (grid gap-y-24).
+           Mobile 51:8886: 90px between intro copy and next band. Bottom padding stays 0
+           so we do not stack inner pb + grid gap. --}}
+      <div class="shop-intro-block__column mx-auto max-w-[886px] pb-0 pt-[90px] text-center lg:pt-[100px]">
         <div
           class="shop-intro-block__body max-w-none font-sans text-xl font-light [&_p:first-child]:mt-0 [&_p:last-child]:mb-0 [&_p+p]:mt-[1.25em] [&_strong]:font-medium {{ esc_attr($tone) }}">
           {!! $body !!}
         </div>
 
         @if($showCta)
-          <div class="shop-intro-block__cta mt-10 flex justify-center md:mt-12">
-            @include('components.button', ['label' => $ctaLabel, 'href' => $ctaUrl])
+          <div class="shop-intro-block__cta mt-6 flex justify-center">
+            @include('components.button', [
+                'label' => $ctaLabel,
+                'href' => $ctaUrl,
+                'attributes' => str_starts_with($ctaUrl, 'http')
+                    ? ['target' => '_blank', 'rel' => 'noopener noreferrer']
+                    : [],
+            ])
           </div>
         @endif
       </div>

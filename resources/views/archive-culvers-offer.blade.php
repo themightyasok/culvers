@@ -33,7 +33,7 @@
   <section class="pb-16 md:pb-28">
     <div class="px-4 md:px-12">
       <div class="mx-auto w-full max-w-8xl">
-        <div class="archive-intro mx-auto max-w-[802px] text-center font-sans text-xl font-light text-deep-moss">
+        <div class="{{ \App\Helpers\LayoutShell::ARCHIVE_INTRO }}">
           {!! wp_kses_post(wpautop($introHtml)) !!}
         </div>
 

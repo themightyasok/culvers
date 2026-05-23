@@ -13,7 +13,7 @@ const SHOP_RELATED_SPLIDE_OPTIONS = {
   arrows: false,
   pagination: true,
   drag: true,
-  gap: '1.75rem',
+  gap: '22px',
   perPage: 1,
   perMove: 1,
   trimSpace: false,

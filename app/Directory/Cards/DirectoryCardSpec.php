@@ -15,10 +15,9 @@ namespace App\Directory\Cards;
  *
  * Field semantics (visual mapping into the tile):
  *
- *   • `hoverPhotoUrl` — large featured-image URL shown on hover/focus.
- *     Empty string means "no hover photo" (career cards behave this way today;
- *     the partial skips the overlay markup entirely so reduced-motion targets
- *     never apply).
+   *   • `hoverPhotoUrl` — large featured-image URL. On logo cards it appears on
+   *     hover/focus; on no-logo CPTs (events / offers / news) it is shown by
+   *     default because there is no brand mark on the moss tile.
  *
  *   • `logoUrl` — image for the upper logo slot; may duplicate
  *     `hoverPhotoUrl` when the factory falls back to the featured image.

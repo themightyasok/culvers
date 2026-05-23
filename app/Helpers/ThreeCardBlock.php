@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Helpers;
 
 /**
- * Flexible layout `three_card_block`: normalize manual/blog cards from saved ACF data.
+ * Flexible layout `three_card_block`: cards from directory CPT queries or blog categories.
  */
 final class ThreeCardBlock
 {
@@ -60,23 +60,127 @@ final class ThreeCardBlock
             }
             $out[] = $value;
         }
+
         return $out;
     }
 
     /**
-     * Structural normalization only — no demo copy or placeholder media is injected here.
+     * Structural normalization — coerces legacy manual rows to CPT queries.
      *
      * @param  array<string, mixed>  $component
      * @return array<string, mixed>
      */
     public static function applyEditorFallback(array $component): array
     {
-        $source = (string) ($component['cards_source'] ?? 'manual');
-        if ($source !== 'manual' && $source !== 'blog' && $source !== 'cpt') {
-            $component['cards_source'] = 'manual';
+        $source = (string) ($component['cards_source'] ?? 'cpt');
+
+        if ($source === 'manual') {
+            $component = self::coerceLegacyManualToCpt($component);
+            $source = 'cpt';
+        }
+
+        if ($source !== 'blog' && $source !== 'cpt') {
+            $component['cards_source'] = 'cpt';
+            if (self::normalizeCptList($component['cards_cpt_post_type'] ?? null) === []) {
+                $component['cards_cpt_post_type'] = ['culvers_news', 'culvers_event', 'culvers_offer'];
+                $component['cards_cpt_count'] = $component['cards_cpt_count'] ?? 3;
+            }
+        } else {
+            $component['cards_source'] = $source;
+        }
+
+        unset($component['cards_items']);
+
+        return $component;
+    }
+
+    /**
+     * @param  array<string, mixed>  $component
+     * @return array<string, mixed>
+     */
+    private static function coerceLegacyManualToCpt(array $component): array
+    {
+        $component['cards_source'] = 'cpt';
+        $component['cards_cpt_count'] = (int) ($component['cards_cpt_count'] ?? 3);
+        if ($component['cards_cpt_count'] < 1) {
+            $component['cards_cpt_count'] = 3;
+        }
+
+        if (self::normalizeCptList($component['cards_cpt_post_type'] ?? null) !== []) {
+            return $component;
+        }
+
+        $component['cards_cpt_post_type'] = [self::inferLegacyManualCpt($component)];
+
+        if (trim((string) ($component['cards_view_all_url'] ?? '')) === '') {
+            $archive = get_post_type_archive_link($component['cards_cpt_post_type'][0]);
+            if (is_string($archive) && $archive !== '') {
+                $component['cards_view_all_url'] = $archive;
+            }
         }
 
         return $component;
+    }
+
+    /**
+     * @param  array<string, mixed>  $component
+     */
+    private static function inferLegacyManualCpt(array $component): string
+    {
+        $heading = mb_strtolower(trim((string) ($component['cards_heading'] ?? '')));
+
+        if (str_contains($heading, 'offer')) {
+            return 'culvers_offer';
+        }
+        if (str_contains($heading, 'event')) {
+            return 'culvers_event';
+        }
+        if (str_contains($heading, 'news')) {
+            return 'culvers_news';
+        }
+        if (str_contains($heading, 'shop')) {
+            return 'culvers_shop';
+        }
+        if (str_contains($heading, 'eat') || str_contains($heading, 'drink')) {
+            return 'culvers_eat_drink';
+        }
+        if (str_contains($heading, 'career')) {
+            return 'culvers_career';
+        }
+
+        foreach (is_array($component['cards_items'] ?? null) ? $component['cards_items'] : [] as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+            $url = mb_strtolower(trim((string) ($row['card_url'] ?? '')));
+            if (str_contains($url, '/latest-offers')) {
+                return 'culvers_offer';
+            }
+            if (str_contains($url, '/latest-events')) {
+                return 'culvers_event';
+            }
+            if (str_contains($url, '/latest-news')) {
+                return 'culvers_news';
+            }
+            if (str_contains($url, '/shops')) {
+                return 'culvers_shop';
+            }
+            if (str_contains($url, '/eat-drink') || str_contains($url, '/dining')) {
+                return 'culvers_eat_drink';
+            }
+        }
+
+        return 'culvers_offer';
+    }
+
+    /**
+     * Black overlay on card media (image or video). 0 = no overlay.
+     *
+     * @param  array<string, mixed>  $component
+     */
+    public static function mediaOverlayOpacity(array $component): int
+    {
+        return Component::overlayOpacityPercent($component['cards_media_overlay_opacity'] ?? null, 25);
     }
 
     /**
@@ -94,7 +198,7 @@ final class ThreeCardBlock
             return $explicit;
         }
 
-        $source = (string) ($component['cards_source'] ?? 'manual');
+        $source = (string) ($component['cards_source'] ?? 'cpt');
         if ($source !== 'cpt') {
             return '';
         }
@@ -117,112 +221,20 @@ final class ThreeCardBlock
     }
 
     /**
-     * Tab panels for Blade: manual → single tab; blog → one tab per category.
+     * Tab panels for Blade: blog → one tab per category; CPT → one tab per directory.
      *
      * @param  array<string, mixed>  $component  Already sanitized + fallback merged.
      * @return list<array{label: string, slug: string, cards: list<array<string, mixed>>}>
      */
     public static function buildTabPanels(array $component): array
     {
-        $source = (string) ($component['cards_source'] ?? 'manual');
+        $source = (string) ($component['cards_source'] ?? 'cpt');
 
         if ($source === 'blog') {
             return self::blogTabPanels($component);
         }
 
-        if ($source === 'cpt') {
-            return self::cptTabPanels($component);
-        }
-
-        return [
-            [
-                'label' => '',
-                'slug' => 'manual',
-                'cards' => self::normalizeManualCards(is_array($component['cards_items'] ?? null) ? $component['cards_items'] : []),
-            ],
-        ];
-    }
-
-    /**
-     * @param  list<array<string, mixed>>|array<string, mixed>  $rows
-     * @return list<array<string, mixed>>
-     */
-    private static function normalizeManualCards(array $rows): array
-    {
-        $out = [];
-        foreach ($rows as $row) {
-            if (! is_array($row)) {
-                continue;
-            }
-            $title = trim((string) ($row['card_title'] ?? ''));
-            $href = trim((string) ($row['card_url'] ?? ''));
-            $media = (string) ($row['card_media_type'] ?? 'image');
-            if ($media !== 'video') {
-                $media = 'image';
-            }
-
-            /** @var array<string, mixed>|null $img */
-            $img = self::normalizeAcfFileField($row['card_image'] ?? null);
-            /** @var array<string, mixed>|null $vid */
-            $vid = self::normalizeAcfFileField($row['card_video'] ?? null, true);
-
-            $alt = trim((string) ($row['card_image_alt'] ?? ''));
-
-            if ($title === '' || $href === '') {
-                continue;
-            }
-
-            $out[] = [
-                'title' => $title,
-                'url' => $href,
-                'media_type' => $media,
-                'image' => $img,
-                'video' => $vid,
-                'poster' => null,
-                'alt' => $alt !== '' ? $alt : $title,
-            ];
-
-            if (count($out) >= 3) {
-                break;
-            }
-        }
-
-        return $out;
-    }
-
-    /**
-     * Resolve ACF image/file fields saved as arrays or attachment IDs.
-     *
-     * @return array<string, mixed>|null
-     */
-    private static function normalizeAcfFileField(mixed $field, bool $isVideo = false): ?array
-    {
-        if (is_array($field) && ! empty($field['url'])) {
-            return $field;
-        }
-
-        if (! is_numeric($field) || (int) $field <= 0) {
-            return null;
-        }
-
-        $id = (int) $field;
-        $url = wp_get_attachment_url($id);
-        if (! is_string($url) || $url === '') {
-            return null;
-        }
-
-        $mime = (string) (get_post_mime_type($id) ?: '');
-        if ($isVideo && $mime !== '' && ! str_starts_with($mime, 'video/')) {
-            return null;
-        }
-
-        $row = [
-            'url' => $url,
-            'mime_type' => $isVideo ? ($mime !== '' ? $mime : 'video/mp4') : $mime,
-            'alt' => trim((string) get_post_meta($id, '_wp_attachment_image_alt', true)),
-        ];
-
-        return $row;
+        return self::cptTabPanels($component);
     }
 
     /**
@@ -269,12 +281,21 @@ final class ThreeCardBlock
                 $order = 'ASC';
             }
 
+            $notIn = [];
+            if (is_singular($postType)) {
+                $currentId = (int) get_queried_object_id();
+                if ($currentId > 0) {
+                    $notIn[] = $currentId;
+                }
+            }
+
             $query = new \WP_Query([
                 'post_type' => $postType,
                 'post_status' => 'publish',
                 'posts_per_page' => $perPage,
                 'orderby' => $orderby,
                 'order' => $order,
+                'post__not_in' => $notIn,
                 'ignore_sticky_posts' => true,
                 'no_found_rows' => true,
             ]);
@@ -283,29 +304,7 @@ final class ThreeCardBlock
             while ($query->have_posts()) {
                 $query->the_post();
                 $postId = (int) get_the_ID();
-                $titleDecoded = html_entity_decode((string) get_the_title(), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                $thumbId = (int) get_post_thumbnail_id($postId);
-                /** @var array<string, mixed>|null $img */
-                $img = null;
-                $altText = $titleDecoded;
-                if ($thumbId > 0) {
-                    $url = wp_get_attachment_image_url($thumbId, 'large');
-                    if (is_string($url) && $url !== '') {
-                        $thumbAlt = trim((string) get_post_meta($thumbId, '_wp_attachment_image_alt', true));
-                        $altText = $thumbAlt !== '' ? $thumbAlt : $titleDecoded;
-                        $img = ['url' => $url, 'alt' => $altText];
-                    }
-                }
-
-                $cards[] = [
-                    'title' => $titleDecoded,
-                    'url' => get_permalink($postId) ?: '',
-                    'media_type' => 'image',
-                    'image' => $img,
-                    'video' => null,
-                    'poster' => null,
-                    'alt' => $altText,
-                ];
+                $cards[] = self::cardFromPostId($postId);
             }
             wp_reset_postdata();
 
@@ -317,6 +316,36 @@ final class ThreeCardBlock
         }
 
         return $panels;
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private static function cardFromPostId(int $postId): array
+    {
+        $titleDecoded = html_entity_decode((string) get_the_title($postId), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $thumbId = (int) get_post_thumbnail_id($postId);
+        /** @var array<string, mixed>|null $img */
+        $img = null;
+        $altText = $titleDecoded;
+        if ($thumbId > 0) {
+            $url = wp_get_attachment_image_url($thumbId, 'large');
+            if (is_string($url) && $url !== '') {
+                $thumbAlt = trim((string) get_post_meta($thumbId, '_wp_attachment_image_alt', true));
+                $altText = $thumbAlt !== '' ? $thumbAlt : $titleDecoded;
+                $img = ['url' => $url, 'alt' => $altText];
+            }
+        }
+
+        return [
+            'title' => $titleDecoded,
+            'url' => get_permalink($postId) ?: '',
+            'media_type' => 'image',
+            'image' => $img,
+            'video' => null,
+            'poster' => null,
+            'alt' => $altText,
+        ];
     }
 
     /**
@@ -362,30 +391,7 @@ final class ThreeCardBlock
             $cards = [];
             while ($q->have_posts()) {
                 $q->the_post();
-                $postId = (int) get_the_ID();
-                $thumbId = (int) get_post_thumbnail_id($postId);
-                $titleDecoded = html_entity_decode((string) get_the_title(), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                /** @var array<string, mixed>|null $img */
-                $img = null;
-                $altText = $titleDecoded;
-                if ($thumbId > 0) {
-                    $u = wp_get_attachment_image_url($thumbId, 'large');
-                    if (is_string($u) && $u !== '') {
-                        $thumbAlt = trim((string) get_post_meta($thumbId, '_wp_attachment_image_alt', true));
-                        $altText = $thumbAlt !== '' ? $thumbAlt : $titleDecoded;
-                        $img = ['url' => $u, 'alt' => $altText];
-                    }
-                }
-
-                $cards[] = [
-                    'title' => $titleDecoded,
-                    'url' => get_permalink($postId) ?: '',
-                    'media_type' => 'image',
-                    'image' => $img,
-                    'video' => null,
-                    'poster' => null,
-                    'alt' => $altText,
-                ];
+                $cards[] = self::cardFromPostId((int) get_the_ID());
             }
             wp_reset_postdata();
 
@@ -397,5 +403,22 @@ final class ThreeCardBlock
         }
 
         return $panels;
+    }
+
+    /**
+     * Figma homepage `51:8214` — intro + single CPT tab rows use stacked landscape
+     * promo tiles on mobile; tabbed News/Events/Offers strips stay portrait Splide.
+     *
+     * @param  array<string, mixed>  $component
+     */
+    public static function usesMobilePromoStack(array $component): bool
+    {
+        if (count(self::buildTabPanels($component)) > 1) {
+            return false;
+        }
+
+        $body = (string) ($component['cards_body'] ?? '');
+
+        return trim(strip_tags($body)) !== '';
     }
 }

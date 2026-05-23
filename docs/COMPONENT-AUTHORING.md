@@ -123,27 +123,22 @@ return [
 
 ### What the registry adds for you (do NOT redefine these)
 
-`ComponentRegistry::registerSharedLayoutChrome()` injects shared tabs **before** your component fields:
+`ComponentRegistry` injects shared editor tabs before your component fields:
 
-1. **Layout & background** — `component_width` plus `background_type` with conditional colour / gradient / image / video / overlay fields (**flat**, no accordion sections — accordions broke nested UX around conditional backgrounds).
-2. **Typography** — `body_text_tone` (default prose tone for the block).
-3. **Visibility** — row visibility toggles (phones vs tablet/desktop-up band).
+1. **Main** — theme-controlled grid/surface note, then your **Content** fields from `main`.
+2. **Typography** — only when a layout declares fields in `typography`.
+3. **Items** — only when a layout declares a repeater (or post picker) in `items`.
+4. **Mobile** — either real `_*_mobile` overrides in `mobile`, or an explanatory message when overrides live on repeater rows instead.
 
-Re-defining any of these keys in `app/Components/<layout>.php` duplicates the field and breaks ACF.
+Re-defining registry-owned keys in `app/Components/<layout>.php` duplicates the field and breaks ACF.
 
-| Field key | What it controls |
+**Front-end chrome is code-authoritative.** Row width and background are merged after sanitization via `App\Helpers\ComponentLayoutChrome::apply()` — saved meta cannot change surfaces on the live site. The ACF Background / Layout pickers were removed; defaults live in `ComponentLayoutChrome` and the `culvers_component_layout_chrome` filter.
+
+| Concern | Where it lives |
 | --------- | ---------------- |
-| `component_width` | 6–12 column span (`Grid::getColumnChoices()`). |
-| `background_type` + descendants | None / colour / gradient / image / image-centred / video. Read via `Background::process($c)`. |
-| `background_overlay_*` | Overlay colour & opacity for image/video backgrounds. |
-| `background_parallax` | Subtle scroll parallax on background image (desktop only). |
-| `body_text_tone` | Default body copy colour. Read via `Component::bodyTextTone($c[, 'light-band'])`. |
-| `visibility_hide_phone` | Hide the entire row **below `md`** (&lt;768px). |
-| `visibility_hide_desktop` | Hide the entire row **from `md` upward** (tablet + desktop). Phones still see the row. |
-
-There is **no** separate tablet-only hide — tablet shares the same band as desktop.
-
-The renderer applies Tailwind bundles via `ComponentVisibility::gridUtilityClasses($c)` (legacy postmeta `visibility_mobile === 'hidden'` still maps to hide-on-phone until migrated).
+| `component_width` | `ComponentLayoutChrome::baseChromeForLayout()` |
+| `background_*` | Same — transparent by default so page diamonds show through |
+| `body_text_tone` | Fixed per layout in code (not editor-driven) |
 
 ### Responsive imagery preset
 
@@ -156,25 +151,21 @@ component PHP / Blade must not add outer `pt-*` / `pb-*` to the section
 element. Inter-section spacing is decided centrally in
 [`App\Helpers\Rhythm`](../app/Helpers/Rhythm.php). Figma uses three levels:
 
-| Level        | Class    | Pixels | Used when                                                                                       |
-| ------------ | -------- | ------ | ----------------------------------------------------------------------------------------------- |
-| **Standard** | `mt-24`  | 96     | **Default** — space between consecutive flexible components site-wide. |
-| **Hugged**   | `mt-15`  | 60     | Reserved — for an intro band that hugs the content it announces. Apply per-case via `Rhythm`.   |
-| **Flush**    | `mt-0`   | 0      | Reserved — cluster joins where one component flows into the next. Apply per-case via `Rhythm`.  |
+| Level        | Mechanism   | Pixels | Used when                                                                                       |
+| ------------ | ----------- | ------ | ----------------------------------------------------------------------------------------------- |
+| **Standard** | `gap-y-24` on the flexible-components grid | 96 | **Default** between flexible rows (all breakpoints). |
+| **Breathed** | `-mt-12` on the current row | 48 | After `section_header` **with** body copy. |
+| **Flush**    | `-mt-24` on the current row | 0  | After slim `section_header` (heading only). |
+| **Hugged**   | `-mt-9` on the current row  | 60 | Reserved — apply per-case via `Rhythm`. |
 
-The renderer
+The parent grid owns Standard spacing. The renderer
 ([`flexible-components.blade.php`](../resources/views/partials/flexible-components.blade.php))
-walks rows in order and asks `Rhythm::spaceAboveClass($previousLayout,
-$previousComponent)` for the `mt-*` utility to apply to the current row.
-Today every non-first row is Standard. The first row gets no top margin.
-To make a layout always hug or flush against the row that follows it,
-add a branch inside `App\Helpers\Rhythm::spaceAboveClass()`.
+only adds negative `mt-*` from `Rhythm::spaceAboveClass()` when the previous
+row is an exception. **Do not** stack `py-12` / `mt-24` on transparent
+sections — that was causing uneven gaps on the homepage.
 
-If a component paints its own background (`bg-white`, `bg-deep-moss`, …),
-it adds **internal** `py-*` directly inside the Blade template so the bg
-has breathing room around its content. The shared baseline is
-`py-12 lg:py-16` (48 / 64 px) — half of the Standard inter-section gap.
-That is intra-component padding and is not editor-tunable.
+Painted bands (`bg-white`, `bg-deep-moss`, …) keep **internal** padding inside
+their own shells (split panels, calculator band, scroller header, etc.).
 
 ### Naming rules
 
@@ -210,7 +201,7 @@ That is intra-component padding and is not editor-tunable.
 - All editor-facing strings go through `__('…', 'culvers')`.
 
 - The **first component tab** in `fields` is usually `tab_general`: it defines the **first content tab label**
-  (“General”, “Slides”, “Job header”, …). Registry chrome tabs (**Layout & background** / **Typography** / **Visibility**)
+  (“General”, “Slides”, “Job header”, …). Registry chrome tabs (**Main** / **Typography** / **Items** / **Mobile**)
   render **before** this tab.
   For multi-section layouts add more tabs after your fields (`tab_items`, `tab_motion_spacing`, …) — keep labels aligned with the canonical ladder above.
   see `career_detail`, `hero_slider`, and `horizontal_scroller`.
@@ -495,7 +486,6 @@ If the component needs interactivity, add an Alpine factory.
 | `ResponsiveFields::breakpointTabFields([…])` | Mandatory Breakpoints tab + intro message; **Mobile overrides** accordion only when non-empty array passed. |
 | `ResponsiveFields::value()` / `::valueForMdUp()` / `::valueForPhone()` / `::imageArray()` / `::string()` | Resolve md+ base vs optional `{base}_mobile` cascade in PHP / Blade. |
 | `Component::responsiveImageTriplet(...)` | **Deprecated** — forwards to `responsiveImagePair()`. |
-| `ComponentVisibility::gridUtilityClasses($c)` | Visibility utilities merged into the flexible grid row (`flexible-components.blade.php`). |
 | `Sanitizer::component($row)`                 | Normalises one flexible row before `flexible-components.blade.php` renders it; runs automatically — components don't call this. |
 
 ## 8. Components with external configuration / services
@@ -700,7 +690,7 @@ logged-in.
 | Anti-pattern | What to do instead |
 | ------------ | ------------------ |
 | Re-defining `component_width`, `background_*`, `body_text_tone`, or visibility toggles in your component file. | They're added by `ComponentRegistry` on every layout. Start from `tab_general` → component-specific fields only. |
-| Adding outer `pt-*` / `pb-*` / `mt-*` / `mb-*` to a component's section element. | Inter-section rhythm is owned by `App\Helpers\Rhythm` (Standard 96 / Hugged 60 / Flush 0) and applied by `partials/flexible-components.blade.php`. Components may only add *internal* `py-*` when they paint their own background. |
+| Adding outer `pt-*` / `pb-*` / `mt-*` / `mb-*` / `py-*` to a component's section element. | Inter-section rhythm is `gap-y-24` on the flexible-components grid, with optional negative `mt-*` from `App\Helpers\Rhythm`. Components may only add *internal* padding inside painted bands. |
 | Hand-writing `<img>` tags. | `Image::render($acfImage, [...])`. |
 | `<h2>` hard-coded in markup. | `Component::headingTag($c['<prefix>_heading_level'] ?? null)`. |
 | Skipping the empty-state branch. | Wrap with `$hasContent` and emit the editor placeholder. |

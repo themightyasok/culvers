@@ -38,7 +38,7 @@
    *
    * Normalisations vs the legacy hand-rolled markup (intentional, both
    * imperceptible at any realistic sidebar width):
-   *   • Section hairlines (`directory-archive.css`) enforce Figma divider
+   *   • Section hairlines (`patterns/directory-archive.css`) enforce Figma divider
    *     rhythm; callers should avoid `extra_section_classes` spacer hacks.
    *   • Toggle button always carries `focus-visible:rounded-md`. The legacy
    *     first group omitted it; the legacy second group had it. Rounded
@@ -86,12 +86,11 @@
       <button
         type="button"
         role="radio"
-        class="directory-archive__filter-option flex w-full min-h-6 items-center gap-[13px] py-0 text-left leading-6 focus-visible:rounded-md culvers-focus-ring-compact"
-        :class="{{ $group_state_var }} === '' ? 'directory-archive__filter-option--on' : 'directory-archive__filter-option--off'"
+        class="directory-archive__filter-option flex w-full min-h-6 cursor-pointer items-center gap-[13px] py-0 text-left leading-6 focus-visible:rounded-md culvers-focus-ring-compact"
         :aria-checked="{{ $group_state_var }} === ''"
         @click="{{ $group_setter }}('')">
         <span class="directory-archive__radio" :class="{{ $group_state_var }} === '' ? 'directory-archive__radio--checked' : ''" aria-hidden="true"></span>
-        <span>{{ esc_html($group_all_label) }}</span>
+        <span class="font-label text-xs font-semibold uppercase leading-6 tracking-wide" :class="{{ $group_state_var }} === '' ? 'text-deep-moss' : 'text-faded-olive'">{{ esc_html($group_all_label) }}</span>
       </button>
     </li>
     @foreach ($group_options as $opt)
@@ -107,12 +106,11 @@
         <button
           type="button"
           role="radio"
-          class="directory-archive__filter-option flex w-full min-h-6 items-center gap-[13px] py-0 text-left leading-6 focus-visible:rounded-md culvers-focus-ring-compact"
-          :class="{{ $group_state_var }} === {{ e($slug_json) }} ? 'directory-archive__filter-option--on' : 'directory-archive__filter-option--off'"
+          class="directory-archive__filter-option flex w-full min-h-6 cursor-pointer items-center gap-[13px] py-0 text-left leading-6 focus-visible:rounded-md culvers-focus-ring-compact"
           :aria-checked="{{ $group_state_var }} === {{ e($slug_json) }}"
           @click="{{ $group_setter }}({{ e($slug_json) }})">
           <span class="directory-archive__radio" :class="{{ $group_state_var }} === {{ e($slug_json) }} ? 'directory-archive__radio--checked' : ''" aria-hidden="true"></span>
-          <span>{{ esc_html($opt_name) }}</span>
+          <span class="font-label text-xs font-semibold uppercase leading-6 tracking-wide" :class="{{ $group_state_var }} === {{ e($slug_json) }} ? 'text-deep-moss' : 'text-faded-olive'">{{ esc_html($opt_name) }}</span>
         </button>
       </li>
     @endforeach

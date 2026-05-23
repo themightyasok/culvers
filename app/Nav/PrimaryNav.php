@@ -6,7 +6,9 @@ namespace App\Nav;
 
 /**
  * Builds a nested tree from a WordPress nav menu location for the Culver mega header.
- * Uses menu-item post meta so static analysis understands the data shape.
+ * Renders the assigned menu as saved in WP (order, parents, URLs) — only dedupes identical
+ * mega hover previews. Use {@see CulverSquareFigmaPrimaryMenu::rebuildAssignedPrimaryMenu()}
+ * to seed the canonical Figma tree into the database.
  *
  * @phpstan-type NavChild array{title: string, url: string, preview: string}
  * @phpstan-type NavBranch array{id: int, title: string, url: string, children: list<NavChild>, is_current: bool}
@@ -52,130 +54,12 @@ final class PrimaryNav
             $tree[] = self::branch($parentPost, $byParent);
         }
 
-        return self::dedupeMegaChildPreviewsInTree(self::moveShopBranchFirst(self::foldStrayShopCategoriesUnderShopBranch($tree)));
+        return self::dedupeMegaChildPreviewsInTree($tree);
     }
 
     /**
-     * @param list<NavBranch> $tree
-     *
-     * @return list<NavBranch>
-     */
-    private static function moveShopBranchFirst(array $tree): array
-    {
-        $shopLabel = __('Shop', 'culvers');
-        $shop = null;
-        $rest = [];
-
-        foreach ($tree as $branch) {
-            if (CulverSquareFigmaPrimaryMenu::menuTitlesMatch($branch['title'], $shopLabel)) {
-                $shop = $branch;
-
-                continue;
-            }
-            $rest[] = $branch;
-        }
-
-        if ($shop === null) {
-            return $tree;
-        }
-
-        return array_merge([$shop], $rest);
-    }
-
-    /**
-     * Shop directory categories belong under the Shop mega branch only. WordPress menus sometimes
-     * hold them as duplicate top-level items; fold them into Shop here so the header never renders
-     * them as bar pills (see mega-nav__top-item loop).
-     *
-     * @param list<NavBranch> $tree
-     *
-     * @return list<NavBranch>
-     */
-    private static function foldStrayShopCategoriesUnderShopBranch(array $tree): array
-    {
-        $shopLabel = __('Shop', 'culvers');
-        $shopIndex = null;
-
-        foreach ($tree as $i => $branch) {
-            if (CulverSquareFigmaPrimaryMenu::menuTitlesMatch($branch['title'], $shopLabel)) {
-                $shopIndex = $i;
-                break;
-            }
-        }
-
-        if ($shopIndex === null) {
-            return $tree;
-        }
-
-        $shopBranch = $tree[$shopIndex];
-        $mergedChildren = $shopBranch['children'];
-
-        foreach ($tree as $i => $branch) {
-            if ($i === $shopIndex) {
-                continue;
-            }
-            if (! self::titleIsShopDirectoryMegaCategory($branch['title'])) {
-                continue;
-            }
-            if (self::homeTitleMeansFrontPageLink($branch['title'], $branch['url'])) {
-                continue;
-            }
-            if (self::shopChildTitlePresent($mergedChildren, $branch['title'])) {
-                continue;
-            }
-
-            $url = self::canonicalShopDirectoryCategoryUrl($branch['title']);
-            if ($url === '') {
-                $url = $branch['url'];
-            }
-
-            $menuPost = get_post((int) $branch['id']);
-            $preview = $menuPost instanceof \WP_Post ? self::previewUrl($menuPost) : '';
-            if ($preview === '') {
-                foreach ($branch['children'] as $sub) {
-                    if ($sub['preview'] !== '') {
-                        $preview = $sub['preview'];
-                        break;
-                    }
-                }
-            }
-
-            $mergedChildren[] = [
-                'title' => $branch['title'],
-                'url' => $url,
-                'preview' => $preview,
-            ];
-        }
-
-        $shopBranch = self::withCurrentFlag([
-            'id' => $shopBranch['id'],
-            'title' => $shopBranch['title'],
-            'url' => $shopBranch['url'],
-            'children' => self::orderShopMegaChildren($mergedChildren),
-        ]);
-
-        $out = [];
-        foreach ($tree as $i => $branch) {
-            if ($i === $shopIndex) {
-                $out[] = $shopBranch;
-
-                continue;
-            }
-            if (
-                self::titleIsShopDirectoryMegaCategory($branch['title'])
-                && ! self::homeTitleMeansFrontPageLink($branch['title'], $branch['url'])
-            ) {
-                continue;
-            }
-            $out[] = $branch;
-        }
-
-        return $out;
-    }
-
-    /**
-     * When the mega submenu renders synthetic rows (folded Shop categories) or WP assigns the same
-     * attachment to many items, hover previews would all look identical. Fill with distinct media URLs.
+     * When WP assigns the same attachment to many submenu items, hover previews would all look
+     * identical. Fill with distinct media URLs.
      *
      * @param  list<NavChild>  $children
      * @return list<NavChild>
@@ -294,91 +178,6 @@ final class PrimaryNav
         }
 
         return $out;
-    }
-
-    private static function titleIsShopDirectoryMegaCategory(string $title): bool
-    {
-        foreach (CulverSquareFigmaPrimaryMenu::shopMegaCategoryLinkRows() as $row) {
-            if (CulverSquareFigmaPrimaryMenu::menuTitlesMatch($title, $row['title'])) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    private static function canonicalShopDirectoryCategoryUrl(string $title): string
-    {
-        foreach (CulverSquareFigmaPrimaryMenu::shopMegaCategoryLinkRows() as $row) {
-            if (CulverSquareFigmaPrimaryMenu::menuTitlesMatch($title, $row['title'])) {
-                return esc_url($row['url']);
-            }
-        }
-
-        return '';
-    }
-
-    /**
-     * @param list<NavChild> $children
-     */
-    private static function shopChildTitlePresent(array $children, string $title): bool
-    {
-        foreach ($children as $child) {
-            if (CulverSquareFigmaPrimaryMenu::menuTitlesMatch($child['title'], $title)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * "Home" may mean the site front page; only fold homeware when the link targets the directory.
-     */
-    private static function homeTitleMeansFrontPageLink(string $title, string $branchUrl): bool
-    {
-        if (! CulverSquareFigmaPrimaryMenu::menuTitlesMatch($title, __('Home', 'culvers'))) {
-            return false;
-        }
-
-        $trimmed = trim($branchUrl);
-        if ($trimmed === '') {
-            return false;
-        }
-
-        $siteHome = esc_url(home_url('/'));
-
-        return rtrim($siteHome, '/') === rtrim($trimmed, '/');
-    }
-
-    /**
-     * Match Figma / seed category order (Beauty, Fashion, …) with any extras last.
-     *
-     * @param list<NavChild> $children
-     *
-     * @return list<NavChild>
-     */
-    private static function orderShopMegaChildren(array $children): array
-    {
-        $remaining = $children;
-        $sorted = [];
-
-        foreach (CulverSquareFigmaPrimaryMenu::shopMegaCategoryLinkRows() as $row) {
-            foreach ($remaining as $k => $ch) {
-                if (CulverSquareFigmaPrimaryMenu::menuTitlesMatch($ch['title'], $row['title'])) {
-                    $sorted[] = $ch;
-                    unset($remaining[$k]);
-
-                    break;
-                }
-            }
-        }
-
-        foreach ($remaining as $ch) {
-            $sorted[] = $ch;
-        }
-
-        return $sorted;
     }
 
     /**

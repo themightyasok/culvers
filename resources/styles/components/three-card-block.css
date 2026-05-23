@@ -1,57 +1,35 @@
 /*
- * Three-card block — mobile Splide pagination (Figma tabbed blog / CPT strip).
- * Unlayered so overrides beat @splidejs/splide/css defaults (see hero-slider note).
+ * Three-card block — Splide pre-mount fallback + desktop hover CTA stack.
+ * Pagination dots: `culvers-splide-dots.css` (unlayered, after Splide import).
+ * Tab pills: `.btn-filter-tab` in tailwind.config.js.
+ * Unlayered so pre-mount overrides beat @splidejs/splide/css defaults.
  */
 
-/*
- * Category filter tabs (News / Events / Offers) — keep `.btn` paint but not the
- * site-wide hover padding-widen; pills must not grow on mouseover.
- */
-.three-card-block__tab.btn {
-  padding-inline: 1.5rem;
-  padding-block: 0.5rem;
-}
-
-@media (hover: hover) {
-  .three-card-block__tab.btn:hover {
-    padding-inline: 1.5rem;
-  }
-}
-
-.three-card-block__splide .splide__pagination {
-  position: static;
-  display: flex;
-  justify-content: center;
-  gap: 0.625rem;
-  margin: 1.25rem 0 0;
-  padding: 0;
-}
-
-.three-card-block__splide .splide__pagination__page {
-  display: inline-block;
-  width: 0.5rem;
-  height: 0.5rem;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  border-radius: 9999px;
-  background: var(--color-dustleaf);
-  opacity: 0.45;
-  transform: none;
-  transition:
-    opacity 0.2s ease-out,
-    background-color 0.2s ease-out;
-}
-
-.three-card-block__splide .splide__pagination__page.is-active {
-  background: var(--color-deep-moss);
-  opacity: 1;
-  transform: none;
-}
-
+/* Desktop hover — title + Explore sit in a flex stack with a tight gap (no absolute CTA). */
 @media (min-width: 640px) {
-  .three-card-block__splide .splide__pagination {
-    display: none;
+  .three-card-block__hover-stack {
+    gap: 0;
+    transition: gap 0.3s ease-out;
+  }
+
+  .three-card-block__card:is(:hover, :focus-within) .three-card-block__hover-stack {
+    gap: 0.75rem;
+  }
+
+  .three-card-block__cta {
+    max-height: 0;
+    overflow: hidden;
+    padding-block: 0;
+    padding-inline: 0;
+    border-width: 0;
+  }
+
+  .three-card-block__card:is(:hover, :focus-within) .three-card-block__cta {
+    max-height: 4rem;
+    overflow: visible;
+    padding-inline: 1.5rem;
+    padding-block: 0.5rem;
+    border-width: 1px;
   }
 }
 

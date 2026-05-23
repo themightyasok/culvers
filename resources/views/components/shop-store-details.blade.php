@@ -36,10 +36,10 @@
 
 @if($hasDetails)
   <section
-    class="shop-store-details {{ esc_attr($root) }} py-12 text-deep-moss lg:py-16"
+    class="shop-store-details {{ esc_attr($root) }} text-deep-moss"
     data-component-root
     data-shop-store-details>
-    <div class="{{ LayoutShell::INNER_READABLE_960 }}">
+    <div class="{{ LayoutShell::INNER_SECTION_7XL }}">
       {{-- Section H2 — Figma shop single `51:6850`: Canela 58 / lh 84 (token: `text-5xl` → `md:text-6xl`). --}}
       <{{ $headingTag }} class="shop-store-details__heading {{ Component::sectionHeadingClasses('text-faded-olive', 'mb-10 text-center md:mb-12') }}">
         {{ esc_html($sectionHeading) }}
@@ -52,7 +52,7 @@
              `max-sm:` overrides land Figma 51:8898 / 8902 / 8906 mobile (Halyard Medium 20 / lh 24)
              so tablet + desktop keep Canela 32 exactly as shipped.
              Values (51:6901, 51:6904) remain Halyard Book 24 / lh 30 below. --}}
-        <div class="flex flex-col items-center py-10 text-center lg:px-8 lg:py-0 lg:pb-0 lg:pt-1 {{ $hasSocial ? '' : 'lg:pl-0' }}">
+        <div class="flex flex-col items-start py-10 text-left lg:items-center lg:px-8 lg:py-0 lg:pb-0 lg:pt-1 lg:text-center {{ $hasSocial ? '' : 'lg:pl-0' }}">
           <p class="{{ Component::mobilePanelSubheadClasses('text-faded-olive') }}">{{ esc_html($contactLabel) }}</p>
           @if($phone !== '')
             @php $telHref = preg_replace('/[^0-9+]/', '', str_replace("\xc2\xa0", ' ', $phone)); @endphp
@@ -66,7 +66,7 @@
           @endif
         </div>
 
-        <div class="flex flex-col items-center py-10 text-center lg:px-8 lg:py-0 lg:pt-1">
+        <div class="flex flex-col items-start py-10 text-left lg:items-center lg:px-8 lg:py-0 lg:pt-1 lg:text-center">
           <p class="{{ Component::mobilePanelSubheadClasses('text-faded-olive') }}">{{ esc_html($addressLabel) }}</p>
           @if($addressForDisplay !== '')
             <p class="mt-3 font-sans text-2xl font-light leading-[30px] text-faded-olive">
@@ -75,7 +75,7 @@
         </div>
 
         @if($hasSocial)
-          <div class="flex flex-col items-center py-10 text-center lg:px-8 lg:py-0 lg:pt-1 lg:pr-0">
+          <div class="flex flex-col items-start py-10 text-left lg:items-center lg:px-8 lg:py-0 lg:pt-1 lg:pr-0 lg:text-center">
             <p class="{{ Component::mobilePanelSubheadClasses('text-faded-olive') }}">{{ esc_html($socialLabel) }}</p>
             @php
               $socialLinkClass =
@@ -83,7 +83,7 @@
                   . 'tracking-widest text-faded-olive underline decoration-brand-500 underline-offset-4 transition-colors '
                   . 'hover:decoration-faded-olive';
             @endphp
-            <div class="mt-4 flex items-center justify-center">
+            <div class="mt-4 flex items-center justify-start lg:justify-center">
               @if($igUrl !== '')
                 <a
                   class="{{ esc_attr($socialLinkClass) }}"

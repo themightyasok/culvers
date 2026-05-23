@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Directory\Cards;
 
+use App\Directory\OpeningHoursCardLine;
+
 /**
  * Per-CPT resolver for {@see DirectoryCardSpec}. The factory is the single
  * place CPT-specific ACF field names and taxonomy slugs live — the canonical
@@ -46,8 +48,11 @@ final class DirectoryCardSpecFactory
          * so directory / related rows never ship an empty moss panel when the editor omits the logo field.
          */
         $logoUrl = $logoFromField !== '' ? $logoFromField : $hoverPhoto;
-        $hoursRaw = self::stringField($postId, 'opening_hours_summary');
-        $subtitle = $hoursRaw !== '' ? $hoursRaw : __('Opening hours TBC', 'culvers');
+        $subtitle = self::cardHoursSubtitle(
+            $postId,
+            OpeningHoursCardLine::forPost($postId),
+            self::stringField($postId, 'opening_hours_summary')
+        );
 
         return new DirectoryCardSpec(
             postId: $postId,
@@ -69,8 +74,11 @@ final class DirectoryCardSpecFactory
         $logoFromField = self::imageFieldUrl($postId, 'eat_drink_logo');
         $hoverPhoto = self::featuredPhotoUrl($postId);
         $logoUrl = $logoFromField !== '' ? $logoFromField : $hoverPhoto;
-        $hoursRaw = self::stringField($postId, 'eat_drink_hours_summary');
-        $subtitle = $hoursRaw !== '' ? $hoursRaw : __('Opening hours TBC', 'culvers');
+        $subtitle = self::cardHoursSubtitle(
+            $postId,
+            OpeningHoursCardLine::forPost($postId),
+            self::stringField($postId, 'eat_drink_hours_summary')
+        );
 
         return new DirectoryCardSpec(
             postId: $postId,
@@ -275,6 +283,19 @@ final class DirectoryCardSpecFactory
     private static function sortTitle(int $postId): string
     {
         return strtolower((string) get_the_title($postId));
+    }
+
+    private static function cardHoursSubtitle(int $postId, ?string $fromOpeningHours, string $summaryFallback): string
+    {
+        if ($fromOpeningHours !== null && $fromOpeningHours !== '') {
+            return $fromOpeningHours;
+        }
+
+        if ($summaryFallback !== '') {
+            return $summaryFallback;
+        }
+
+        return __('Opening hours TBC', 'culvers');
     }
 
     /**

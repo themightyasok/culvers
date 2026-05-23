@@ -98,18 +98,7 @@ final class HomepageFlexibleAcfAttach
      */
     private static function threeCardBlockRow(array $row): array
     {
-        $cards = $row['cards_items'] ?? [];
-        if (! is_array($cards)) {
-            return $row;
-        }
-        foreach ($cards as $i => $card) {
-            if (! is_array($card)) {
-                continue;
-            }
-            $cards[$i]['card_video'] = self::acfFileValue($card['card_video'] ?? null);
-            $cards[$i]['card_image'] = self::acfImageValue($card['card_image'] ?? null);
-        }
-        $row['cards_items'] = $cards;
+        unset($row['cards_items']);
 
         return $row;
     }

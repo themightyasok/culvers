@@ -1,0 +1,17 @@
+/**
+ * Contact page — map embed chrome; theme zoom buttons only.
+ */
+
+.contact__map-frame {
+  isolation: isolate;
+}
+
+.contact__map-iframe {
+  position: absolute;
+  inset: 0;
+  width: calc(100% + 56px);
+  height: calc(100% + 80px);
+  margin-right: -56px;
+  margin-bottom: -80px;
+  border: 0;
+}

@@ -32,8 +32,7 @@ final class DirectoryFlexibleDefaults
             'shop_store_details',
             'opening_hours',
             'centre_map',
-            'section_header',
-            'three_card_block',
+            'shop_related_eat_drink',
         ],
         'culvers_event' => [
             'image_hero',
@@ -51,7 +50,6 @@ final class DirectoryFlexibleDefaults
         ],
         'culvers_news' => [
             'image_hero',
-            'event_meta',
             'section_header',
             'shop_split_highlight',
             'section_header',

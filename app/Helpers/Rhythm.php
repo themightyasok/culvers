@@ -9,47 +9,39 @@ namespace App\Helpers;
  *
  * Measured against the Figma file (`Culver Square Website Design — Developer
  * Release`, file key `KoBl6rTY98YnvusBgKLx4A`) on the homepage and
- * Plan-My-Visit page, the design uses a tight standard gap with two
- * exceptions reserved for specific authored cases:
+ * Plan-My-Visit page, the design uses a single standard gap (~91–96 px)
+ * between flexible components, with a few exceptions:
  *
- *   STANDARD  96 px        Site-wide default between flexible components (`mt-24`).
- *   HUGGED    ~60 px       Reserved for future "intro band hugs its content"
- *                            cases. Not used by default — apply per-case.
- *   FLUSH     0 px         Cluster joins where one component flows visually
- *                            into the next (e.g. Plan-My-Visit Travel
- *                            Calculator → Centre Map, Newsletter → Footer).
- *                            Not used by default — apply per-case.
+ *   STANDARD  96 px        `gap-y-24` on the flexible-components grid
+ *                            ({@see Grid::getMainGridContainerClasses()}). Same at all breakpoints.
+ *   HUGGED    ~60 px       Reserved — `-mt-9`.
+ *   BREATHED  48 px        After `section_header` with body — `-mt-12`.
+ *   FLUSH     0 px         After slim `section_header` — `-mt-24`.
  *
- * Implementation: the renderer
- * ({@see resources/views/partials/flexible-components.blade.php}) walks the
- * components in order and asks {@see self::spaceAboveClass()} for the
- * `mt-*` utility to put on the current row. The first row gets no top
- * margin (the page hero handles its own offset under the fixed header).
+ * Implementation: the parent grid owns the default gap. The renderer walks rows
+ * and asks {@see self::spaceAboveClass()} for optional negative `mt-*` utilities
+ * that reduce the grid gap for the exceptions above. Do not stack outer `py-*`
+ * on component roots — that was doubling the visual rhythm.
  *
- * There is no editor surface for this — it is an architectural decision
- * baked in code so consistency does not depend on per-page authoring.
- * To change the default gap, edit {@see self::SPACE_STANDARD}; to mark
- * a layout key as always-hugged or always-flush, add a branch inside
- * {@see self::spaceAboveClass()}.
- *
- * Tailwind utilities ship from the default v4 spacing scale (1 unit = 4 px):
- *   • `mt-24` → 6rem → 96 px (STANDARD)
- *   • `mt-15` → 3.75rem → 60 px (HUGGED, reserved)
- *   • `mt-0`  → 0 → 0 px (FLUSH, reserved)
+ * Tailwind (1 unit = 4 px):
+ *   • `gap-y-24` → 96 px (STANDARD, on the grid)
+ *   • `-mt-24` → cancel one gap unit (FLUSH)
+ *   • `-mt-12` → 48 px effective (BREATHED)
+ *   • `-mt-9` → 60 px effective (HUGGED, reserved)
  */
 final class Rhythm
 {
-    /** Standard inter-section gap between flexible components (96 px). */
-    public const SPACE_STANDARD = 'mt-24';
+    /** Default gap is on the grid (`gap-y-24`); rows do not add top margin. */
+    public const SPACE_STANDARD = '';
 
-    /** Reserved: intro band hugs its immediate next sibling (60 px). */
-    public const SPACE_HUGGED = 'mt-15';
+    /** Reserved: intro band hugs its immediate next sibling (60 px effective). */
+    public const SPACE_HUGGED = '-mt-9';
 
-    /** Section-header-with-body → next component (48 px) — see {@see self::spaceAboveClass()}. */
-    public const SPACE_BREATHED = 'mt-12';
+    /** Section-header-with-body → next component (48 px effective). */
+    public const SPACE_BREATHED = '-mt-12';
 
-    /** Reserved: cluster join — the next component butts directly against this one. */
-    public const SPACE_FLUSH = 'mt-0';
+    /** Slim section_header → next component (0 px effective). */
+    public const SPACE_FLUSH = '-mt-24';
 
     /**
      * Top-margin utility to apply to the *current* row, given what came
@@ -61,11 +53,24 @@ final class Rhythm
      *
      * @param array<string, mixed> $previousComponent Sanitised row data of
      *   the previous component (may be empty when first).
+     * @param ?string $currentLayout Layout key of the row receiving the margin.
      */
-    public static function spaceAboveClass(?string $previousLayout, array $previousComponent = []): string
-    {
+    public static function spaceAboveClass(
+        ?string $previousLayout,
+        array $previousComponent = [],
+        ?string $currentLayout = null,
+    ): string {
         if ($previousLayout === null) {
             return '';
+        }
+
+        /*
+         * Full-bleed image hero → shop intro band (Figma 51:6154 / 51:6679): cancel
+         * the default grid gap; the intro block's own pt-[100px] (lg) / pt-[90px]
+         * (mobile, 51:8886) supplies the measured space below the hero keyline.
+         */
+        if ($previousLayout === 'image_hero' && $currentLayout === 'shop_intro_block') {
+            return self::SPACE_FLUSH;
         }
 
         /*

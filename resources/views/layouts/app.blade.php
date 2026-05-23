@@ -45,13 +45,11 @@
           {{--
             Footer-overlap spacer.
             `.footer-newsletter-band` is vertically centred on the footer top with `-translate-y-1/2`
-            (half of the newsletter sits in the white band, half on olive). The spacer must reserve
-            **newsletter_half + clear breathing room** so the card never visually slams into the last
-            component above it. Newsletter min-heights (Figma calibrated) are
-            300 / 380 / 420 → halves 150 / 190 / 210. We add ~90 / 130 / 150 px of clean whitespace
-            on top so the rhythm matches the rest of the page-to-section spacing.
+            from lg upward (half the newsletter sits in the cream band, half on olive). Below lg the
+            newsletter is full-bleed with no overlap — one standard `gap-y-24` (96px) band only.
+            lg+ spacer = newsletter half (210px @ min-h 420) + 96px — same rhythm as flexible rows.
           --}}
-          <div aria-hidden="true" class="site-footer-spacer h-[240px] w-full md:h-[320px] lg:h-[360px]"></div>
+          <div aria-hidden="true" class="site-footer-spacer h-24 w-full lg:h-[306px]"></div>
 
           @include('sections.footer')
         </div>

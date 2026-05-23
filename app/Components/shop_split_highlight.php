@@ -46,43 +46,10 @@ return [
                 'wrapper' => ['width' => '50'],
             ],
         ],
-        'split_center_lists' => [
-            'type' => 'true_false',
-            'options' => [
-                'label' => __('Centre bullet lists', 'culvers'),
-                'instructions' => __(
-                    'When on, list lines are centre-aligned in the copy column (Figma job perks: '
-                    . 'bullets follow each line, not a single left column). Headline and body '
-                    . 'paragraphs are unchanged.',
-                    'culvers'
-                ),
-                'default_value' => 0,
-                'ui' => 1,
-                'wrapper' => ['width' => '50'],
-            ],
-        ],
-        'split_copy_align' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Copy column alignment', 'culvers'),
-                'instructions' => __(
-                    'Center matches Figma 51:6386 offer / event split (headline, body, lists).',
-                    'culvers'
-                ),
-                'choices' => [
-                    'left' => __('Left (default)', 'culvers'),
-                    'center' => __('Center', 'culvers'),
-                ],
-                'default_value' => 'left',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '50'],
-                'conditional_logic' => $staticOnly,
-            ],
-        ],
         'split_copy_background' => [
             'type' => 'select',
             'options' => [
-                'label' => __('Copy column background', 'culvers'),
+                'label' => __('Copy column background / text colour', 'culvers'),
                 'instructions' => __(
                     'Olive column with white type is the Figma 51:6386 default. White column uses deep-moss type.',
                     'culvers'

@@ -37,7 +37,7 @@ final class ArchiveHeroComponent
             'hero_title_line' => is_string($titleRaw) ? $titleRaw : '',
             'hero_subtitle_line' => is_string($subtitleRaw) ? $subtitleRaw : '',
             'hero_title_tone' => is_string($toneRaw) && $toneRaw !== '' ? $toneRaw : 'glowleaf',
-            'hero_overlay_opacity' => is_numeric($opacityRaw) ? (int) $opacityRaw : 35,
+            'hero_overlay_opacity' => \App\Helpers\Component::overlayOpacityPercent($opacityRaw, 35),
             /* Image is supplied without baked-in text — let `image-hero` render the title + subtitle overlay. */
             'hero_title_in_image' => false,
         ];

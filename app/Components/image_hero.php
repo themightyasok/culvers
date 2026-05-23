@@ -60,23 +60,15 @@ return [
                     'wrapper' => ['width' => '50'],
                 ],
             ],
-            'hero_overlay_opacity' => [
-                'type' => 'number',
-                'options' => [
-                    'label' => __('Image overlay darkness', 'culvers'),
-                    'instructions' => __(
-                        'Solid black overlay opacity on the hero image (0–85). Figma default is 20 — push higher only ' .
-                        'when text contrast on a busy photo demands it.',
-                        'culvers'
-                    ),
-                    'default_value' => 20,
-                    'min' => 0,
-                    'max' => 85,
-                    'step' => 1,
-                    'append' => '%',
-                    'wrapper' => ['width' => '50'],
-                ],
-            ],
+            'hero_overlay_opacity' => Component::overlayOpacityRangeField(
+                __('Image overlay darkness', 'culvers'),
+                __(
+                    'Black overlay on the hero image. Figma default is 20% — raise only when text needs more contrast.',
+                    'culvers'
+                ),
+                20,
+                '50'
+            ),
             'hero_title_in_image' => [
                 'type' => 'true_false',
                 'options' => [

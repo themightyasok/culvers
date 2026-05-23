@@ -68,7 +68,7 @@
 
 @if($count > 0)
   <section
-    class="leasing-agent-grid {{ esc_attr($root) }} py-12 text-deep-moss lg:py-16"
+    class="leasing-agent-grid {{ esc_attr($root) }} text-deep-moss"
     data-component-root
     data-leasing-agent-grid>
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
@@ -103,7 +103,7 @@
               </div>
             @endif
 
-            <p class="mt-[22px] font-heading text-3xl leading-[1.1] text-faded-olive">
+            <p class="{{ Component::mobilePanelSubheadClasses('text-faded-olive', 'mt-[22px]') }}">
               {{ esc_html($agent['name']) }}
             </p>
 

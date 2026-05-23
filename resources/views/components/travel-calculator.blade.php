@@ -32,11 +32,9 @@
 
   $heading = trim((string) ($c['tc_heading'] ?? ''));
   $intro = trim((string) ($c['tc_intro'] ?? ''));
-  $originLabel = __('Where are you travelling from', 'culvers');
-  $originPlaceholder = __('Enter postcode or place', 'culvers');
-  $destinationName = GoogleMapsCustomizer::destinationLabel();
-  $modeLabel = __('Travel by', 'culvers');
-  $modePlaceholder = __('Select', 'culvers');
+  $originLabel = __('Your destination', 'culvers');
+  $originPlaceholder = __('Type your destination here', 'culvers');
+  $modeLabel = __('travel by', 'culvers');
   $buttonLabel = __('Search', 'culvers');
 
   $modesRaw = $c['tc_modes'] ?? [];
@@ -93,7 +91,7 @@
           'label' => GoogleMapsCustomizer::destinationLabel(),
           'placeId' => GoogleMapsCustomizer::destinationPlaceId(),
       ],
-      'showMap' => $showMap && $apiConfigured,
+      'showMap' => $showMap && ($apiConfigured || $mockActive || $hasPlaceholder),
       'defaultMode' => $defaultMode,
   ]);
   if (! is_string($alpineConfig)) {
@@ -114,7 +112,11 @@
          Mobile uses asymmetric vertical padding (58 top / 91 bottom) so the
          title sits closer to the top edge while the search button has room
          below — sm and up reset to the symmetric desktop pattern. --}}
-    <div class="travel-calculator__band mx-auto w-full max-w-[78rem] rounded-[10px] bg-light-green px-4 pt-14 pb-20 sm:px-10 sm:py-12 md:px-16 md:py-16 lg:px-24 xl:px-[120px]">
+    <div
+      class="travel-calculator__band mx-auto w-full max-w-[78rem] bg-light-green"
+      :class="hasMapPanel
+        ? 'rounded-[10px] p-4 sm:p-6'
+        : 'rounded-[10px] px-4 pt-14 pb-20 sm:px-10 sm:py-12 md:px-16 md:py-16 lg:px-24 xl:px-[120px]'">
       {{-- Inner content area is 1008px wide per Figma (1248 - 120·2). --}}
       <div class="mx-auto w-full max-w-[63rem]">
         @if($hasIntro)
@@ -138,14 +140,6 @@
             @endif
           </header>
         @endif
-
-        <p class="travel-calculator__destination @if($hasIntro) mt-4 @else mb-6 @endif text-center font-sans text-sm font-medium uppercase tracking-widest text-deep-moss/80 md:text-xs">
-          {{ esc_html(sprintf(
-              /* translators: %s: fixed destination name from Customizer */
-              __('Destination: %s', 'culvers'),
-              $destinationName !== '' ? $destinationName : __('Culver Square', 'culvers')
-          )) }}
-        </p>
 
         @if(! $apiConfigured && $mockActive && current_user_can('edit_posts'))
           {{-- Dev-only mock indicator: visible to editors on local so it's obvious
@@ -176,7 +170,7 @@
             <input
               id="{{ esc_attr($instanceId) }}-origin"
               type="text"
-              class="travel-calculator__input h-[46px] w-full rounded-full border-[1.5px] border-faded-olive bg-transparent px-5 font-sans text-base leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-deep-moss focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-deep-moss"
+              class="travel-calculator__input h-[46px] w-full rounded-full border-[1.5px] border-faded-olive bg-transparent px-5 font-sans text-[15px] leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-deep-moss focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-deep-moss"
               placeholder="{{ esc_attr($originPlaceholder) }}"
               autocomplete="street-address"
               maxlength="200"
@@ -196,7 +190,7 @@
             <div class="relative">
               <select
                 id="{{ esc_attr($instanceId) }}-mode"
-                class="travel-calculator__select h-[46px] w-full appearance-none rounded-full border-[1.5px] border-faded-olive bg-transparent px-5 pr-10 font-sans text-base leading-[1.32] text-deep-moss focus:border-deep-moss focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-deep-moss"
+                class="travel-calculator__select h-[46px] w-full appearance-none rounded-full border-[1.5px] border-faded-olive bg-transparent px-5 pr-10 font-sans text-[15px] leading-[1.32] text-deep-moss focus:border-deep-moss focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-deep-moss"
                 x-model="mode"
                 x-bind:disabled="loading">
                 @foreach($modes as $modeOption)
@@ -219,10 +213,8 @@
 
           <div class="travel-calculator__submit flex w-full justify-center md:w-auto md:justify-self-start">
             {{-- Hand-rolled button (not the partial) because the label swaps with Alpine
-                 between idle / loading states. Class spine matches the partial — `btn
-                 btn-dark btn-form` — so hover stays consistent with every other CTA.
-                 `btn-dark` is the Figma travel-calculator search variant: deep-moss
-                 fill, glowleaf text, padding-widen on hover (same as primary). --}}
+                 between idle / loading states. `btn-dark btn-form` — fixed padding on
+                 hover via `.travel-calculator__submit` in travel-calculator.css. --}}
             <button
               type="submit"
               class="btn btn-dark btn-form"
@@ -238,7 +230,7 @@
                shipped to match the original travel-calc skin).
                Figma 51:9221 mobile spec (Halyard Book 20 / lh 1.3 / Deep Moss, sentence case)
                is `max-sm:`-scoped only. --}}
-          class="travel-calculator__result mt-10 min-h-[1.5rem] text-center font-sans text-xs font-semibold uppercase leading-6 tracking-[1px] text-deep-moss md:text-xs max-sm:text-xl max-sm:font-light max-sm:normal-case max-sm:tracking-normal max-sm:leading-[1.3]"
+          class="travel-calculator__result mt-10 min-h-[1.25rem] text-center font-label text-xs font-semibold uppercase leading-5 tracking-[1px] text-deep-moss max-sm:max-w-[19rem] max-sm:mx-auto"
           role="status"
           aria-live="polite">
           <span x-show="error !== ''" class="text-red-700" x-text="error" x-cloak></span>
@@ -250,45 +242,75 @@
             {{ esc_html__('Calculating your journey…', 'culvers') }}
           </span>
         </div>
-      </div>
-    </div>
 
-    @if($showMap)
-      {{-- Match the card width above (Figma 1248px / max-w-7xl) so the map
-           and the band line up vertically rather than the map running wider. --}}
-      <div class="travel-calculator__map mx-auto mt-6 w-full max-w-[78rem] overflow-hidden rounded-[10px] bg-light-cream">
-        @if($apiConfigured)
-          <iframe
-            x-ref="map"
-            class="block h-[420px] w-full md:h-[528px]"
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"
-            allowfullscreen
-            title="{{ esc_attr__('Route preview map', 'culvers') }}"></iframe>
-        @elseif($hasPlaceholder)
-          {!! Image::render($placeholderImage, [
-              'class' => 'block h-auto w-full object-cover',
-              'alt' => __('Map placeholder', 'culvers'),
-          ]) !!}
-        @elseif($mockActive)
-          {{-- Dev-mock: shape-match the live iframe band (420 / 528) but render
-               a token-tinted panel with a pin-pair illustration so the page
-               reads visually like the Figma even without a real Maps key. --}}
-          <div class="flex h-[420px] w-full flex-col items-center justify-center gap-4 bg-light-green/60 text-center text-deep-moss md:h-[528px]">
-            <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-              <path d="M20 6c-7.18 0-13 5.82-13 13 0 9.75 13 27 13 27s13-17.25 13-27c0-7.18-5.82-13-13-13Zm0 17.5a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9Z" fill="currentColor" opacity="0.85" />
-              <path d="M44 18c-7.18 0-13 5.82-13 13 0 9.75 13 27 13 27s13-17.25 13-27c0-7.18-5.82-13-13-13Zm0 17.5a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9Z" fill="currentColor" />
-            </svg>
-            <p class="font-sans text-sm text-deep-moss/80 md:text-base">
-              {{ __('Live route preview disabled in dev mock mode.', 'culvers') }}
-            </p>
-          </div>
-        @elseif(current_user_can('edit_posts'))
-          <div class="flex h-[420px] w-full items-center justify-center bg-light-cream text-center font-sans text-sm text-deep-moss/70">
-            {{ __('Configure a Google Maps API key to render the route preview.', 'culvers') }}
+        @if($showMap)
+          {{-- Figma expanded: 24px inset on all sides of the map within the pale-sage card
+               (`51:7995`–`7997`). Map lives inside the same band so padding stays uniform. --}}
+          <div
+            class="travel-calculator__map-panel mt-8 w-full sm:mt-10"
+            x-show="hasMapPanel"
+            x-cloak
+            x-transition.opacity.duration.200ms>
+            <div
+              class="travel-calculator__map-frame relative min-h-[346px] w-full overflow-hidden rounded-[10px] bg-light-cream/40 md:min-h-[528px]"
+              role="region"
+              aria-label="{{ esc_attr__('Route preview map', 'culvers') }}"
+              aria-busy="true"
+              x-bind:aria-busy="mapLoading ? 'true' : 'false'">
+              <div
+                class="travel-calculator__map-loading absolute inset-0 z-10 flex flex-col items-center justify-center gap-4 rounded-[10px] bg-light-green/90"
+                x-show="mapLoading && ! mapError"
+                x-cloak>
+                <div
+                  class="size-10 animate-spin rounded-full border-2 border-faded-olive/30 border-t-deep-moss"
+                  aria-hidden="true"></div>
+                <p class="font-label text-xs font-semibold uppercase tracking-[1px] text-deep-moss">
+                  {{ esc_html__('Loading route map…', 'culvers') }}
+                </p>
+              </div>
+
+              <p
+                class="absolute inset-0 z-20 flex items-center justify-center px-6 text-center font-sans text-sm text-deep-moss md:text-base"
+                x-show="mapError !== ''"
+                x-text="mapError"
+                x-cloak></p>
+
+              @if($apiConfigured)
+                <iframe
+                  class="travel-calculator__map-iframe"
+                  x-bind:src="embedSrc"
+                  x-bind:key="embedSrc"
+                  x-on:load="onMapLoad()"
+                  x-on:error="onMapError()"
+                  loading="lazy"
+                  referrerpolicy="no-referrer-when-downgrade"
+                  allowfullscreen
+                  title="{{ esc_attr__('Route preview map', 'culvers') }}"></iframe>
+              @elseif($hasPlaceholder)
+                <div x-init="mapLoading = false">
+                  {!! Image::render($placeholderImage, [
+                      'class' => 'block h-[346px] w-full object-cover md:h-[528px]',
+                      'alt' => __('Route preview map', 'culvers'),
+                  ]) !!}
+                </div>
+              @elseif($mockActive)
+                <div
+                  class="flex h-[346px] w-full flex-col items-center justify-center gap-4 text-center text-deep-moss md:h-[528px]"
+                  x-init="mapLoading = false">
+                  <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M20 6c-7.18 0-13 5.82-13 13 0 9.75 13 27 13 27s13-17.25 13-27c0-7.18-5.82-13-13-13Zm0 17.5a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9Z" fill="currentColor" opacity="0.85" />
+                    <path d="M44 18c-7.18 0-13 5.82-13 13 0 9.75 13 27 13 27s13-17.25 13-27c0-7.18-5.82-13-13-13Zm0 17.5a4.5 4.5 0 1 1 0-9 4.5 4.5 0 0 1 0 9Z" fill="currentColor" />
+                  </svg>
+                  <p class="font-sans text-sm text-deep-moss/80 md:text-base">
+                    {{ __('Route preview map (dev mock).', 'culvers') }}
+                  </p>
+                </div>
+              @endif
+            </div>
           </div>
         @endif
       </div>
-    @endif
+
+    </div>
   </div>
 </section>

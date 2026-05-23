@@ -65,24 +65,6 @@ return [
                 'wrapper' => ['width' => '50'],
             ],
         ],
-        'header_background' => [
-            'type' => 'select',
-            'options' => [
-                'label' => __('Background', 'culvers'),
-                'instructions' => __(
-                    'White band matches Figma 51:6386 intro (offer / event singles). '
-                    . 'Inherit uses the page surface only.',
-                    'culvers'
-                ),
-                'choices' => [
-                    'inherit' => __('Inherit page surface (default)', 'culvers'),
-                    'white' => __('White', 'culvers'),
-                ],
-                'default_value' => 'inherit',
-                'allow_null' => 0,
-                'wrapper' => ['width' => '50'],
-            ],
-        ],
         'header_max_width' => [
             'type' => 'select',
             'options' => [

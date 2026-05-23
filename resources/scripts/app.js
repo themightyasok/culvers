@@ -4,7 +4,7 @@ import Alpine from 'alpinejs';
 
 import registerSiteHeaderAlpine from './alpine/site-header.js';
 import registerThreeCardBlockAlpine from './alpine/three-card-block.js';
-import registerSplitHighlightAlpine from './alpine/split-highlight.js';
+import registerSplitHighlightAlpine from './alpine/shop-split-highlight.js';
 import registerHeroSliderAlpine from './alpine/hero-slider.js';
 import registerHorizontalScrollerAlpine from './alpine/horizontal-scroller.js';
 import registerDirectoryArchiveAlpine from './alpine/directory-archive.js';

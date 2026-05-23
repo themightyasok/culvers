@@ -239,6 +239,15 @@ final class EatDrinkDirectoryPopulate
         }
     }
 
+    public static function sideloadFromUrlPublic(string $url, string $basenameHint): int
+    {
+        self::loadDependencies();
+
+        return self::withDirectoryImportUploadFilters(
+            static fn (): int => self::sideloadFromUrl($url, $basenameHint)
+        );
+    }
+
     private static function sideloadFromUrl(string $url, string $basenameHint): int
     {
         $tmp = download_url($url, 90);

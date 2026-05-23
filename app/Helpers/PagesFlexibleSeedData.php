@@ -673,7 +673,6 @@ final class PagesFlexibleSeedData
             'cards_heading' => $heading,
             'cards_subheading' => '',
             'cards_body' => sprintf('<p>%s</p>', esc_html($body)),
-            'cards_items' => [],
             'cards_blog_categories' => [],
             'cards_blog_per_category' => 3,
             'cards_cpt_post_type' => $postType,
@@ -788,6 +787,26 @@ final class PagesFlexibleSeedData
     /**
      * @return list<array<string, mixed>>
      */
+    /**
+     * Per-row polaroid tilts — Figma baseline is left +7° / right −6°; vary slightly
+     * per headline so each open state feels distinct (guest services accordion).
+     *
+     * @return list<array{0: int, 1: int}>
+     */
+    private static function guestServicesTisTilts(): array
+    {
+        return [
+            [7, -6],
+            [5, -8],
+            [9, -4],
+            [4, -9],
+            [8, -5],
+            [6, -7],
+            [10, -3],
+        ];
+    }
+
+    /** @return list<array<string, mixed>> */
     private static function guestServicesTisItems(): array
     {
         $polaroidLeft = [
@@ -840,11 +859,13 @@ final class PagesFlexibleSeedData
         ];
 
         $items = [];
-        foreach ($rows as $row) {
+        $tilts = self::guestServicesTisTilts();
+        foreach ($rows as $index => $row) {
             $label = $row[0];
             $body = $row[1];
             $ctaLabel = $row[2] ?? null;
             $ctaUrl = $row[3] ?? null;
+            $pair = $tilts[$index] ?? [7, -6];
             $items[] = self::tisRow(
                 $label,
                 $body,
@@ -852,6 +873,8 @@ final class PagesFlexibleSeedData
                 $polaroidRight,
                 is_string($ctaLabel) ? $ctaLabel : null,
                 is_string($ctaUrl) ? $ctaUrl : null,
+                $pair[0],
+                $pair[1],
             );
         }
 
@@ -870,14 +893,16 @@ final class PagesFlexibleSeedData
         ?array $imageRight = null,
         ?string $ctaLabel = null,
         ?string $ctaUrl = null,
+        int $tiltLeft = 7,
+        int $tiltRight = -6,
     ): array {
         $row = [
             'item_label' => $label,
             'item_body' => sprintf('<p>%s</p>', esc_html($body)),
             'item_image_left' => $imageLeft,
             'item_image_right' => $imageRight,
-            'item_image_left_tilt' => 7,
-            'item_image_right_tilt' => -6,
+            'item_image_left_tilt' => $tiltLeft,
+            'item_image_right_tilt' => $tiltRight,
         ];
         if ($ctaLabel !== null && $ctaLabel !== '') {
             $row['item_cta_label'] = $ctaLabel;

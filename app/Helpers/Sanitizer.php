@@ -217,6 +217,7 @@ final class Sanitizer
                         // Repeater sub-fields & misc rich-text holders kept across components.
                         'hero_subtitle_line',
                         'item_body', 'card_body',
+                        'item_answer', 'tab_body',
                     ], true)
                 ) {
                     $sanitized[$key] = self::wysiwyg($value);

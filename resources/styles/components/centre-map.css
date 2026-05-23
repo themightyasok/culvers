@@ -70,3 +70,13 @@
   cursor: grabbing;
   transition: none;
 }
+
+/* Category filter rows — pointer on links/buttons; active bullet keeps a deep-moss ring. */
+.centre-map__category {
+  cursor: pointer;
+}
+
+.centre-map__category-bullet--active {
+  border-color: var(--color-deep-moss, #2e301e);
+  background-color: var(--color-glowleaf, #d4ff50);
+}

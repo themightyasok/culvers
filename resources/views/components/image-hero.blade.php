@@ -8,7 +8,7 @@
    * Contact, About, brand-lockup pages, etc. Sizing/colour calibrated to the
    * Figma "Header hero" spec (51:9360 — Get In Touch):
    *   • Band: 480 / 580 / 646px across mobile → desktop (Figma is 646px on 1440)
-   *   • Title: text-9xl (96px) on lg, glowleaf default, normal tracking, lh 1
+   *   • Title: Canela 46 px / lh 1.1 mobile (`51:9234`), 96 px / lh 96 desktop (`51:9364`)
    *   • Subtitle: 20px / SemiBold / 4px tracking on lg, scales down on mobile
    *   • Overlay default 20% (was 50%); editor can dial up to 85%
    * Bleeds under the fixed header — `includePadding: false` strips the default
@@ -100,9 +100,12 @@
           <h1 class="sr-only">{{ esc_html($titleLine !== '' ? $titleLine : get_the_title()) }}</h1>
           @php
               $heroLogoAlt = trim((string) ($logo['alt'] ?? ''));
-              // Large centre lockups (shop singles etc.): cap by viewport + px ceiling so logos read boldly on wide bands.
+              // Omit HTML width/height (pass 0) so intrinsic px do not cap size; Figma max-*
+              // caps live in unlayered `app.css` (`.image-hero__logo`) — never force a display width.
               $heroLogoImgArgs = [
-                  'class' => 'max-h-[min(60vw,400px)] w-auto max-w-full object-contain md:max-h-[min(52vw,520px)] lg:max-h-[min(50vw,640px)]',
+                  'class' => 'image-hero__logo',
+                  'width' => 0,
+                  'height' => 0,
                   'loading' => 'eager',
                   'decoding' => 'async',
               ];
@@ -116,16 +119,9 @@
           <div class="flex max-w-[min(100%,72rem)] justify-center px-2">
             {!! Image::render($logo, $heroLogoImgArgs) !!}
           </div>
-        {{-- Image-hero H1 — same type ramp as hero-slider; wider max-width for wrapping; editorial `<br>` / newlines kept. --}}
         @elseif($titleLine !== '')
-          @php
-              $titleSafe = preg_replace('#<br\s*/?>#i', "\n", $titleLine);
-          @endphp
-          {{-- Desktop H1 (md:9xl, lg:7.75rem) kept exactly as shipped — mobile uses
-               `max-sm:` overrides to land Figma's H1 Mobile token (Canela 48 / lh 1.1)
-               without touching the tablet+ ramp above. --}}
-          <h1 class="image-hero__title mx-auto max-w-[min(100%,68rem)] text-balance break-words {{ Component::imageHeroTitleClasses($titleToneClass) }}">
-            {!! nl2br(e($titleSafe)) !!}
+          <h1 class="image-hero__title whitespace-nowrap {{ Component::imageHeroTitleClasses($titleToneClass) }}">
+            {{ esc_html(preg_replace('/\s+/u', ' ', $titleLine)) }}
           </h1>
         @else
           {{-- Product-only heroes (e.g. Figma 51:6394) leave the title line blank. --}}

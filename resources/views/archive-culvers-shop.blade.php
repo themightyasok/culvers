@@ -65,7 +65,7 @@
              <p>…<p></p>…</p> nesting is invalid HTML and browsers auto-
              close the outer paragraph on the inner one. --}}
         <div
-          class="archive-intro mx-auto max-w-[802px] text-center font-sans text-xl font-light text-deep-moss">
+          class="{{ \App\Helpers\LayoutShell::ARCHIVE_INTRO }}">
           {!! wp_kses_post(wpautop($introHtml)) !!}
         </div>
 
@@ -86,7 +86,7 @@
               :class="filtersVisible ? 'max-lg:max-h-[1600px] max-lg:overflow-visible' : 'max-lg:hidden'"
               role="region"
               aria-label="{{ esc_attr__('Directory filters', 'culvers') }}">
-              <aside class="directory-archive__aside w-full rounded-none bg-white pb-6 pt-0 shadow-none lg:w-[325px] lg:shrink-0">
+              <aside class="directory-archive__aside w-full rounded-none bg-transparent px-[23px] pb-6 pt-0 shadow-none lg:w-[325px] lg:shrink-0">
                 <h2 class="sr-only">{{ __('Directory filters', 'culvers') }}</h2>
 
                 @include('partials.directory-filter-group', [
@@ -123,6 +123,7 @@
                     @include('partials.directory-shop-card')
                   @endwhile
                 </div>
+                @include('partials.directory-archive-pagination')
               @endif
             </div>
           </div>

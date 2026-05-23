@@ -68,6 +68,14 @@ final class EatDrinkDirectorySeedData
                 'featured_url' => null,
                 'type_slug' => 'restaurants',
             ],
+            [
+                'title' => 'Chopstix',
+                'slug' => 'chopstix',
+                'logo_url' => null,
+                'logo_theme_file' => null,
+                'featured_url' => null,
+                'type_slug' => 'restaurants',
+            ],
         ];
     }
 

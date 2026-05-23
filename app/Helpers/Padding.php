@@ -11,10 +11,10 @@ namespace App\Helpers;
  * `getBottomPaddingClass`, `getBottomPaddingClassesOnly`) were removed when the
  * per-component "Top padding" / "Bottom padding" ACF controls were dropped: the
  * inter-section vertical rhythm between flexible components now comes from a
- * single `gap-y-32` on the parent grid container (see
+ * uniform `gap-y-24` on the parent grid container (see
  * {@see Grid::getMainGridContainerClasses()}), so no component is allowed to
- * contribute to outer spacing. Components that need internal padding around
- * their own painted background apply it directly in their Blade template.
+ * contribute outer vertical spacing. Components that need internal padding
+ * around their own painted background apply it inside their Blade template.
  *
  * What remains here are **header / subheader / body** padding class builders
  * (`getHeaderSubheaderPaddingClasses`) still used where a component applies

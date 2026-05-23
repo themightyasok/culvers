@@ -129,15 +129,15 @@ final class ArchiveHeroFields
             'new_lines' => 'br',
         ]);
 
-        $group->addNumber($prefix . '_hero_overlay_opacity', [
+        $group->addRange($prefix . '_hero_overlay_opacity', [
             'label' => __('Image overlay darkness', 'culvers'),
             'instructions' => __(
-                'Solid black overlay opacity on the hero image (0–85). Figma default is 20 — push higher only when text contrast on a busy photo demands it.',
+                'Black overlay on the archive hero image (0% = none). Raise only when text needs more contrast.',
                 'culvers'
             ),
             'default_value' => 35,
             'min' => 0,
-            'max' => 85,
+            'max' => 100,
             'step' => 1,
             'append' => '%',
         ]);

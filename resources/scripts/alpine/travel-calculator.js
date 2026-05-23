@@ -1,15 +1,8 @@
 /**
  * Travel Calculator: posts to `wp-json/culvers/v1/travel-calculator`,
- * renders the result strip + swaps the Maps Embed iframe to a directions URL
- * built from the resolved origin.
- *
- * Configuration is JSON-injected at render time from the Blade template:
- *   - endpoint:   REST URL
- *   - nonce:      X-WP-Nonce token (wp_rest)
- *   - apiKey:     Maps Embed API key (browser-restricted in Google Cloud)
- *   - destination: { address, label, placeId }
- *   - defaultMode: pre-selected mode in the dropdown
- *   - resultTemplateLoading / resultTemplateInitial: editor-localised strings
+ * renders the result strip, then reveals the route map only after a
+ * successful search (Figma collapsed `51:9027` → expanded `51:9193` /
+ * desktop `51:7970` + map band `51:7995`–`7997`).
  *
  * @param {import('alpinejs').Alpine} Alpine
  */
@@ -32,32 +25,45 @@ export default function registerTravelCalculatorAlpine(Alpine) {
           ? config.destination.placeId
           : '',
     },
-    showMap: config.showMap !== false,
+    showMap: config.showMap === true,
 
     origin: '',
     mode: typeof config.defaultMode === 'string' ? config.defaultMode : 'driving',
     loading: false,
+    mapLoading: false,
+    mapRequested: false,
+    mapError: '',
     result: null,
     error: '',
 
-    init() {
-      this.refreshMapSrc();
+    /** @type {ReturnType<typeof setTimeout> | undefined} */
+    _mapLoadTimer: undefined,
+
+    /** @returns {boolean} */
+    get hasMapPanel() {
+      return this.showMap && this.mapRequested;
     },
 
     /** @returns {string} */
-    get formattedResult() {
-      if (this.error !== '') {
-        return this.error;
+    get embedSrc() {
+      if (!this.mapRequested || this.apiKey === '' || this.result === null) {
+        return '';
       }
-      if (this.loading) {
-        return typeof this.config?.resultTemplateLoading === 'string'
-          ? this.config.resultTemplateLoading
-          : 'Calculating…';
+      const trimmed = this.origin.trim();
+      if (trimmed === '') {
+        return '';
       }
-      if (this.result && typeof this.result.message === 'string') {
-        return this.result.message;
-      }
-      return '';
+      const destinationParam =
+        this.destination.placeId !== ''
+          ? `place_id:${this.destination.placeId}`
+          : this.destination.address;
+      const params = new URLSearchParams({
+        key: this.apiKey,
+        origin: trimmed,
+        destination: destinationParam,
+        mode: this.mode,
+      });
+      return `https://www.google.com/maps/embed/v1/directions?${params.toString()}`;
     },
 
     async submit() {
@@ -73,6 +79,8 @@ export default function registerTravelCalculatorAlpine(Alpine) {
 
       this.loading = true;
       this.result = null;
+      this.mapRequested = false;
+      this.mapLoading = false;
 
       try {
         const response = await fetch(this.endpoint, {
@@ -101,7 +109,24 @@ export default function registerTravelCalculatorAlpine(Alpine) {
         if (payload.origin && typeof payload.origin === 'string') {
           this.origin = payload.origin;
         }
-        this.refreshMapSrc();
+
+        if (this.showMap) {
+          this.mapRequested = true;
+          if (this.apiKey !== '') {
+            this.mapLoading = true;
+            this.scheduleMapLoadTimeout();
+            this.$nextTick(() => {
+              const root = this.$root;
+              const band =
+                root instanceof HTMLElement
+                  ? root.querySelector('.travel-calculator__map-band')
+                  : null;
+              if (band instanceof HTMLElement) {
+                band.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+              }
+            });
+          }
+        }
       } catch (err) {
         this.error =
           err instanceof Error && err.message
@@ -112,37 +137,35 @@ export default function registerTravelCalculatorAlpine(Alpine) {
       }
     },
 
-    refreshMapSrc() {
-      const iframe = this.$refs?.map;
-      if (!(iframe instanceof HTMLIFrameElement) || !this.showMap || this.apiKey === '') {
-        return;
-      }
-      iframe.src = this.buildEmbedUrl();
+    onMapLoad() {
+      this.clearMapLoadTimer();
+      this.mapLoading = false;
+      this.mapError = '';
     },
 
-    /** @returns {string} */
-    buildEmbedUrl() {
-      const base = 'https://www.google.com/maps/embed/v1';
-      const destinationParam =
-        this.destination.placeId !== ''
-          ? `place_id:${this.destination.placeId}`
-          : this.destination.address;
+    onMapError() {
+      this.clearMapLoadTimer();
+      this.mapLoading = false;
+      this.mapError =
+        'The route map could not be loaded. Check that Maps Embed API is enabled for your Google Maps key.';
+    },
 
-      if (this.result && typeof this.origin === 'string' && this.origin.trim() !== '') {
-        const params = new URLSearchParams({
-          key: this.apiKey,
-          origin: this.origin,
-          destination: destinationParam,
-          mode: this.mode,
-        });
-        return `${base}/directions?${params.toString()}`;
+    scheduleMapLoadTimeout() {
+      this.clearMapLoadTimer();
+      this._mapLoadTimer = window.setTimeout(() => {
+        if (this.mapLoading) {
+          this.mapLoading = false;
+          this.mapError =
+            'The route map is taking longer than expected. Check Maps Embed API and HTTP referrer restrictions on your Google Maps key.';
+        }
+      }, 12000);
+    },
+
+    clearMapLoadTimer() {
+      if (this._mapLoadTimer !== undefined) {
+        window.clearTimeout(this._mapLoadTimer);
+        this._mapLoadTimer = undefined;
       }
-
-      const params = new URLSearchParams({
-        key: this.apiKey,
-        q: destinationParam,
-      });
-      return `${base}/place?${params.toString()}`;
     },
   }));
 }

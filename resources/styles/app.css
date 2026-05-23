@@ -6,6 +6,7 @@
 @import './theme.tokens.css';
 
 @import '@splidejs/splide/css';
+@import './components/culvers-splide-dots.css';
 
 /*
  * Splide ships `.splide.is-initialized:not(.is-active) .splide__list { display: block }` so single /
@@ -19,16 +20,14 @@
 @import './components/horizontal-scroller.css';
 @import './components/text-image-slider.css';
 @import './components/info-block.css';
-@import './components/directory-archive.css';
-@import './components/mega-nav.css';
+@import './patterns/directory-archive.css';
 @import './components/centre-map.css';
-@import './components/travel-calculator-map.css';
+@import './components/contact.css';
+@import './components/travel-calculator.css';
 @import './components/three-card-block.css';
 @import './components/shop-related-shops.css';
-@import './components/site-footer-desktop.css';
-@import './components/site-footer-mobile.css';
-@import './components/site-footer-pattern.css';
-@import './components/site-page-pattern.css';
+@import './patterns/site-footer-pattern.css';
+@import './patterns/site-page-pattern.css';
 @layer base {
   /*
    * Anchor underline + focus defaults live in tailwind.config.js (`culversThemePlugin`).
@@ -36,6 +35,20 @@
 
   [x-cloak] {
     display: none !important;
+  }
+
+  /*
+   * Approximate header chrome height before `site-header.js` measures the pill — prevents a
+   * ~100px layout jump on mobile where the old 11.25rem fallback was far taller than the 75px bar.
+   */
+  :root {
+    --site-header-offset-fallback: 4.6875rem;
+  }
+
+  @media (min-width: 1024px) {
+    :root {
+      --site-header-offset-fallback: 11.25rem;
+    }
   }
 
   /*
@@ -48,7 +61,7 @@
   .site-header-scroll-spacer {
     display: block;
     width: 100%;
-    height: var(--site-header-offset, 11.25rem);
+    height: var(--site-header-offset, var(--site-header-offset-fallback));
     flex-shrink: 0;
     pointer-events: none;
   }
@@ -84,28 +97,6 @@
 }
 
 @layer components {
-  /*
-   * Flexible component visibility — registry fields visibility_hide_* (+ legacy visibility_mobile).
-   * Explicit bundles so arbitrary Tailwind strings built in PHP are not purged by the JIT compiler.
-   *
-   * Two-band model: phones (< md) vs md+ (tablet + desktop). No tablet-only axis.
-   */
-  .culvers-hide-below-md {
-    @apply hidden md:block;
-  }
-
-  .culvers-vis--hide-phone {
-    @apply hidden md:block;
-  }
-
-  .culvers-vis--hide-md-up {
-    @apply block md:hidden;
-  }
-
-  .culvers-vis--hide-all {
-    @apply hidden;
-  }
-
   .prose :where(h1, h2, h3, h4, h5, h6) {
     @apply font-heading font-normal;
   }
@@ -240,17 +231,27 @@
     max-width: 100vw;
     margin-left: calc(50% - 50vw);
     margin-right: calc(50% - 50vw);
-    margin-top: calc(-1 * var(--site-header-offset, 11.25rem));
+    margin-top: calc(-1 * var(--site-header-offset, var(--site-header-offset-fallback)));
+    /* Clip cover/parallax layers — inner overflow alone can leak ~1px at the bottom edge. */
+    overflow: hidden;
   }
 
-  /* Figma: 6px Glowleaf keyline framing the full hero (full-bleed section). */
+  /* Figma: 6px Glowleaf keyline framing the hero band (full bleed; sits above content z-20). */
   .hero-slider--viewport::after {
     content: '';
     pointer-events: none;
     position: absolute;
     inset: 0;
-    z-index: 15;
-    box-shadow: inset 0 0 0 6px var(--color-glowleaf);
+    bottom: -1px;
+    z-index: 30;
+    box-sizing: border-box;
+    border: 6px solid var(--color-glowleaf);
+  }
+
+  @media (max-width: 1023px) {
+    .hero-slider--viewport::after {
+      top: var(--site-header-offset, var(--site-header-offset-fallback));
+    }
   }
 
   /*
@@ -264,7 +265,8 @@
     max-width: 100vw;
     margin-left: calc(50% - 50vw);
     margin-right: calc(50% - 50vw);
-    margin-top: calc(-1 * var(--site-header-offset, 11.25rem));
+    margin-top: calc(-1 * var(--site-header-offset, var(--site-header-offset-fallback)));
+    overflow: hidden;
   }
 
   .image-hero--viewport::after {
@@ -272,8 +274,16 @@
     pointer-events: none;
     position: absolute;
     inset: 0;
-    z-index: 15;
-    box-shadow: inset 0 0 0 6px var(--color-glowleaf);
+    bottom: -1px;
+    z-index: 30;
+    box-sizing: border-box;
+    border: 6px solid var(--color-glowleaf);
+  }
+
+  @media (max-width: 1023px) {
+    .image-hero--viewport::after {
+      top: var(--site-header-offset, var(--site-header-offset-fallback));
+    }
   }
 
   .hero-slider__splide {
@@ -307,6 +317,52 @@
     .hero-slider--bp-shift .hero-slider__copy {
       opacity: 0.25;
     }
+  }
+}
+
+/*
+ * Image-hero centre lockups (shop / eat-drink singles). Unlayered so rules beat WP layers.
+ * Figma 51:6165 (Accessorize shop hero): wordmark ≈597×57px. Figma 51:6689 (Greggs food):
+ * ≈473×107px. Mobile 51:8867: ≈301×29px.
+ * Small assets need a display width to upscale; cap at 597px (37.3125rem), not 46rem (736px),
+ * and bind height with max-height so wide marks do not balloon to ~160px+ tall.
+ */
+.image-hero__logo {
+  display: block;
+  width: min(82vw, 18.8125rem);
+  height: auto;
+  max-height: 1.75rem;
+  object-fit: contain;
+  object-position: center;
+  /* Brand marks from CMS are usually dark/colour; render white over hero imagery
+     (same treatment as directory cards on moss — see directory-card.blade.php). */
+  filter: brightness(0) invert(1);
+}
+
+/*
+ * Hero cover photos — object-cover + parallax scale can round 1px short of the clip box.
+ * Slight overscan keeps the bottom edge flush under the glowleaf frame.
+ */
+.image-hero--viewport [data-background-parallax-image],
+.hero-slider--viewport [data-background-parallax-image] {
+  inset: -1px;
+  width: calc(100% + 2px);
+  height: calc(100% + 2px);
+  max-width: none;
+  max-height: none;
+}
+
+@media (min-width: 640px) {
+  .image-hero__logo {
+    width: min(78vw, 28rem);
+    max-height: 2.375rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .image-hero__logo {
+    width: min(72vw, 37.3125rem);
+    max-height: 6.6875rem;
   }
 }
 

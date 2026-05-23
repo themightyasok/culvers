@@ -81,9 +81,13 @@ export default function registerSiteHeaderAlpine(Alpine) {
     searchHtml: '',
     searchResultsVisible: false,
 
-    headerRevealed: false,
+    headerRevealed: true,
     /** When true, the fixed header is translated off-screen (scroll-down + delay path). */
     headerDockHidden: false,
+    /** Off until after first paint so Alpine's initial `translate-y-0` does not animate in. */
+    headerDockTransitionEnabled: false,
+    /** Drill-down carousel slides; disabled when closing drawer or following a link. */
+    mobileNavAnimate: true,
 
     /** @type {number} */
     _lastScrollY: 0,
@@ -239,9 +243,27 @@ export default function registerSiteHeaderAlpine(Alpine) {
       }
     },
 
-    resetMobileSubmenu() {
+    resetMobileSubmenu(instant = false) {
+      this.mobileNavAnimate = !instant;
       this.mobileNavDepth = 0;
       this.mobileActiveBranch = null;
+    },
+
+    /**
+     * Navigate from the mobile drawer without running close / carousel animations.
+     *
+     * @param {string} url
+     */
+    followMobileNavLink(url) {
+      const target = typeof url === 'string' ? url.trim() : '';
+      if (target === '' || target === '#') {
+        return;
+      }
+      this.mobileNavAnimate = false;
+      this.mobileOpen = false;
+      this.resetMobileSubmenu(true);
+      document.body.classList.remove('mobile-nav-open');
+      window.location.assign(target);
     },
 
     /**
@@ -255,24 +277,23 @@ export default function registerSiteHeaderAlpine(Alpine) {
       const kids = branch.children;
       if (!kids || kids.length === 0) {
         if (typeof branch.url === 'string' && branch.url !== '') {
-          window.location.assign(branch.url);
+          this.followMobileNavLink(branch.url);
         }
 
         return;
       }
+      this.mobileNavAnimate = true;
       this.mobileActiveBranch = branch;
       this.mobileNavDepth = 1;
     },
 
     openSearch() {
       this.mobileOpen = false;
-      this.resetMobileSubmenu();
       this.searchOpen = true;
       this.closeMega();
     },
 
     openSearchFromMobile() {
-      this.resetMobileSubmenu();
       this.mobileOpen = false;
       this.closeMega();
       this.searchOpen = true;
@@ -294,7 +315,6 @@ export default function registerSiteHeaderAlpine(Alpine) {
     closeAll() {
       this.closeMega();
       this.mobileOpen = false;
-      this.resetMobileSubmenu();
       this.closeSearch();
     },
 
@@ -469,6 +489,12 @@ export default function registerSiteHeaderAlpine(Alpine) {
     },
 
     setupHeaderReveal() {
+      if (window.matchMedia('(max-width: 1023px)').matches) {
+        this.headerRevealed = true;
+
+        return;
+      }
+
       const root = this.$el;
       if (!(root instanceof HTMLElement)) {
         this.headerRevealed = true;
@@ -506,6 +532,13 @@ export default function registerSiteHeaderAlpine(Alpine) {
       this._lastScrollY = this.readScrollY();
       this.hydrateMobileNavTree();
 
+      document.documentElement.style.setProperty(
+        '--site-header-offset',
+        getComputedStyle(document.documentElement)
+          .getPropertyValue('--site-header-offset-fallback')
+          .trim() || '4.6875rem'
+      );
+
       this.syncHeaderDock();
       const onScroll = () => this.syncHeaderDock();
       window.addEventListener('scroll', onScroll, { passive: true });
@@ -523,6 +556,12 @@ export default function registerSiteHeaderAlpine(Alpine) {
       this.setupHeaderReveal();
 
       this.syncDocumentHeaderOffset();
+
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          this.headerDockTransitionEnabled = true;
+        });
+      });
 
       const bindSmootherTicker = () => {
         if (
@@ -548,7 +587,9 @@ export default function registerSiteHeaderAlpine(Alpine) {
       this.$watch('mobileOpen', (open) => {
         document.body.classList.toggle('mobile-nav-open', !!open);
         if (!open) {
-          this.resetMobileSubmenu();
+          this.resetMobileSubmenu(true);
+        } else {
+          this.mobileNavAnimate = true;
         }
         this.revealDock();
         this.syncDocumentHeaderOffset();

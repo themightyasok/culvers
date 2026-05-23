@@ -6,6 +6,7 @@
   /** @var string $hero_title */
   /** @var string $hero_subtitle */
   /** @var list<array{aside: string, body: string}> $sections */
+  use App\Helpers\Component;
   use App\Helpers\LayoutShell;
 
   $hero_title = isset($hero_title) ? (string) $hero_title : '';
@@ -23,9 +24,9 @@
   <div
     class="pointer-events-none absolute left-[12.5%] top-[-260px] hidden size-[1048px] -rotate-45 bg-white/[0.28] mix-blend-soft-light md:block"
     aria-hidden="true"></div>
-  <div class="relative z-10 mx-auto w-full max-w-[56rem]">
+  <div class="relative z-10 w-full">
     @if($hero_title !== '')
-      <h1 id="policy-page-heading" class="m-0 font-heading text-5xl font-normal leading-[1.08] tracking-tight text-brand-500 sm:text-7xl md:text-8xl lg:text-9xl lg:leading-[1.05]">
+      <h1 id="policy-page-heading" class="image-hero__title m-0 whitespace-nowrap {{ Component::imageHeroTitleClasses('text-brand-500') }}">
         {{ esc_html($hero_title) }}
       </h1>
     @endif

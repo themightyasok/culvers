@@ -68,9 +68,14 @@
   $embedQuery = $destPlaceId !== ''
       ? 'place_id:' . $destPlaceId
       : ($destAddress !== '' ? $destAddress : 'Culver Square Colchester');
-  $embedSrc = $apiConfigured
-      ? 'https://www.google.com/maps/embed/v1/place?key=' . rawurlencode($apiKey) . '&q=' . rawurlencode($embedQuery) . '&zoom=14'
-      : '';
+  $mapAlpineConfig = wp_json_encode([
+      'apiKey' => $apiKey,
+      'embedQuery' => $embedQuery,
+      'initialZoom' => 14,
+  ]);
+  if (! is_string($mapAlpineConfig)) {
+      $mapAlpineConfig = '{}';
+  }
 @endphp
 
 <section
@@ -111,7 +116,7 @@
                 href="{{ esc_url($mapUrl) }}"
                 @if(str_starts_with($mapUrl, 'http')) target="_blank" rel="noopener noreferrer" @endif>
                 {{ esc_html($mapLabel) }}
-                <span aria-hidden="true">↗</span>
+                @include('partials.footer-external-arrow-figma')
                 @if(str_starts_with($mapUrl, 'http'))
                   <span class="sr-only">{{ __('(opens in new tab)', 'culvers') }}</span>
                 @endif
@@ -196,7 +201,7 @@
               autocomplete="given-name"
               maxlength="100"
               required
-              class="contact__input h-[46px] w-full rounded-full border border-deep-moss/30 bg-white px-5 font-sans text-base font-light leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
+              class="contact__input h-[46px] w-full rounded-full border-[1.5px] border-faded-olive bg-white px-5 font-sans text-[15px] font-light leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
               placeholder="{{ esc_attr($firstNamePlaceholder) }}"
               x-model.trim="firstName"
               x-on:input="onFieldInput()"
@@ -216,7 +221,7 @@
               autocomplete="family-name"
               maxlength="100"
               required
-              class="contact__input h-[46px] w-full rounded-full border border-deep-moss/30 bg-white px-5 font-sans text-base font-light leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
+              class="contact__input h-[46px] w-full rounded-full border-[1.5px] border-faded-olive bg-white px-5 font-sans text-[15px] font-light leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
               placeholder="{{ esc_attr($lastNamePlaceholder) }}"
               x-model.trim="lastName"
               x-on:input="onFieldInput()"
@@ -237,7 +242,7 @@
               maxlength="200"
               required
               inputmode="email"
-              class="contact__input h-[46px] w-full rounded-full border border-deep-moss/30 bg-white px-5 font-sans text-base font-light leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
+              class="contact__input h-[46px] w-full rounded-full border-[1.5px] border-faded-olive bg-white px-5 font-sans text-[15px] font-light leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
               placeholder="{{ esc_attr($emailPlaceholder) }}"
               x-model.trim="email"
               x-on:input="onFieldInput()"
@@ -255,7 +260,7 @@
                 <select
                   id="{{ esc_attr($instanceId) }}-reason"
                   name="reason"
-                  class="contact__select h-[46px] w-full appearance-none rounded-full border border-deep-moss/30 bg-white px-5 pr-10 font-sans text-base font-light leading-[1.32] text-deep-moss focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
+                  class="contact__select h-[46px] w-full appearance-none rounded-full border-[1.5px] border-faded-olive bg-white px-5 pr-10 font-sans text-[15px] font-light leading-[1.32] text-deep-moss focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
                   x-model="reason"
                   x-on:change="onFieldInput()"
                   x-bind:disabled="loading">
@@ -276,7 +281,7 @@
                 type="text"
                 name="reason"
                 maxlength="100"
-                class="contact__input h-[46px] w-full rounded-full border border-deep-moss/30 bg-white px-5 font-sans text-base font-light leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
+                class="contact__input h-[46px] w-full rounded-full border-[1.5px] border-faded-olive bg-white px-5 font-sans text-[15px] font-light leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
                 placeholder="{{ esc_attr($reasonPlaceholder) }}"
                 x-model.trim="reason"
                 x-on:input="onFieldInput()"
@@ -296,7 +301,7 @@
               rows="6"
               maxlength="5000"
               required
-              class="contact__textarea min-h-[156px] w-full resize-y rounded-[18px] border border-deep-moss/30 bg-white px-5 py-4 font-sans text-base font-light leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
+              class="contact__textarea min-h-[156px] w-full resize-y rounded-[20px] border-[1.5px] border-faded-olive bg-white px-5 py-4 font-sans text-[15px] font-light leading-[1.32] text-deep-moss placeholder:text-dustleaf focus:border-glowleaf focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-glowleaf disabled:opacity-60"
               placeholder="{{ esc_attr($messagePlaceholder) }}"
               x-model.trim="message"
               x-on:input="onFieldInput()"
@@ -341,17 +346,24 @@
   </div>
 
   @if($showMap)
-    <div class="contact__map mt-12 overflow-hidden bg-light-cream md:mt-16">
+    {{-- Same width shell as footer newsletter (`mx-auto max-w-8xl` in `footer.blade.php`). --}}
+    <div class="{{ LayoutShell::INNER_MAX_GUTTERED }} contact__map mt-12 md:mt-16">
       @if($apiConfigured)
-        <iframe
-          class="block h-[420px] w-full md:h-[570px]"
-          src="{{ esc_url($embedSrc) }}"
-          loading="lazy"
-          referrerpolicy="no-referrer-when-downgrade"
-          allowfullscreen
-          title="{{ esc_attr(sprintf(/* translators: %s: destination short label */ __('Map of %s', 'culvers'), $destLabel !== '' ? $destLabel : __('the centre', 'culvers'))) }}"></iframe>
+        <div
+          class="contact__map-frame relative w-full overflow-hidden rounded-[10px] bg-light-cream aspect-[400/600] max-sm:min-h-[600px] sm:aspect-[1401/570]"
+          data-contact-map
+          x-data='contactMapEmbed({{ $mapAlpineConfig }})'>
+          <iframe
+            class="contact__map-iframe"
+            x-bind:src="embedSrc"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            allowfullscreen
+            title="{{ esc_attr(sprintf(/* translators: %s: destination short label */ __('Map of %s', 'culvers'), $destLabel !== '' ? $destLabel : __('the centre', 'culvers'))) }}"></iframe>
+          @include('partials.map-embed-zoom-controls')
+        </div>
       @elseif(current_user_can('edit_posts'))
-        <div class="flex h-[420px] w-full items-center justify-center bg-light-cream text-center font-sans text-sm text-deep-moss/70">
+        <div class="flex aspect-[400/600] max-sm:min-h-[600px] w-full items-center justify-center rounded-[10px] bg-light-cream text-center font-sans text-sm text-deep-moss/70 sm:aspect-[1401/570]">
           {{ __('Configure a Google Maps API key at Appearance → Customize → Google Maps to render the embedded map.', 'culvers') }}
         </div>
       @endif
