@@ -96,17 +96,15 @@ final class Grid
     /**
      * Class spine for the main flexible-components grid container.
      *
-     * Inter-section vertical rhythm is **`gap-y-24` (96 px)** between every flexible
-     * row. Figma homepage mobile (`51:8208`) and desktop both measure ~91–96 px
-     * between bands — one token, all breakpoints. {@see Rhythm} adds negative
-     * `mt-*` only for flush / breathed exceptions.
+     * Inter-section vertical rhythm: **`gap-y-[76px]`** between flexible rows.
+     * {@see Rhythm} adds negative `mt-*` only for flush / breathed exceptions.
      *
      * Horizontal layout: 12 columns + `gap-x-6`. Do not stack outer `py-*` on
      * transparent section roots — that doubled the visual gap before this model.
      */
     public static function getMainGridContainerClasses(): string
     {
-        return 'grid grid-cols-12 gap-x-6 gap-y-24';
+        return 'grid grid-cols-12 gap-x-6 gap-y-[76px]';
     }
 
     /**

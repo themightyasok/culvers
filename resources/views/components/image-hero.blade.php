@@ -70,10 +70,13 @@
 
 @if($hasContent)
   <section
-    class="image-hero image-hero--viewport {{ esc_attr($root) }} relative isolate w-full text-white {{ $hasHero ? '' : 'bg-deep-moss' }}"
+    class="image-hero image-hero--viewport {{ esc_attr($root) }} relative isolate w-full text-white {{ $hasHero ? '' : 'text-hero-viewport' }}"
     data-component-root
     data-image-hero>
-    <div class="relative {{ $heroBandMin }} w-full overflow-hidden" data-background-parallax-trigger>
+    <div class="relative {{ $heroBandMin }} w-full overflow-hidden">
+      @if(! $hasHero)
+        @include('partials.text-hero-backdrop')
+      @endif
       @if($hasHero)
         {!! Image::renderResponsiveCover($desk, $mobUrl !== '' ? $mob : null, [
             'class' => 'absolute inset-0 size-full object-cover object-top',
@@ -81,7 +84,6 @@
             'loading' => 'eager',
             'decoding' => 'async',
             'fetchpriority' => 'high',
-            'data' => ['background-parallax-image' => '1'],
         ]) !!}
 
         <div
@@ -91,7 +93,7 @@
       @endif
 
       <div
-        class="relative z-20 flex {{ $heroBandMin }} w-full flex-col items-center justify-center px-4 pb-12 pt-[length:var(--site-header-offset,11.25rem)] text-center md:px-5 lg:px-6 md:pb-14">
+        class="relative z-20 flex {{ $heroBandMin }} w-full flex-col items-center justify-center px-4 pb-12 pt-[length:var(--site-header-offset,var(--site-header-offset-fallback))] text-center md:px-5 lg:px-6 md:pb-14">
         @if($titleInImage)
           {{-- Title (and any subtitle) is part of the supplied artwork; render --}}
           {{-- only an sr-only h1 so the page still has a real heading for AT. --}}
@@ -120,7 +122,7 @@
             {!! Image::render($logo, $heroLogoImgArgs) !!}
           </div>
         @elseif($titleLine !== '')
-          <h1 class="image-hero__title whitespace-nowrap {{ Component::imageHeroTitleClasses($titleToneClass) }}">
+          <h1 class="image-hero__title md:whitespace-nowrap {{ Component::imageHeroTitleClasses($titleToneClass) }}">
             {{ esc_html(preg_replace('/\s+/u', ' ', $titleLine)) }}
           </h1>
         @else

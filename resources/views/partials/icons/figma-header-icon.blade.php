@@ -14,6 +14,7 @@
       'centre-map-mobile' => 'figma-centre-map-mobile.svg',
       'getting-here-mobile' => 'figma-getting-here-mobile.svg',
       'mobile-drawer-chevron' => 'figma-mobile-drawer-chevron.svg',
+      'mobile-back-arrow' => 'figma-mobile-back-arrow.svg',
       default => '',
   };
 

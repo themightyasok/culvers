@@ -28,6 +28,7 @@
 
 @media (max-width: 767px) {
   .info-block__grid {
+    /* Figma `51:8283`: 50px from rule to next tile icon (after copy→rule padding on the cell). */
     row-gap: 50px;
   }
 }

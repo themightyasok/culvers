@@ -20,6 +20,10 @@ return [
             ],
         ],
         'details_heading_level' => Component::headingLevelField(null, false, 2, '30'),
+        'details_heading_spacing' => Component::sectionHeadingSpacingField(
+            'compact',
+            __('Figma shop single: tighter gap before the contact / address columns.', 'culvers')
+        ),
         'msg_contact' => Component::sectionDivider(__('Contact column', 'culvers')),
         'details_contact_phone' => [
             'type' => 'text',

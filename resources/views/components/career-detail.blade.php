@@ -88,9 +88,9 @@
       <div
         class="career-detail__band grid items-start gap-10 md:gap-12 lg:grid-cols-[minmax(0,336px)_minmax(0,1fr)] lg:gap-x-16">
         {{-- Figma 51:6450: title (51:6464) top-aligns with sections (51:6472); meta below title (51:6465). --}}
-        <aside class="career-detail__sidebar flex flex-col gap-9 self-start text-deep-moss max-sm:items-center max-sm:text-center">
+        <aside class="career-detail__sidebar flex flex-col self-start text-deep-moss max-sm:items-center max-sm:text-center">
           @if($title !== '')
-            <{{ $titleTag }} class="career-detail__title font-heading text-5xl leading-[1.1]">
+            <{{ $titleTag }} class="career-detail__title {{ Component::sectionHeadingClasses('text-deep-moss') }}">
               {{ esc_html($title) }}
             </{{ $titleTag }}>
           @endif
@@ -116,9 +116,9 @@
           @endif
 
           @if($meta !== [])
-            <dl class="career-detail__meta flex flex-col gap-[30px]">
+            <dl class="career-detail__meta mt-8 flex flex-col">
               @foreach($meta as $row)
-                <div class="career-detail__meta-row flex flex-col gap-1 border-t border-deep-moss/20 pt-[30px] first:border-t-0 first:pt-0 max-sm:items-center">
+                <div class="career-detail__meta-row flex flex-col gap-1 border-t border-deep-moss/20 py-5 first:border-t-0 first:pt-0 max-sm:items-center">
                   @if($row['label'] !== '')
                     <dt class="career-detail__meta-label font-sans text-xl font-medium leading-6 text-deep-moss max-sm:text-center">
                       {{ esc_html($row['label']) }}
@@ -135,31 +135,33 @@
           @endif
 
           @if($hasApply)
-            <div class="career-detail__sidebar-cta mt-10 max-sm:flex max-sm:w-full max-sm:justify-center @if($meta !== []) border-t border-deep-moss/20 pt-8 @endif">
-              <a
-                class="btn btn-primary"
-                href="{{ esc_url($applyUrl) }}"
-                @if(str_starts_with($applyUrl, 'http')) target="_blank" rel="noopener noreferrer" @endif>
-                {{ esc_html($applyLabel) }}
-                @if(str_starts_with($applyUrl, 'http'))
-                  <span class="sr-only">{{ __('(opens in new tab)', 'culvers') }}</span>
-                @endif
-              </a>
+            <div class="career-detail__sidebar-cta @if($meta !== []) border-t border-deep-moss/20 @endif">
+              <div class="pt-8 max-sm:flex max-sm:justify-center">
+                <a
+                  class="btn btn-primary"
+                  href="{{ esc_url($applyUrl) }}"
+                  @if(str_starts_with($applyUrl, 'http')) target="_blank" rel="noopener noreferrer" @endif>
+                  {{ esc_html($applyLabel) }}
+                  @if(str_starts_with($applyUrl, 'http'))
+                    <span class="sr-only">{{ __('(opens in new tab)', 'culvers') }}</span>
+                  @endif
+                </a>
+              </div>
             </div>
           @endif
         </aside>
 
         @if($sections !== [])
-          <div class="career-detail__sections flex flex-col gap-10 self-start md:gap-[5.125rem] lg:gap-[5.125rem]">
+          <div class="career-detail__sections flex flex-col gap-10 self-start md:gap-14">
             @foreach($sections as $section)
               <article class="career-detail__section">
                 @if($section['heading'] !== '')
-                  <{{ $sectionTag }} class="career-detail__section-heading font-heading text-3xl leading-[1.1] text-faded-olive">
+                  <{{ $sectionTag }} class="career-detail__section-heading {{ Component::sectionHeadingClasses('text-faded-olive', 'mb-4') }}">
                     {{ esc_html($section['heading']) }}
                   </{{ $sectionTag }}>
                 @endif
                 @if($section['body_plain'] !== '')
-                  <div class="career-detail__section-body mt-[4.1875rem] font-sans text-xl font-light leading-[1.3] text-deep-moss rt-link-faded [&_p+p]:mt-3 [&_strong]:font-medium [&_strong]:text-deep-moss [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol_li+li]:mt-2 [&_ul]:m-0 [&_ul]:w-full [&_ul]:list-outside [&_ul]:list-disc [&_ul]:p-0 [&_ul]:text-left [&_ul>li]:ms-[1.875rem] [&_ul>li]:leading-[1.3] [&_ul>li]:marker:text-deep-moss [&_ul>li+li]:mt-0">
+                  <div class="career-detail__section-body font-sans text-xl font-light leading-[1.3] text-deep-moss rt-link-faded [&_p+p]:mt-3 [&_strong]:font-medium [&_strong]:text-deep-moss [&_ol]:my-3 [&_ol]:list-decimal [&_ol]:pl-6 [&_ol_li+li]:mt-2 [&_ul]:m-0 [&_ul]:w-full [&_ul]:list-outside [&_ul]:list-disc [&_ul]:p-0 [&_ul]:text-left [&_ul>li]:ms-[1.875rem] [&_ul>li]:leading-[1.3] [&_ul>li]:marker:text-deep-moss [&_ul>li+li]:mt-0">
                     {!! $section['body_html'] !!}
                   </div>
                 @endif

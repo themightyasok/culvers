@@ -14,19 +14,14 @@
   $sections = isset($sections) && is_array($sections) ? $sections : [];
 @endphp
 
-{{-- Sheet feedback row 27: bigger heading + soft-light rotated square decoration so the policy
-     hero reads on-brand instead of as a flat moss band. --}}
+{{-- Figma policy headers (`51:6558`): faded olive + 50% scrim, overlay diamond, 646px band. --}}
 <section
-  class="policy-page__hero hero-slider--viewport relative isolate flex min-h-[min(560px,88svh)] flex-col items-center justify-center overflow-hidden bg-deep-moss px-6 pb-14 pt-[calc(var(--site-header-offset,11.25rem)+2.5rem)] text-center text-white sm:px-10 md:min-h-[620px] md:px-12 md:pb-20 md:pt-[calc(var(--site-header-offset,11.25rem)+3rem)]"
+  class="policy-page__hero text-hero-viewport hero-slider--viewport relative isolate flex min-h-[480px] flex-col items-center justify-center overflow-hidden px-6 pb-14 pt-[calc(var(--site-header-offset,11.25rem)+2.5rem)] text-center text-white sm:px-10 md:min-h-[580px] md:px-12 md:pb-20 md:pt-[calc(var(--site-header-offset,11.25rem)+3rem)] lg:min-h-[646px]"
   aria-labelledby="policy-page-heading">
-  {{-- Same decorative diamond used by the homepage hero (Figma `51:4920`):
-       1048 px white-at-28% square, mix-blend soft-light, anchored upper-left. --}}
-  <div
-    class="pointer-events-none absolute left-[12.5%] top-[-260px] hidden size-[1048px] -rotate-45 bg-white/[0.28] mix-blend-soft-light md:block"
-    aria-hidden="true"></div>
-  <div class="relative z-10 w-full">
+  @include('partials.text-hero-backdrop')
+  <div class="relative z-10 mx-auto w-full max-w-5xl px-6 sm:px-10 md:px-12">
     @if($hero_title !== '')
-      <h1 id="policy-page-heading" class="image-hero__title m-0 whitespace-nowrap {{ Component::imageHeroTitleClasses('text-brand-500') }}">
+      <h1 id="policy-page-heading" class="image-hero__title m-0 md:whitespace-nowrap {{ Component::imageHeroTitleClasses('text-brand-500') }}">
         {{ esc_html($hero_title) }}
       </h1>
     @endif
@@ -39,7 +34,7 @@
 </section>
 
 <div class="policy-page__surface relative text-deep-moss">
-  <div class="relative z-10 {{ LayoutShell::INNER_MAX_GUTTERED }} py-12 md:py-16 lg:py-20">
+  <div class="relative z-10 mx-auto w-full max-w-5xl {{ LayoutShell::GUTTER_X }} py-12 md:py-16 lg:py-20">
     <div class="policy-page__stack flex flex-col gap-12 md:gap-14 lg:gap-16">
       @foreach($sections as $section)
         @php
@@ -52,7 +47,7 @@
             {{-- Sheet feedback row 27: align aside + body typography with Figma — bigger aside
                  heading (Canela ~32px) and slightly bigger body copy with looser leading. --}}
             @if($aside !== '')
-              <aside class="policy-page__aside font-heading text-3xl leading-[1.15] text-faded-olive md:text-4xl lg:max-w-[22rem] lg:pt-1 rt-link-prose">
+              <aside class="policy-page__aside {{ Component::mobilePanelSubheadClasses('text-faded-olive', 'lg:max-w-[22rem] lg:pt-1 rt-link-prose') }}">
                 {!! $aside !!}
               </aside>
             @endif

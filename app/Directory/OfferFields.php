@@ -23,6 +23,18 @@ final class OfferFields
             'title' => __('Offer listing fields', 'culvers'),
         ]);
 
+        $group->addImage('offer_card_image', [
+            'label' => __('Card image', 'culvers'),
+            'instructions' => __(
+                'Portrait photo for three-card blocks and the offers archive grid. '
+                . 'Falls back to the featured image, then the single-page hero image when empty.',
+                'culvers'
+            ),
+            'return_format' => 'array',
+            'preview_size' => 'medium',
+            'library' => 'all',
+        ]);
+
         $group->addText('offer_card_validity', [
             'label' => __('Validity line (card)', 'culvers'),
             'instructions' => __('Short validity window for the card, e.g. "Until 14 Feb" or "While stocks last".', 'culvers'),

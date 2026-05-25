@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Directory\Cards;
 
+use App\Directory\DirectoryCardImage;
 use App\Directory\OpeningHoursCardLine;
 
 /**
@@ -149,7 +150,7 @@ final class DirectoryCardSpecFactory
             permalink: (string) get_permalink($postId),
             title: (string) get_the_title($postId),
             sortTitle: self::sortTitle($postId),
-            hoverPhotoUrl: self::featuredPhotoUrl($postId),
+            hoverPhotoUrl: self::storyCardPhotoUrl($postId),
             /* Events have no brand logo — the slot shows the primary category
                name when present, falling back to the post title so a card is
                never blank. The canonical partial reads `eyebrowText` only when
@@ -179,7 +180,7 @@ final class DirectoryCardSpecFactory
             permalink: (string) get_permalink($postId),
             title: (string) get_the_title($postId),
             sortTitle: self::sortTitle($postId),
-            hoverPhotoUrl: self::featuredPhotoUrl($postId),
+            hoverPhotoUrl: self::storyCardPhotoUrl($postId),
             logoUrl: '',
             eyebrowText: $primaryCategoryName !== '' ? $primaryCategoryName : (string) get_the_title($postId),
             subtitleText: $subtitle,
@@ -209,7 +210,7 @@ final class DirectoryCardSpecFactory
             permalink: (string) get_permalink($postId),
             title: (string) get_the_title($postId),
             sortTitle: self::sortTitle($postId),
-            hoverPhotoUrl: self::featuredPhotoUrl($postId),
+            hoverPhotoUrl: self::storyCardPhotoUrl($postId),
             logoUrl: '',
             eyebrowText: $eyebrow,
             subtitleText: $subtitle,
@@ -278,6 +279,11 @@ final class DirectoryCardSpecFactory
         $url = get_the_post_thumbnail_url($postId, 'large');
 
         return is_string($url) ? $url : '';
+    }
+
+    private static function storyCardPhotoUrl(int $postId): string
+    {
+        return DirectoryCardImage::resolve($postId)['url'];
     }
 
     private static function sortTitle(int $postId): string

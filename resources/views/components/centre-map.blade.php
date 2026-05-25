@@ -204,7 +204,7 @@
         ? '{{ $panelPosition === 'right' ? 'lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]' : 'lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]' }}'
         : 'lg:grid-cols-1'">
       @if($heading !== '')
-        <{{ $headingTag }} class="centre-map__heading-mobile m-0 text-center font-heading text-4xl leading-[1.1] text-lighter-cream lg:hidden">
+        <{{ $headingTag }} class="centre-map__heading-mobile m-0 text-center lg:hidden {{ Component::sectionHeadingClasses('text-lighter-cream') }}">
           {{ esc_html($heading) }}
         </{{ $headingTag }}>
       @endif

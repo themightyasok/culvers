@@ -35,7 +35,7 @@
         </div>
 
         @if($showCta)
-          <div class="shop-intro-block__cta mt-6 flex justify-center">
+          <div class="shop-intro-block__cta {{ Component::sectionBodyToCtaGapClasses('flex justify-center') }}">
             @include('components.button', [
                 'label' => $ctaLabel,
                 'href' => $ctaUrl,

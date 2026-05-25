@@ -1,6 +1,7 @@
 @php
   use App\Customizer\FooterCustomizer;
   use App\Footer\FooterNewsletterImage;
+  use App\Helpers\LayoutShell;
 
   $newsletterImgId = FooterNewsletterImage::attachmentIdForCurrentView();
   $newsletterAction = FooterCustomizer::newsletterFormAction();
@@ -41,6 +42,7 @@
           );
       }
   }
+
 @endphp
 
 {{--
@@ -82,8 +84,10 @@
            `-translate-y-1/2` centres on the footer top edge; `-mb-[half min-heights]` collapses the
            phantom layout gap (transform does not affect flow). Spacer in `layouts/app.blade.php`
            matches these halves so main content is not overlapped. --}}
+      {{-- Overlap straddle (translate + negative mb) is lg+ only — base/md utilities were
+           winning over max-lg:mb-0 in the compiled cascade and pulling the band into content above. --}}
       <section
-        class="footer-newsletter-band relative z-20 max-lg:mb-0 max-lg:translate-y-0 {{ \App\Helpers\LayoutShell::BREAKOUT_X_MOBILE }} -mb-[150px] -translate-y-1/2 md:-mb-[190px] lg:-mb-[210px]"
+        class="footer-newsletter-band relative z-20 max-lg:mb-0 max-lg:translate-y-0 {{ LayoutShell::BREAKOUT_X_MOBILE }} lg:-mb-[210px] lg:-translate-y-1/2"
         aria-labelledby="footer-newsletter-heading">
         <div
           class="footer-newsletter relative overflow-hidden max-lg:min-h-[604px] max-lg:rounded-none min-h-[300px] rounded-lg md:min-h-[380px] md:rounded-[10px] lg:min-h-[420px]"
@@ -407,7 +411,7 @@
 
       {{-- Footer banner uses Figma footer wordmark file when present; otherwise Custom Logo or small inline mark (`partials.culver-square-logo`). --}}
       <div
-        class="site-footer__wordmark relative z-10 w-full opacity-70 max-lg:mt-12 lg:mt-[170px] [&_svg]:mx-auto [&_svg]:block [&_svg]:h-auto [&_svg]:w-full [&_svg]:max-h-[min(30vw,220px)] md:[&_svg]:max-h-[min(26vw,240px)] lg:[&_svg]:max-h-[min(22vw,280px)] lg:[&_svg]:mb-10 [&_svg]:max-w-none [&_svg]:object-contain [&_svg]:text-glowleaf [&_img]:mx-auto [&_img]:block [&_img]:h-auto [&_img]:max-h-[min(30vw,220px)] [&_img]:w-full [&_img]:max-w-none md:[&_img]:max-h-[min(26vw,240px)] lg:[&_img]:max-h-[min(22vw,280px)] [&_img]:object-contain">
+        class="site-footer__wordmark relative z-10 w-full opacity-70 max-lg:mt-12 lg:mt-[170px] [&_svg]:mx-auto [&_svg]:block [&_svg]:h-auto [&_svg]:w-full [&_svg]:max-h-[min(calc(30vw-10px),210px)] md:[&_svg]:max-h-[min(26vw,240px)] lg:[&_svg]:max-h-[min(22vw,280px)] lg:[&_svg]:mb-10 [&_svg]:max-w-none [&_svg]:object-contain [&_svg]:text-glowleaf [&_img]:mx-auto [&_img]:block [&_img]:h-auto [&_img]:max-h-[min(calc(30vw-10px),210px)] [&_img]:w-full [&_img]:max-w-none md:[&_img]:max-h-[min(26vw,240px)] lg:[&_img]:max-h-[min(22vw,280px)] [&_img]:object-contain">
         <a
           class="site-footer__logo flex w-full justify-center text-glowleaf"
           href="{{ esc_url(home_url('/')) }}"
@@ -440,9 +444,10 @@
         </a>
       </div>
 
-      {{-- Rule above legal row — glowleaf like Figma dividers. --}}
+      {{-- Rule below wordmark — glowleaf like Figma dividers. Mobile `2:1023` leaves
+           clear space between the logo lockup and this rule (not flush under the SVG). --}}
       {{-- Avoid overflow-x-auto here: per CSS overflow rules it forces overflow-y away from visible and can clip row text in flex layouts. Stack on small screens instead of horizontal scroll. --}}
-      <div class="footer-under-logo relative z-20 mt-0 w-full border-t border-glowleaf">
+      <div class="footer-under-logo relative z-20 w-full border-t border-glowleaf max-lg:mt-10 lg:mt-0">
         <div
           class="site-footer__legal-band grid w-full grid-cols-1 gap-y-4 py-6 text-center max-lg:place-items-start max-lg:text-left md:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] md:items-center md:gap-x-6 md:gap-y-0 md:py-7 md:text-center lg:place-items-center">
           <p
@@ -494,7 +499,7 @@
       </div>
     </div>
   </div>
-  {{-- 10px glowleaf accent at the page bottom (Figma). Fixed height across breakpoints so the
-       border looks identical on every page. Sole source of truth for the page-bottom edge. --}}
-  <div class="site-footer__accent h-[10px] w-full shrink-0 bg-glowleaf" aria-hidden="true"></div>
+  {{-- 10px glowleaf accent at the page bottom (Figma desktop). Hidden on mobile — the
+       olive footer band is the page edge there (`Footer — Mobile/Default`). --}}
+  <div class="site-footer__accent hidden h-[10px] w-full shrink-0 bg-glowleaf lg:block" aria-hidden="true"></div>
 </footer>

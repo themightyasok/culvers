@@ -78,8 +78,15 @@ class BackgroundParallaxManager {
     return rect.width > 0 && rect.height > 0;
   }
 
+  /** Hero / static image-hero bands are above the fold — skip parallax (scale 1.08 on init reads as a zoom jump). */
+  shouldSkipParallaxTarget(target) {
+    return !!target.closest('.hero-slider--viewport, .image-hero--viewport');
+  }
+
   collectTargets() {
-    return this.queryAllParallaxTargets().filter((el) => this.isTargetInLayout(el));
+    return this.queryAllParallaxTargets().filter(
+      (el) => this.isTargetInLayout(el) && !this.shouldSkipParallaxTarget(el)
+    );
   }
 
   getComponentRoot(element) {

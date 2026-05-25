@@ -10,6 +10,24 @@ return [
     'label' => __('Opening hours', 'culvers'),
     'display' => 'block',
     'main' => [
+        'msg_context' => Component::sectionDivider(__('Context', 'culvers')),
+        'hours_context' => [
+            'type' => 'select',
+            'options' => [
+                'label' => __('Hours context', 'culvers'),
+                'instructions' => __(
+                    'Retailer: this venue\'s own opening hours (shop / eat & drink singles). '
+                        . 'Centre: site-wide centre hours (homepage, Plan My Visit, Guest Services). '
+                        . 'The day rows below are always saved on this page — they are not shared globally.',
+                    'culvers'
+                ),
+                'choices' => \App\Helpers\OpeningHoursContext::choices(),
+                'default_value' => \App\Helpers\OpeningHoursContext::CENTRE,
+                'allow_null' => 0,
+                'return_format' => 'value',
+                'wrapper' => ['width' => '50'],
+            ],
+        ],
         'msg_intro' => Component::sectionDivider(__('Intro copy', 'culvers')),
         'hours_heading' => [
             'type' => 'text',

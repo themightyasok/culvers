@@ -41,7 +41,7 @@ final class LayoutShell
      */
     public const ARCHIVE_INTRO = 'mx-auto max-w-[802px] py-12 text-center font-sans text-xl font-light text-deep-moss md:py-16 [&>:first-child]:mt-0 [&>:last-child]:mb-0';
 
-    /** Break out of the main grid to viewport width (horizontal scroller strip, mobile newsletter). */
+    /** Break out of the main grid to viewport width (horizontal scroller strip). */
     public const BREAKOUT_X = 'culvers-breakout-x';
 
     /** Viewport breakout below the lg breakpoint only (footer newsletter band). */

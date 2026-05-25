@@ -2,6 +2,7 @@
   use App\Helpers\Component;
   use App\Helpers\Image;
   use App\Helpers\LayoutShell;
+  use App\Helpers\OpeningHoursContext;
 
   /**
    * Opening hours — heading + intro copy + day rows with “today” highlight,
@@ -66,19 +67,19 @@
   $hasIntro = $heading !== '' || $subheading !== '' || trim(strip_tags($body)) !== '';
   $hasRows = $normalizedRows !== [];
 
-  $isShopSingle = get_post_type() === 'culvers_shop';
-  $hoursHeadingClass = Component::sectionHeadingClasses('text-faded-olive');
-  $hoursHeaderShellClass = $isShopSingle
-      ? 'mb-10 text-center md:mb-12'
-      : 'mx-auto mb-10 max-w-[40rem] text-center md:mb-12';
-  // Plan / landing (Figma 51:4918): sub + body = Halyard Book 20px / lh 1.3; shop single unchanged.
-  $hoursSubClass = $isShopSingle
-      ? 'mt-4 font-sans text-xl font-light leading-[1.3] text-faded-olive'
-      : 'mt-4 font-sans text-xl font-light leading-[1.3] text-deep-moss';
-  $hoursIntroBodyBase = $isShopSingle
-      ? 'opening-hours__body mt-6 max-w-none text-center font-sans text-xl font-light leading-[1.3] text-faded-olive [&_p+p]:mt-4 [&_strong]:font-medium rt-link-olive-surface'
-      : 'opening-hours__body mt-6 max-w-none text-center font-sans [&_p]:text-xl [&_p]:font-light [&_p]:leading-[1.3] [&_p+p]:mt-4 [&_strong]:font-medium rt-link-prose';
-  $hoursListTopBorder = $isShopSingle ? 'border-faded-olive/45' : 'border-deep-moss/20';
+  $isRetailer = OpeningHoursContext::isRetailer($c);
+  $hoursHeadingClass = Component::sectionIntroHeadingClasses('text-faded-olive');
+  $hoursIntroShellClass = trim(
+      ($isRetailer ? 'text-center' : 'mx-auto max-w-[40rem] text-center')
+      . ' section-intro-stack flex flex-col items-center'
+  );
+  $hoursSubClass = $isRetailer
+      ? Component::sectionIntroBodyClasses('text-faded-olive')
+      : Component::sectionIntroBodyClasses('text-deep-moss');
+  $hoursIntroBodyBase = $isRetailer
+      ? 'opening-hours__body max-w-none text-center ' . Component::sectionIntroBodyClasses('text-faded-olive', '[&_p+p]:mt-4 [&_strong]:font-medium rt-link-olive-surface')
+      : 'opening-hours__body max-w-none text-center ' . Component::sectionIntroBodyClasses('text-deep-moss', '[&_p]:font-light [&_p+p]:mt-4 [&_strong]:font-medium rt-link-prose');
+  $hoursListTopBorder = $isRetailer ? 'border-faded-olive/45' : 'border-deep-moss/20';
   /** Rows: Book 300 + lh 1.3; “today” uses same px as peers — pill is a pseudo-element bleed. */
   $hoursRowShellShop = 'flex items-center justify-between gap-6 px-3 py-3.5 font-sans text-xl font-light leading-[1.3] text-faded-olive sm:px-2';
   $hoursRowShellDefault = 'flex items-center justify-between gap-6 px-3 py-3.5 font-sans text-xl font-light leading-[1.3] text-deep-moss sm:px-2';
@@ -89,11 +90,16 @@
       'relative isolate overflow-visible font-normal leading-[26px] before:pointer-events-none before:absolute before:inset-y-[-3px] before:z-0 before:inset-x-0 before:rounded-full before:bg-brand-500 sm:before:-inset-x-[1.875rem]';
   $hoursTodayBleedDefault =
       'relative isolate overflow-visible font-normal leading-[26px] before:pointer-events-none before:absolute before:inset-y-[-3px] before:z-0 before:inset-x-0 before:rounded-full before:bg-brand-500 sm:before:-inset-x-[1.875rem]';
-  $hoursFootClass = $isShopSingle
+  $hoursFootClass = $isRetailer
       ? 'mx-auto mt-8 max-w-[22.5rem] text-center font-sans text-xl font-light leading-[1.3] text-faded-olive'
       : 'mx-auto mt-8 max-w-[22.5rem] text-center font-sans text-xl font-light leading-[1.3] text-deep-moss';
 
   $hoursFirstRowToday = isset($normalizedRows[0]) && ($normalizedRows[0]['is_today'] ?? false);
+  $hoursIntroTailGap = $hasIntro && $hasRows
+      ? (($subheading !== '' || trim(strip_tags($body)) !== '')
+          ? Component::sectionBodyToFollowContentGapClasses()
+          : Component::sectionHeadingToFollowContentGapClasses())
+      : '';
 @endphp
 
 @if($hasIntro || $hasRows || $footnote !== '' || $leftUrl !== '' || $rightUrl !== '')
@@ -101,24 +107,29 @@
   <section class="opening-hours {{ esc_attr($root) }} text-deep-moss" id="opening-hours" data-component-root data-opening-hours>
     <div class="{{ LayoutShell::INNER_SECTION_7XL }}">
       @if($hasIntro)
-        <header class="{{ esc_attr($hoursHeaderShellClass) }}">
+        <div class="{{ esc_attr(trim($hoursIntroShellClass . ' ' . $hoursIntroTailGap)) }}">
           @if($heading !== '')
-            <{{ $headingTag }} class="{{ esc_attr(trim($hoursHeadingClass)) }}">
+            <{{ $headingTag }} class="{{ esc_attr($hoursHeadingClass) }}">
               {{ esc_html($heading) }}
             </{{ $headingTag }}>
           @endif
-          @if($subheading !== '')
-            <p class="{{ esc_attr(trim($hoursSubClass)) }}">
-              {!! nl2br(e($subheading)) !!}
-            </p>
-          @endif
-          @if(trim(strip_tags($body)) !== '')
-            <div
-              class="{{ esc_attr(trim($hoursIntroBodyBase . ($isShopSingle ? '' : ' ' . $tone))) }}">
-              {!! $body !!}
+
+          @if($subheading !== '' || trim(strip_tags($body)) !== '')
+            <div class="{{ Component::sectionIntroContentStackClasses() }}">
+              @if($subheading !== '')
+                <p class="{{ esc_attr(trim($hoursSubClass)) }}">
+                  {!! nl2br(e($subheading)) !!}
+                </p>
+              @endif
+              @if(trim(strip_tags($body)) !== '')
+                <div
+                  class="{{ esc_attr(trim($hoursIntroBodyBase . ($subheading !== '' ? ' ' . Component::sectionSubheadingToBodyGapClasses() : '') . ($isRetailer ? '' : ' ' . $tone))) }}">
+                  {!! $body !!}
+                </div>
+              @endif
             </div>
           @endif
-        </header>
+        </div>
       @endif
 
       @if($hasRows)
@@ -145,7 +156,7 @@
                   $nextRowIsToday = isset($normalizedRows[$index + 1])
                       && ($normalizedRows[$index + 1]['is_today'] ?? false);
 
-                  if ($isShopSingle) {
+                  if ($isRetailer) {
                       $hoursRowBase = $hoursRowShellShop;
                       if ($row['is_today']) {
                           $hoursRowBase .= ' ' . $hoursTodayBleedShop;

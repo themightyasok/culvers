@@ -72,22 +72,22 @@
     data-component-root
     data-leasing-agent-grid>
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
-      <header class="mx-auto max-w-[802px] text-center">
+      <header class="section-intro-stack mx-auto max-w-[802px] text-center">
         {{-- Desktop H2 Title (Figma) — reuse section heading ladder. --}}
-        <{{ $headingTag }} class="leasing-agent-grid__heading {{ Component::sectionHeadingClasses('text-faded-olive') }}">
+        <{{ $headingTag }} class="leasing-agent-grid__heading {{ Component::sectionIntroHeadingClasses('text-faded-olive') }}">
           {{ esc_html($heading) }}
         </{{ $headingTag }}>
 
         @if($introRaw !== '')
           <div
-            class="mx-auto mt-10 max-w-[53rem] text-center font-sans text-xl font-light leading-[1.3] text-deep-moss [&_p+p]:mt-4">
+            class="{{ Component::sectionIntroContentStackClasses() }} mx-auto max-w-[53rem] text-center font-sans text-xl font-light leading-[1.3] text-deep-moss [&_p+p]:mt-4">
             {!! wp_kses_post(wpautop($introRaw)) !!}
           </div>
         @endif
       </header>
 
       <div
-        class="{{ esc_attr(trim('mt-11 grid gap-10 divide-y divide-faded-olive/15 ' . $gridCols . ' lg:gap-0 lg:divide-x lg:divide-y-0')) }}">
+        class="{{ esc_attr(trim('mt-6 grid gap-10 divide-y divide-faded-olive/15 ' . $gridCols . ' lg:gap-0 lg:divide-x lg:divide-y-0')) }}">
         @foreach ($agents as $agent)
           <div class="flex flex-col items-center px-6 pt-10 text-center first:pt-0 lg:px-10 lg:pt-0 xl:px-12">
             @php

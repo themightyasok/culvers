@@ -15,22 +15,29 @@ custom row labels (e.g. "Easter Sunday") to a weekday for the highlight.
 
 ## When to use
 
-The canonical "centre opening hours" panel. Reuse on the homepage,
-Plan My Visit, and Guest Services. For shop-specific opening hours
-use the shop listing field (`opening_hours_summary` line on each
-shop) rendered in the directory cards / shop singles.
+One shared layout for **centre-wide** and **retailer-specific** hours:
+
+| Context | `hours_context` | Where rows are saved |
+| --- | --- | --- |
+| Homepage, Plan My Visit, Guest Services | **Centre** | On that page's flexible stack |
+| Shop / eat & drink single | **Retailer** | On **that venue's** post — each store's own week |
+
+Directory cards read the same per-post rows for the "Open Today …" subtitle
+(`OpeningHoursCardLine`). The one-line card fallback is `opening_hours_summary`
+on the shop / eat & drink listing fields.
 
 ## Editor fields
 
 | Field | Type | Default | Notes |
 | --- | --- | --- | --- |
+| `hours_context` | select (`centre`, `retailer`) | `centre` | Presentation only — does not copy or share hour data. |
 | `hours_heading` | text | — | |
 | `hours_heading_level` | select | `h2` | |
 | `hours_subheading` | textarea (`new_lines: br`) | — | |
 | `hours_body` | wysiwyg (`toolbar: basic`, `media_upload: 0`) | — | |
 | `hours_graphic_left` | image | — | Optional line art on large screens. |
 | `hours_graphic_right` | image | — | |
-| `hours_rows` | repeater (0–14, `table` layout) | — | |
+| `hours_rows` | repeater (0–14, `table` layout) | — | **This venue's or centre's schedule** — always edited per post. |
 | `hours_footnote` | textarea (`new_lines: br`) | — | Small note below the list. |
 
 ### Row sub-fields
@@ -43,11 +50,13 @@ shop) rendered in the directory cards / shop singles.
 
 ## Behaviour notes
 
-- "Today" is computed server-side via WordPress's site timezone — no
-  client clock; identical render for every visitor.
-- Inner shell uses `LayoutShell::INNER_READABLE_960` (narrow column).
+- **Retailer** context: faded-olive typography, full-width band, olive row dividers (shop / eat & drink singles).
+- **Centre** context: deep-moss body copy, narrow intro shell (Plan My Visit, homepage).
+- "Today" is computed server-side from **this row's** `hours_rows` in the site timezone.
+- Inner shell uses `LayoutShell::INNER_SECTION_7XL`.
 
 ## Related components
 
 - [`info_block`](INFO-BLOCK.md) — same intro pattern but with 4-up
   icon cells instead of an hours list.
+- [`shop_store_details`](SHOP-STORE-DETAILS.md) — contact / address band on directory singles.

@@ -26,12 +26,28 @@ return [
                     'instructions' => __(
                         'Centre a brand lockup over the photo (knock-out / white artwork reads best). ' .
                         'When set, the large title line is skipped; the subtitle line still renders. ' .
-                        'Leave empty to use “Title line” instead.',
+                        'Leave empty to use “Title line” or a logo source below.',
                         'culvers'
                     ),
                     'return_format' => 'array',
                     'preview_size' => 'medium',
                     'library' => 'all',
+                ],
+            ],
+            'hero_logo_source' => [
+                'type' => 'select',
+                'options' => [
+                    'label' => __('Logo source (when upload empty)', 'culvers'),
+                    'instructions' => __(
+                        'Directory singles typically use “Directory listing logo”. ' .
+                        'Eat & drink venues without a listing logo may use “Featured image”.',
+                        'culvers'
+                    ),
+                    'choices' => \App\Helpers\ImageHeroLogoSource::choices(),
+                    'default_value' => \App\Helpers\ImageHeroLogoSource::UPLOADED,
+                    'allow_null' => 0,
+                    'return_format' => 'value',
+                    'wrapper' => ['width' => '50'],
                 ],
             ],
             'hero_title_line' => [

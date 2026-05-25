@@ -64,7 +64,7 @@
     </span>
 
     <span
-      class="relative z-10 flex w-full flex-1 items-center justify-center px-6 py-10 text-center max-sm:px-7 max-sm:py-6">
+      class="relative z-10 flex w-full flex-1 items-center justify-center px-4 py-5 text-center sm:px-5 sm:py-6 max-sm:px-5 max-sm:py-4">
       <span
         @class([
             'three-card-block__hover-stack relative flex max-w-full flex-col items-center text-center',
@@ -74,7 +74,7 @@
         <span
           @class([
               'three-card-block__title font-heading text-4xl leading-[1.1] text-white transition-colors duration-300 ease-out motion-safe:group-hover/card:text-glowleaf motion-safe:group-focus-within/card:text-glowleaf md:text-5xl md:leading-none',
-              'sm:max-w-[13.25rem] sm:block sm:text-balance' => ! $showMobileArrow,
+              'sm:max-w-full sm:block sm:text-balance' => ! $showMobileArrow,
           ])>
           {{ esc_html($title) }}
         </span>

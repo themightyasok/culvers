@@ -116,7 +116,7 @@
       <div class="relative z-10 mx-auto flex w-full max-w-[774px] flex-col items-center">
         @if($heading !== '')
           {{-- Figma `51:8003` FAQ section heading: Canela 58 / lh 1.15 / Faded Olive. --}}
-          <{{ $headingTag }} class="{{ Component::sectionHeadingClasses('text-faded-olive', 'text-center') }}">
+          <{{ $headingTag }} class="{{ Component::sectionIntroHeadingClasses('text-faded-olive', Component::sectionHeadingToFollowContentGapClasses() . ' text-center') }}">
             {{ esc_html($heading) }}
           </{{ $headingTag }}>
           @if($showKeyline)
@@ -124,7 +124,7 @@
           @endif
         @endif
 
-        <div class="faq__list mt-10 w-full md:mt-12">
+        <div class="faq__list w-full">
           @foreach($items as $i => $item)
             @php
                 $questionId = $instanceId . '-q-' . $i;
@@ -139,7 +139,7 @@
                   {{-- Desktop spec preserved (`text-lg md:text-xl`, Figma 51:8007 desktop = 20 / lh 1.3).
                        `max-sm:text-xl` bumps viewports under 640 px to Figma 51:9315 mobile (20 / lh 1.3)
                        without touching tablet (640-767, intentionally 18) or desktop. --}}
-                  class="faq__question group flex w-full cursor-pointer items-center justify-between gap-4 py-5 text-left font-sans text-lg leading-[1.3] text-faded-olive transition-colors culvers-focus-ring md:text-xl max-sm:text-xl"
+                  class="faq__question group flex w-full cursor-pointer items-center justify-between gap-4 pt-7 pb-3 text-left font-sans text-lg leading-[1.3] text-faded-olive transition-colors culvers-focus-ring md:pt-5 md:pb-5 md:text-xl max-sm:text-xl"
                   data-faq-question
                   aria-controls="{{ esc_attr($panelId) }}"
                   aria-expanded="{{ $isOpen ? 'true' : 'false' }}"

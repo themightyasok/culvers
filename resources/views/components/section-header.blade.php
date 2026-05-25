@@ -38,6 +38,13 @@
   };
 
   $hasContent = $eyebrow !== '' || $heading !== '' || $bodyLines !== [];
+  $usesIntroStackGap = $heading !== '' && $bodyLines !== [] && $eyebrow === '';
+  $bodyGapClass = ($heading !== '' || $eyebrow !== '') && ! $usesIntroStackGap
+      ? Component::sectionHeadingToBodyGapClasses()
+      : '';
+  $headingTailGapClass = $heading !== '' && $bodyLines === []
+      ? Component::sectionHeadingToFollowContentGapClasses()
+      : '';
 @endphp
 
 @if(! $hasContent)
@@ -57,7 +64,8 @@
     data-component-root
     data-section-header>
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
-      <div class="section-header__inner {{ $alignClass }} {{ $maxWidthClass }} flex flex-col">
+      <div
+        class="section-header__inner {{ $alignClass }} {{ $maxWidthClass }} flex flex-col {{ $usesIntroStackGap ? 'section-intro-stack' : '' }}">
         @if($eyebrow !== '')
           <p class="section-header__eyebrow font-sans text-xs font-semibold uppercase tracking-widest text-faded-olive">
             {{ esc_html($eyebrow) }}
@@ -68,13 +76,13 @@
           {{-- Section H2 (58 px desktop / 48 px mobile) in Faded Olive — matches Figma section
                H2 token; body retains Deep Moss for readability against the cream surface. --}}
           <{{ $headingTag }}
-            class="section-header__heading {{ Component::sectionHeadingClasses('text-faded-olive', $eyebrow !== '' ? 'mt-3' : '') }}">
+            class="section-header__heading {{ Component::sectionIntroHeadingClasses('text-faded-olive', trim(($eyebrow !== '' ? 'mt-3' : '') . ' ' . $headingTailGapClass)) }}">
             {{ esc_html($heading) }}
           </{{ $headingTag }}>
         @endif
 
         @if($bodyLines !== [])
-          <div class="section-header__body font-sans text-base font-light leading-7 text-deep-moss/85 md:text-lg @if($heading !== '' || $eyebrow !== '') mt-5 md:mt-6 @endif">
+          <div class="section-header__body {{ Component::sectionIntroBodyClasses('text-deep-moss/85', trim(($usesIntroStackGap ? Component::sectionIntroContentStackClasses($isCenter ? 'items-center' : 'items-start') : '') . ' ' . $bodyGapClass)) }}">
             @foreach($bodyLines as $i => $line)
               @if($i > 0)<br />@endif
               {{ esc_html(trim($line)) }}

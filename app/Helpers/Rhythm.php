@@ -12,36 +12,35 @@ namespace App\Helpers;
  * Plan-My-Visit page, the design uses a single standard gap (~91–96 px)
  * between flexible components, with a few exceptions:
  *
- *   STANDARD  96 px        `gap-y-24` on the flexible-components grid
- *                            ({@see Grid::getMainGridContainerClasses()}). Same at all breakpoints.
- *   HUGGED    ~60 px       Reserved — `-mt-9`.
- *   BREATHED  48 px        After `section_header` with body — `-mt-12`.
- *   FLUSH     0 px         After slim `section_header` — `-mt-24`.
+ *   STANDARD  76 px                         `gap-y-[76px]` on the grid
+ *   HUGGED    ~60 px effective               `-mt-[16px]`
+ *   BREATHED  48 px effective                `-mt-[28px]`
+ *   FLUSH     0 px effective                 `-mt-[76px]`
  *
  * Implementation: the parent grid owns the default gap. The renderer walks rows
  * and asks {@see self::spaceAboveClass()} for optional negative `mt-*` utilities
  * that reduce the grid gap for the exceptions above. Do not stack outer `py-*`
  * on component roots — that was doubling the visual rhythm.
  *
- * Tailwind (1 unit = 4 px):
- *   • `gap-y-24` → 96 px (STANDARD, on the grid)
- *   • `-mt-24` → cancel one gap unit (FLUSH)
- *   • `-mt-12` → 48 px effective (BREATHED)
- *   • `-mt-9` → 60 px effective (HUGGED, reserved)
+ * Tailwind:
+ *   • `gap-y-[76px]` → 76 px (STANDARD, on the grid)
+ *   • `-mt-[76px]` → cancel one gap unit (FLUSH)
+ *   • `-mt-[28px]` → 48 px effective (BREATHED)
+ *   • `-mt-[16px]` → 60 px effective (HUGGED, reserved)
  */
 final class Rhythm
 {
-    /** Default gap is on the grid (`gap-y-24`); rows do not add top margin. */
+    /** Default gap is on the grid (`gap-y-[76px]`); rows do not add top margin. */
     public const SPACE_STANDARD = '';
 
     /** Reserved: intro band hugs its immediate next sibling (60 px effective). */
-    public const SPACE_HUGGED = '-mt-9';
+    public const SPACE_HUGGED = '-mt-[16px]';
 
     /** Section-header-with-body → next component (48 px effective). */
-    public const SPACE_BREATHED = '-mt-12';
+    public const SPACE_BREATHED = '-mt-[28px]';
 
     /** Slim section_header → next component (0 px effective). */
-    public const SPACE_FLUSH = '-mt-24';
+    public const SPACE_FLUSH = '-mt-[76px]';
 
     /**
      * Top-margin utility to apply to the *current* row, given what came
@@ -92,7 +91,12 @@ final class Rhythm
          */
         if ($previousLayout === 'section_header') {
             $hasBody = trim(strip_tags((string) ($previousComponent['header_body'] ?? ''))) !== '';
-            return $hasBody ? self::SPACE_BREATHED : self::SPACE_FLUSH;
+
+            // Slim label (heading only): cancel grid gap so the H2 sits on its subject.
+            // Body band: keep the full grid gap — spacing below copy lives on the header
+            // row via {@see Component::sectionBodyToFollowContentGapClasses()}, not negative
+            // margin on the component below (BREATHED was collapsing 76px → ~48px).
+            return $hasBody ? self::SPACE_STANDARD : self::SPACE_FLUSH;
         }
 
         return self::SPACE_STANDARD;

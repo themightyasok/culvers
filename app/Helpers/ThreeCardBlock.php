@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Helpers;
 
+use App\Directory\DirectoryCardImage;
+
 /**
  * Flexible layout `three_card_block`: cards from directory CPT queries or blog categories.
  */
@@ -324,17 +326,31 @@ final class ThreeCardBlock
     private static function cardFromPostId(int $postId): array
     {
         $titleDecoded = html_entity_decode((string) get_the_title($postId), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-        $thumbId = (int) get_post_thumbnail_id($postId);
+        $postType = get_post_type($postId);
+        $thumbId = 0;
+        $imageUrl = '';
+
+        if (is_string($postType) && DirectoryCardImage::supportsPostType($postType)) {
+            $resolved = DirectoryCardImage::resolve($postId);
+            $thumbId = $resolved['attachment_id'];
+            $imageUrl = $resolved['url'];
+        } else {
+            $thumbId = (int) get_post_thumbnail_id($postId);
+            if ($thumbId > 0) {
+                $url = wp_get_attachment_image_url($thumbId, 'large');
+                $imageUrl = is_string($url) && $url !== '' ? $url : '';
+            }
+        }
+
         /** @var array<string, mixed>|null $img */
         $img = null;
         $altText = $titleDecoded;
-        if ($thumbId > 0) {
-            $url = wp_get_attachment_image_url($thumbId, 'large');
-            if (is_string($url) && $url !== '') {
+        if ($imageUrl !== '') {
+            if ($thumbId > 0) {
                 $thumbAlt = trim((string) get_post_meta($thumbId, '_wp_attachment_image_alt', true));
                 $altText = $thumbAlt !== '' ? $thumbAlt : $titleDecoded;
-                $img = ['url' => $url, 'alt' => $altText];
             }
+            $img = ['url' => $imageUrl, 'alt' => $altText];
         }
 
         return [

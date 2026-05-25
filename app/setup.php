@@ -101,24 +101,13 @@ add_filter('culvers_full_width_components', static function (array $layouts): ar
 
 // Authoritative chrome defaults: see App\Helpers\ComponentLayoutChrome.
 add_filter('culvers_component_layout_chrome', static function (array $chrome, string $layout, array $component): array {
-    unset($component);
-
-    if ($layout !== 'opening_hours') {
-        return $chrome;
+    if ($layout === 'opening_hours' && \App\Helpers\OpeningHoursContext::isRetailer($component)) {
+        return array_merge($chrome, [
+            'component_width' => 'full',
+        ]);
     }
 
-    if (! function_exists('get_the_ID') || ! function_exists('get_post_type')) {
-        return $chrome;
-    }
-
-    $postId = (int) get_the_ID();
-    if ($postId <= 0 || get_post_type($postId) !== 'culvers_shop') {
-        return $chrome;
-    }
-
-    return array_merge($chrome, [
-        'component_width' => 'full',
-    ]);
+    return $chrome;
 }, 10, 3);
 
 add_action('after_setup_theme', static function (): void {

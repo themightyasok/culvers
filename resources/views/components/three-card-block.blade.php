@@ -30,6 +30,7 @@
   }
 
   $hasIntro = $heading !== '' || $sub !== '' || trim(strip_tags($body)) !== '';
+  $hasIntroBody = trim(strip_tags($body)) !== '' || $sub !== '';
   $mobilePromoStack = ThreeCardBlock::usesMobilePromoStack($c);
   $mobilePromoOverlay = max($mediaOverlayOpacity, 30);
   $hasCards = false;
@@ -39,6 +40,17 @@
           $hasCards = true;
           break;
       }
+  }
+
+  $introStackTailGap = '';
+  if ($hasIntro && ($showTabs || $hasCards)) {
+      $introStackTailGap = $showTabs
+          // Page Ruler measures ink→tab (~32px at md+), not the header box margin;
+          // Canela line-height extends ~13px past the trimmed box → mb-[45px] at md+.
+          ? 'mb-[37px] md:mb-[45px]'
+          : ($hasIntroBody
+              ? Component::sectionBodyToFollowContentGapClasses()
+              : Component::sectionHeadingToFollowContentGapClasses());
   }
 @endphp
 
@@ -57,38 +69,26 @@
   x-data="threeCardBlock()">
   <div class="mx-auto w-full max-w-8xl px-3 sm:px-4 md:px-5 lg:px-6">
     @if($heading !== '' || $sub !== '' || $body !== '')
-      <header class="mx-auto max-w-[52rem] text-center">
-        @if($heading !== '')
-          {{-- Section H2: 58px desktop / 48px mobile (Component::sectionHeadingClasses). --}}
-          <{{ $headingTag }} class="{{ Component::sectionHeadingClasses('text-faded-olive') }}">
-            {{ esc_html($heading) }}
-          </{{ $headingTag }}>
-        @endif
-
-        @if($sub !== '')
-          <p class="mt-4 font-sans text-xs uppercase tracking-widest text-faded-olive md:text-xs">
-            {{ esc_html($sub) }}
-          </p>
-        @endif
-
-        @if($body !== '')
-          {{-- Desktop spec preserved (Halyard Light 20 / lh 26 = text-xl leading-[1.3]).
-               Figma 51:8212 mobile spec (Halyard Book 14 / lh 20) lands via `max-sm:`
-               only — tablet 640-767 stays at text-xl, matching the pre-mobile-audit build.
-               Prose plugin defaults force 18px so we render the body with explicit
-               utilities — keeps prose for rich text elsewhere intact. --}}
-          <div
-            class="three-card-block__intro mx-auto mt-6 max-w-[36.75rem] text-center font-sans text-xl font-light leading-[1.3] text-deep-moss max-sm:text-sm max-sm:leading-5 [&_p+p]:mt-4 [&_strong]:font-medium rt-link-olive-surface">
-            {!! $body !!}
-          </div>
-        @endif
-      </header>
+      @include('partials.section-intro-stack', [
+          'headingTag' => $headingTag,
+          'heading' => $heading,
+          'headingClasses' => Component::sectionIntroHeadingClasses('text-faded-olive'),
+          'subheading' => $sub,
+          'subheadingClasses' => 'font-sans text-xs uppercase tracking-widest text-faded-olive md:text-xs',
+          'bodyHtml' => $body,
+          'bodyClasses' => 'three-card-block__intro mx-auto max-w-[36.75rem] text-center font-sans text-xl font-light leading-[1.3] text-deep-moss max-sm:text-sm max-sm:leading-5 [&_p+p]:mt-4 [&_strong]:font-medium rt-link-olive-surface',
+          'introStackIncludeCta' => false,
+          'ctaLabel' => '',
+          'ctaUrl' => '',
+          'introStackTailGap' => $introStackTailGap,
+          'wrapperClasses' => 'mx-auto max-w-[52rem] text-center',
+      ])
     @endif
 
     @if($showTabs)
       {{-- Filter chips — Figma 51:5133/5134/5135. Typography matches `.btn` (13px label pill). --}}
       <div
-        class="mt-6 flex flex-nowrap items-center justify-center gap-1.5 max-sm:overflow-x-auto max-sm:pb-1 md:mt-8 md:flex-wrap md:gap-4"
+        class="{{ esc_attr(trim('flex flex-nowrap items-center justify-center gap-1.5 max-sm:overflow-x-auto max-sm:pb-1 md:flex-wrap md:gap-4' . ($hasCards ? ' ' . Component::sectionControlsToFollowContentGapClasses() : ''))) }}"
         role="tablist"
         aria-label="{{ esc_attr__('Filter stories', 'culvers') }}"
         x-on:keydown.right.prevent="selectTab((activeTab + 1) % {{ count($tabs) }}, true)"
@@ -124,10 +124,10 @@
       Use an instantaneous leave plus a eased enter-only fade; `isolate` separates stacking contexts.
       `overflow-visible`: card hover scales (`scale-[1.03]`) must not be clipped away from rounded
       corners (`overflow-hidden` here previously cut the zoom off inside the panels box).
-      Top margin stays on this wrapper only.
+      Spacing above cards: intro stack / tab row `mb-*` — never `mt-*` on this wrapper.
     --}}
     <div
-      class="three-card-block__panels relative isolate mt-10 grid grid-cols-1 overflow-visible md:mt-14 [&>.three-card-block__panel]:col-start-1 [&>.three-card-block__panel]:row-start-1 [&>.three-card-block__panel]:w-full [&>.three-card-block__panel]:min-w-0">
+      class="three-card-block__panels relative isolate grid grid-cols-1 overflow-visible [&>.three-card-block__panel]:col-start-1 [&>.three-card-block__panel]:row-start-1 [&>.three-card-block__panel]:w-full [&>.three-card-block__panel]:min-w-0">
       @foreach($tabs as $index => $tab)
       <div
         class="three-card-block__panel"
@@ -203,7 +203,7 @@
     </div>
 
     @if($viewAllUrl !== '')
-      <div class="mt-12 flex justify-center md:mt-14">
+      <div class="{{ Component::sectionBodyToCtaGapClasses('flex justify-center') }}">
         @include('components.button', ['label' => $viewAllLabel, 'href' => $viewAllUrl])
       </div>
     @endif

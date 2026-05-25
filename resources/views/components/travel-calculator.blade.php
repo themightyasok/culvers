@@ -122,12 +122,7 @@
         @if($hasIntro)
           <header class="text-center">
             @if($heading !== '')
-              {{-- Figma `51:9035` Travel Calc Mobile: Canela 36 / lh 1.1 / Deep Moss (H2 Mobile);
-                   Figma `51:7978` Travel Calc Desktop: Canela 64 / lh 1.2 / Deep Moss (H2 Title).
-                   This is the one Section H2 in the design system that uses the larger 64 px
-                   token rather than the generic 58 px, so we override `sectionHeadingClasses`
-                   inline rather than route through it. --}}
-              <h2 class="travel-calculator__heading font-heading text-4xl leading-[1.1] text-deep-moss md:text-7xl md:leading-[1.2]">
+              <h2 class="travel-calculator__heading {{ Component::sectionHeadingClasses('text-deep-moss') }}">
                 {{ esc_html($heading) }}
               </h2>
             @endif
@@ -229,8 +224,12 @@
           {{-- Desktop result strip preserved (Commuters SemiBold 12 caps tracking-[1px] —
                shipped to match the original travel-calc skin).
                Figma 51:9221 mobile spec (Halyard Book 20 / lh 1.3 / Deep Moss, sentence case)
-               is `max-sm:`-scoped only. --}}
-          class="travel-calculator__result mt-10 min-h-[1.25rem] text-center font-label text-xs font-semibold uppercase leading-5 tracking-[1px] text-deep-moss max-sm:max-w-[19rem] max-sm:mx-auto"
+               is `max-sm:`-scoped only. Collapsed until a search runs so idle card padding
+               is not inflated by an empty status row. --}}
+          class="travel-calculator__result text-center font-label text-xs font-semibold uppercase leading-5 tracking-[1px] text-deep-moss max-sm:max-w-[19rem] max-sm:mx-auto"
+          x-show="loading || error !== '' || result !== null"
+          x-bind:class="(loading || error !== '' || result !== null) ? 'mt-10' : ''"
+          x-cloak
           role="status"
           aria-live="polite">
           <span x-show="error !== ''" class="text-red-700" x-text="error" x-cloak></span>

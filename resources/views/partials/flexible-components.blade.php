@@ -43,6 +43,14 @@ $templateResolver = TemplateResolver::getInstance();
          * reuse stray values — e.g. `size-*` Tailwind slipping onto unrelated CTAs in a later band.
          */
         unset($class, $href, $label, $button_extra_class, $attributes);
+        /*
+         * BladeOne stores view data on `$this->variables`; `unset()` in compiled templates does not
+         * reliably clear those keys. Assign empty defaults so a prior row (e.g. info_block CTA)
+         * cannot bleed into the next layout’s section-intro-stack include.
+         */
+        $ctaLabel = '';
+        $ctaUrl = '';
+        $introStackIncludeCta = false;
 
         $layout = $component['acf_fc_layout'] ?? '';
         $component = $component + ComponentDefaults::get($layout);

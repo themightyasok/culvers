@@ -2,6 +2,7 @@
 
 @php
   use App\Search\SearchService;
+  use App\Helpers\Component;
 
   global $wp_query;
 
@@ -17,7 +18,7 @@
         <header class="search-page__intro mx-auto max-w-[802px] text-center pt-10 md:pt-12 lg:pt-14">
           <h1
             id="search-page-heading"
-            class="m-0 font-heading text-5xl font-normal leading-[1.1] text-deep-moss md:text-7xl">
+            class="search-page__heading m-0 {{ Component::sectionHeadingClasses('text-deep-moss') }}">
             {{ __('Search', 'culvers') }}
           </h1>
 

@@ -179,6 +179,7 @@ $hasSubheadingText = TextFormatter::hasVisibleContent((string) $subheading_text)
 $hasBodyText = TextFormatter::hasVisibleContent((string) $body_text);
 $hasButton = trim((string) $button_text) !== '' && trim((string) ($button_link['url'] ?? '')) !== '';
 $hasHeaderBlock = $hasHeaderText || $hasSubheadingText || $hasBodyText;
+$hasHeaderSection = $hasHeaderBlock || $hasButton;
 
 $normalized_items = [];
 foreach ($scroll_cards as $item) {
@@ -279,6 +280,16 @@ foreach ($scroll_cards as $item) {
     ];
 }
 
+// Computed after items exist — earlier pass ran while $normalized_items was still empty.
+$headerTailGap = ! empty($normalized_items) && $hasHeaderSection
+    ? ($intro_flush_to_content
+        ? Component::sectionIntroToControlsGapClasses()
+        : Component::sectionBodyToFollowContentGapClasses())
+    : '';
+$wrapperTopPad = $hasHeaderSection
+    ? 'pt-0 motion-reduce:pt-0'
+    : 'pt-[clamp(24px,5vh,56px)] pb-0 motion-reduce:pt-0';
+
 // Horizontal grid inset is already stripped at the canonical opener above.
 $fullBleedScrollerStrip = ! empty($normalized_items);
 
@@ -324,25 +335,29 @@ $horizontal_scroller_gap_css = $scroller_preset_key === HorizontalScrollerPreset
         </div>
 
         {{-- Top: Header --}}
-        @if($hasHeaderBlock || $hasButton)
-            <div class="horizontal-scroller__header mx-auto flex w-full max-w-8xl flex-col justify-start pt-0 pb-6 max-lg:pb-4 {{ LayoutShell::GUTTER_X }} lg:min-h-[240px] {{ $header_alignment_class }} {{ $header_text_align_class }}">
+        @if($hasHeaderSection)
+            <div class="horizontal-scroller__header mx-auto flex w-full max-w-8xl flex-col justify-start pt-0 {{ esc_attr($headerTailGap) }} {{ LayoutShell::GUTTER_X }} lg:min-h-[240px] {{ $header_alignment_class }} {{ $header_text_align_class }}">
                 @if($hasHeaderBlock)
-                    <div class="horizontal-scroller__intro flex flex-col gap-4 md:gap-6 {{ $intro_flush_to_content ? 'mb-0' : 'mb-10 md:mb-14' }} {{ $header_text_align_class }}">
+                    <div class="horizontal-scroller__intro section-intro-stack flex flex-col {{ $header_text_align_class }}">
                         @if($hasHeaderText)
-                            <h2 class="font-heading leading-[1.1] {{ $header_text_color_class }} {{ $header_size_class }} {{ $header_text_weight_class }} {{ $scroller_typography_padding_class }}">
+                            <h2 class="section-intro-stack__heading font-heading {{ $header_text_color_class }} {{ $header_size_class }} {{ $header_text_weight_class }} {{ $scroller_typography_padding_class }}">
                                 {!! TextFormatter::inline((string) $header_text) !!}
                             </h2>
                         @endif
 
-                        @if($hasSubheadingText)
-                            <h3 class="font-sans {{ $subheading_text_color_class }} {{ $subheading_size_class }} {{ $subheading_text_weight_class }} max-lg:text-base max-lg:font-light {{ $scroller_typography_padding_class }}">
-                                {!! TextFormatter::inline((string) $subheading_text) !!}
-                            </h3>
-                        @endif
+                        @if($hasSubheadingText || $hasBodyText)
+                            <div class="{{ Component::sectionIntroContentStackClasses($header_text_align_class === 'text-center' ? 'items-center' : 'items-start') }}">
+                                @if($hasSubheadingText)
+                                    <h3 class="font-sans {{ $subheading_text_color_class }} {{ $subheading_size_class }} {{ $subheading_text_weight_class }} max-lg:text-base max-lg:font-light {{ $scroller_typography_padding_class }}">
+                                        {!! TextFormatter::inline((string) $subheading_text) !!}
+                                    </h3>
+                                @endif
 
-                        @if($hasBodyText)
-                            <div class="horizontal-scroller__intro-body max-lg:text-sm max-lg:leading-5 max-lg:font-light max-lg:[&_p]:text-sm max-lg:[&_p]:leading-5 max-lg:[&_p]:font-light {{ $body_classes }} {{ $intro_body_color_class }} prose prose-neutral max-lg:prose-sm {{ $intro_body_layout_class }} {{ $scroller_typography_padding_class }}">
-                                {!! TextFormatter::rich((string) $body_text) !!}
+                                @if($hasBodyText)
+                                    <div class="horizontal-scroller__intro-body max-lg:text-sm max-lg:leading-5 max-lg:font-light max-lg:[&_p]:text-sm max-lg:[&_p]:leading-5 max-lg:[&_p]:font-light {{ $body_classes }} {{ $intro_body_color_class }} prose prose-neutral max-lg:prose-sm {{ $intro_body_layout_class }} {{ $scroller_typography_padding_class }} {{ $hasSubheadingText ? Component::sectionSubheadingToBodyGapClasses() : '' }}">
+                                        {!! TextFormatter::rich((string) $body_text) !!}
+                                    </div>
+                                @endif
                             </div>
                         @endif
                     </div>
@@ -375,7 +390,7 @@ $horizontal_scroller_gap_css = $scroller_preset_key === HorizontalScrollerPreset
                         $btn_classes = trim('btn ' . $btn_variant_class . $btn_size_class . ' gap-2');
                         $btn_target = trim((string) ($button_link['target'] ?? ''));
                     @endphp
-                    <div class="horizontal-scroller__header-cta mt-8">
+                    <div class="horizontal-scroller__header-cta {{ Component::sectionBodyToCtaGapClasses() }}">
                         <a
                             href="{{ esc_url((string) ($button_link['url'] ?? '')) }}"
                             class="{{ esc_attr(trim($btn_classes)) }}"
@@ -399,7 +414,7 @@ $horizontal_scroller_gap_css = $scroller_preset_key === HorizontalScrollerPreset
 
         @if(! empty($normalized_items))
             <div class="@if($fullBleedScrollerStrip) {{ LayoutShell::BREAKOUT_X }} @endif">
-            <div class="horizontal-scroller__wrapper relative w-full select-none overflow-x-hidden overflow-y-visible pt-[clamp(24px,5vh,56px)] pb-0 motion-reduce:pt-0 {{ $disable_scroll ? 'cursor-default overflow-visible' : 'cursor-grab overflow-hidden active:cursor-grabbing' }} {{ $scroll_speed_class }} {{ $header_text_color_class }}">
+            <div class="horizontal-scroller__wrapper relative w-full select-none overflow-x-hidden overflow-y-visible {{ esc_attr($wrapperTopPad) }} {{ $disable_scroll ? 'cursor-default overflow-visible' : 'cursor-grab overflow-hidden active:cursor-grabbing' }} {{ $scroll_speed_class }} {{ $header_text_color_class }}">
                 <div class="horizontal-scroller__container" style="{{ esc_attr($horizontal_scroller_gap_css) }}" aria-label="{{ $disable_scroll ? __('Floating content', 'culvers') : __('Horizontal scrolling floating content', 'culvers') }}">
                     @foreach($disable_scroll ? [0] : [0, 1] as $set_index)
                         @php $is_clone_set = $set_index > 0; @endphp

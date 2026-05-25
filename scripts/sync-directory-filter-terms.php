@@ -14,10 +14,6 @@ if (! class_exists(\App\Directory\ShopTaxonomySeeder::class)) {
 \App\Directory\ShopTaxonomySeeder::syncNow();
 \App\Directory\EatDrinkTaxonomySeeder::syncNow();
 
-if (class_exists(\App\Directory\EatDrinkDirectoryPopulate::class)) {
-    \App\Directory\EatDrinkDirectoryPopulate::runSeed(false);
-}
-
 if (defined('WP_CLI') && WP_CLI && class_exists('\WP_CLI')) {
     \WP_CLI::success('Directory filter terms synced (shops + eat & drink).');
 }

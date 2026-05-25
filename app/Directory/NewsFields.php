@@ -23,6 +23,18 @@ final class NewsFields
             'title' => __('News listing fields', 'culvers'),
         ]);
 
+        $group->addImage('news_card_image', [
+            'label' => __('Card image', 'culvers'),
+            'instructions' => __(
+                'Portrait photo for three-card blocks and the news archive grid. '
+                . 'Falls back to the featured image, then the single-page hero image when empty.',
+                'culvers'
+            ),
+            'return_format' => 'array',
+            'preview_size' => 'medium',
+            'library' => 'all',
+        ]);
+
         $group->addText('news_card_eyebrow', [
             'label' => __('Eyebrow line (card)', 'culvers'),
             'instructions' => __(

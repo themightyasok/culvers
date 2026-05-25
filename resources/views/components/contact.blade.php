@@ -89,7 +89,7 @@
       {{-- Optional band title (page often uses `image_hero` for H1). Figma section H2: Canela 58 / faded olive when used. --}}
       <{{ $headingTag }}
         id="{{ esc_attr($headingId) }}"
-        class="contact__heading {{ Component::sectionHeadingClasses('text-faded-olive', 'mb-10 text-center md:mb-14') }}">
+        class="contact__heading {{ Component::sectionIntroHeadingClasses('text-faded-olive', Component::sectionHeadingToFollowContentGapClasses() . ' text-center') }}">
         {{ esc_html($heading) }}
       </{{ $headingTag }}>
     @endif
@@ -102,7 +102,7 @@
                  `h1-h6 { @apply font-heading }` rule + the `.font-heading` utility that
                  still compile above the `font-sans` rule in Tailwind 4's source order.
                  `sm:font-heading` (no `!`) restores Canela 32 / lh 1.1 from tablet up. --}}
-            <h3 class="contact__panel-heading font-sans! text-xl font-medium leading-6 sm:font-heading! sm:text-3xl sm:font-normal sm:leading-[1.1]">
+            <h3 class="contact__panel-heading {{ Component::mobilePanelSubheadClasses('text-faded-olive', 'font-sans! sm:font-heading!') }}">
               {{ esc_html(FooterCustomizer::gettingHereTitle()) }}
             </h3>
             @if($address !== '')
@@ -128,7 +128,7 @@
             <div class="contact__panel-block mt-12">
               {{-- Matches Getting Here subhead above: `font-sans!` wins mobile, `sm:font-heading!`
                    restores Canela 32 / lh 1.1 at tablet+. --}}
-              <h3 class="contact__panel-heading font-sans! text-xl font-medium leading-6 sm:font-heading! sm:text-3xl sm:font-normal sm:leading-[1.1]">
+              <h3 class="contact__panel-heading {{ Component::mobilePanelSubheadClasses('text-faded-olive', 'font-sans! sm:font-heading!') }}">
                 {{ esc_html(FooterCustomizer::contactTitle()) }}
               </h3>
               @if($phone !== '')

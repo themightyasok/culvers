@@ -95,7 +95,7 @@ foreach ($liveSlugs as $liveSlug) {
 
     $components = get_field('components', $post->ID);
     if (! is_array($components) || $components === []) {
-        WP_CLI::warning(sprintf('%s has no flexible components — run shop-single-populate-flexible.php first', $localSlug));
+        WP_CLI::warning(sprintf('%s has no flexible components — populate in WP admin first', $localSlug));
         ++$failed;
         continue;
     }

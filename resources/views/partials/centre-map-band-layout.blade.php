@@ -154,7 +154,7 @@
               @php($catSlugJson = json_encode($cat['slug'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES))
               @php($catLabelJson = json_encode($cat['label'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES))
               @php($isAll = str_ends_with($cat['slug'], '-all') || $cat['slug'] === 'all')
-              <li class="min-w-0">
+              <li class="grid min-w-0">
                 @include('partials.centre-map-category-option', [
                     'cat' => $cat,
                     'catSlugJson' => $catSlugJson,

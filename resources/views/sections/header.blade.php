@@ -10,6 +10,18 @@
   $instagramUrl = get_theme_mod('culvers_instagram_url', '#');
   $facebookUrl = get_theme_mod('culvers_facebook_url', '#');
 
+  /*
+   * Header wordmark sizing — mobile-first so desktop caps do not bleed into `< lg`.
+   * Mobile nav: 46×205; desktop bar: 22×178 (wrapper max-h 28px). Search bar is lg+ only.
+   */
+  $headerLogoSvgClass = 'block h-[46px] w-auto max-w-[min(100%,205px)] shrink-0 text-current lg:h-[22px] lg:max-w-[min(100%,178px)] [&_svg]:max-h-full';
+  $headerLogoWrapClass = 'flex h-[46px] w-[205px] max-w-[min(100%,205px)] items-center lg:h-[22px] lg:max-h-[28px] lg:w-[178px] lg:max-w-[min(100%,178px)] [&_svg]:h-full [&_svg]:max-w-full [&_svg]:object-contain [&_svg]:object-center lg:[&_svg]:object-left';
+  $headerLogoImgWrapClass = 'block h-[46px] w-[205px] max-w-[min(100%,205px)] lg:h-[22px] lg:max-h-[28px] lg:w-[178px] lg:max-w-[min(100%,178px)] [&_img]:h-full [&_img]:w-auto [&_img]:max-h-full [&_img]:object-contain [&_img]:object-center lg:[&_img]:object-left';
+  $headerLogoPartialClass = 'block h-[46px] w-[205px] max-w-[min(100%,205px)] shrink-0 text-glowleaf lg:h-[22px] lg:w-[178px] lg:max-w-[min(100%,178px)] lg:max-w-full [&_svg]:max-h-full';
+  $headerLogoDesktopWrapClass = 'flex max-h-[28px] w-[178px] max-w-full items-center [&_svg]:max-h-full [&_svg]:max-w-full [&_svg]:object-contain [&_svg]:object-left';
+  $headerLogoDesktopImgWrapClass = 'block max-h-[28px] w-[178px] [&_img]:h-full [&_img]:w-auto [&_img]:max-h-[28px] [&_img]:object-contain [&_img]:object-left';
+  $headerLogoDesktopPartialClass = 'block h-[22px] w-[178px] max-w-full text-deep-moss';
+
   /* Same full wordmark SVG as `sections/footer` — `currentColor` picks up link `text-*`. */
   $headerWordmarkAbs = get_template_directory() . '/resources/images/brand/culver-square-footer-wordmark.svg';
   $headerWordmarkSvg = '';
@@ -18,7 +30,7 @@
       if ($headerWordmarkRaw !== '') {
           $headerWordmarkSvg = (string) preg_replace(
               '/<svg\b/',
-              '<svg class="block h-[22px] w-auto max-w-[min(100%,178px)] max-lg:h-[56px] max-lg:max-w-[min(100%,249px)] shrink-0 text-current [&_svg]:max-h-full" aria-hidden="true" focusable="false"',
+              '<svg class="' . esc_attr($headerLogoSvgClass) . '" aria-hidden="true" focusable="false"',
               $headerWordmarkRaw,
               1,
           );
@@ -117,13 +129,13 @@
                     x-show="!searchOpen"
                     x-cloak>
                     @if($headerWordmarkSvg !== '')
-                      <span class="flex max-h-[28px] w-[178px] max-w-[min(100%,178px)] items-center max-lg:max-h-[56px] max-lg:w-[249px] max-lg:max-w-[min(100%,249px)] [&_svg]:max-h-full [&_svg]:max-w-full [&_svg]:object-contain max-lg:[&_svg]:object-center lg:[&_svg]:object-left">{!! $headerWordmarkSvg !!}</span>
+                      <span class="{{ $headerLogoWrapClass }}">{!! $headerWordmarkSvg !!}</span>
                     @elseif(has_custom_logo())
-                      <span class="block max-h-[28px] w-[178px] max-lg:max-h-[56px] max-lg:w-[249px] max-lg:max-w-[min(100%,249px)] [&_img]:h-full [&_img]:w-auto [&_img]:max-h-[28px] max-lg:[&_img]:max-h-[56px] [&_img]:object-contain [&_img]:object-left max-lg:[&_img]:object-center">
+                      <span class="{{ $headerLogoImgWrapClass }}">
                         {!! get_custom_logo() !!}
                       </span>
                     @else
-                      @include('partials.culver-square-logo', ['class' => 'block h-[22px] w-[178px] max-w-[min(100%,178px)] shrink-0 text-glowleaf max-lg:h-[56px] max-lg:w-[249px] max-lg:max-w-[min(100%,249px)] lg:max-w-full [&_svg]:max-h-full'])
+                      @include('partials.culver-square-logo', ['class' => $headerLogoPartialClass])
                     @endif
                   </a>
 
@@ -192,7 +204,7 @@
                 <div class="mega-nav__bar-end relative z-20 flex shrink-0 items-center gap-2 lg:gap-[18px]">
                   <button
                     type="button"
-                    class="mega-nav__search-mobile relative flex size-[39px] shrink-0 items-center justify-center rounded-[45.349px] bg-glowleaf p-0 culvers-focus-ring-compact lg:hidden"
+                    class="mega-nav__search-mobile relative flex size-[32px] shrink-0 items-center justify-center rounded-full bg-glowleaf p-0 culvers-focus-ring-compact lg:hidden"
                     x-bind:aria-expanded="searchOpen ? 'true' : 'false'"
                     aria-controls="site-header-search"
                     x-show="!searchOpen"
@@ -383,17 +395,18 @@
                 method="get"
                 action="{{ esc_url(home_url('/')) }}"
                 role="search"
-                class="site-header__search-row flex min-h-[75px] w-full items-center gap-3 px-4 py-2 max-lg:gap-4 lg:min-h-[80px] lg:gap-8 lg:px-5 xl:px-6"
+                class="site-header__search-row flex min-h-[75px] w-full items-center gap-3 px-4 py-2 max-lg:gap-3 lg:min-h-[80px] lg:gap-8 lg:px-5 xl:px-6"
                 x-on:submit="closeSearch()">
-                <a class="shrink-0 text-deep-moss" href="{{ esc_url(home_url('/')) }}" rel="home" aria-label="{{ esc_attr(get_bloginfo('name')) }}">
+                {{-- Mobile search is full-width input + close; logo stays on desktop search bar only. --}}
+                <a class="max-lg:hidden shrink-0 text-deep-moss" href="{{ esc_url(home_url('/')) }}" rel="home" aria-label="{{ esc_attr(get_bloginfo('name')) }}">
                   @if($headerWordmarkSvg !== '')
-                    <span class="flex max-h-[28px] w-[178px] max-w-full items-center max-lg:max-h-[56px] max-lg:w-[249px] max-lg:max-w-[min(100%,249px)] [&_svg]:max-h-full [&_svg]:max-w-full [&_svg]:object-contain [&_svg]:object-left">{!! $headerWordmarkSvg !!}</span>
+                    <span class="{{ $headerLogoDesktopWrapClass }}">{!! $headerWordmarkSvg !!}</span>
                   @elseif(has_custom_logo())
-                    <span class="block max-h-[28px] w-[178px] max-lg:max-h-[56px] max-lg:w-[249px] max-lg:max-w-[min(100%,249px)] [&_img]:h-full [&_img]:w-auto [&_img]:max-h-[28px] max-lg:[&_img]:max-h-[56px] [&_img]:object-contain [&_img]:object-left">
+                    <span class="{{ $headerLogoDesktopImgWrapClass }}">
                       {!! get_custom_logo() !!}
                     </span>
                   @else
-                    @include('partials.culver-square-logo', ['class' => 'block h-[22px] w-[178px] max-w-full text-deep-moss max-lg:h-[56px] max-lg:w-[249px] max-lg:max-w-[min(100%,249px)]'])
+                    @include('partials.culver-square-logo', ['class' => $headerLogoDesktopPartialClass])
                   @endif
                 </a>
                 <svg class="shrink-0 text-faded-olive" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -511,7 +524,7 @@
                     @if($branch['children'] !== [])
                       <button
                         type="button"
-                        class="flex w-full items-center justify-between gap-4 py-[26px] text-left font-heading text-4xl leading-[1.1] focus-visible:rounded-sm culvers-focus-ring-compact{{ $mobileCurrent ? ' text-glowleaf' : ' text-faded-olive' }}"
+                        class="flex w-full items-center justify-between gap-4 py-5 text-left font-heading text-4xl leading-[1.1] focus-visible:rounded-sm culvers-focus-ring-compact{{ $mobileCurrent ? ' text-glowleaf' : ' text-faded-olive' }}"
                         x-on:click="openMobileSubmenuByIndex({{ (int) $idx }})"
                         @if($mobileCurrent) aria-current="page" @endif>
                         <span>{{ $branch['title'] }}</span>
@@ -524,7 +537,7 @@
                       </button>
                     @else
                       <a
-                        class="flex w-full items-center justify-between gap-4 py-[26px] font-heading text-4xl leading-[1.1] focus-visible:rounded-sm culvers-focus-ring-compact{{ $mobileCurrent ? ' text-glowleaf' : ' text-faded-olive' }}"
+                        class="flex w-full items-center justify-between gap-4 py-5 font-heading text-4xl leading-[1.1] focus-visible:rounded-sm culvers-focus-ring-compact{{ $mobileCurrent ? ' text-glowleaf' : ' text-faded-olive' }}"
                         href="{{ esc_url($branch['url']) }}"
                         x-on:click.prevent="followMobileNavLink('{{ esc_url($branch['url']) }}')"
                         @if($mobileCurrent) aria-current="page" @endif>
@@ -555,7 +568,7 @@
               {{-- Figma `51:9087` Centre Map / Getting Here pill — Light Green at 60 %, Halyard
                    Display Book 20 / lh 1.3 / Faded Olive, 24 px icon. --}}
               <div
-                class="flex min-h-[61px] divide-x divide-faded-olive/15 overflow-hidden rounded-[12px] bg-light-green/60 text-faded-olive">
+                class="flex min-h-[61px] overflow-hidden rounded-[12px] bg-light-green/60 text-faded-olive">
                 <a
                   class="flex flex-1 items-center gap-3 px-5 py-3 text-left font-sans text-xl font-light leading-[1.3] transition-colors hover:bg-faded-olive/[0.06] culvers-focus-ring-compact-faded-olive"
                   href="{{ esc_url($mapUrl) }}"
@@ -581,7 +594,7 @@
               {{-- Figma `51:9095` socials pill — Glowleaf at 60 %, Commuters SemiBold 14.5 /
                    lh 29 / 1.2 px tracking / uppercase / 24 px icon. --}}
               <div
-                class="flex min-h-[57px] divide-x divide-faded-olive/20 overflow-hidden rounded-[12px] bg-glowleaf/60 text-faded-olive">
+                class="flex min-h-[57px] overflow-hidden rounded-[12px] bg-glowleaf/60 text-faded-olive">
                 @if($instagramUrl !== '' && $instagramUrl !== '#')
                   <a
                     class="flex flex-1 items-center justify-center gap-3 px-4 py-3 text-center font-label text-sm font-semibold uppercase leading-7 tracking-widest transition-colors hover:bg-faded-olive/[0.07] culvers-focus-ring-compact-faded-olive"
@@ -636,59 +649,57 @@
           class="flex h-full w-1/2 min-w-[50%] flex-col overflow-y-auto overscroll-contain px-4 pb-10 pt-6 sm:px-6"
           id="mega-mobile-panel-sub"
           :aria-hidden="mobileNavDepth === 0">
-          <div>
-            <button
-              type="button"
-              class="inline-flex items-center gap-2.5 text-left text-faded-olive culvers-focus-ring-compact-faded-olive"
-              x-on:click="resetMobileSubmenu()">
-              <span
-                class="inline-flex size-[30px] shrink-0 items-center justify-center rounded-full bg-light-green text-faded-olive"
-                aria-hidden="true">
-                <svg class="size-4" viewBox="0 0 24 24" fill="none">
-                  <path
-                    d="m15 6-6 6 6 6"
-                    stroke="currentColor"
-                    stroke-width="1.5"
-                    stroke-linecap="round"
-                    stroke-linejoin="round" />
-                </svg>
-              </span>
-              <span class="font-label text-sm font-semibold uppercase leading-6 tracking-widest">{{ __('Back', 'culvers') }}</span>
-            </button>
-          </div>
-
-          <template x-if="mobileActiveBranch">
-            <div class="mt-10 flex min-h-0 flex-1 flex-col">
-              <div class="border-b border-deep-moss pb-[26px]">
-                <div class="flex items-center justify-between gap-3">
-                  <h3
-                    class="font-heading text-4xl leading-[1.1] text-faded-olive"
-                    x-text="mobileActiveBranch.title"></h3>
-                  <a
-                    class="inline-flex size-[43px] shrink-0 items-center justify-center rounded-full bg-glowleaf text-deep-moss culvers-focus-ring-compact-deep-moss"
-                    x-bind:href="mobileActiveBranch.url || '#'"
-                    x-on:click.prevent="followMobileNavLink(mobileActiveBranch.url)">
-                    <span class="sr-only">{{ __('Open section', 'culvers') }}</span>
-                    @include('partials.icons.figma-header-icon', [
-                        'header_icon_variant' => 'explore-arrow',
-                        'header_icon_class' => 'size-4 shrink-0',
-                    ])
-                  </a>
-                </div>
-              </div>
-              <ul class="mt-6 divide-y divide-faded-olive/15">
-                <template x-for="(child, cIdx) in mobileActiveBranch.children" :key="(child.url || '') + '-' + cIdx">
-                  <li class="list-none">
-                    <a
-                      class="block py-6 font-sans text-2xl font-normal capitalize leading-[1.3] text-faded-olive focus-visible:rounded-sm culvers-focus-ring-compact"
-                      x-bind:href="child.url"
-                      x-on:click.prevent="followMobileNavLink(child.url)"
-                      x-text="child.title"></a>
-                  </li>
-                </template>
-              </ul>
+          <div class="flex flex-col gap-[42px]">
+            <div class="flex flex-col gap-[19px]">
+              <button
+                type="button"
+                class="inline-flex items-center gap-2.5 text-left text-faded-olive culvers-focus-ring-compact-faded-olive"
+                x-on:click="resetMobileSubmenu()">
+                <span class="inline-flex shrink-0" aria-hidden="true">
+                  @include('partials.icons.figma-header-icon', [
+                      'header_icon_variant' => 'mobile-back-arrow',
+                      'header_icon_class' => 'size-[30px] shrink-0 rotate-90',
+                  ])
+                </span>
+                <span class="font-label text-sm font-semibold uppercase leading-6 tracking-widest">{{ __('Back', 'culvers') }}</span>
+              </button>
+              <div class="h-0 w-full border-b border-faded-olive/15" aria-hidden="true"></div>
             </div>
-          </template>
+
+            <template x-if="mobileActiveBranch">
+              <div class="flex min-h-0 flex-1 flex-col gap-[42px]">
+                <div class="flex flex-col gap-[26px]">
+                  <div class="flex items-center justify-between gap-3">
+                    <h3
+                      class="font-heading text-4xl leading-[1.1] text-faded-olive"
+                      x-text="mobileActiveBranch.title"></h3>
+                    <a
+                      class="inline-flex size-[43px] shrink-0 items-center justify-center rounded-full bg-glowleaf text-deep-moss culvers-focus-ring-compact-deep-moss"
+                      x-bind:href="mobileActiveBranch.url || '#'"
+                      x-on:click.prevent="followMobileNavLink(mobileActiveBranch.url)">
+                      <span class="sr-only">{{ __('Open section', 'culvers') }}</span>
+                      @include('partials.icons.figma-header-icon', [
+                          'header_icon_variant' => 'explore-arrow',
+                          'header_icon_class' => 'size-4 shrink-0',
+                      ])
+                    </a>
+                  </div>
+                  <div class="h-0 w-full border-b border-deep-moss" aria-hidden="true"></div>
+                </div>
+                <ul class="divide-y divide-faded-olive/15">
+                  <template x-for="(child, cIdx) in mobileActiveBranch.children" :key="(child.url || '') + '-' + cIdx">
+                    <li class="list-none">
+                      <a
+                        class="block py-6 font-sans text-2xl font-normal capitalize leading-[1.3] text-faded-olive focus-visible:rounded-sm culvers-focus-ring-compact"
+                        x-bind:href="child.url"
+                        x-on:click.prevent="followMobileNavLink(child.url)"
+                        x-text="child.title"></a>
+                    </li>
+                  </template>
+                </ul>
+              </div>
+            </template>
+          </div>
         </div>
       </div>
     </div>

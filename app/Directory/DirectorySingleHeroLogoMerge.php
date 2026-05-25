@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Directory;
 
+use App\Helpers\ImageHeroLogoSource;
+
 /**
  * Injects listing/CPT logo fields into the first `image_hero` flexible row
- * when the hero has no explicit logo yet, so overlays match directory cards:
- * shops (`shop_logo`), eat & drink (`eat_drink_logo` + featured-image fallback),
- * careers (`career_employer_logo`).
+ * when the hero has no explicit logo yet and {@see ImageHeroLogoSource} allows it.
  *
  * Editors can still override via the hero row Logo field — we only merge when
  * `hero_logo` resolves empty and `hero_title_in_image` is unset.
@@ -44,15 +44,6 @@ final class DirectorySingleHeroLogoMerge
             return $value;
         }
 
-        if (! in_array($postType, ['culvers_shop', 'culvers_eat_drink', 'culvers_career'], true)) {
-            return $value;
-        }
-
-        $logoArr = self::directoryLogoImageArray($pid, $postType);
-        if ($logoArr === null) {
-            return $value;
-        }
-
         foreach ($value as $i => $row) {
             if (! is_array($row)) {
                 continue;
@@ -69,6 +60,16 @@ final class DirectorySingleHeroLogoMerge
                 return $value;
             }
 
+            $source = ImageHeroLogoSource::resolve($row);
+            if ($source === ImageHeroLogoSource::NONE || $source === ImageHeroLogoSource::UPLOADED) {
+                return $value;
+            }
+
+            $logoArr = self::logoImageArrayForSource($pid, $postType, $source);
+            if ($logoArr === null) {
+                return $value;
+            }
+
             $row['hero_logo'] = $logoArr;
             $row['hero_title_line'] = '';
             $value[$i] = $row;
@@ -80,7 +81,7 @@ final class DirectorySingleHeroLogoMerge
     }
 
     /**
-     * @param  array<string,mixed> $row
+     * @param array<string,mixed> $row
      */
     private static function rowHasUsableHeroLogo(array $row): bool
     {
@@ -101,8 +102,18 @@ final class DirectorySingleHeroLogoMerge
     /**
      * @return array<string,mixed>|null  ACF image-array shape for `Image::render`
      */
-    private static function directoryLogoImageArray(int $postId, string $postType): ?array
+    private static function logoImageArrayForSource(int $postId, string $postType, string $source): ?array
     {
+        if ($source === ImageHeroLogoSource::FEATURED) {
+            $thumbId = (int) get_post_thumbnail_id($postId);
+
+            return self::normalizeAcfImageField($thumbId > 0 ? $thumbId : null);
+        }
+
+        if ($source !== ImageHeroLogoSource::DIRECTORY_LOGO) {
+            return null;
+        }
+
         if (! function_exists('get_field')) {
             return null;
         }
@@ -114,18 +125,7 @@ final class DirectorySingleHeroLogoMerge
             default => null,
         };
 
-        $fromField = self::normalizeAcfImageField($raw);
-        if ($fromField !== null) {
-            return $fromField;
-        }
-
-        if ($postType === 'culvers_eat_drink') {
-            $thumbId = (int) get_post_thumbnail_id($postId);
-
-            return self::normalizeAcfImageField($thumbId > 0 ? $thumbId : null);
-        }
-
-        return null;
+        return self::normalizeAcfImageField($raw);
     }
 
     /**

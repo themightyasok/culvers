@@ -194,24 +194,26 @@
                   id="{{ esc_attr($panelId) }}"
                   role="tabpanel"
                   aria-labelledby="{{ esc_attr($tabId) }}"
-                  class="shop-split-highlight__panel col-start-1 row-start-1 flex max-w-[34.625rem] flex-col items-center gap-6 justify-self-center transition-opacity duration-300 ease-out lg:gap-8"
+                  class="shop-split-highlight__panel section-intro-stack col-start-1 row-start-1 flex max-w-[34.625rem] flex-col items-center justify-self-center transition-opacity duration-300 ease-out"
                   x-bind:class="activeTab === {{ $i }} ? 'opacity-100' : 'opacity-0 pointer-events-none'"
                   x-bind:aria-hidden="activeTab === {{ $i }} ? 'false' : 'true'">
                   @if($tab['kicker'] !== '' || $tab['headline'] !== '')
-                    <div class="flex flex-col gap-0">
+                    <div class="flex flex-col gap-0 leading-none">
                       @if($tab['kicker'] !== '')
-                        <p class="font-heading text-5xl leading-[1.1] text-brand-500 lg:text-7xl lg:leading-[1.2]">
+                        <p class="{{ Component::sectionHeadingClasses('text-brand-500') }}">
                           {{ esc_html($tab['kicker']) }}
                         </p>
                       @endif
                       @if($tab['headline'] !== '')
-                        <p class="font-heading text-5xl leading-[1.1] text-brand-500 lg:text-7xl lg:leading-[1.2] {{ $tab['kicker'] !== '' ? '-mt-1' : '' }}">
+                        <p class="{{ Component::sectionHeadingClasses('text-brand-500', $tab['kicker'] !== '' ? '-mt-1' : '') }}">
                           {{ esc_html($tab['headline']) }}
                         </p>
                       @endif
                     </div>
                   @endif
 
+                  @if($tab['body_plain'] !== '' || $tab['show_cta'])
+                    <div class="{{ Component::sectionIntroContentStackClasses() }}">
                   @if($tab['body_plain'] !== '')
                     <div class="{{ $bodyClasses }}">
                       {!! $tab['body_html'] !!}
@@ -219,33 +221,37 @@
                   @endif
 
                   @if($tab['show_cta'])
-                    <div class="pt-2">
+                    <div class="{{ Component::sectionBodyToCtaGapClasses('flex justify-center') }}">
                       @include('components.button', [
                           'label' => $tab['cta_label'],
                           'href' => $tab['cta_url'],
                       ])
                     </div>
                   @endif
+                    </div>
+                  @endif
                 </div>
               @endforeach
             </div>
           @else
-            <div class="flex w-full max-w-[34.625rem] flex-col items-center gap-6 text-center lg:gap-8">
+            <div class="section-intro-stack flex w-full max-w-[34.625rem] flex-col items-center text-center">
               @if($hasStaticSerifLines)
-                <div class="text-center">
+                <div class="text-center leading-none">
                   @if($kicker !== '')
-                    <p class="font-heading text-5xl leading-[1.1] {{ $staticSerifTone }} lg:text-7xl lg:leading-[1.2]">
+                    <p class="{{ Component::sectionHeadingClasses($staticSerifTone) }}">
                       {{ esc_html($kicker) }}
                     </p>
                   @endif
                   @if($headline !== '')
-                    <p class="font-heading text-5xl leading-[1.1] {{ $staticSerifTone }} lg:text-7xl lg:leading-[1.2] {{ $kicker !== '' ? '-mt-1' : '' }}">
+                    <p class="{{ Component::sectionHeadingClasses($staticSerifTone, $kicker !== '' ? '-mt-1' : '') }}">
                       {{ esc_html($headline) }}
                     </p>
                   @endif
                 </div>
               @endif
 
+              @if($bodyPlain !== '' || $showCta)
+                <div class="{{ Component::sectionIntroContentStackClasses() }}">
               @if($bodyPlain !== '')
                 <div class="{{ $bodyClassesStatic }}">
                   {!! $bodyHtml !!}
@@ -253,8 +259,10 @@
               @endif
 
               @if($showCta)
-                <div class="flex justify-center pt-2">
+                <div class="{{ Component::sectionBodyToCtaGapClasses('flex justify-center') }}">
                   @include('components.button', ['label' => $ctaLabel, 'href' => $ctaUrl])
+                </div>
+              @endif
                 </div>
               @endif
             </div>

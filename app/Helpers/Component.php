@@ -219,15 +219,215 @@ final class Component
     }
 
     /**
-     * Image-hero H1 — mobile `51:9234`: Canela 46; desktop `51:9364`: Canela 96.
-     * Line-height 0.7 on the display lockup (sheet / brand direction). Homepage slider
-     * uses its own ramp in hero-slider.blade.php — not this helper.
+     * Section H2 in intro stacks (heading → sub → body → CTA).
+     *
+     * Pairs with `.section-intro-stack__heading` / `.section-intro-stack__content` in app.css.
+     * {@see sectionHeadingClasses()} keeps token line-heights for standalone titles.
+     */
+    public static function sectionIntroHeadingClasses(
+        string $toneClass = 'text-faded-olive',
+        string $extra = ''
+    ): string {
+        $base = 'section-intro-stack__heading font-heading text-5xl md:text-6xl ' . $toneClass;
+
+        return trim($extra !== '' ? $base . ' ' . $extra : $base);
+    }
+
+    /**
+     * Large body copy under section headings — Figma Halyard Book 20 / lh 1.3 (`text-xl`).
+     * Use for section intros, opening-hours copy, split-highlight panels, info-block body, etc.
+     */
+    public static function sectionBodyClasses(
+        string $toneClass = 'text-deep-moss',
+        string $extra = ''
+    ): string {
+        $base = 'font-sans text-xl font-light leading-[1.3] ' . $toneClass;
+
+        return trim($extra !== '' ? $base . ' ' . $extra : $base);
+    }
+
+    /**
+     * Body copy slot inside {@see sectionIntroContentStackClasses()} — resets first `<p>` margins.
+     */
+    public static function sectionIntroBodyClasses(
+        string $toneClass = 'text-deep-moss',
+        string $extra = ''
+    ): string {
+        return self::sectionBodyClasses($toneClass, '[&_p:first-child]:mt-0 ' . $extra);
+    }
+
+    /**
+     * Canonical intro-stack spacing — `.section-intro-stack__*` CSS + stock Tailwind margins.
+     *
+     * Do not use flex `gap-*` between heading and body — use {@see sectionIntroContentStackClasses()}.
+     */
+
+    /** Inner wrapper for subheading + body + optional CTA beneath a section heading. */
+    public static function sectionIntroContentStackClasses(string $extra = ''): string
+    {
+        $base = 'section-intro-stack__content flex w-full flex-col items-center';
+
+        return trim($extra !== '' ? $base . ' ' . $extra : $base);
+    }
+
+    /** @deprecated Flex gap on intro stacks — use {@see sectionIntroContentStackClasses()} instead. */
+    public static function sectionIntroStackGapClasses(string $extra = ''): string
+    {
+        return trim($extra);
+    }
+
+    /** Margin from section heading to body when not using {@see sectionIntroContentStackClasses()}. */
+    public static function sectionHeadingToBodyGapClasses(string $extra = ''): string
+    {
+        $base = 'mt-4';
+
+        return trim($extra !== '' ? $base . ' ' . $extra : $base);
+    }
+
+    /** Margin from subheading / label line to body copy beneath. */
+    public static function sectionSubheadingToBodyGapClasses(string $extra = ''): string
+    {
+        $base = 'mt-4';
+
+        return trim($extra !== '' ? $base . ' ' . $extra : $base);
+    }
+
+    /** Margin from body copy to CTA pill beneath. */
+    public static function sectionBodyToCtaGapClasses(string $extra = ''): string
+    {
+        $base = 'mt-11';
+
+        return trim($extra !== '' ? $base . ' ' . $extra : $base);
+    }
+
+    /**
+     * Margin below body / sub copy when there is no CTA — same 44px rhythm as
+     * {@see sectionBodyToCtaGapClasses()} so card grids are not tight against prose.
+     */
+    public static function sectionBodyToFollowContentGapClasses(string $extra = ''): string
+    {
+        $base = 'mb-10 md:mb-12';
+
+        return trim($extra !== '' ? $base . ' ' . $extra : $base);
+    }
+
+    /**
+     * Margin below a section heading before non-prose content (hours list, card grid, scroller strip).
+     */
+    public static function sectionHeadingToFollowContentGapClasses(string $extra = ''): string
+    {
+        $base = 'mb-10 md:mb-12';
+
+        return trim($extra !== '' ? $base . ' ' . $extra : $base);
+    }
+
+    /**
+     * Tighter heading → carousel on shop singles (Figma `51:8984` / `51:8337`).
+     *
+     * @deprecated Prefer {@see sectionHeadingSpacingClasses()} with preset `carousel`.
+     */
+    public static function sectionHeadingToCarouselGapClasses(string $extra = ''): string
+    {
+        return self::sectionHeadingSpacingClasses('carousel', $extra);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public static function sectionHeadingSpacingChoices(): array
+    {
+        return [
+            'standard' => __('Standard — list or prose below', 'culvers'),
+            'carousel' => __('Carousel — horizontal strip below', 'culvers'),
+            'compact' => __('Compact — multi-column panel below', 'culvers'),
+        ];
+    }
+
+    /**
+     * Editor select for space between a section H2 and the content beneath it.
+     *
+     * @return array{type: string, options: array<string, mixed>}
+     */
+    public static function sectionHeadingSpacingField(
+        string $default = 'standard',
+        ?string $instructions = null
+    ): array {
+        return [
+            'type' => 'select',
+            'options' => [
+                'label' => __('Heading spacing', 'culvers'),
+                'instructions' => $instructions ?? __(
+                    'Vertical space between the section heading and the content below.',
+                    'culvers'
+                ),
+                'choices' => self::sectionHeadingSpacingChoices(),
+                'default_value' => $default,
+                'allow_null' => 0,
+                'return_format' => 'value',
+                'wrapper' => ['width' => '50'],
+            ],
+        ];
+    }
+
+    public static function sectionHeadingSpacingClasses(string $preset, string $extra = ''): string
+    {
+        $base = match ($preset) {
+            'carousel' => 'mb-14 md:mb-5',
+            'compact' => 'mb-8 md:mb-5',
+            default => 'mb-10 md:mb-12',
+        };
+
+        return trim($extra !== '' ? $base . ' ' . $extra : $base);
+    }
+
+    /**
+     * @param array<string, mixed> $component
+     */
+    public static function resolveSectionHeadingSpacing(
+        array $component,
+        string $fieldKey,
+        string $default = 'standard'
+    ): string {
+        $raw = is_string($component[$fieldKey] ?? null) ? trim($component[$fieldKey]) : '';
+
+        if (in_array($raw, ['standard', 'carousel', 'compact'], true)) {
+            return $raw;
+        }
+
+        return $default;
+    }
+
+    /**
+     * Margin below intro copy / heading before a filter or tab pill row.
+     */
+    public static function sectionIntroToControlsGapClasses(string $extra = ''): string
+    {
+        $base = 'mb-6 md:mb-8';
+
+        return trim($extra !== '' ? $base . ' ' . $extra : $base);
+    }
+
+    /**
+     * Margin below a filter / tab pill row before a card grid or panel stack.
+     * Apply on the control row — never `mt-*` on the grid beneath.
+     */
+    public static function sectionControlsToFollowContentGapClasses(string $extra = ''): string
+    {
+        $base = 'mb-10 md:mb-14';
+
+        return trim($extra !== '' ? $base . ' ' . $extra : $base);
+    }
+
+    /**
+     * Image-hero H1 — mobile `51:9234`: Canela 46 / lh 1 (wraps cleanly); desktop
+     * `51:9364`: Canela 96 / lh 0.7 display lockup. Homepage slider uses its own
+     * ramp in hero-slider.blade.php — not this helper.
      */
     public static function imageHeroTitleClasses(
         string $toneClass = 'text-glowleaf',
         string $extra = ''
     ): string {
-        $base = 'font-heading text-[46px] leading-[0.7] md:text-9xl ' . $toneClass;
+        $base = 'font-heading text-[46px] leading-none md:text-9xl md:leading-[0.7] ' . $toneClass;
 
         return trim($extra !== '' ? $base . ' ' . $extra : $base);
     }
@@ -290,7 +490,7 @@ final class Component
      * their own inner shell.
      *
      * Outer vertical padding (`pt-*` / `pb-*` / `py-*` on the section root) is
-     * **never** emitted — inter-section spacing is the parent grid `gap-y-24`
+     * **never** emitted — inter-section spacing is the parent grid `gap-y-[76px]`
      * ({@see \App\Helpers\Grid::getMainGridContainerClasses()}), with optional
      * negative `mt-*` from {@see \App\Helpers\Rhythm} for flush/breathed rows.
      * Painted bands apply *internal* padding inside their own shells only.

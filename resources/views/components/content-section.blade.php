@@ -14,6 +14,7 @@
   $heading = trim((string) ($c['content_heading'] ?? ''));
   $body = (string) ($c['content_body'] ?? '');
   $hasContent = $heading !== '' || trim(strip_tags($body)) !== '';
+  $usesIntroStackGap = $heading !== '' && trim(strip_tags($body)) !== '';
 @endphp
 
 @if($hasContent)
@@ -21,17 +22,18 @@
   class="content-section {{ esc_attr($root) }} relative text-deep-moss"
   data-component-root
   data-content-section>
-  <div class="{{ LayoutShell::INNER_MAX_GUTTERED }} text-left">
+  <div
+    class="{{ LayoutShell::INNER_MAX_GUTTERED }} text-left {{ $usesIntroStackGap ? 'section-intro-stack flex flex-col' : '' }}">
   @if($heading !== '')
     {{-- Section H2: 64px desktop / 48px mobile (Component::sectionHeadingClasses). --}}
-    <{{ $headingTag }} class="content-section__heading {{ Component::sectionHeadingClasses('text-deep-moss', 'mb-4') }}">
+    <{{ $headingTag }} class="content-section__heading {{ Component::sectionIntroHeadingClasses('text-deep-moss') }}">
       {{ esc_html($heading) }}
     </{{ $headingTag }}>
   @endif
 
   @if(trim(strip_tags($body)) !== '')
     <div
-      class="content-section__body prose prose-lg max-w-none text-deep-moss prose-headings:text-deep-moss prose-p:text-deep-moss prose-li:text-deep-moss prose-strong:text-deep-moss rt-link-prose {{ esc_attr($tone) }}">
+      class="content-section__body prose prose-lg max-w-none text-deep-moss prose-headings:text-deep-moss prose-p:text-deep-moss prose-li:text-deep-moss prose-strong:text-deep-moss rt-link-prose [&_p:first-child]:mt-0 {{ esc_attr($tone) }} {{ $usesIntroStackGap ? Component::sectionIntroContentStackClasses('items-start') : '' }}">
       {!! $body !!}
     </div>
   @endif

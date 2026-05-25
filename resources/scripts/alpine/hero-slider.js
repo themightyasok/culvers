@@ -84,14 +84,6 @@ export default function registerHeroSliderAlpine(Alpine) {
       });
 
       this.splide.mount();
-      const splideInstance = this.splide;
-      window.requestAnimationFrame(() => {
-        window.requestAnimationFrame(() => {
-          if (this.splide === splideInstance && typeof splideInstance.refresh === 'function') {
-            splideInstance.refresh();
-          }
-        });
-      });
     },
 
     destroy() {

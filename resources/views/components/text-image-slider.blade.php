@@ -89,7 +89,7 @@
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
       @if($heading !== '')
         {{-- Section H2: 64px desktop / 48px mobile (Component::sectionHeadingClasses). --}}
-        <{{ $headingTag }} class="text-image-slider__heading {{ Component::sectionHeadingClasses('text-deep-moss', 'mb-12 text-center') }}">
+        <{{ $headingTag }} class="text-image-slider__heading {{ Component::sectionIntroHeadingClasses('text-deep-moss', Component::sectionHeadingToFollowContentGapClasses() . ' text-center') }}">
           {{ esc_html($heading) }}
         </{{ $headingTag }}>
       @endif
@@ -100,6 +100,7 @@
               $labelId = $instanceId . '-l-' . $i;
               $panelId = $instanceId . '-p-' . $i;
               $isOpen = in_array($i, $defaultOpen, true);
+              $hasItemCta = $item['cta_label'] !== '' && $item['cta_url'] !== '';
               $hasLeftImage = $item['image_left'] !== null
                   && trim((string) ($item['image_left']['url'] ?? '')) !== '';
               $hasRightImage = $item['image_right'] !== null
@@ -149,12 +150,12 @@
                 x-bind:inert="!isOpen({{ $i }})">
                 <div class="text-image-slider__panel-inner overflow-hidden">
                   <div
-                    class="text-image-slider__body mx-auto max-w-[44rem] px-2 py-6 text-left font-sans text-base font-light leading-7 text-deep-moss/90 lg:py-10 lg:text-center lg:text-lg rt-link-faded [&_p+p]:mt-3 [&_strong]:font-medium"
+                    class="text-image-slider__body mx-auto max-w-[44rem] px-2 text-left font-sans text-base font-light leading-7 text-deep-moss/90 lg:text-center lg:text-lg rt-link-faded [&_p+p]:mt-3 [&_strong]:font-medium {{ $hasItemCta ? 'pt-6 lg:pt-10' : 'py-6 lg:py-10' }}"
                     data-tis-body>
                     {!! $item['body_html'] !!}
                   </div>
-                  @if($item['cta_label'] !== '' && $item['cta_url'] !== '')
-                    <div class="text-image-slider__cta mx-auto flex max-w-[44rem] justify-start px-2 pb-2 lg:justify-center lg:pb-4">
+                  @if($hasItemCta)
+                    <div class="text-image-slider__cta mx-auto mt-6 flex max-w-[44rem] justify-start px-2 pb-6 lg:justify-center lg:pb-10">
                       @include('components.button', [
                           'label' => $item['cta_label'],
                           'href' => $item['cta_url'],

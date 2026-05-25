@@ -24,6 +24,18 @@ final class EventFields
             'title' => __('Event listing fields', 'culvers'),
         ]);
 
+        $group->addImage('event_card_image', [
+            'label' => __('Card image', 'culvers'),
+            'instructions' => __(
+                'Portrait photo for three-card blocks and the events archive grid. '
+                . 'Falls back to the featured image, then the single-page hero image when empty.',
+                'culvers'
+            ),
+            'return_format' => 'array',
+            'preview_size' => 'medium',
+            'library' => 'all',
+        ]);
+
         $group->addText('event_card_date', [
             'label' => __('Date line (card)', 'culvers'),
             'instructions' => __('Short date for the card, e.g. "Sat 12 July" or "Thu 12 – Sun 15 July".', 'culvers'),

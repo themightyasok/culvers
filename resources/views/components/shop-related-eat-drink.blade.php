@@ -13,6 +13,9 @@
   $headingTag = Component::headingTagFromComponent($c, 'eat_drink_related_heading_level', 2);
 
   $heading = trim((string) ($c['eat_drink_related_heading'] ?? __('More flavours to discover', 'culvers')));
+  $relatedHeadingSpacing = Component::sectionHeadingSpacingClasses(
+      Component::resolveSectionHeadingSpacing($c, 'eat_drink_related_heading_spacing', 'carousel')
+  );
   $viewUrl = trim((string) ($c['eat_drink_related_view_all_url'] ?? ''));
   $viewLabel = trim((string) ($c['eat_drink_related_view_all_label'] ?? __('View all', 'culvers')));
 
@@ -33,7 +36,7 @@
     x-data="shopRelatedShops()">
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
       @if($heading !== '')
-        <{{ $headingTag }} class="shop-related-eat-drink__heading {{ Component::sectionHeadingClasses('text-faded-olive', 'mx-auto mb-10 max-w-[52rem] text-center md:mb-14') }}">
+        <{{ $headingTag }} class="shop-related-eat-drink__heading {{ Component::sectionIntroHeadingClasses('text-faded-olive', 'mx-auto max-w-[52rem] text-center ' . $relatedHeadingSpacing) }}">
           {{ esc_html($heading) }}
         </{{ $headingTag }}>
       @endif
@@ -62,7 +65,7 @@
       </div>
 
       @if($viewUrl !== '')
-        <div class="mt-12 flex justify-center md:mt-14">
+        <div class="{{ Component::sectionBodyToCtaGapClasses('flex justify-center') }}">
           @include('components.button', ['label' => $viewLabel, 'href' => $viewUrl])
         </div>
       @endif

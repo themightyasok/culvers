@@ -16,7 +16,8 @@
     "lint:js:fix": "eslint \"resources/scripts/**/*.js\" --fix",
     "format": "prettier --write \"resources/**/*.{js,css}\" \"tailwind.config.js\" \"vite.config.js\"",
     "format:check": "prettier --check \"resources/**/*.{js,css}\" \"tailwind.config.js\" \"vite.config.js\"",
-    "verify": "npm run lint && npm run format:check && npm run build && composer lint && composer analyse",
+    "verify": "npm run lint && npm run format:check && npm run build && composer lint && composer analyse && npm run check:blade-forks",
+    "check:blade-forks": "php scripts/check-component-blade-forks.php",
     "test:e2e:directory-filters": "node scripts/e2e-directory-filters.mjs",
     "prepare": "husky || true"
   },

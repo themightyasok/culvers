@@ -33,9 +33,6 @@ app/Directory/
 ├── ShopArchiveFields.php         ← ACF options page for the /shops/ archive customisation
 ├── ShopArchiveThreeCard.php      ← optional "stories" strip below the shops archive
 ├── DirectoryFlexibleDefaults.php ← editor-only defaults for new directory singles
-├── ShopSingleFlexibleSeedData.php
-├── ShopDirectoryPopulate.php     ← one-shot CLI populate from Figma assets
-├── ShopDirectorySeedData.php
 ├── ShopTaxonomySeeder.php        ← seeds default category / type terms
 ├── EatDrinkFields.php            ← Eat & Drink listing fields
 ├── EatDrinkTaxonomySeeder.php

@@ -47,16 +47,10 @@ the theme architecture and component contract.
 - **Admin:** **Shops** menu → custom post type **`culvers_shop`** with
   taxonomies **Shop categories** and **Retailer types**. Default terms
   are seeded once on load (Figma-aligned labels).
-- **Demo retailers + hero / mega URLs:** optional CLI
-  `scripts/shops-directory-populate.php` sideloads logos from the
-  Figma Developer Release MCP asset URLs, assigns categories/types,
-  saves **`Shop directory`** options (`/shops/` hero slider), and
-  syncs the primary mega menu so **Shop** → `/shops/` and each
-  category row → `/shops/?category={slug}`. Run via
-  `./scripts/with-local-env.sh wp eval-file wp-content/themes/culvers/scripts/shops-directory-populate.php`
-  from `app/public`. Theme `init` also runs
+- **Demo retailers + hero / mega URLs:** managed in **WP admin** (Shops
+  CPT, **Shop directory** options, primary nav). Theme `init` runs
   `ShopDirectoryNavSync::maybeSync()` once (option-versioned) so
-  existing installs pick up those URLs without re-running the script.
+  category mega links point at `/shops/?category={slug}`.
 - **Cards:** ACF **Shop listing fields** on each shop: logo + opening
   hours line; fallback featured image + placeholder hours text.
 
@@ -162,21 +156,13 @@ Use the helper (matches your WordPress root to a site in
 cd wp-content/themes/culvers   # or stay anywhere and pass absolute path to script
 ./scripts/with-local-env.sh wp theme list --status=active
 ./scripts/with-local-env.sh mysql local -e "SHOW TABLES;"
-./scripts/with-local-env.sh wp eval-file wp-content/themes/culvers/scripts/homepage-populate-flexible.php
-./scripts/with-local-env.sh wp eval-file wp-content/themes/culvers/scripts/shops-directory-populate.php
+./scripts/with-local-env.sh wp eval-file wp-content/themes/culvers/scripts/mega-menu-sync-previews.php
 ```
 
-The **homepage** command creates/finds the **Home** page, sets
-**Settings → Reading** to that **static front page**, and saves the
-canonical **Page Components** stack (hero → three video cards →
-horizontal scroller → video → info grid → three posts → opening
-hours) via `update_field('components', …)` — the same payload as
-`HomepageFlexibleSeedData`. Re-running replaces that flexible field.
-
-The **shops** command upserts **Shops** demo posts from Figma MCP
-imagery, saves **`Shop directory`** hero slides (see WP admin →
-**Shop directory**), and syncs **Shop** mega-menu URLs to `/shops/`
-plus `?category=` deep links.
+Content lives in **WordPress** (ACF flexible fields, post meta, options,
+media library). Use WP admin or targeted CLI scripts under
+`scripts/` to change it — there is no theme-side seed layer that runs
+at request time.
 
 > Do not put `declare(strict_types=1);` in scripts executed by
 > `wp eval-file` with Local's bundled PHP (it fatal-errors); the

@@ -29,6 +29,8 @@ if (! function_exists('culvers_blade')) {
         }
 
         $blade = new BladeOne($views, $cache, BladeOne::MODE_AUTO);
+        // Prevent @include argument keys from persisting into later templates (flexible rows, etc.).
+        $blade->includeScope = true;
 
         return $blade;
     }

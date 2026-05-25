@@ -47,7 +47,8 @@
 
   @media (min-width: 1024px) {
     :root {
-      --site-header-offset-fallback: 11.25rem;
+      /* 46px top + 10px bottom + 80px pill = 136px — must match measured `.site-header__chrome`. */
+      --site-header-offset-fallback: 8.5rem;
     }
   }
 
@@ -99,6 +100,25 @@
 @layer components {
   .prose :where(h1, h2, h3, h4, h5, h6) {
     @apply font-heading font-normal;
+  }
+
+  /*
+   * Intro stacks (heading → body → CTA) — spacing must work WITHOUT text-box-trim
+   * (unsupported in most browsers today). Flex `gap-*` + token heading line-heights
+   * reads ~15px too loose; margin on the content slot + leading-none on the heading
+   * matches the tight Figma bands on Plan My Visit / info_block / section_header.
+   */
+  .section-intro-stack__heading {
+    @apply m-0 leading-none;
+    text-box-trim: trim-both;
+    text-box-edge: cap alphabetic;
+  }
+
+  .section-intro-stack__content {
+    /* mt-8 (32px) ≈ 19px cap→body in browser — closest stock step to Figma ~22px trimmed. */
+    @apply mt-8;
+    text-box-trim: trim-both;
+    text-box-edge: cap alphabetic;
   }
 
   /* Prose link underlines: tuned via theme.extend.typography in tailwind.config.js */
@@ -242,10 +262,9 @@
     pointer-events: none;
     position: absolute;
     inset: 0;
-    bottom: -1px;
     z-index: 30;
-    box-sizing: border-box;
-    border: 6px solid var(--color-glowleaf);
+    /* Inset shadow — uniform 6px on all sides; border + bottom:-1px was clipped by overflow:hidden. */
+    box-shadow: inset 0 0 0 6px var(--color-glowleaf);
   }
 
   @media (max-width: 1023px) {
@@ -274,15 +293,64 @@
     pointer-events: none;
     position: absolute;
     inset: 0;
-    bottom: -1px;
     z-index: 30;
-    box-sizing: border-box;
-    border: 6px solid var(--color-glowleaf);
+    /* Inset shadow — uniform 6px on all sides; border + bottom:-1px was clipped by overflow:hidden. */
+    box-shadow: inset 0 0 0 6px var(--color-glowleaf);
   }
 
   @media (max-width: 1023px) {
     .image-hero--viewport::after {
       top: var(--site-header-offset, var(--site-header-offset-fallback));
+    }
+  }
+
+  /*
+   * Text-only hero backdrop — Figma legal / policy headers (`51:6558` → `51:6560`–`51:6561`):
+   * faded olive + 50% black scrim, decorative white diamond (overlay blend, not soft-light).
+   */
+  .text-hero-viewport__backdrop {
+    pointer-events: none;
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .text-hero-viewport__backdrop-base {
+    position: absolute;
+    inset: 0;
+    background-color: var(--color-faded-olive);
+  }
+
+  .text-hero-viewport__backdrop-scrim {
+    position: absolute;
+    inset: 0;
+    background-color: rgb(0 0 0 / 0.5);
+  }
+
+  .text-hero-viewport__backdrop-diamond {
+    position: absolute;
+    left: calc(20.83% + 31px);
+    top: -42rem;
+    display: none;
+    width: 82.375rem;
+    height: 82.375rem;
+    align-items: center;
+    justify-content: center;
+    mix-blend-mode: overlay;
+  }
+
+  .text-hero-viewport__backdrop-diamond-inner {
+    flex: none;
+    width: 58.252rem;
+    height: 58.252rem;
+    transform: rotate(-45deg);
+    background-color: rgb(255 255 255 / 0.2);
+  }
+
+  @media (min-width: 768px) {
+    .text-hero-viewport__backdrop-diamond {
+      display: flex;
     }
   }
 
