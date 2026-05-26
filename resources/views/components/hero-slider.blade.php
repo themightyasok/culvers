@@ -94,7 +94,7 @@
               <li class="splide__slide hero-slider__slide">
                 {{-- The 6px Glowleaf inset keyline lives on `.hero-slider--viewport::after`
                      (single source — see resources/styles/app.css). --}}
-                <div class="relative min-h-[100svh] w-full overflow-hidden">
+                <div class="hero-slider__band relative w-full overflow-hidden">
                   {!! Image::renderResponsiveCover($desk, $mobUrl !== '' ? $mob : null, [
                       'class' => 'absolute inset-0 size-full object-cover',
                       'alt' => $alt,
@@ -116,7 +116,7 @@
                   <div class="pointer-events-none absolute inset-0 z-0 bg-black/40" aria-hidden="true"></div>
 
                   <div
-                    class="hero-slider__stage relative z-10 flex min-h-[100svh] w-full items-center px-4 pb-12 lg:px-6 lg:pb-16 lg:pt-[length:var(--site-header-offset,var(--site-header-offset-fallback))] {{ esc_attr($justify) }}">
+                    class="hero-slider__stage hero-slider__band relative z-10 flex w-full items-center px-4 pb-12 lg:min-h-[100svh] lg:px-6 lg:pb-16 lg:pt-[length:var(--site-header-offset,var(--site-header-offset-fallback))] {{ esc_attr($justify) }}">
                     <div class="hero-slider__copy pointer-events-auto max-w-[min(100%,60rem)] motion-safe:transition-opacity motion-safe:duration-300 motion-safe:ease-out {{ esc_attr($textAlign) }}">
                       @if($headline !== '')
                         @php

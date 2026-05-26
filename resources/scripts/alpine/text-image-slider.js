@@ -149,7 +149,8 @@ export default function registerTextImageSliderAlpine(Alpine) {
             gsap.killTweensOf(motionEl);
           }
 
-          if (initial) {
+          /** Mobile accordion image: no bounce/scale — show/hide instantly with the row. */
+          if (initial || isMobile || reducedMotion || !gsap) {
             mediaRoot.classList.toggle('is-active', open);
             motionEl.style.opacity = open ? '1' : '0';
             motionEl.style.visibility = open ? 'visible' : 'hidden';
@@ -159,17 +160,9 @@ export default function registerTextImageSliderAlpine(Alpine) {
                 x: 0,
                 y: 0,
               });
-            } else if (open && restScale !== 1) {
-              motionEl.style.transform = `scale(${restScale})`;
+            } else {
+              motionEl.style.transform = open && restScale !== 1 ? `scale(${restScale})` : '';
             }
-            return;
-          }
-
-          if (reducedMotion || !gsap) {
-            mediaRoot.classList.toggle('is-active', open);
-            motionEl.style.opacity = open ? '1' : '0';
-            motionEl.style.visibility = open ? 'visible' : 'hidden';
-            motionEl.style.transform = open && restScale !== 1 ? `scale(${restScale})` : '';
             return;
           }
 

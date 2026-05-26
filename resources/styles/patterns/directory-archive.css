@@ -17,6 +17,7 @@
  * width/height parity with `/shops/` and `/eat-drink/` directory grids.
  */
 .directory-card-grid {
+  --directory-archive-gap: 22px;
   display: grid;
   gap: var(--directory-archive-gap);
   align-items: start;

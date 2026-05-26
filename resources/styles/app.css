@@ -365,7 +365,12 @@
   }
 
   .hero-slider__splide {
-    @apply relative min-h-[100svh];
+    @apply relative;
+    min-height: 100svh;
+  }
+
+  .hero-slider__band {
+    min-height: 100svh;
   }
 
   /* Splide defaults can add slide spacing; hero must be edge-to-edge */
@@ -376,7 +381,20 @@
 
   .hero-slider__splide .splide__track,
   .hero-slider__splide .splide__list {
-    @apply min-h-[100svh];
+    min-height: 100svh;
+  }
+
+  /*
+   * Mobile: hero sits below the fixed bar (scroll spacer clears the header) —
+   * band height is the remaining viewport, not 100svh on top of the spacer.
+   */
+  @media (max-width: 1023px) {
+    .hero-slider__band,
+    .hero-slider__splide,
+    .hero-slider__splide .splide__track,
+    .hero-slider__splide .splide__list {
+      min-height: calc(100svh - var(--site-header-offset, var(--site-header-offset-fallback)));
+    }
   }
 
   /*
