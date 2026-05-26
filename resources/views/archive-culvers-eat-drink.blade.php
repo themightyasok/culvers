@@ -110,7 +110,6 @@
                     @include('partials.directory-eat-drink-card')
                   @endwhile
                 </div>
-                @include('partials.directory-archive-pagination')
               @endif
             </div>
           </div>

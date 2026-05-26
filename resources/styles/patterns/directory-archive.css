@@ -234,8 +234,3 @@
     transition-duration: 0.01ms !important;
   }
 }
-
-/* Pagination — Figma `51:8828` (43 px Glowleaf active pill, centred row). */
-.directory-archive__pagination-page {
-  min-width: 2.6875rem;
-}

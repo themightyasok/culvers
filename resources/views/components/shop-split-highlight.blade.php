@@ -181,10 +181,9 @@
               @endforeach
             </div>
 
-            {{-- Panel deck — all panels share one grid cell so the column sizes to the tallest;
-                 each panel is `justify-self-center` so the capped copy block (max-w 34.625rem)
-                 sits on the same centre line as the tab row above. --}}
-            <div class="shop-split-highlight__panels relative grid w-full">
+            {{-- Panel deck — inactive panels are absolute so column height follows the
+                 active tab only (avoids empty CTA space when another tab has a button). --}}
+            <div class="shop-split-highlight__panels relative w-full">
               @foreach($tabs as $i => $tab)
                 @php
                     $tabId = $tablistId . '-tab-' . $i;
@@ -194,8 +193,8 @@
                   id="{{ esc_attr($panelId) }}"
                   role="tabpanel"
                   aria-labelledby="{{ esc_attr($tabId) }}"
-                  class="shop-split-highlight__panel section-intro-stack col-start-1 row-start-1 flex max-w-[34.625rem] flex-col items-center justify-self-center transition-opacity duration-300 ease-out"
-                  x-bind:class="activeTab === {{ $i }} ? 'opacity-100' : 'opacity-0 pointer-events-none'"
+                  class="shop-split-highlight__panel section-intro-stack mx-auto flex w-full max-w-[34.625rem] flex-col items-center transition-opacity duration-300 ease-out"
+                  x-bind:class="activeTab === {{ $i }} ? 'relative z-[1] opacity-100' : 'pointer-events-none absolute inset-x-0 top-0 z-0 opacity-0'"
                   x-bind:aria-hidden="activeTab === {{ $i }} ? 'false' : 'true'">
                   @if($tab['kicker'] !== '' || $tab['headline'] !== '')
                     <div class="flex flex-col gap-0 leading-none">
@@ -212,22 +211,29 @@
                     </div>
                   @endif
 
-                  @if($tab['body_plain'] !== '' || $tab['show_cta'])
-                    <div class="{{ Component::sectionIntroContentStackClasses() }}">
                   @if($tab['body_plain'] !== '')
-                    <div class="{{ $bodyClasses }}">
-                      {!! $tab['body_html'] !!}
-                    </div>
-                  @endif
+                    <div class="{{ Component::sectionIntroContentStackClasses() }}">
+                      <div class="{{ $bodyClasses }}">
+                        {!! $tab['body_html'] !!}
+                      </div>
 
-                  @if($tab['show_cta'])
-                    <div class="{{ Component::sectionBodyToCtaGapClasses('flex justify-center') }}">
-                      @include('components.button', [
-                          'label' => $tab['cta_label'],
-                          'href' => $tab['cta_url'],
-                      ])
+                      @if($tab['show_cta'])
+                        <div class="{{ Component::sectionBodyToCtaGapClasses('flex justify-center') }}">
+                          @include('components.button', [
+                              'label' => $tab['cta_label'],
+                              'href' => $tab['cta_url'],
+                          ])
+                        </div>
+                      @endif
                     </div>
-                  @endif
+                  @elseif($tab['show_cta'])
+                    <div class="{{ Component::sectionIntroContentStackClasses() }}">
+                      <div class="{{ Component::sectionBodyToCtaGapClasses('mt-0 flex justify-center') }}">
+                        @include('components.button', [
+                            'label' => $tab['cta_label'],
+                            'href' => $tab['cta_url'],
+                        ])
+                      </div>
                     </div>
                   @endif
                 </div>

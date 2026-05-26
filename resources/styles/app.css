@@ -251,9 +251,14 @@
     max-width: 100vw;
     margin-left: calc(50% - 50vw);
     margin-right: calc(50% - 50vw);
-    margin-top: calc(-1 * var(--site-header-offset, var(--site-header-offset-fallback)));
     /* Clip cover/parallax layers — inner overflow alone can leak ~1px at the bottom edge. */
     overflow: hidden;
+  }
+
+  @media (min-width: 1024px) {
+    .hero-slider--viewport {
+      margin-top: calc(-1 * var(--site-header-offset, var(--site-header-offset-fallback)));
+    }
   }
 
   /* Figma: 6px Glowleaf keyline framing the hero band (full bleed; sits above content z-20). */
@@ -269,7 +274,7 @@
 
   @media (max-width: 1023px) {
     .hero-slider--viewport::after {
-      top: var(--site-header-offset, var(--site-header-offset-fallback));
+      top: 0;
     }
   }
 
@@ -284,8 +289,13 @@
     max-width: 100vw;
     margin-left: calc(50% - 50vw);
     margin-right: calc(50% - 50vw);
-    margin-top: calc(-1 * var(--site-header-offset, var(--site-header-offset-fallback)));
     overflow: hidden;
+  }
+
+  @media (min-width: 1024px) {
+    .image-hero--viewport {
+      margin-top: calc(-1 * var(--site-header-offset, var(--site-header-offset-fallback)));
+    }
   }
 
   .image-hero--viewport::after {
@@ -300,7 +310,7 @@
 
   @media (max-width: 1023px) {
     .image-hero--viewport::after {
-      top: var(--site-header-offset, var(--site-header-offset-fallback));
+      top: 0;
     }
   }
 
@@ -397,9 +407,9 @@
  */
 .image-hero__logo {
   display: block;
-  width: min(82vw, 18.8125rem);
+  width: min(85vw, 22rem);
   height: auto;
-  max-height: 1.75rem;
+  max-height: 3rem;
   object-fit: contain;
   object-position: center;
   /* Brand marks from CMS are usually dark/colour; render white over hero imagery
@@ -472,6 +482,17 @@
 @supports (padding: max(0px)) {
   .hero-slider__pagination.splide__pagination {
     right: max(2.875rem, env(safe-area-inset-right, 0px));
+  }
+}
+
+@media (max-width: 639px) {
+  .hero-slider__pagination.splide__pagination {
+    top: auto;
+    right: auto;
+    bottom: max(2rem, env(safe-area-inset-bottom, 0px));
+    left: 50%;
+    flex-direction: row;
+    translate: -50% 0;
   }
 }
 

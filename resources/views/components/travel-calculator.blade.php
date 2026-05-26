@@ -32,8 +32,8 @@
 
   $heading = trim((string) ($c['tc_heading'] ?? ''));
   $intro = trim((string) ($c['tc_intro'] ?? ''));
-  $originLabel = __('Your destination', 'culvers');
-  $originPlaceholder = __('Type your destination here', 'culvers');
+  $originLabel = __('Starting point', 'culvers');
+  $originPlaceholder = __('Type your starting point here', 'culvers');
   $modeLabel = __('travel by', 'culvers');
   $buttonLabel = __('Search', 'culvers');
 

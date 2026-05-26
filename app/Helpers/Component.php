@@ -470,14 +470,22 @@ final class Component
     }
 
     /**
-     * Centre-map category labels on mobile — Figma `51:8961`–`8976`: Halyard Book 20 / lh 24.
-     * Desktop accordion list keeps Commuter uppercase (`lg:` utilities on the element).
+     * Centre-map filter labels (category rows + accordion group toggles) — Figma Plan My Visit
+     * `51:5906`–`5917`: Commuters Sans SemiBold 12 / uppercase.
+     */
+    public static function centreMapFilterLabelClasses(string $extra = ''): string
+    {
+        $base = 'font-label text-xs font-semibold uppercase';
+
+        return trim($extra !== '' ? $base . ' ' . $extra : $base);
+    }
+
+    /**
+     * @deprecated Use {@see centreMapFilterLabelClasses()} — centre map filters use Commuters at all breakpoints.
      */
     public static function centreMapCategoryMobileClasses(string $extra = ''): string
     {
-        $base = 'max-lg:font-sans max-lg:text-xl max-lg:font-light max-lg:normal-case max-lg:leading-6 max-lg:tracking-normal';
-
-        return trim($extra !== '' ? $base . ' ' . $extra : $base);
+        return self::centreMapFilterLabelClasses($extra);
     }
 
     /**
@@ -490,7 +498,7 @@ final class Component
      * their own inner shell.
      *
      * Outer vertical padding (`pt-*` / `pb-*` / `py-*` on the section root) is
-     * **never** emitted — inter-section spacing is the parent grid `gap-y-[76px]`
+     * **never** emitted — inter-section spacing is the parent grid `gap-y-[100px]`
      * ({@see \App\Helpers\Grid::getMainGridContainerClasses()}), with optional
      * negative `mt-*` from {@see \App\Helpers\Rhythm} for flush/breathed rows.
      * Painted bands apply *internal* padding inside their own shells only.

@@ -71,7 +71,7 @@
           @endif
         </div>
 
-        <div class="flex flex-col items-start py-10 text-left lg:items-center lg:px-8 lg:py-0 lg:pt-1 lg:text-center">
+        <div class="flex flex-col items-center py-10 text-center lg:items-center lg:px-8 lg:py-0 lg:pt-1 lg:text-center">
           <p class="{{ Component::mobilePanelSubheadClasses('text-faded-olive') }}">{{ esc_html($addressLabel) }}</p>
           @if($addressForDisplay !== '')
             <p class="mt-3 font-sans text-2xl font-light leading-[30px] text-faded-olive">

@@ -150,7 +150,7 @@ final class ArchiveHeroFields
         ]);
 
         $group->addImage($prefix . '_footer_newsletter_image', [
-            'label' => __('Footer newsletter — background image', 'culvers'),
+            'label' => __('Footer newsletter — background image (tablet / desktop)', 'culvers'),
             'instructions' => __(
                 'Used on this directory’s archive and on singles until a post overrides it '
                 . '(sidebar “Footer newsletter” when editing a single). Leave empty to use the site-wide '
@@ -159,6 +159,17 @@ final class ArchiveHeroFields
             ),
             'return_format' => 'id',
             'preview_size' => 'large',
+        ]);
+
+        $group->addImage($prefix . '_footer_newsletter_image_mobile', [
+            'label' => __('Footer newsletter — background image (mobile override)', 'culvers'),
+            'instructions' => __(
+                'Optional tighter crop for small screens. Falls back to the desktop image above, '
+                . 'then the site-wide Customizer mobile/desktop images when empty.',
+                'culvers'
+            ),
+            'return_format' => 'id',
+            'preview_size' => 'medium',
         ]);
 
         if (isset($config['extra'])) {

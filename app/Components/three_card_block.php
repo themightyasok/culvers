@@ -2,10 +2,11 @@
 
 /**
  * Three card block — hero-style row with optional blog category tabs + View all.
- * Cards always come from published posts (directory CPTs or blog categories).
+ * Manual cards (image / video, title, link) or auto-populated from directory CPTs / blog.
  */
 
 use App\Helpers\Component;
+use App\Helpers\ThreeCardBlock;
 
 $onlyWhen = static function (string $value): array {
     return [[['field' => 'cards_source', 'operator' => '==', 'value' => $value]]];
@@ -57,7 +58,7 @@ return [
         'cards_media_overlay_opacity' => Component::overlayOpacityRangeField(
             __('Card media overlay darkness', 'culvers'),
             __(
-                'Black overlay on each card image (0% = none). '
+                'Black overlay on each card image or video (0% = none). '
                     . 'Helps white title text stay readable over bright photography.',
                 'culvers'
             ),
@@ -70,15 +71,17 @@ return [
             'options' => [
                 'label' => __('Card source', 'culvers'),
                 'instructions' => __(
-                    'Pick published posts from directory CPTs (events, offers, news, shops, eat & drink, careers) '
-                        . 'or from blog categories. Card title, image, and link always come from the post.',
+                    'Manual — pick up to three cards (image or video, title, link). '
+                        . 'Directory posts — latest items from selected CPTs with optional toggle tabs. '
+                        . 'Blog — category tabs that pull recent posts.',
                     'culvers'
                 ),
                 'choices' => [
+                    'manual' => __('Manual (up to three cards)', 'culvers'),
                     'cpt' => __('Directory posts (latest items)', 'culvers'),
                     'blog' => __('Blog posts (category tabs)', 'culvers'),
                 ],
-                'default_value' => 'cpt',
+                'default_value' => 'manual',
                 'layout' => 'horizontal',
                 'return_format' => 'value',
             ],
@@ -112,9 +115,6 @@ return [
             ],
         ],
         'cards_cpt_post_type' => [
-            /* Multi-select so a single block can power a "What are you looking for today?"
-               toggle that flips between News / Events / Offers cards. One tab per selected
-               CPT (tab label = the human label below). Order of selection = tab order. */
             'type' => 'select',
             'options' => [
                 'label' => __('Directory CPTs', 'culvers'),
@@ -179,4 +179,5 @@ return [
             ],
         ],
     ],
+    'items' => ThreeCardBlock::manualCardsItemsTabFields($onlyWhen('manual')),
 ];

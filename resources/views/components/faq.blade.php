@@ -4,7 +4,7 @@
   use App\Helpers\LayoutShell;
 
   /**
-   * FAQ — centred Canela heading + glowleaf keyline + accordion of disclosure
+   * FAQ — centred Canela heading + accordion of disclosure rows. Optional
    * rows. Optional decorative line-art images flank the column on lg+ screens.
    * Implements the WAI ARIA disclosure pattern (one button per question with
    * `aria-expanded` controlling the answer region). Figma ref: 51:7998.
@@ -15,7 +15,6 @@
   $headingTag = Component::headingTagFromComponent($c, 'faq_heading_level', 2);
 
   $heading = trim((string) ($c['faq_heading'] ?? ''));
-  $showKeyline = ! empty($c['faq_show_keyline']);
   $openMode = ($c['faq_open_mode'] ?? 'single') === 'multi' ? 'multi' : 'single';
 
   $itemsRaw = $c['faq_items'] ?? [];
@@ -119,9 +118,6 @@
           <{{ $headingTag }} class="{{ Component::sectionIntroHeadingClasses('text-faded-olive', Component::sectionHeadingToFollowContentGapClasses() . ' text-center') }}">
             {{ esc_html($heading) }}
           </{{ $headingTag }}>
-          @if($showKeyline)
-            <span class="faq__keyline mt-6 block h-[2px] w-4 bg-glowleaf" aria-hidden="true"></span>
-          @endif
         @endif
 
         <div class="faq__list w-full">
@@ -139,7 +135,7 @@
                   {{-- Desktop spec preserved (`text-lg md:text-xl`, Figma 51:8007 desktop = 20 / lh 1.3).
                        `max-sm:text-xl` bumps viewports under 640 px to Figma 51:9315 mobile (20 / lh 1.3)
                        without touching tablet (640-767, intentionally 18) or desktop. --}}
-                  class="faq__question group flex w-full cursor-pointer items-center justify-between gap-4 pt-7 pb-3 text-left font-sans text-lg leading-[1.3] text-faded-olive transition-colors culvers-focus-ring md:pt-5 md:pb-5 md:text-xl max-sm:text-xl"
+                  class="faq__question group flex w-full cursor-pointer items-center justify-between gap-4 py-6 text-left font-sans text-lg leading-[1.3] text-faded-olive transition-colors culvers-focus-ring md:py-5 md:text-xl max-sm:text-xl"
                   data-faq-question
                   aria-controls="{{ esc_attr($panelId) }}"
                   aria-expanded="{{ $isOpen ? 'true' : 'false' }}"

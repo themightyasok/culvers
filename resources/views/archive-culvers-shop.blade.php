@@ -123,7 +123,6 @@
                     @include('partials.directory-shop-card')
                   @endwhile
                 </div>
-                @include('partials.directory-archive-pagination')
               @endif
             </div>
           </div>

@@ -73,7 +73,7 @@
     class="image-hero image-hero--viewport {{ esc_attr($root) }} relative isolate w-full text-white {{ $hasHero ? '' : 'text-hero-viewport' }}"
     data-component-root
     data-image-hero>
-    <div class="relative {{ $heroBandMin }} w-full overflow-hidden">
+    <div class="relative {{ $heroBandMin }} w-full overflow-hidden max-lg:flex max-lg:flex-col max-lg:items-center max-lg:justify-center">
       @if(! $hasHero)
         @include('partials.text-hero-backdrop')
       @endif
@@ -93,7 +93,7 @@
       @endif
 
       <div
-        class="relative z-20 flex {{ $heroBandMin }} w-full flex-col items-center justify-center px-4 pb-12 pt-[length:var(--site-header-offset,var(--site-header-offset-fallback))] text-center md:px-5 lg:px-6 md:pb-14">
+        class="relative z-20 flex w-full flex-col items-center justify-center px-4 text-center md:px-5 lg:absolute lg:inset-0 lg:px-6 lg:pb-14 lg:pt-[length:var(--site-header-offset,var(--site-header-offset-fallback))]">
         @if($titleInImage)
           {{-- Title (and any subtitle) is part of the supplied artwork; render --}}
           {{-- only an sr-only h1 so the page still has a real heading for AT. --}}

@@ -96,7 +96,7 @@ final class Grid
     /**
      * Class spine for the main flexible-components grid container.
      *
-     * Inter-section vertical rhythm: **`gap-y-[76px]`** between flexible rows.
+     * Inter-section vertical rhythm: **`gap-y-[100px]`** between flexible rows.
      * {@see Rhythm} adds negative `mt-*` only for flush / breathed exceptions.
      *
      * Horizontal layout: 12 columns + `gap-x-6`. Do not stack outer `py-*` on
@@ -104,7 +104,7 @@ final class Grid
      */
     public static function getMainGridContainerClasses(): string
     {
-        return 'grid grid-cols-12 gap-x-6 gap-y-[76px]';
+        return 'grid grid-cols-12 gap-x-6 gap-y-[100px]';
     }
 
     /**

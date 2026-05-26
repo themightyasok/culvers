@@ -471,7 +471,7 @@
     <h2 id="mega-mobile-drawer-title" class="sr-only">{{ __('Site menu', 'culvers') }}</h2>
 
     <div
-      class="flex shrink-0 items-center justify-between gap-4 border-b border-faded-olive/15 px-5 pb-4 pt-[max(0.5rem,env(safe-area-inset-top))] sm:px-6">
+      class="flex shrink-0 items-center justify-between gap-4 border-b border-faded-olive/15 px-5 py-4 pt-[max(1rem,env(safe-area-inset-top))] sm:px-6">
       <a
         class="shrink-0 focus-visible:rounded-sm culvers-focus-ring"
         href="{{ esc_url(home_url('/')) }}"

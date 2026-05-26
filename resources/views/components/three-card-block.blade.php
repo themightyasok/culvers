@@ -3,14 +3,14 @@
   use App\Helpers\ThreeCardBlock;
 
   /**
-   * Three card block — directory CPT or blog category tabs (1–3 cells per tab).
-   * Card title, image, and link always come from the selected posts.
+   * Three card block — manual cards (image / video) or directory CPT / blog category tabs.
    */
 
   $c = is_array($component ?? null) ? $component : [];
   $c = ThreeCardBlock::applyEditorFallback($c);
   $root = Component::rootClasses($c);
   $headingTag = Component::headingTagFromComponent($c, 'cards_heading_level', 2);
+  $isManualMode = ThreeCardBlock::isManualSource($c);
 
   $tabs = ThreeCardBlock::buildTabPanels($c);
   $showTabs = count($tabs) > 1;
@@ -72,7 +72,7 @@
       @include('partials.section-intro-stack', [
           'headingTag' => $headingTag,
           'heading' => $heading,
-          'headingClasses' => Component::sectionIntroHeadingClasses('text-faded-olive'),
+          'headingClasses' => Component::sectionIntroHeadingClasses('text-faded-olive', 'max-sm:text-6xl'),
           'subheading' => $sub,
           'subheadingClasses' => 'font-sans text-xs uppercase tracking-widest text-faded-olive md:text-xs',
           'bodyHtml' => $body,
@@ -152,7 +152,7 @@
                 @include('partials.three-card-block-card', [
                   'card' => $card,
                   'cardAspectClass' => 'aspect-[398/230]',
-                  'isManualMode' => false,
+                  'isManualMode' => $isManualMode,
                   'showMobileArrow' => true,
                   'mobileArrowLayout' => 'inline',
                   'mediaOverlayOpacity' => $mobilePromoOverlay,
@@ -173,7 +173,7 @@
                       @include('partials.three-card-block-card', [
                         'card' => $card,
                         'cardAspectClass' => 'aspect-[2/3]',
-                        'isManualMode' => false,
+                        'isManualMode' => $isManualMode,
                         'showMobileArrow' => true,
                         'mobileArrowLayout' => 'stack',
                         'mediaOverlayOpacity' => $mediaOverlayOpacity,
@@ -191,7 +191,7 @@
               @include('partials.three-card-block-card', [
                 'card' => $card,
                 'cardAspectClass' => 'aspect-[2/3]',
-                'isManualMode' => false,
+                'isManualMode' => $isManualMode,
                 'showMobileArrow' => false,
                 'mediaOverlayOpacity' => $mediaOverlayOpacity,
               ])

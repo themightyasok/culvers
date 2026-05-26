@@ -133,7 +133,7 @@
             @php($groupSlugJson = json_encode($group['slug'], JSON_HEX_TAG | JSON_HEX_APOS | JSON_UNESCAPED_SLASHES))
             <button
               type="button"
-              class="shrink-0 font-label text-xs font-semibold uppercase leading-6 tracking-wide transition culvers-focus-ring-compact"
+              class="shrink-0 transition culvers-focus-ring-compact {{ Component::centreMapFilterLabelClasses() }}"
               :class="openGroup === {{ e($groupSlugJson) }}
                 ? 'rounded-full bg-glowleaf px-4 py-2 text-[0.8125rem] tracking-wide text-deep-moss'
                 : 'text-dustleaf hover:text-lighter-cream'"
@@ -180,7 +180,7 @@
             <h3 class="m-0">
               <button
                 type="button"
-                class="centre-map__group-toggle flex w-full items-center justify-between gap-4 py-4 text-left font-sans text-sm font-semibold uppercase tracking-widest text-glowleaf transition hover:text-lighter-cream culvers-focus-ring-compact"
+                class="centre-map__group-toggle flex w-full items-center justify-between gap-4 py-4 text-left text-glowleaf transition hover:text-lighter-cream culvers-focus-ring-compact {{ Component::centreMapFilterLabelClasses() }}"
                 aria-expanded="false"
                 :aria-expanded="(openGroup === {{ e($groupSlugJson) }}).toString()"
                 aria-controls="centre-map-group-{{ $groupSlugAttr }}"

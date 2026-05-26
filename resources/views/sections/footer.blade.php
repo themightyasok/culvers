@@ -1,9 +1,14 @@
 @php
   use App\Customizer\FooterCustomizer;
   use App\Footer\FooterNewsletterImage;
+  use App\Helpers\Image;
   use App\Helpers\LayoutShell;
 
-  $newsletterImgId = FooterNewsletterImage::attachmentIdForCurrentView();
+  $newsletterImages = FooterNewsletterImage::imagesForCurrentView();
+  $newsletterDesk = $newsletterImages['desktop'];
+  $newsletterMob = $newsletterImages['mobile'];
+  $newsletterDeskUrl = isset($newsletterDesk['url']) ? trim((string) $newsletterDesk['url']) : '';
+  $newsletterMobUrl = isset($newsletterMob['url']) ? trim((string) $newsletterMob['url']) : '';
   $newsletterAction = FooterCustomizer::newsletterFormAction();
   $instagramUrl = FooterCustomizer::instagramUrl();
   $facebookUrl = FooterCustomizer::facebookUrl();
@@ -93,18 +98,14 @@
           class="footer-newsletter relative overflow-hidden max-lg:min-h-[604px] max-lg:rounded-none min-h-[300px] rounded-lg md:min-h-[380px] md:rounded-[10px] lg:min-h-[420px]"
           data-background-parallax-trigger>
           <div class="pointer-events-none absolute inset-0 overflow-hidden rounded-[inherit]" aria-hidden="true">
-            @if($newsletterImgId > 0 || $newsletterFallbackUri !== '')
+            @if($newsletterDeskUrl !== '' || $newsletterMobUrl !== '' || $newsletterFallbackUri !== '')
               <div class="absolute inset-0 size-full" data-background-parallax-image="1">
-                @if($newsletterImgId > 0)
-                  {!! wp_get_attachment_image(
-                      $newsletterImgId,
-                      'large',
-                      false,
-                      [
-                          'class' => 'absolute inset-0 size-full object-cover object-center',
-                          'sizes' => '(max-width: 768px) 100vw, 1440px',
-                      ]
-                  ) !!}
+                @if($newsletterDeskUrl !== '' || $newsletterMobUrl !== '')
+                  {!! Image::renderResponsiveCover($newsletterDesk, $newsletterMob, [
+                      'class' => 'absolute inset-0 size-full object-cover object-center',
+                      'loading' => 'lazy',
+                      'decoding' => 'async',
+                  ]) !!}
                 @else
                   <img
                     src="{{ esc_url($newsletterFallbackUri) }}"

@@ -26,7 +26,7 @@ final class FooterNewsletterEditorFields
         $group->setGroupConfig('position', 'side');
 
         $group->addImage(FooterNewsletterImage::SINGULAR_FIELD, [
-            'label' => __('Newsletter background', 'culvers'),
+            'label' => __('Newsletter background (tablet / desktop)', 'culvers'),
             'instructions' => __(
                 'Large photo behind the rounded newsletter panel. Leave empty to use the default '
                 . 'for this content type (Appearance → the matching directory screen, e.g. Shop directory / Latest News) '
@@ -35,6 +35,17 @@ final class FooterNewsletterEditorFields
             ),
             'return_format' => 'id',
             'preview_size' => 'large',
+        ]);
+
+        $group->addImage(FooterNewsletterImage::SINGULAR_FIELD_MOBILE, [
+            'label' => __('Newsletter background (mobile override)', 'culvers'),
+            'instructions' => __(
+                'Optional tighter crop for small screens. Falls back to the desktop image above, '
+                . 'then the directory default and Customizer images when empty.',
+                'culvers'
+            ),
+            'return_format' => 'id',
+            'preview_size' => 'medium',
         ]);
 
         $group->setLocation('post_type', '==', 'page')

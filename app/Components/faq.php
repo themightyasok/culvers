@@ -1,7 +1,7 @@
 <?php
 
 /**
- * FAQ — centred Canela heading + glowleaf keyline + accordion of question/answer
+ * FAQ — centred Canela heading + accordion of question/answer disclosure rows.
  * disclosure rows. Optional decorative line-art SVGs/PNGs flank the column on
  * desktop. Figma ref: 51:7998.
  */
@@ -23,15 +23,6 @@ return [
             ],
         ],
         'faq_heading_level' => Component::headingLevelField(null, false, 2, '30'),
-        'faq_show_keyline' => [
-            'type' => 'true_false',
-            'options' => [
-                'label' => __('Show glowleaf keyline under heading', 'culvers'),
-                'default_value' => 1,
-                'ui' => 1,
-                'wrapper' => ['width' => '50'],
-            ],
-        ],
         'faq_open_mode' => [
             'type' => 'select',
             'options' => [

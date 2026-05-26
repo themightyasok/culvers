@@ -112,7 +112,7 @@
             <button
               id="{{ esc_attr($labelId) }}"
               type="button"
-              class="text-image-slider__label group flex w-full cursor-pointer items-center justify-between gap-4 py-2.5 text-left font-heading text-3xl leading-[1.1] text-faded-olive transition-colors duration-300 ease-out culvers-focus-ring lg:justify-center lg:py-3 lg:text-center lg:text-5xl lg:text-black md:text-6xl lg:text-7xl"
+              class="text-image-slider__label group flex w-full cursor-pointer items-center justify-between gap-4 py-6 text-left font-heading text-3xl leading-[1.1] text-faded-olive transition-colors duration-300 ease-out culvers-focus-ring lg:justify-center lg:py-3 lg:text-center lg:text-5xl lg:text-black md:text-6xl lg:text-7xl"
               data-tis-label
               aria-controls="{{ esc_attr($panelId) }}"
               aria-expanded="{{ $isOpen ? 'true' : 'false' }}"

@@ -116,7 +116,7 @@
                   <div class="pointer-events-none absolute inset-0 z-0 bg-black/40" aria-hidden="true"></div>
 
                   <div
-                    class="hero-slider__stage relative z-10 flex min-h-[100svh] w-full items-center px-4 pb-16 pt-[length:var(--site-header-offset,var(--site-header-offset-fallback))] md:px-5 lg:px-6 {{ esc_attr($justify) }}">
+                    class="hero-slider__stage relative z-10 flex min-h-[100svh] w-full items-center px-4 pb-12 lg:px-6 lg:pb-16 lg:pt-[length:var(--site-header-offset,var(--site-header-offset-fallback))] {{ esc_attr($justify) }}">
                     <div class="hero-slider__copy pointer-events-auto max-w-[min(100%,60rem)] motion-safe:transition-opacity motion-safe:duration-300 motion-safe:ease-out {{ esc_attr($textAlign) }}">
                       @if($headline !== '')
                         @php

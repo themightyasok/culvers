@@ -16,6 +16,8 @@ final class FooterCustomizer
 
     public const MOD_NEWSLETTER_IMAGE_ID = 'culvers_footer_newsletter_image_id';
 
+    public const MOD_NEWSLETTER_IMAGE_MOBILE_ID = 'culvers_footer_newsletter_image_mobile_id';
+
     public const MOD_NEWSLETTER_HEADING = 'culvers_footer_newsletter_heading';
 
     /**
@@ -70,8 +72,23 @@ final class FooterCustomizer
         ]);
 
         $wp_customize->add_control(new \WP_Customize_Media_Control($wp_customize, self::MOD_NEWSLETTER_IMAGE_ID, [
-            'label' => __('Newsletter — background image', 'culvers'),
+            'label' => __('Newsletter — background image (tablet / desktop)', 'culvers'),
             'description' => __('Large photo behind the inset rounded newsletter panel.', 'culvers'),
+            'section' => self::SECTION,
+            'mime_type' => 'image',
+        ]));
+
+        $wp_customize->add_setting(self::MOD_NEWSLETTER_IMAGE_MOBILE_ID, [
+            'default' => '',
+            'sanitize_callback' => static fn ($v): int => absint($v),
+        ]);
+
+        $wp_customize->add_control(new \WP_Customize_Media_Control($wp_customize, self::MOD_NEWSLETTER_IMAGE_MOBILE_ID, [
+            'label' => __('Newsletter — background image (mobile override)', 'culvers'),
+            'description' => __(
+                'Optional tighter crop for small screens. Falls back to the tablet/desktop image when empty.',
+                'culvers'
+            ),
             'section' => self::SECTION,
             'mime_type' => 'image',
         ]));

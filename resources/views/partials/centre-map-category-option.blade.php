@@ -15,7 +15,7 @@
   $isAll = ! empty($isAll);
   $filterOnly = ! empty($filterOnly);
   $catUrl = trim((string) ($cat['url'] ?? ''));
-  $rowClass = 'centre-map__category group flex h-full w-full cursor-pointer items-center gap-3 text-left font-label text-xs font-semibold uppercase leading-6 tracking-wide text-light-green transition hover:text-glowleaf culvers-focus-ring-compact ' . Component::centreMapCategoryMobileClasses() . ' lg:rounded-md lg:px-1 lg:py-1.5 lg:font-sans lg:text-sm lg:font-semibold lg:uppercase lg:tracking-[0.18em]';
+  $rowClass = 'centre-map__category group flex h-full w-full cursor-pointer items-center gap-3 text-left text-light-green transition hover:text-glowleaf culvers-focus-ring-compact lg:rounded-md lg:px-1 lg:py-1.5 ' . Component::centreMapFilterLabelClasses();
   $bulletClass = 'centre-map__category-bullet inline-flex size-3 shrink-0 items-center justify-center self-center rounded-full border border-lighter-cream/60 transition';
 @endphp
 @if($catUrl !== '' && ! $filterOnly)

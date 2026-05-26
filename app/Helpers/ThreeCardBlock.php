@@ -7,7 +7,7 @@ namespace App\Helpers;
 use App\Directory\DirectoryCardImage;
 
 /**
- * Flexible layout `three_card_block`: cards from directory CPT queries or blog categories.
+ * Flexible layout `three_card_block`: manual cards, directory CPT queries, or blog categories.
  */
 final class ThreeCardBlock
 {
@@ -22,9 +22,6 @@ final class ThreeCardBlock
     ];
 
     /**
-     * Human-readable tab labels for each supported CPT. Kept inline (rather than reading
-     * `WP_Post_Type::labels->name`) so the toggle pills stay short ("News" not "Latest News").
-     *
      * @var array<string, string>
      */
     private const CPT_TAB_LABELS = [
@@ -37,8 +34,129 @@ final class ThreeCardBlock
     ];
 
     /**
-     * Normalize the CPT picker payload (legacy single-string OR new array). Order is preserved.
+     * ACF Items-tab field map for manual card rows (shared by flexible layout + archive options).
      *
+     * @param  array<int, array<int, array<string, string>>>  $conditionalLogic
+     * @return array<string, array<string, mixed>>
+     */
+    public static function manualCardsItemsTabFields(array $conditionalLogic, string $repeaterKey = 'cards_items'): array
+    {
+        return [
+            'cards_items_help' => [
+                'type' => 'message',
+                'options' => [
+                    'message' => __(
+                        'These manual cards are only rendered when <strong>Card source</strong> on the '
+                        . '<em>Main</em> tab is set to <strong>Manual</strong>. For blog or directory CPT '
+                        . 'sources, the row builds itself from those queries and ignores this list.',
+                        'culvers'
+                    ),
+                    'esc_html' => 0,
+                    'wrapper' => ['class' => 'culvers-acf-help'],
+                ],
+            ],
+            $repeaterKey => [
+                'type' => 'repeater',
+                'options' => [
+                    'label' => __('Cards (manual)', 'culvers'),
+                    'instructions' => __(
+                        'Exactly three cards recommended. Video plays while hovered (respects reduced motion). '
+                            . 'Only used when source is "Manual".',
+                        'culvers'
+                    ),
+                    'min' => 0,
+                    'max' => 3,
+                    'layout' => 'block',
+                    'button_label' => __('Add card', 'culvers'),
+                    'collapsed' => 'card_title',
+                    'conditional_logic' => $conditionalLogic,
+                    'sub_fields' => self::manualCardSubFields(),
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * @return array<string, array<string, mixed>>
+     */
+    public static function manualCardSubFields(): array
+    {
+        return [
+            'card_title' => [
+                'type' => 'text',
+                'options' => [
+                    'label' => __('Card title', 'culvers'),
+                    'required' => 1,
+                    'wrapper' => ['width' => '70'],
+                ],
+            ],
+            'card_media_type' => [
+                'type' => 'radio',
+                'options' => [
+                    'label' => __('Media', 'culvers'),
+                    'choices' => [
+                        'image' => __('Image', 'culvers'),
+                        'video' => __('Video', 'culvers'),
+                    ],
+                    'default_value' => 'image',
+                    'layout' => 'horizontal',
+                    'return_format' => 'value',
+                    'wrapper' => ['width' => '30'],
+                ],
+            ],
+            'card_url' => [
+                'type' => 'url',
+                'options' => [
+                    'label' => __('Link URL', 'culvers'),
+                    'required' => 1,
+                ],
+            ],
+            'card_image' => [
+                'type' => 'image',
+                'options' => [
+                    'label' => __('Image', 'culvers'),
+                    'instructions' => __('Used when media is Image.', 'culvers'),
+                    'return_format' => 'array',
+                    'preview_size' => 'medium',
+                    'library' => 'all',
+                    'conditional_logic' => [[[
+                        'field' => 'card_media_type',
+                        'operator' => '==',
+                        'value' => 'image',
+                    ]]],
+                ],
+            ],
+            'card_image_alt' => [
+                'type' => 'text',
+                'options' => [
+                    'label' => __('Image alt text', 'culvers'),
+                    'instructions' => __('Important for screen readers when using an image.', 'culvers'),
+                    'conditional_logic' => [[[
+                        'field' => 'card_media_type',
+                        'operator' => '==',
+                        'value' => 'image',
+                    ]]],
+                ],
+            ],
+            'card_video' => [
+                'type' => 'file',
+                'options' => [
+                    'label' => __('Video file', 'culvers'),
+                    'instructions' => __('Used when media is Video.', 'culvers'),
+                    'mime_types' => 'mp4,webm',
+                    'return_format' => 'array',
+                    'library' => 'all',
+                    'conditional_logic' => [[[
+                        'field' => 'card_media_type',
+                        'operator' => '==',
+                        'value' => 'video',
+                    ]]],
+                ],
+            ],
+        ];
+    }
+
+    /**
      * @return list<string>
      */
     private static function normalizeCptList(mixed $raw): array
@@ -67,117 +185,22 @@ final class ThreeCardBlock
     }
 
     /**
-     * Structural normalization — coerces legacy manual rows to CPT queries.
+     * Structural normalization only — no demo copy or placeholder media is injected here.
      *
      * @param  array<string, mixed>  $component
      * @return array<string, mixed>
      */
     public static function applyEditorFallback(array $component): array
     {
-        $source = (string) ($component['cards_source'] ?? 'cpt');
-
-        if ($source === 'manual') {
-            $component = self::coerceLegacyManualToCpt($component);
-            $source = 'cpt';
-        }
-
-        if ($source !== 'blog' && $source !== 'cpt') {
-            $component['cards_source'] = 'cpt';
-            if (self::normalizeCptList($component['cards_cpt_post_type'] ?? null) === []) {
-                $component['cards_cpt_post_type'] = ['culvers_news', 'culvers_event', 'culvers_offer'];
-                $component['cards_cpt_count'] = $component['cards_cpt_count'] ?? 3;
-            }
-        } else {
-            $component['cards_source'] = $source;
-        }
-
-        unset($component['cards_items']);
-
-        return $component;
-    }
-
-    /**
-     * @param  array<string, mixed>  $component
-     * @return array<string, mixed>
-     */
-    private static function coerceLegacyManualToCpt(array $component): array
-    {
-        $component['cards_source'] = 'cpt';
-        $component['cards_cpt_count'] = (int) ($component['cards_cpt_count'] ?? 3);
-        if ($component['cards_cpt_count'] < 1) {
-            $component['cards_cpt_count'] = 3;
-        }
-
-        if (self::normalizeCptList($component['cards_cpt_post_type'] ?? null) !== []) {
-            return $component;
-        }
-
-        $component['cards_cpt_post_type'] = [self::inferLegacyManualCpt($component)];
-
-        if (trim((string) ($component['cards_view_all_url'] ?? '')) === '') {
-            $archive = get_post_type_archive_link($component['cards_cpt_post_type'][0]);
-            if (is_string($archive) && $archive !== '') {
-                $component['cards_view_all_url'] = $archive;
-            }
+        $source = (string) ($component['cards_source'] ?? 'manual');
+        if ($source !== 'manual' && $source !== 'blog' && $source !== 'cpt') {
+            $component['cards_source'] = 'manual';
         }
 
         return $component;
     }
 
     /**
-     * @param  array<string, mixed>  $component
-     */
-    private static function inferLegacyManualCpt(array $component): string
-    {
-        $heading = mb_strtolower(trim((string) ($component['cards_heading'] ?? '')));
-
-        if (str_contains($heading, 'offer')) {
-            return 'culvers_offer';
-        }
-        if (str_contains($heading, 'event')) {
-            return 'culvers_event';
-        }
-        if (str_contains($heading, 'news')) {
-            return 'culvers_news';
-        }
-        if (str_contains($heading, 'shop')) {
-            return 'culvers_shop';
-        }
-        if (str_contains($heading, 'eat') || str_contains($heading, 'drink')) {
-            return 'culvers_eat_drink';
-        }
-        if (str_contains($heading, 'career')) {
-            return 'culvers_career';
-        }
-
-        foreach (is_array($component['cards_items'] ?? null) ? $component['cards_items'] : [] as $row) {
-            if (! is_array($row)) {
-                continue;
-            }
-            $url = mb_strtolower(trim((string) ($row['card_url'] ?? '')));
-            if (str_contains($url, '/latest-offers')) {
-                return 'culvers_offer';
-            }
-            if (str_contains($url, '/latest-events')) {
-                return 'culvers_event';
-            }
-            if (str_contains($url, '/latest-news')) {
-                return 'culvers_news';
-            }
-            if (str_contains($url, '/shops')) {
-                return 'culvers_shop';
-            }
-            if (str_contains($url, '/eat-drink') || str_contains($url, '/dining')) {
-                return 'culvers_eat_drink';
-            }
-        }
-
-        return 'culvers_offer';
-    }
-
-    /**
-     * Black overlay on card media (image or video). 0 = no overlay.
-     *
      * @param  array<string, mixed>  $component
      */
     public static function mediaOverlayOpacity(array $component): int
@@ -186,11 +209,6 @@ final class ThreeCardBlock
     }
 
     /**
-     * Resolve the View all URL — defaults to the chosen CPT's archive URL
-     * when the editor leaves it blank in CPT mode (so a Latest Events
-     * three_card_block on the What's On landing automatically links to
-     * /latest-events/ without manual wiring).
-     *
      * @param  array<string, mixed>  $component
      */
     public static function viewAllUrl(array $component): string
@@ -200,7 +218,7 @@ final class ThreeCardBlock
             return $explicit;
         }
 
-        $source = (string) ($component['cards_source'] ?? 'cpt');
+        $source = (string) ($component['cards_source'] ?? 'manual');
         if ($source !== 'cpt') {
             return '';
         }
@@ -210,9 +228,6 @@ final class ThreeCardBlock
             return '';
         }
 
-        /* Multi-CPT toggle (e.g. News / Events / Offers) has no single "View all" — each
-           tab already deep-links its own archive via card permalinks, and a single button
-           below would be ambiguous. Suppress unless the editor supplied an explicit URL. */
         if (count($list) > 1) {
             return '';
         }
@@ -223,34 +238,148 @@ final class ThreeCardBlock
     }
 
     /**
-     * Tab panels for Blade: blog → one tab per category; CPT → one tab per directory.
-     *
-     * @param  array<string, mixed>  $component  Already sanitized + fallback merged.
+     * @param  array<string, mixed>  $component
      * @return list<array{label: string, slug: string, cards: list<array<string, mixed>>}>
      */
     public static function buildTabPanels(array $component): array
     {
-        $source = (string) ($component['cards_source'] ?? 'cpt');
+        $source = (string) ($component['cards_source'] ?? 'manual');
 
         if ($source === 'blog') {
             return self::blogTabPanels($component);
         }
 
-        return self::cptTabPanels($component);
+        if ($source === 'cpt') {
+            return self::cptTabPanels($component);
+        }
+
+        $itemsKey = self::manualItemsKey($component);
+
+        return [
+            [
+                'label' => '',
+                'slug' => 'manual',
+                'cards' => self::normalizeManualCards(
+                    is_array($component[$itemsKey] ?? null) ? $component[$itemsKey] : []
+                ),
+            ],
+        ];
     }
 
     /**
-     * One tab panel per selected directory CPT (events / offers / news / shops /
-     * eat-drink / careers). Title + post thumbnail render inside the existing
-     * big-card layout, so the landing-page strips visually match Figma — overlay
-     * style on a tall image — without forcing every CPT row to use the moss-tile
-     * directory card pattern (which is reserved for the archive grids).
-     *
-     * Single-CPT selection still produces a single un-labelled panel (tabs hide
-     * when there's only one). Multi-CPT selection produces a labelled tab per
-     * CPT, e.g. the homepage "What are you looking for today?" News/Events/Offers
-     * toggle.
-     *
+     * @param  array<string, mixed>  $component
+     */
+    public static function isManualSource(array $component): bool
+    {
+        return (string) ($component['cards_source'] ?? 'manual') === 'manual';
+    }
+
+    /**
+     * @param  array<string, mixed>  $component
+     */
+    public static function usesMobilePromoStack(array $component): bool
+    {
+        if (! self::isManualSource($component)) {
+            return false;
+        }
+
+        if (count(self::buildTabPanels($component)) > 1) {
+            return false;
+        }
+
+        $body = (string) ($component['cards_body'] ?? '');
+
+        return trim(strip_tags($body)) !== '';
+    }
+
+    /**
+     * @param  array<string, mixed>  $component
+     */
+    private static function manualItemsKey(array $component): string
+    {
+        if (array_key_exists('cards_items', $component)) {
+            return 'cards_items';
+        }
+
+        return 'archive_three_card_items';
+    }
+
+    /**
+     * @param  array<int, mixed>  $rows
+     * @return list<array<string, mixed>>
+     */
+    private static function normalizeManualCards(array $rows): array
+    {
+        $out = [];
+        foreach ($rows as $row) {
+            if (! is_array($row)) {
+                continue;
+            }
+            $title = trim((string) ($row['card_title'] ?? ''));
+            $href = trim((string) ($row['card_url'] ?? ''));
+            $media = (string) ($row['card_media_type'] ?? 'image');
+            if ($media !== 'video') {
+                $media = 'image';
+            }
+
+            $img = self::normalizeAcfFileField($row['card_image'] ?? null);
+            $vid = self::normalizeAcfFileField($row['card_video'] ?? null, true);
+            $alt = trim((string) ($row['card_image_alt'] ?? ''));
+
+            if ($title === '' || $href === '') {
+                continue;
+            }
+
+            $out[] = [
+                'title' => $title,
+                'url' => $href,
+                'media_type' => $media,
+                'image' => $img,
+                'video' => $vid,
+                'poster' => null,
+                'alt' => $alt !== '' ? $alt : $title,
+            ];
+
+            if (count($out) >= 3) {
+                break;
+            }
+        }
+
+        return $out;
+    }
+
+    /**
+     * @return array<string, mixed>|null
+     */
+    private static function normalizeAcfFileField(mixed $field, bool $isVideo = false): ?array
+    {
+        if (is_array($field) && ! empty($field['url'])) {
+            return $field;
+        }
+
+        if (! is_numeric($field) || (int) $field <= 0) {
+            return null;
+        }
+
+        $id = (int) $field;
+        $url = wp_get_attachment_url($id);
+        if (! is_string($url) || $url === '') {
+            return null;
+        }
+
+        $mime = (string) (get_post_mime_type($id) ?: '');
+        if ($isVideo && $mime !== '' && ! str_starts_with($mime, 'video/')) {
+            return null;
+        }
+
+        return [
+            'url' => $url,
+            'mime_type' => $isVideo ? ($mime !== '' ? $mime : 'video/mp4') : $mime,
+            'alt' => trim((string) get_post_meta($id, '_wp_attachment_image_alt', true)),
+        ];
+    }
+
+    /**
      * @param  array<string, mixed>  $component
      * @return list<array{label: string, slug: string, cards: list<array<string, mixed>>}>
      */
@@ -273,9 +402,6 @@ final class ThreeCardBlock
         $panels = [];
 
         foreach ($list as $postType) {
-            /* CPTs sort newest-first by default (matches the archive query
-               hooks in DirectoryPostTypes::adjustArchiveQueries) so a "Latest
-               X" strip surfaces the freshest items without extra config. */
             $orderby = 'date';
             $order = 'DESC';
             if ($postType === 'culvers_shop' || $postType === 'culvers_eat_drink' || $postType === 'culvers_career') {
@@ -305,8 +431,7 @@ final class ThreeCardBlock
             $cards = [];
             while ($query->have_posts()) {
                 $query->the_post();
-                $postId = (int) get_the_ID();
-                $cards[] = self::cardFromPostId($postId);
+                $cards[] = self::cardFromPostId((int) get_the_ID());
             }
             wp_reset_postdata();
 
@@ -342,7 +467,6 @@ final class ThreeCardBlock
             }
         }
 
-        /** @var array<string, mixed>|null $img */
         $img = null;
         $altText = $titleDecoded;
         if ($imageUrl !== '') {
@@ -419,22 +543,5 @@ final class ThreeCardBlock
         }
 
         return $panels;
-    }
-
-    /**
-     * Figma homepage `51:8214` — intro + single CPT tab rows use stacked landscape
-     * promo tiles on mobile; tabbed News/Events/Offers strips stay portrait Splide.
-     *
-     * @param  array<string, mixed>  $component
-     */
-    public static function usesMobilePromoStack(array $component): bool
-    {
-        if (count(self::buildTabPanels($component)) > 1) {
-            return false;
-        }
-
-        $body = (string) ($component['cards_body'] ?? '');
-
-        return trim(strip_tags($body)) !== '';
     }
 }

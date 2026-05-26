@@ -152,7 +152,6 @@
                     @include('partials.directory-career-card')
                   @endwhile
                 </div>
-                @include('partials.directory-archive-pagination')
               @endif
             </div>
           </div>

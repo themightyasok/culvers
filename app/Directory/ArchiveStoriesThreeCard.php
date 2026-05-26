@@ -107,6 +107,10 @@ final class ArchiveStoriesThreeCard
         }
 
         $categoryIds = self::normalizeCategoryIds(get_field("{$stem}_category_tabs", 'option'));
+        $source = Cast::toString(get_field("{$stem}_source", 'option'));
+        if ($source === '') {
+            $source = $categoryIds !== [] ? 'blog' : 'cpt';
+        }
 
         $base = array_merge(self::defaultsSkeleton(), [
             'cards_heading' => $heading,
@@ -114,6 +118,32 @@ final class ArchiveStoriesThreeCard
             'cards_view_all_label' => $viewAllLabel,
         ]);
 
+        if ($source === 'manual') {
+            $items = get_field("{$stem}_items", 'option');
+
+            return self::finalizeOrNull(array_merge($base, [
+                'cards_source' => 'manual',
+                'archive_three_card_items' => is_array($items) ? $items : [],
+            ]));
+        }
+
+        if ($source === 'blog') {
+            return self::finalizeOrNull(array_merge($base, [
+                'cards_source' => 'blog',
+                'cards_blog_categories' => $categoryIds,
+                'cards_blog_per_category' => $perPage,
+            ]));
+        }
+
+        if ($source === 'cpt') {
+            return self::finalizeOrNull(array_merge($base, [
+                'cards_source' => 'cpt',
+                'cards_cpt_post_type' => self::DEFAULT_STORIES_TAB_CPTS,
+                'cards_cpt_count' => $perPage,
+            ]));
+        }
+
+        // Legacy options saved before `{stem}_source` existed.
         if ($categoryIds !== []) {
             return self::finalizeOrNull(array_merge($base, [
                 'cards_source' => 'blog',

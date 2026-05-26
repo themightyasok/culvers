@@ -12,10 +12,10 @@ namespace App\Helpers;
  * Plan-My-Visit page, the design uses a single standard gap (~91–96 px)
  * between flexible components, with a few exceptions:
  *
- *   STANDARD  76 px                         `gap-y-[76px]` on the grid
- *   HUGGED    ~60 px effective               `-mt-[16px]`
- *   BREATHED  48 px effective                `-mt-[28px]`
- *   FLUSH     0 px effective                 `-mt-[76px]`
+     *   STANDARD  100 px                        `gap-y-[100px]` on the grid
+     *   HUGGED    ~60 px effective               `-mt-[16px]`
+     *   BREATHED  48 px effective                `-mt-[28px]`
+     *   FLUSH     0 px effective                 `-mt-[100px]`
  *
  * Implementation: the parent grid owns the default gap. The renderer walks rows
  * and asks {@see self::spaceAboveClass()} for optional negative `mt-*` utilities
@@ -23,14 +23,14 @@ namespace App\Helpers;
  * on component roots — that was doubling the visual rhythm.
  *
  * Tailwind:
- *   • `gap-y-[76px]` → 76 px (STANDARD, on the grid)
- *   • `-mt-[76px]` → cancel one gap unit (FLUSH)
+     *   • `gap-y-[100px]` → 100 px (STANDARD, on the grid)
+     *   • `-mt-[100px]` → cancel one gap unit (FLUSH)
  *   • `-mt-[28px]` → 48 px effective (BREATHED)
  *   • `-mt-[16px]` → 60 px effective (HUGGED, reserved)
  */
 final class Rhythm
 {
-    /** Default gap is on the grid (`gap-y-[76px]`); rows do not add top margin. */
+    /** Default gap is on the grid (`gap-y-[100px]`); rows do not add top margin. */
     public const SPACE_STANDARD = '';
 
     /** Reserved: intro band hugs its immediate next sibling (60 px effective). */
@@ -40,7 +40,7 @@ final class Rhythm
     public const SPACE_BREATHED = '-mt-[28px]';
 
     /** Slim section_header → next component (0 px effective). */
-    public const SPACE_FLUSH = '-mt-[76px]';
+    public const SPACE_FLUSH = '-mt-[100px]';
 
     /**
      * Top-margin utility to apply to the *current* row, given what came
