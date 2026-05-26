@@ -52,11 +52,9 @@
   filter: drop-shadow(0 0 6px var(--color-glowleaf, #d4ff50));
 }
 
-/* While no SVG export is wired yet, dim the raster image slightly so the
- * status pill reads as the focused element. Cheap visual cue that something
- * happened, removable once `[data-shop-slug]` paths exist on the map. */
+/* Legacy raster fallback when no per-filter SVG bundle is present. */
 .centre-map__map-wrap[data-active-category]:not([data-active-category=''])
-  .centre-map__image-stage {
+  .centre-map__image-stage:not(.centre-map__image-stage--filter-maps) {
   filter: brightness(0.78) saturate(0.85);
   transition: filter 0.25s ease-out;
 }

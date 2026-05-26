@@ -449,6 +449,10 @@
   filter: brightness(0) invert(1);
 }
 
+.image-hero__logo--native {
+  filter: none;
+}
+
 /*
  * Hero cover photos — object-cover + parallax scale can round 1px short of the clip box.
  * Slight overscan keeps the bottom edge flush under the glowleaf frame.

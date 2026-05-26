@@ -71,6 +71,9 @@ final class DirectorySingleHeroLogoMerge
             }
 
             $row['hero_logo'] = $logoArr;
+            if (LogoPreserveColors::shouldPreserveForPost($pid, $postType)) {
+                $row['hero_logo_preserve_colors'] = 1;
+            }
             $row['hero_title_line'] = '';
             $value[$i] = $row;
 

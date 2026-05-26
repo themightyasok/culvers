@@ -48,12 +48,14 @@ final class CareerFields
         $group->addImage('career_employer_logo', [
             'label' => __('Employer logo', 'culvers'),
             'instructions' => __(
-                'Brand logo for the listing card (white artwork preferred — it is rendered on the dark moss tile). Falls back to the role title when empty.',
+                'Brand logo for the listing card. White artwork works best on the moss tile unless “Use logo as uploaded” is enabled.',
                 'culvers'
             ),
             'return_format' => 'array',
             'preview_size' => 'medium',
         ]);
+
+        $group->addTrueFalse('career_employer_logo_preserve_colors', LogoPreserveColors::acfFieldDefinition());
 
         $group->setLocation('post_type', '==', 'culvers_career');
 

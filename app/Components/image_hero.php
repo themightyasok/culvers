@@ -34,6 +34,13 @@ return [
                     'library' => 'all',
                 ],
             ],
+            'hero_logo_preserve_colors' => [
+                'type' => 'true_false',
+                'options' => array_merge(
+                    \App\Directory\LogoPreserveColors::acfFieldDefinition(),
+                    ['wrapper' => ['width' => '50']]
+                ),
+            ],
             'hero_logo_source' => [
                 'type' => 'select',
                 'options' => [

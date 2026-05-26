@@ -25,6 +25,7 @@
 
   $logo = isset($c['hero_logo']) && is_array($c['hero_logo']) ? $c['hero_logo'] : [];
   $logoUrl = isset($logo['url']) ? trim((string) $logo['url']) : '';
+  $preserveLogoColors = ! empty($c['hero_logo_preserve_colors']);
 
   $titleLine = trim((string) ($c['hero_title_line'] ?? ''));
   $titleToneRaw = is_string($c['hero_title_tone'] ?? null) ? (string) $c['hero_title_tone'] : 'glowleaf';
@@ -105,7 +106,7 @@
               // Omit HTML width/height (pass 0) so intrinsic px do not cap size; Figma max-*
               // caps live in unlayered `app.css` (`.image-hero__logo`) — never force a display width.
               $heroLogoImgArgs = [
-                  'class' => 'image-hero__logo',
+                  'class' => 'image-hero__logo' . ($preserveLogoColors ? ' image-hero__logo--native' : ''),
                   'width' => 0,
                   'height' => 0,
                   'loading' => 'eager',

@@ -32,6 +32,8 @@ final class EatDrinkFields
             'library' => 'all',
         ]);
 
+        $group->addTrueFalse('eat_drink_logo_preserve_colors', LogoPreserveColors::acfFieldDefinition());
+
         $group->addText('eat_drink_hours_summary', [
             'label' => __('Opening hours line', 'culvers'),
             'instructions' => __('Short line under the title on cards, e.g. “Open Today 9am – 9pm”.', 'culvers'),

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Directory\Cards;
 
 use App\Directory\DirectoryCardImage;
+use App\Directory\LogoPreserveColors;
 use App\Directory\OpeningHoursCardLine;
 
 /**
@@ -66,7 +67,7 @@ final class DirectoryCardSpecFactory
             subtitleText: $subtitle,
             categorySlugs: self::termSlugs($postId, 'culvers_shop_category'),
             typeSlugs: self::termSlugs($postId, 'culvers_shop_type'),
-            invertLogoForMossTile: $logoFromField !== '',
+            invertLogoForMossTile: $logoFromField !== '' && ! LogoPreserveColors::shouldPreserveForPost($postId, 'culvers_shop'),
         );
     }
 
@@ -92,7 +93,7 @@ final class DirectoryCardSpecFactory
             subtitleText: $subtitle,
             categorySlugs: self::termSlugs($postId, 'culvers_eat_drink_category'),
             typeSlugs: self::termSlugs($postId, 'culvers_eat_drink_type'),
-            invertLogoForMossTile: $logoFromField !== '',
+            invertLogoForMossTile: $logoFromField !== '' && ! LogoPreserveColors::shouldPreserveForPost($postId, 'culvers_eat_drink'),
         );
     }
 
@@ -119,7 +120,7 @@ final class DirectoryCardSpecFactory
             subtitleText: $employmentType,
             categorySlugs: self::termSlugs($postId, 'culvers_career_department'),
             typeSlugs: $typeSlugs,
-            invertLogoForMossTile: $logoUrl !== '',
+            invertLogoForMossTile: $logoUrl !== '' && ! LogoPreserveColors::shouldPreserveForPost($postId, 'culvers_career'),
         );
     }
 

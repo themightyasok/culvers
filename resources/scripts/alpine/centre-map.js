@@ -23,6 +23,10 @@ export default function registerCentreMapAlpine(Alpine) {
     activeCategoryLabel:
       typeof init.activeCategoryLabel === 'string' ? init.activeCategoryLabel : '',
     zoom: typeof init.zoom === 'number' && init.zoom >= 1 ? init.zoom : 1,
+    defaultMapUrl: typeof init.defaultMapUrl === 'string' ? init.defaultMapUrl : '',
+    mapUrls: init.mapUrls && typeof init.mapUrls === 'object' ? init.mapUrls : {},
+    groupAllByGroup:
+      init.groupAllByGroup && typeof init.groupAllByGroup === 'object' ? init.groupAllByGroup : {},
     panX: 0,
     panY: 0,
     isDragging: false,
@@ -33,11 +37,6 @@ export default function registerCentreMapAlpine(Alpine) {
     panStartY: 0,
 
     init() {
-      this.$watch('activeCategorySlug', (slug) => {
-        this.syncMapCategoryHighlight(slug);
-      });
-      this.syncMapCategoryHighlight(this.activeCategorySlug);
-
       this.$watch('zoom', (level) => {
         if (level <= 1) {
           this.panX = 0;
@@ -107,11 +106,17 @@ export default function registerCentreMapAlpine(Alpine) {
 
     /** Figma mobile (51:8950): pill tabs switch groups; filters stay visible (no panel toggle). */
     selectGroup(slug) {
-      if (this.openGroup !== slug) {
-        this.activeCategorySlug = '';
-        this.activeCategoryLabel = '';
-      }
       this.openGroup = slug;
+
+      const allEntry = this.groupAllByGroup[slug];
+      if (allEntry && typeof allEntry.slug === 'string') {
+        this.activeCategorySlug = allEntry.slug;
+        this.activeCategoryLabel = typeof allEntry.label === 'string' ? allEntry.label : '';
+        return;
+      }
+
+      this.activeCategorySlug = '';
+      this.activeCategoryLabel = '';
     },
 
     isGroupActive(slug) {
@@ -122,50 +127,22 @@ export default function registerCentreMapAlpine(Alpine) {
       return this.openGroup === groupSlug;
     },
 
-    /**
-     * Mark SVG `[data-category]` nodes when a category slug is active.
-     * Flat PNG maps still get the raster dim via CSS on `.centre-map__image-stage`.
-     *
-     * @param {string} slug
-     */
-    syncMapCategoryHighlight(slug) {
-      const wrap = this.$root?.querySelector?.('.centre-map__map-wrap');
-      if (!wrap) {
-        return;
+    /** Resolve the map artwork for the active filter (pre-rendered SVG per category). */
+    currentMapUrl() {
+      const slug =
+        typeof this.activeCategorySlug === 'string'
+          ? this.activeCategorySlug.trim().toLowerCase()
+          : '';
+
+      if (slug === '' || slug === 'all') {
+        return this.defaultMapUrl;
       }
 
-      const normalized = typeof slug === 'string' ? slug.trim().toLowerCase() : '';
-      const showAll = normalized === '' || normalized === 'all' || normalized.endsWith('-all');
+      if (Object.prototype.hasOwnProperty.call(this.mapUrls, slug)) {
+        return this.mapUrls[slug];
+      }
 
-      wrap.querySelectorAll('[data-category]').forEach((node) => {
-        if (!(node instanceof HTMLElement)) {
-          return;
-        }
-
-        node.removeAttribute('data-active-category-match');
-        node.removeAttribute('data-active');
-
-        if (showAll) {
-          return;
-        }
-
-        const tokens = (node.getAttribute('data-category') || '')
-          .toLowerCase()
-          .split(/\s+/)
-          .filter(Boolean);
-        const shopSlug = (node.getAttribute('data-shop-slug') || '').toLowerCase();
-        const matches =
-          tokens.includes(normalized) ||
-          shopSlug === normalized ||
-          tokens.some((token) => token.replace(/_/g, '-') === normalized);
-
-        if (matches) {
-          node.setAttribute('data-active-category-match', '1');
-          node.setAttribute('data-active', 'true');
-        } else {
-          node.setAttribute('data-active', 'false');
-        }
-      });
+      return this.defaultMapUrl;
     },
   }));
 }

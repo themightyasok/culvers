@@ -13,7 +13,7 @@
   @if($groups !== [])
     <div
       class="centre-map__status absolute bottom-4 left-4 z-10 hidden items-center gap-3 rounded-full bg-glowleaf/95 px-4 py-1.5 text-deep-moss shadow-[0_2px_6px_rgba(0,0,0,0.18)] md:bottom-6 md:left-6 lg:flex"
-      x-show="activeCategorySlug !== ''"
+      x-show="activeCategorySlug !== '' && ! activeCategorySlug.endsWith('-all')"
       x-cloak
       x-transition.opacity.duration.150ms>
       <span class="font-sans text-xs font-semibold uppercase tracking-[0.18em]">
@@ -46,7 +46,7 @@
   @endif
   @if($imageUrl !== '')
     <div
-      class="centre-map__image-stage size-full origin-center transition-transform duration-200 ease-out will-change-transform"
+      class="centre-map__image-stage size-full origin-center transition-transform duration-200 ease-out will-change-transform @if(! empty($hasFilterMaps)) centre-map__image-stage--filter-maps @endif"
       :class="{
         'centre-map__image-stage--pannable': zoom > 1,
         'centre-map__image-stage--dragging': isDragging,
@@ -57,6 +57,7 @@
       @pointerup="onMapPointerEnd($event)"
       @pointercancel="onMapPointerEnd($event)">
       <img
+        :src="currentMapUrl()"
         src="{{ esc_url($imageUrl) }}"
         alt="{{ esc_attr($imageAlt) }}"
         class="pointer-events-none block size-full select-none object-contain max-lg:object-cover"
@@ -184,7 +185,7 @@
                 aria-expanded="false"
                 :aria-expanded="(openGroup === {{ e($groupSlugJson) }}).toString()"
                 aria-controls="centre-map-group-{{ $groupSlugAttr }}"
-                @click="openGroup = openGroup === {{ e($groupSlugJson) }} ? '' : {{ e($groupSlugJson) }}">
+                @click="openGroup === {{ e($groupSlugJson) }} ? (openGroup = '') : selectGroup({{ e($groupSlugJson) }})">
                 <span>{{ esc_html($group['label']) }}</span>
                 <span class="relative inline-flex size-4 shrink-0 items-center justify-center" aria-hidden="true">
                   <span class="block h-px w-4 bg-current"></span>

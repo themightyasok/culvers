@@ -1,4 +1,5 @@
 @php
+  use App\CentreMap\CentreMapFilterAssets;
   use App\Helpers\Component;
   use App\Helpers\Image;
   use App\Helpers\LayoutShell;
@@ -39,6 +40,14 @@
   $imageAlt = is_array($image) && is_string($image['alt'] ?? null) ? (string) $image['alt'] : '';
   if ($imageAlt === '') {
       $imageAlt = __('Centre floor plan', 'culvers');
+  }
+
+  $filterMapUrls = CentreMapFilterAssets::hasFilterMaps() ? CentreMapFilterAssets::urlsBySlug() : [];
+  $defaultMapUrl = CentreMapFilterAssets::hasFilterMaps()
+      ? CentreMapFilterAssets::defaultUrl()
+      : $imageUrl;
+  if ($defaultMapUrl === '' && $imageUrl !== '') {
+      $defaultMapUrl = $imageUrl;
   }
 
   $panelPosition = ($c['centre_map_panel_position'] ?? 'left') === 'right' ? 'right' : 'left';
@@ -107,9 +116,39 @@
      still renders a functional map — so always consider this component as
      having content unless we're explicitly suppressed. */
   $hasContent = $heading !== '' || $eyebrow !== '' || $bodyLines !== []
-      || $imageUrl !== '' || $groups !== [] || $isMapOnly;
+      || $imageUrl !== '' || $defaultMapUrl !== '' || $groups !== [] || $isMapOnly;
 
   $expandedGroupSlug = $groups !== [] ? $groups[0]['slug'] : '';
+
+  /** @var array<string, array{slug: string, label: string}> $groupAllByGroup */
+  $groupAllByGroup = [];
+  $initialCategorySlug = '';
+  $initialCategoryLabel = '';
+  foreach ($groups as $groupIndex => $group) {
+      foreach ($group['items'] as $item) {
+          $itemSlug = (string) ($item['slug'] ?? '');
+          if ($itemSlug === '' || (! str_ends_with($itemSlug, '-all') && $itemSlug !== 'all')) {
+              continue;
+          }
+          $groupAllByGroup[(string) $group['slug']] = [
+              'slug' => $itemSlug,
+              'label' => (string) ($item['label'] ?? ''),
+          ];
+          if ($groupIndex === 0) {
+              $initialCategorySlug = $itemSlug;
+              $initialCategoryLabel = (string) ($item['label'] ?? '');
+          }
+          break;
+      }
+  }
+
+  $initialMapUrl = $initialCategorySlug !== '' && $filterMapUrls !== []
+      ? CentreMapFilterAssets::urlForSlug($initialCategorySlug)
+      : $defaultMapUrl;
+  if ($initialMapUrl === '') {
+      $initialMapUrl = $defaultMapUrl;
+  }
+
   /**
    * Pre-compute Alpine init state once so we don't re-encode JSON inline.
    *   • panelOpen — visibility of the left filter panel (toggled by the pill button)
@@ -120,9 +159,12 @@
   $alpineInit = wp_json_encode([
       'panelOpen' => true,
       'openGroup' => $expandedGroupSlug,
-      'activeCategorySlug' => '',
-      'activeCategoryLabel' => '',
+      'activeCategorySlug' => $initialCategorySlug,
+      'activeCategoryLabel' => $initialCategoryLabel,
       'zoom' => 1,
+      'defaultMapUrl' => $defaultMapUrl,
+      'mapUrls' => $filterMapUrls,
+      'groupAllByGroup' => $groupAllByGroup,
   ], JSON_UNESCAPED_SLASHES);
 
 @endphp
@@ -216,8 +258,9 @@
           'panelPosition' => $panelPosition,
           'filterButtonLabel' => $filterButtonLabel,
           'filterButtonShowLabel' => $filterButtonShowLabel,
-          'imageUrl' => $imageUrl,
+          'imageUrl' => $initialMapUrl !== '' ? $initialMapUrl : ($defaultMapUrl !== '' ? $defaultMapUrl : $imageUrl),
           'imageAlt' => $imageAlt,
+          'hasFilterMaps' => $filterMapUrls !== [],
           'showZoom' => $showZoom,
           'isMapOnly' => $isMapOnly,
       ])

@@ -30,7 +30,7 @@
     type="button"
     class="{{ $rowClass }}"
     :class="activeCategorySlug === {{ $catSlugJson }} ? 'text-glowleaf' : ''"
-    @click="@if($isAll)activeCategorySlug = ''; activeCategoryLabel = '';@else activeCategorySlug = activeCategorySlug === {{ $catSlugJson }} ? '' : {{ $catSlugJson }}; activeCategoryLabel = activeCategorySlug === {{ $catSlugJson }} ? {{ $catLabelJson }} : '';@endif">
+    @click="activeCategorySlug = activeCategorySlug === {{ $catSlugJson }} ? '' : {{ $catSlugJson }}; activeCategoryLabel = activeCategorySlug === {{ $catSlugJson }} ? {{ $catLabelJson }} : '';">
     <span
       class="{{ $bulletClass }}"
       :class="activeCategorySlug === {{ $catSlugJson }} ? 'centre-map__category-bullet--active border-deep-moss bg-glowleaf' : ''"

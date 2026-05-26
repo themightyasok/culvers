@@ -85,7 +85,7 @@
         @endif
 
         @if ($spec->hasLogoImage())
-          {{-- Brand marks on moss: monochrome invert unless the slot reuses the storefront photo. Repair SVG-served-as-.jpg via `scripts/fix-shop-jpg-svg-logos.php`. --}}
+          {{-- Brand marks on moss: monochrome invert unless “Use logo as uploaded” is on. --}}
           <div
             class="directory-shop-card__logo-slot pointer-events-none relative z-30 flex min-h-0 flex-1 items-center justify-center px-8 {{ $logoFadeClasses }}">
             <img

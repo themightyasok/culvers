@@ -29,6 +29,8 @@ final class ShopFields
             'library' => 'all',
         ]);
 
+        $group->addTrueFalse('shop_logo_preserve_colors', LogoPreserveColors::acfFieldDefinition());
+
         $group->addText('opening_hours_summary', [
             'label' => __('Opening hours line', 'culvers'),
             'instructions' => __('Short line under the title on cards, e.g. “Open Today 9am – 5:30pm”.', 'culvers'),
