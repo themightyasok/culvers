@@ -481,6 +481,30 @@
   }
 }
 
+/* Circular emblems (Cosmic Tattoo etc.) — must follow wordmark breakpoints and
+ * beat `.image-hero__logo` max-height caps with higher specificity. */
+.image-hero__logo.image-hero__logo--emblem {
+  width: auto;
+  max-width: min(78vw, 16rem);
+  max-height: min(78vw, 16rem);
+}
+
+@media (min-width: 640px) {
+  .image-hero__logo.image-hero__logo--emblem {
+    width: auto;
+    max-width: min(56vw, 22rem);
+    max-height: min(56vw, 22rem);
+  }
+}
+
+@media (min-width: 1024px) {
+  .image-hero__logo.image-hero__logo--emblem {
+    width: auto;
+    max-width: min(28vw, 20rem);
+    max-height: min(28vw, 20rem);
+  }
+}
+
 /*
  * Hero pagination overrides — Figma `51:4993` (homepage hero `Frame 21`):
  *   • vertical stack on the right edge, 22 px centre-to-centre gap

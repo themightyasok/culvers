@@ -1,6 +1,7 @@
 @php
   use App\Helpers\Component;
   use App\Helpers\Image;
+  use App\Helpers\ImageHeroLogoPresentation;
 
   /**
    * Image hero — full-bleed page header. Pairs with `hero_slider` (looping
@@ -26,6 +27,7 @@
   $logo = isset($c['hero_logo']) && is_array($c['hero_logo']) ? $c['hero_logo'] : [];
   $logoUrl = isset($logo['url']) ? trim((string) $logo['url']) : '';
   $preserveLogoColors = ! empty($c['hero_logo_preserve_colors']);
+  $logoEmblem = ImageHeroLogoPresentation::isEmblemLockup(get_the_ID() ?: null, $logoUrl !== '' ? $logo : null);
 
   $titleLine = trim((string) ($c['hero_title_line'] ?? ''));
   $titleToneRaw = is_string($c['hero_title_tone'] ?? null) ? (string) $c['hero_title_tone'] : 'glowleaf';
@@ -105,8 +107,15 @@
               $heroLogoAlt = trim((string) ($logo['alt'] ?? ''));
               // Omit HTML width/height (pass 0) so intrinsic px do not cap size; Figma max-*
               // caps live in unlayered `app.css` (`.image-hero__logo`) — never force a display width.
+              $heroLogoClasses = 'image-hero__logo';
+              if ($preserveLogoColors) {
+                  $heroLogoClasses .= ' image-hero__logo--native';
+              }
+              if ($logoEmblem) {
+                  $heroLogoClasses .= ' image-hero__logo--emblem';
+              }
               $heroLogoImgArgs = [
-                  'class' => 'image-hero__logo' . ($preserveLogoColors ? ' image-hero__logo--native' : ''),
+                  'class' => $heroLogoClasses,
                   'width' => 0,
                   'height' => 0,
                   'loading' => 'eager',
