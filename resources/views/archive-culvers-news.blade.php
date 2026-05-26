@@ -31,7 +31,7 @@
 
   @include('components.image-hero', ['component' => $newsArchiveHero])
 
-  <section class="pb-16 md:pb-28">
+  <section>
     <div class="px-4 md:px-12">
       <div class="mx-auto w-full max-w-8xl">
         {{-- <div> wrapper (not <p>) so cascading text-center / typography

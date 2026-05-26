@@ -30,7 +30,7 @@
 
   @include('components.image-hero', ['component' => $offersArchiveHero])
 
-  <section class="pb-16 md:pb-28">
+  <section>
     <div class="px-4 md:px-12">
       <div class="mx-auto w-full max-w-8xl">
         <div class="{{ \App\Helpers\LayoutShell::ARCHIVE_INTRO }}">
