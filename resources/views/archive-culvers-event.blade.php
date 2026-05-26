@@ -64,6 +64,8 @@
               @endwhile
             </ul>
           @endif
+
+          @include('partials.whats-on-return-cta')
         </div>
       </div>
     </div>

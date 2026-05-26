@@ -64,7 +64,7 @@ final class DirectoryPostTypes
     /** Sort newest-first on the post-type archive (offers, news). */
     private const SORT_NEWEST_FIRST = 'date-desc';
 
-    /** Sort oldest-first on the post-type archive (events). */
+    /** Sort oldest-first on the post-type archive (reserved — none active). */
     private const SORT_OLDEST_FIRST = 'date-asc';
 
     /** Sort alphabetically by title (shops, eat-drink, careers). */
@@ -165,7 +165,7 @@ final class DirectoryPostTypes
                 'archive_slug' => 'latest-events',
                 'menu_icon' => 'dashicons-calendar-alt',
                 'menu_position' => AdminMenu::POS_EVENTS,
-                'archive_sort' => self::SORT_OLDEST_FIRST,
+                'archive_sort' => self::SORT_NEWEST_FIRST,
                 'labels' => [
                     'name' => __('Latest Events', 'culvers'),
                     'singular_name' => __('Event', 'culvers'),
