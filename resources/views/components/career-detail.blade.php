@@ -69,17 +69,7 @@
       || $hasApply;
 @endphp
 
-@if(! $hasContent)
-  @if(current_user_can('edit_posts'))
-    <section class="career-detail {{ esc_attr($root) }}" data-component-root data-career-detail>
-      <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
-        <div class="rounded border border-amber-400 bg-amber-50 px-4 py-3 text-sm text-amber-950">
-          {{ __('Career detail — add a job title, meta rows or role sections to display this band.', 'culvers') }}
-        </div>
-      </div>
-    </section>
-  @endif
-@else
+@if($hasContent)
   <section
     class="career-detail {{ esc_attr($root) }} text-deep-moss"
     data-component-root

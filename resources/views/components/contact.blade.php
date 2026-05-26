@@ -362,10 +362,6 @@
             title="{{ esc_attr(sprintf(/* translators: %s: destination short label */ __('Map of %s', 'culvers'), $destLabel !== '' ? $destLabel : __('the centre', 'culvers'))) }}"></iframe>
           @include('partials.map-embed-zoom-controls')
         </div>
-      @elseif(current_user_can('edit_posts'))
-        <div class="flex aspect-[400/600] max-sm:min-h-[600px] w-full items-center justify-center rounded-[10px] bg-light-cream text-center font-sans text-sm text-deep-moss/70 sm:aspect-[1401/570]">
-          {{ __('Configure a Google Maps API key at Appearance → Customize → Google Maps to render the embedded map.', 'culvers') }}
-        </div>
       @endif
     </div>
   @endif

@@ -71,11 +71,6 @@
             'ctaUrl' => $ctaUrl,
             'wrapperClasses' => 'info-block__intro mx-auto max-w-[52rem] text-center',
         ])
-        @if($ctaLabel !== '' && $ctaUrl === '' && current_user_can('edit_posts'))
-          <p class="{{ Component::sectionBodyToCtaGapClasses('text-center font-sans text-base text-deep-moss/60') }}">
-            {{ __('Add a CTA URL to show the button.', 'culvers') }}
-          </p>
-        @endif
       @endif
 
       @if($hasGrid)

@@ -136,18 +136,6 @@
           </header>
         @endif
 
-        @if(! $apiConfigured && $mockActive && current_user_can('edit_posts'))
-          {{-- Dev-only mock indicator: visible to editors on local so it's obvious
-               the result strip is canned, not live. Suppressed on staging/live. --}}
-          <div class="mt-8 rounded border border-deep-moss/30 bg-deep-moss/10 px-4 py-3 text-sm text-deep-moss">
-            {{ __('Dev mock active — distances and durations are deterministic canned values. Set a Google Maps API key in Appearance → Customize → Google Maps for live lookups.', 'culvers') }}
-          </div>
-        @elseif(! $apiConfigured && current_user_can('edit_posts'))
-          <div class="mt-8 rounded border border-amber-400 bg-amber-50 px-4 py-3 text-sm text-amber-950">
-            {{ __('Add a Google Maps API key at Appearance → Customize → Google Maps to enable live travel lookups.', 'culvers') }}
-          </div>
-        @endif
-
         {{-- Form row: two equal pill inputs (336/335px in Figma) and the Search
              button to the right. `auto` button column lets the dark CTA hug
              its label so the canonical `.btn` hover-widen still reads. --}}
