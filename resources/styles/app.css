@@ -211,6 +211,20 @@
     @apply overflow-hidden lg:overflow-auto;
   }
 
+  /*
+   * Mega menu scrim — Figma `72:5036` is `rgba(0,0,0,0.3)` but on frame `72:5031` it sits
+   * over the hero band which already carries a 30% scrim (`72:5032`). Composed read ≈ 51%
+   * (1 − 0.7×0.7); single live layer uses 55% to match the mock.
+   */
+  .site-header__menu-scrim {
+    pointer-events: auto;
+    background-color: rgb(0 0 0 / 0.55);
+  }
+
+  .site-header__menu-scrim[x-cloak] {
+    pointer-events: none;
+  }
+
   /* The footer underline rule lives outside @layer (see end of file) so it can
      beat WordPress's inline `:root :where(a:where(:not(.wp-element-button)):link)`
      reset, which is unlayered and would otherwise win regardless of specificity. */

@@ -59,12 +59,25 @@
         $navTree,
         JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES
     ) !!}</script>
+  {{-- Figma menu-open frame `72:5031`: scrim layer `72:5036` (30% black) over hero that already has 30% — see `.site-header__menu-scrim` in app.css. --}}
+  <div
+    class="site-header__menu-scrim fixed inset-0 z-[1] hidden motion-reduce:transition-none lg:block"
+    x-show="megaOpenId !== null"
+    x-cloak
+    x-transition:enter="transition ease-out duration-200 motion-reduce:transition-none motion-reduce:duration-0"
+    x-transition:enter-start="opacity-0"
+    x-transition:enter-end="opacity-100"
+    x-transition:leave="transition ease-in duration-150 motion-reduce:transition-none motion-reduce:duration-0"
+    x-transition:leave-start="opacity-100"
+    x-transition:leave-end="opacity-0"
+    x-on:click="closeMega()"
+    aria-hidden="true"></div>
   {{--
     Scroll-hide transform lives on `.site-header__chrome` only. The mobile drawer stays a direct
     child of `<header>` so `position:fixed` resolves to the viewport (transform ancestors would clip it).
   --}}
   <div
-    class="site-header__chrome will-change-transform motion-reduce:transition-none"
+    class="site-header__chrome relative z-10 will-change-transform motion-reduce:transition-none"
     x-ref="headerChrome"
     x-bind:class="[
       headerDockHidden ? '-translate-y-full pointer-events-none' : 'translate-y-0',
