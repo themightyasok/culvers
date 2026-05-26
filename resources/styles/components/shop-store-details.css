@@ -1,0 +1,19 @@
+/**
+ * Shop store details — Figma shop single contact / address / social band.
+ * Spacing is scoped here so other section-heading presets stay unchanged.
+ */
+
+.shop-store-details__heading {
+  margin-bottom: 38px;
+}
+
+@media (min-width: 1024px) {
+  .shop-store-details__column {
+    padding-top: 8px;
+    padding-bottom: 16px;
+  }
+
+  .shop-store-details__column + .shop-store-details__column {
+    border-left: 1px solid color-mix(in srgb, var(--color-faded-olive) 40%, transparent);
+  }
+}

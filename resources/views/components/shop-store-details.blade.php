@@ -17,10 +17,6 @@
       $sectionHeading = __('Store Details', 'culvers');
   }
 
-  $detailsHeadingSpacing = Component::sectionHeadingSpacingClasses(
-      Component::resolveSectionHeadingSpacing($c, 'details_heading_spacing', 'compact')
-  );
-
   $contactLabel = __('Contact Number', 'culvers');
   $phone = trim((string) ($c['details_contact_phone'] ?? ''));
   $addressLabel = __('Address', 'culvers');
@@ -36,6 +32,10 @@
   $hasSocial = $explicitIncludeSocial && ($igUrl !== '' || $igHandle !== '');
 
   $hasDetails = $phone !== '' || $addressForDisplay !== '' || $hasSocial;
+
+  $columnsGridClass = $hasSocial
+      ? 'lg:grid-cols-3'
+      : 'lg:grid-cols-2';
 @endphp
 
 @if($hasDetails)
@@ -46,18 +46,18 @@
     <div class="{{ LayoutShell::INNER_SECTION_7XL }}">
       {{-- Section H2 — Figma shop single `51:6850`: Canela 58 / lh 84 (token: `text-5xl` → `md:text-6xl`). --}}
       {{-- Figma mobile `51:8894`: tighter H2 → first row than carousel blocks (`51:8984` uses ~58px). --}}
-      <{{ $headingTag }} class="shop-store-details__heading {{ Component::sectionIntroHeadingClasses('text-faded-olive', $detailsHeadingSpacing . ' text-center') }}">
+      <{{ $headingTag }} class="shop-store-details__heading {{ Component::sectionIntroHeadingClasses('text-faded-olive', 'text-center') }}">
         {{ esc_html($sectionHeading) }}
       </{{ $headingTag }}>
 
       {{-- Dividers aligned with opening-hours shop rows ({@see opening-hours.blade.php} `border-faded-olive/40`). --}}
       <div
-        class="{{ esc_attr($hasSocial ? 'flex flex-col divide-y divide-faded-olive/40 lg:grid lg:grid-cols-3 lg:gap-0 lg:divide-x lg:divide-y-0' : 'flex flex-col divide-y divide-faded-olive/40 lg:grid lg:grid-cols-2 lg:gap-0 lg:divide-x lg:divide-y-0') }}">
+        class="shop-store-details__columns flex flex-col divide-y divide-faded-olive/40 lg:grid lg:gap-0 lg:divide-y-0 {{ esc_attr($columnsGridClass) }}">
         {{-- Column titles desktop spec preserved (Figma 51:6900 / 51:6903 — Canela 32 / lh 1.1).
              `max-sm:` overrides land Figma 51:8898 / 8902 / 8906 mobile (Halyard Medium 20 / lh 24)
              so tablet + desktop keep Canela 32 exactly as shipped.
              Values (51:6901, 51:6904) remain Halyard Book 24 / lh 30 below. --}}
-        <div class="flex flex-col items-center py-6 text-center lg:items-center lg:px-8 lg:py-0 lg:pb-0 lg:pt-1 {{ $hasSocial ? '' : 'lg:pl-0' }}">
+        <div class="shop-store-details__column flex flex-col items-center py-6 text-center lg:items-center lg:px-8 lg:py-0 {{ $hasSocial ? '' : 'lg:pl-0' }}">
           <p class="{{ Component::mobilePanelSubheadClasses('text-faded-olive') }}">{{ esc_html($contactLabel) }}</p>
           @if($phone !== '')
             @php $telHref = preg_replace('/[^0-9+]/', '', str_replace("\xc2\xa0", ' ', $phone)); @endphp
@@ -71,7 +71,7 @@
           @endif
         </div>
 
-        <div class="flex flex-col items-center py-10 text-center lg:items-center lg:px-8 lg:py-0 lg:pt-1 lg:text-center">
+        <div class="shop-store-details__column flex flex-col items-center py-10 text-center lg:items-center lg:px-8 lg:py-0 lg:text-center">
           <p class="{{ Component::mobilePanelSubheadClasses('text-faded-olive') }}">{{ esc_html($addressLabel) }}</p>
           @if($addressForDisplay !== '')
             <p class="mt-3 font-sans text-2xl font-light leading-[30px] text-faded-olive">
@@ -80,7 +80,7 @@
         </div>
 
         @if($hasSocial)
-          <div class="flex flex-col items-center py-6 text-center lg:items-center lg:px-8 lg:py-0 lg:pt-1 lg:pr-0">
+          <div class="shop-store-details__column flex flex-col items-center py-6 text-center lg:items-center lg:px-8 lg:py-0 lg:pr-0">
             <p class="{{ Component::mobilePanelSubheadClasses('text-faded-olive') }}">{{ esc_html($socialLabel) }}</p>
             @php
               $socialLinkClass =

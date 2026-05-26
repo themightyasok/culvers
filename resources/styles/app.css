@@ -26,6 +26,7 @@
 @import './components/travel-calculator.css';
 @import './components/three-card-block.css';
 @import './components/shop-related-shops.css';
+@import './components/shop-store-details.css';
 @import './patterns/site-footer-pattern.css';
 @import './patterns/site-page-pattern.css';
 @layer base {

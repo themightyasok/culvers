@@ -69,6 +69,14 @@
   transition: none;
 }
 
+/* Accordion group toggles, mobile tab pills, and filter rows — explicit pointer
+ * (group toggles omitted cursor-pointer in Blade; Eat & Drink / Shop headers felt dead). */
+.centre-map__group-toggle,
+.centre-map__mobile-tabs button,
+.centre-map__filter-toggle {
+  cursor: pointer;
+}
+
 /* Category filter rows — pointer on links/buttons; active bullet keeps a deep-moss ring. */
 .centre-map__category {
   cursor: pointer;
