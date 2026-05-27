@@ -243,6 +243,10 @@ final class ThreeCardBlock
      */
     public static function viewAllUrl(array $component): string
     {
+        if (is_singular(['culvers_event', 'culvers_offer', 'culvers_news'])) {
+            return '';
+        }
+
         $source = (string) ($component['cards_source'] ?? 'manual');
         if ($source === 'manual') {
             return '';

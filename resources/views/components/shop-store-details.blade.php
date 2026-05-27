@@ -1,4 +1,5 @@
 @php
+  use App\Helpers\AddressDisplay;
   use App\Helpers\Component;
   use App\Helpers\LayoutShell;
 
@@ -21,8 +22,7 @@
   $phone = trim((string) ($c['details_contact_phone'] ?? ''));
   $addressLabel = __('Address', 'culvers');
   $addressRaw = trim((string) ($c['details_address'] ?? ''));
-  $addressPlain = trim(wp_strip_all_tags(preg_replace('/<br\s*\/?>/i', ' ', $addressRaw)));
-  $addressForDisplay = preg_replace('/\s+/u', ' ', $addressPlain);
+  $addressLines = AddressDisplay::balancedLines($addressRaw);
   $socialLabel = __('Social Media', 'culvers');
   $igUrl = trim((string) ($c['details_instagram_url'] ?? ''));
   $igHandle = trim((string) ($c['details_instagram_handle'] ?? ''));
@@ -31,7 +31,7 @@
   $explicitIncludeSocial = (bool) (int) ($c['details_show_social_column'] ?? 1);
   $hasSocial = $explicitIncludeSocial && ($igUrl !== '' || $igHandle !== '');
 
-  $hasDetails = $phone !== '' || $addressForDisplay !== '' || $hasSocial;
+  $hasDetails = $phone !== '' || $addressLines !== [] || $hasSocial;
 
   $columnsGridClass = $hasSocial
       ? 'lg:grid-cols-3'
@@ -73,9 +73,12 @@
 
         <div class="shop-store-details__column flex flex-col items-center py-10 text-center lg:items-center lg:px-8 lg:py-0 lg:text-center">
           <p class="{{ Component::mobilePanelSubheadClasses('text-faded-olive') }}">{{ esc_html($addressLabel) }}</p>
-          @if($addressForDisplay !== '')
-            <p class="mt-3 font-sans text-2xl font-light leading-[30px] text-faded-olive">
-              {{ esc_html($addressForDisplay) }}</p>
+          @if($addressLines !== [])
+            <p class="shop-store-details__address mt-3 font-sans text-2xl font-light leading-[30px] text-faded-olive">
+              @foreach($addressLines as $index => $line)
+                @if($index > 0)<br aria-hidden="true">@endif{{ esc_html($line) }}
+              @endforeach
+            </p>
           @endif
         </div>
 

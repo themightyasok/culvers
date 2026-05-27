@@ -16,4 +16,10 @@
   .shop-store-details__column + .shop-store-details__column {
     border-left: 1px solid color-mix(in srgb, var(--color-faded-olive) 40%, transparent);
   }
+
+  .shop-store-details__address {
+    max-width: 22rem;
+    margin-inline: auto;
+    text-wrap: balance;
+  }
 }

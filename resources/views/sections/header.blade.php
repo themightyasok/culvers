@@ -11,8 +11,8 @@
   $facebookUrl = get_theme_mod('culvers_facebook_url', '#');
 
   /*
-   * Header wordmark sizing — mobile-first so desktop caps do not bleed into `< lg`.
-   * Mobile nav: 46×205; desktop bar: 22×178 (wrapper max-h 28px). Search bar is lg+ only.
+   * Header wordmark — Figma Mobile Nav filled mark (`2:988`) at every breakpoint.
+   * Mobile nav: 46×205; desktop bar + search: 22×178 (wrapper max-h 28px).
    */
   $headerLogoSvgClass = 'block h-[46px] w-auto max-w-[min(100%,205px)] shrink-0 text-current lg:h-[22px] lg:max-w-[min(100%,178px)] [&_svg]:max-h-full';
   $headerLogoWrapClass = 'flex h-[46px] w-[205px] max-w-[min(100%,205px)] items-center lg:h-[22px] lg:max-h-[28px] lg:w-[178px] lg:max-w-[min(100%,178px)] [&_svg]:h-full [&_svg]:max-w-full [&_svg]:object-contain [&_svg]:object-center lg:[&_svg]:object-left';
@@ -22,20 +22,29 @@
   $headerLogoDesktopImgWrapClass = 'block max-h-[28px] w-[178px] [&_img]:h-full [&_img]:w-auto [&_img]:max-h-[28px] [&_img]:object-contain [&_img]:object-left';
   $headerLogoDesktopPartialClass = 'block h-[22px] w-[178px] max-w-full text-deep-moss';
 
-  /* Same full wordmark SVG as `sections/footer` — `currentColor` picks up link `text-*`. */
-  $headerWordmarkAbs = get_template_directory() . '/resources/images/brand/culver-square-footer-wordmark.svg';
-  $headerWordmarkSvg = '';
-  if (is_readable($headerWordmarkAbs)) {
-      $headerWordmarkRaw = (string) file_get_contents($headerWordmarkAbs);
-      if ($headerWordmarkRaw !== '') {
-          $headerWordmarkSvg = (string) preg_replace(
-              '/<svg\b/',
-              '<svg class="' . esc_attr($headerLogoSvgClass) . '" aria-hidden="true" focusable="false"',
-              $headerWordmarkRaw,
-              1,
-          );
+  $headerWordmarkFromFile = static function (string $absolutePath, string $svgClass): string {
+      if (! is_readable($absolutePath)) {
+          return '';
       }
-  }
+
+      $raw = (string) file_get_contents($absolutePath);
+      if ($raw === '') {
+          return '';
+      }
+
+      return (string) preg_replace(
+          '/<svg\b/',
+          '<svg class="' . esc_attr($svgClass) . '" aria-hidden="true" focusable="false"',
+          $raw,
+          1,
+      );
+  };
+
+  $headerWordmarkSvg = $headerWordmarkFromFile(
+      get_template_directory() . '/resources/images/brand/culver-square-wordmark.svg',
+      $headerLogoSvgClass,
+  );
+  $headerHasWordmark = $headerWordmarkSvg !== '';
 @endphp
 
 {{--
@@ -142,7 +151,7 @@
                     aria-label="{{ esc_attr(get_bloginfo('name')) }}"
                     x-show="!searchOpen"
                     x-cloak>
-                    @if($headerWordmarkSvg !== '')
+                    @if($headerHasWordmark)
                       <span class="{{ $headerLogoWrapClass }}">{!! $headerWordmarkSvg !!}</span>
                     @elseif(has_custom_logo())
                       <span class="{{ $headerLogoImgWrapClass }}">
@@ -416,7 +425,7 @@
                 x-on:submit="closeSearch()">
                 {{-- Mobile search is full-width input + close; logo stays on desktop search bar only. --}}
                 <a class="max-lg:hidden shrink-0 text-deep-moss" href="{{ esc_url(home_url('/')) }}" rel="home" aria-label="{{ esc_attr(get_bloginfo('name')) }}">
-                  @if($headerWordmarkSvg !== '')
+                  @if($headerHasWordmark)
                     <span class="{{ $headerLogoDesktopWrapClass }}">{!! $headerWordmarkSvg !!}</span>
                   @elseif(has_custom_logo())
                     <span class="{{ $headerLogoDesktopImgWrapClass }}">

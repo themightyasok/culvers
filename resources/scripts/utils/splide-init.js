@@ -11,13 +11,14 @@ export function initSplideCarousels(root = document) {
     .forEach((el) => {
       if (!(el instanceof HTMLElement)) return;
 
-      let options = {};
+      const slideCount = el.querySelectorAll('.splide__slide').length;
+      let options = { type: slideCount > 1 ? 'loop' : 'slide' };
       const raw = el.getAttribute('data-splide-options');
       if (raw) {
         try {
-          options = JSON.parse(raw);
+          options = { type: slideCount > 1 ? 'loop' : 'slide', ...JSON.parse(raw) };
         } catch {
-          options = {};
+          options = { type: slideCount > 1 ? 'loop' : 'slide' };
         }
       }
 

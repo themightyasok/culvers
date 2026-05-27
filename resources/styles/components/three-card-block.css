@@ -5,6 +5,27 @@
  * Unlayered so pre-mount overrides beat @splidejs/splide/css defaults.
  */
 
+/*
+ * Autoplay card videos: no native controls or iOS centre play affordance.
+ * Playback is driven in three-card-block.js (hover / in-viewport); taps go to the card link.
+ */
+.three-card-block__card video.three-card-block__media {
+  pointer-events: none;
+}
+
+.three-card-block__card video.three-card-block__media::-webkit-media-controls,
+.three-card-block__card video.three-card-block__media::-webkit-media-controls-enclosure,
+.three-card-block__card video.three-card-block__media::-webkit-media-controls-panel,
+.three-card-block__card video.three-card-block__media::-webkit-media-controls-panel-container,
+.three-card-block__card video.three-card-block__media::-webkit-media-controls-start-playback-button,
+.three-card-block__card video.three-card-block__media::-webkit-media-controls-overlay-play-button,
+.three-card-block__card video.three-card-block__media::-webkit-media-controls-play-button {
+  -webkit-appearance: none;
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none;
+}
+
 /* Desktop hover — title + Explore sit in a flex stack with a tight gap (no absolute CTA). */
 @media (min-width: 640px) {
   .three-card-block__hover-stack {

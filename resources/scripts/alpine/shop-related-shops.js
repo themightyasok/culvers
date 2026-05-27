@@ -7,8 +7,7 @@ import Splide from '@splidejs/splide';
 
 /** @type {import('@splidejs/splide').Options} */
 const SHOP_RELATED_SPLIDE_OPTIONS = {
-  type: 'slide',
-  rewind: true,
+  type: 'loop',
   speed: 600,
   arrows: false,
   pagination: true,
@@ -90,7 +89,11 @@ export default function registerShopRelatedShopsAlpine(Alpine) {
       this.destroySplide();
       this.splideRoot = root;
 
-      this.splide = new Splide(root, SHOP_RELATED_SPLIDE_OPTIONS);
+      this.splide = new Splide(root, {
+        ...SHOP_RELATED_SPLIDE_OPTIONS,
+        type: slideCount > 1 ? 'loop' : 'slide',
+        pagination: slideCount > 1,
+      });
       this.splide.on('mounted', () => {
         requestAnimationFrame(() => {
           this.splide?.refresh();

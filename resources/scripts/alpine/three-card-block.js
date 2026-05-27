@@ -9,8 +9,7 @@ import Splide from '@splidejs/splide';
 
 /** @type {import('@splidejs/splide').Options} */
 const THREE_CARD_SPLIDE_OPTIONS = {
-  type: 'slide',
-  rewind: true,
+  type: 'loop',
   speed: 600,
   arrows: false,
   pagination: true,
@@ -306,6 +305,7 @@ export default function registerThreeCardBlockAlpine(Alpine) {
       const slideCount = nextRoot.querySelectorAll('.splide__slide').length;
       const options = {
         ...THREE_CARD_SPLIDE_OPTIONS,
+        type: slideCount > 1 ? 'loop' : 'slide',
         pagination: slideCount > 1,
       };
 
@@ -392,6 +392,17 @@ export default function registerThreeCardBlockAlpine(Alpine) {
 
         if (tryNow()) {
           return;
+        }
+
+        if (el.networkState === HTMLMediaElement.NETWORK_EMPTY) {
+          try {
+            if (el.preload === 'none') {
+              el.preload = 'metadata';
+            }
+            el.load();
+          } catch {
+            /* ignore */
+          }
         }
 
         let painted = false;

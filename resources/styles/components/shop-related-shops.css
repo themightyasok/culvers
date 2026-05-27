@@ -4,8 +4,11 @@
  * Unlayered so overrides beat @splidejs/splide/css defaults.
  */
 
-/* Section H2 → card grid: 32px (stock `mb-8` / intro-stack cap→content rhythm). */
-.shop-related-shops__heading,
+/* Section H2 → card grid: 44px on shop singles; eat & drink row keeps 32px. */
+.shop-related-shops__heading {
+  margin-bottom: 44px;
+}
+
 .shop-related-eat-drink__heading {
   margin-bottom: 32px;
 }
