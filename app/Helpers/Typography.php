@@ -54,8 +54,8 @@ final class Typography
             'text-3xl' => __('Small heading — 32px', 'culvers'),
             'text-4xl' => __('Medium heading — 40px', 'culvers'),
             'text-5xl' => __('Large heading — 48px', 'culvers'),
-            'text-6xl' => __('Section title — 58px', 'culvers'),
-            'text-7xl' => __('Extra large — 64px', 'culvers'),
+            'text-6xl' => __('Section title — 58px (mobile)', 'culvers'),
+            'text-7xl' => __('Section title — 64px (desktop)', 'culvers'),
             'text-8xl' => __('Huge — 84px (H1)', 'culvers'),
             'text-9xl' => __('Hero — 96px', 'culvers'),
         ];

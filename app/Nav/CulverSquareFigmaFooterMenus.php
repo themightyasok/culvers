@@ -36,6 +36,7 @@ final class CulverSquareFigmaFooterMenus
                 'items' => [
                     ['label' => __('Careers', 'culvers'), 'url' => '#'],
                     ['label' => __('Leasing Opportunities', 'culvers'), 'url' => '#'],
+                    ['label' => __('Commercialisation Opportunities', 'culvers'), 'url' => '#'],
                     ['label' => __('Parking', 'culvers'), 'url' => '#'],
                     ['label' => __('Opening hours', 'culvers'), 'url' => '#'],
                 ],

@@ -100,6 +100,15 @@ return [
                             'wrapper' => ['width' => '50'],
                         ],
                     ],
+                    'item_cta_new_tab' => [
+                        'type' => 'true_false',
+                        'options' => [
+                            'label' => __('Open CTA in new tab', 'culvers'),
+                            'default_value' => 0,
+                            'ui' => 1,
+                            'wrapper' => ['width' => '50'],
+                        ],
+                    ],
                     'item_image_left' => [
                         'type' => 'image',
                         'options' => [

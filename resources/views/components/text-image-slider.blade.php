@@ -2,6 +2,7 @@
   use App\Helpers\Component;
   use App\Helpers\Image;
   use App\Helpers\LayoutShell;
+  use App\Support\PageSectionAnchor;
 
   /**
    * Text-image slider — vertical stack of large Canela headlines that expand
@@ -52,11 +53,14 @@
           $right = isset($row['item_image_right']) && is_array($row['item_image_right']) ? $row['item_image_right'] : null;
           $ctaLabel = trim((string) ($row['item_cta_label'] ?? ''));
           $ctaUrl = trim((string) ($row['item_cta_url'] ?? ''));
+          $ctaNewTab = ! empty($row['item_cta_new_tab']);
           $items[] = [
               'label' => $label,
+              'anchor_id' => PageSectionAnchor::fromHeading($label),
               'body_html' => $bodyHtml,
               'cta_label' => $ctaLabel,
               'cta_url' => $ctaUrl,
+              'cta_new_tab' => $ctaNewTab,
               'image_left' => $left,
               'image_right' => $right,
               // Figma 51:8144 (right polaroid, -5.99°) and 51:8145 (left polaroid, +7.24°).
@@ -107,7 +111,8 @@
                   && trim((string) ($item['image_right']['url'] ?? '')) !== '';
           @endphp
           <li
-            class="text-image-slider__item relative w-full"
+            id="{{ esc_attr($item['anchor_id']) }}"
+            class="text-image-slider__item relative w-full {{ PageSectionAnchor::scrollMarginClass() }}"
             data-tis-item="{{ $i }}">
             <button
               id="{{ esc_attr($labelId) }}"
@@ -159,6 +164,9 @@
                       @include('components.button', [
                           'label' => $item['cta_label'],
                           'href' => $item['cta_url'],
+                          'attributes' => ! empty($item['cta_new_tab'])
+                              ? ['target' => '_blank', 'rel' => 'noopener noreferrer']
+                              : [],
                       ])
                     </div>
                   @endif

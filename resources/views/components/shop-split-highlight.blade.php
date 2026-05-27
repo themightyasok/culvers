@@ -35,6 +35,7 @@
           $bodyPlain = trim(wp_strip_all_tags($bodyHtml));
           $ctaLabel = trim((string) ($row['tab_cta_label'] ?? ''));
           $ctaUrl = trim((string) ($row['tab_cta_url'] ?? ''));
+          $ctaNewTab = ! empty($row['tab_cta_new_tab']);
 
           if ($label === '' && $headline === '' && $kicker === '' && $bodyPlain === '') {
               continue;
@@ -57,6 +58,7 @@
               'body_plain' => $bodyPlain,
               'cta_label' => $ctaLabel,
               'cta_url' => $ctaUrl,
+              'cta_new_tab' => $ctaNewTab,
               'show_cta' => $ctaLabel !== '' && $ctaUrl !== '',
               'media' => $effectiveMedia,
               'media_url' => $effectiveUrl,
@@ -87,7 +89,9 @@
   $bodyPlain = trim(wp_strip_all_tags($bodyHtml));
   $ctaLabel = trim((string) ($c['split_cta_label'] ?? ''));
   $ctaUrl = trim((string) ($c['split_cta_url'] ?? ''));
+  $ctaNewTab = ! empty($c['split_cta_new_tab']);
   $showCta = $ctaLabel !== '' && $ctaUrl !== '';
+  $ctaAttributes = $ctaNewTab ? ['target' => '_blank', 'rel' => 'noopener noreferrer'] : [];
 
   $copyBgRaw = is_string($c['split_copy_background'] ?? null) ? (string) $c['split_copy_background'] : 'olive';
   $copyOnWhite = $copyBgRaw === 'white';
@@ -100,18 +104,20 @@
   $bodyListClasses = ' [&_ul]:mt-9 [&_ul]:w-full [&_ul]:list-inside [&_ul]:list-disc [&_ul]:p-0 [&_ul]:text-center [&_ul]:leading-[1.8]'
       . ' [&_ul>li+li]:mt-0';
 
-  $bodyClasses = 'max-w-[34.625rem] w-full font-sans text-xl font-light text-lighter-cream rt-link-brand'
+  $proseClass = 'shop-split-highlight__prose';
+
+  $bodyClasses = 'max-w-[34.625rem] w-full font-sans text-xl font-light text-lighter-cream rt-link-brand ' . $proseClass
       . ' [&_p+p]:mt-4 [&_strong]:font-medium [&_strong]:text-lighter-cream'
       . ' [&>*:first-child]:mt-0'
       . $bodyListClasses
       . ' [&_ul>li]:marker:text-lighter-cream';
 
   $bodyClassesStatic = $copyOnWhite
-      ? 'w-full max-w-[34.625rem] font-sans text-xl font-light text-deep-moss/90 rt-link-faded'
+      ? 'w-full max-w-[34.625rem] font-sans text-xl font-light text-deep-moss/90 rt-link-faded ' . $proseClass
           . ' [&_p+p]:mt-4 [&_strong]:font-medium [&_strong]:text-deep-moss [&>*:first-child]:mt-0'
           . $bodyListClasses
           . ' [&_ul>li]:marker:text-deep-moss'
-      : 'w-full max-w-[34.625rem] font-sans text-xl font-light text-white rt-link-brand'
+      : 'w-full max-w-[34.625rem] font-sans text-xl font-light text-white rt-link-brand ' . $proseClass
           . ' [&_p+p]:mt-4 [&_strong]:font-medium [&_strong]:text-white [&>*:first-child]:mt-0'
           . $bodyListClasses
           . ' [&_ul>li]:marker:text-white';
@@ -119,8 +125,8 @@
   $staticSerifTone = $copyOnWhite ? 'text-faded-olive' : 'text-brand-500';
 
   $staticCopyColumnClasses = $hasTabs
-      ? 'flex min-h-0 flex-col items-center justify-center gap-6 px-8 pb-12 pt-12 text-center lg:min-h-full lg:gap-8 lg:px-10 xl:px-14 xl:pt-12'
-      : 'flex min-h-0 flex-col items-center justify-center px-8 pb-12 pt-12 text-center lg:min-h-full lg:px-10 xl:px-14';
+      ? 'flex min-h-0 flex-col items-center justify-start gap-6 px-8 pb-12 pt-12 text-center lg:h-full lg:min-h-full lg:gap-8 lg:px-10 xl:px-14 xl:pt-12'
+      : 'flex min-h-0 flex-col items-center justify-center px-8 pb-12 pt-12 text-center lg:h-full lg:min-h-full lg:px-10 xl:px-14';
 
   $copyColumnBgClass = $copyOnWhite ? 'bg-white' : 'bg-faded-olive';
   $gridSurfaceClass = $copyOnWhite ? '' : 'bg-faded-olive';
@@ -133,13 +139,13 @@
     class="shop-split-highlight {{ esc_attr($root) }} text-deep-moss"
     data-component-root
     data-shop-split-highlight
-    @if($hasTabs) x-data="splitHighlight" @endif>
+    @if($hasTabs) data-has-tabs="true" x-data="splitHighlight" @endif>
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
       {{-- Grid (not flex row) so the image column matches the copy column height even when the
            <img> is absolutely positioned (out of flow). Flex would leave the media cell at min-height only. --}}
       <div
         class="grid overflow-hidden rounded-[10px] {{ $gridSurfaceClass }} shadow-sm lg:min-h-[597px] lg:grid-cols-12 lg:items-stretch">
-        {{-- Copy column: always centre-aligned (horizontal + vertical). --}}
+        {{-- Copy column: centre-aligned by default; tabbed decks top-align so tabs don't shift on switch. --}}
         <div
           class="max-lg:order-1 lg:order-none {{ $copyColumnBgClass }} {{ $staticCopyColumnClasses }} {{ $ratio === '50-50' ? 'lg:col-span-6' : 'lg:col-span-7' }}">
           @if($hasTabs)
@@ -222,6 +228,9 @@
                           @include('components.button', [
                               'label' => $tab['cta_label'],
                               'href' => $tab['cta_url'],
+                              'attributes' => ! empty($tab['cta_new_tab'])
+                                  ? ['target' => '_blank', 'rel' => 'noopener noreferrer']
+                                  : [],
                           ])
                         </div>
                       @endif
@@ -232,6 +241,9 @@
                         @include('components.button', [
                             'label' => $tab['cta_label'],
                             'href' => $tab['cta_url'],
+                            'attributes' => ! empty($tab['cta_new_tab'])
+                                ? ['target' => '_blank', 'rel' => 'noopener noreferrer']
+                                : [],
                         ])
                       </div>
                     </div>
@@ -240,7 +252,7 @@
               @endforeach
             </div>
           @else
-            <div class="section-intro-stack flex w-full max-w-[34.625rem] flex-col items-center text-center">
+            <div class="shop-split-highlight__copy-inner section-intro-stack flex w-full max-w-[34.625rem] flex-col items-center text-center">
               @if($hasStaticSerifLines)
                 <div class="text-center leading-none">
                   @if($kicker !== '')
@@ -266,7 +278,11 @@
 
               @if($showCta)
                 <div class="{{ Component::sectionBodyToCtaGapClasses('flex justify-center') }}">
-                  @include('components.button', ['label' => $ctaLabel, 'href' => $ctaUrl])
+                  @include('components.button', [
+                      'label' => $ctaLabel,
+                      'href' => $ctaUrl,
+                      'attributes' => $ctaAttributes,
+                  ])
                 </div>
               @endif
                 </div>

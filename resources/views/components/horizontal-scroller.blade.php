@@ -35,11 +35,10 @@ $backgroundStyles = $backgroundData['styles'] ?? '';
 
 $header_text = $c['scroller_header_text'] ?? '';
 $header_text_color = $c['scroller_header_text_color'] ?? 'text-white';
-// Section H2 default — 58 px Canela (text-6xl), matching
+// Section H2 default — 64 px Canela (text-7xl), matching
 // Component::sectionHeadingClasses(). The dropdown still allows opting up
-// to text-7xl/text-8xl/text-9xl when a landing page genuinely wants a
-// hero-scale header strip.
-$header_text_size = $c['scroller_header_text_size'] ?? 'text-6xl';
+// to text-8xl/text-9xl when a landing page genuinely wants a hero-scale header strip.
+$header_text_size = $c['scroller_header_text_size'] ?? 'text-7xl';
 $header_text_weight = Typography::coerceCanelaHeadingWeight(
     (string) ($c['scroller_header_text_weight'] ?? 'font-normal')
 );
@@ -92,32 +91,24 @@ $scroll_speed_class = $disable_scroll
     };
 
 // Keep heading sizes constrained to the Typography header dropdown choices.
-// Default is text-6xl (58 px) so the strip header sits on the canonical
+// Default is text-7xl (64 px) so the strip header sits on the canonical
 // section H2 ramp; editors can opt into larger sizes per layout.
-//
-// Historical posts saved `text-7xl` (the old 64 px default before the spec
-// was lowered to 58 px). Coerce that legacy value here so we don't have to
-// migrate every existing horizontal_scroller row.
 $header_desktop_size = in_array(
     $header_text_size,
     array_keys(Typography::getHeaderSizeChoices()),
     true
-) ? $header_text_size : 'text-6xl';
-if ($header_desktop_size === 'text-7xl') {
-    $header_desktop_size = 'text-6xl';
-}
+) ? $header_text_size : 'text-7xl';
 // Pair every editor-chosen desktop size with a mobile fallback so the
-// header always steps down on phones (matches the canonical section H2
-// ramp documented in Component::sectionHeadingClasses()).
+// header always steps down on phones (matches Component::sectionHeadingSizeClasses()).
 $header_mobile_size = match ($header_desktop_size) {
     'text-3xl' => 'text-2xl',
     'text-4xl' => 'text-3xl',
     'text-5xl' => 'text-4xl',
     'text-6xl' => 'text-5xl',
-    'text-7xl' => 'text-5xl', // canonical 48 → 64
-    'text-8xl' => 'text-6xl',
-    'text-9xl' => 'text-7xl',
-    default => 'text-5xl',
+    'text-7xl' => 'text-6xl',
+    'text-8xl' => 'text-7xl',
+    'text-9xl' => 'text-8xl',
+    default => 'text-6xl',
 };
 $header_size_class = $header_mobile_size . ' md:' . $header_desktop_size;
 $header_text_color_class = match ($header_text_color) {

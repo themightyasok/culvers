@@ -134,14 +134,8 @@ update_option(FooterNavLinkSync::OPTION_VER, FooterNavLinkSync::CURRENT_VER, tru
 // "Centre Map" and "Getting Here" pills next to the search button. They
 // default to `#` until an editor sets them in Customize → Theme Options, so
 // preset them now to the Plan My Visit page where both are documented.
-$planMyVisitUrl = function_exists('home_url') ? home_url('/plan-my-visit/') : '/plan-my-visit/';
-foreach (['culvers_centre_map_url', 'culvers_getting_here_url'] as $modKey) {
-    $current = (string) get_theme_mod($modKey, '#');
-    if ($current === '' || $current === '#') {
-        set_theme_mod($modKey, $planMyVisitUrl);
-        \WP_CLI::log(sprintf('Theme mod %s set to %s', $modKey, $planMyVisitUrl));
-    }
-}
+PrimaryNavLinkSync::syncHeaderShortcutUrls();
+\WP_CLI::log('Header utility links (Centre Map / Getting Here) synced to section anchors.');
 
 /* -----------------------------------------------------------------
  * Cache flush — menu HTML is cached aggressively.

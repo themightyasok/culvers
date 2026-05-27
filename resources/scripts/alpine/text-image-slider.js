@@ -5,6 +5,8 @@
  *
  * @param {import('alpinejs').Alpine} Alpine
  */
+import { findAccordionIndexFromHash } from '../utils/page-anchor.js';
+
 export default function registerTextImageSliderAlpine(Alpine) {
   Alpine.data('textImageSlider', (config = {}) => ({
     /** @type {'single' | 'multi'} */
@@ -18,14 +20,48 @@ export default function registerTextImageSliderAlpine(Alpine) {
       if (this.mode === 'single' && this.openIndices.length > 1) {
         this.openIndices = [this.openIndices[0]];
       }
-      this.syncDom();
+
+      const root = this.$root;
+
+      const applyHashOpen = () => {
+        if (!(root instanceof HTMLElement)) {
+          return;
+        }
+        const hashIndex = findAccordionIndexFromHash(root);
+        if (hashIndex !== null) {
+          this.openAt(hashIndex);
+        }
+      };
+
+      if (root instanceof HTMLElement) {
+        const hashIndex = findAccordionIndexFromHash(root);
+        if (hashIndex !== null) {
+          this.openAt(hashIndex);
+        } else {
+          this.syncDom();
+        }
+      } else {
+        this.syncDom();
+      }
+
       this.$nextTick(() => {
         this.syncMediaAnimations(true);
         this._mediaReady = true;
+        applyHashOpen();
       });
+
+      if (root instanceof HTMLElement) {
+        this._hashChangeHandler = applyHashOpen;
+        window.addEventListener('hashchange', this._hashChangeHandler);
+        window.addEventListener('gsap:smoother:ready', this._hashChangeHandler);
+      }
     },
 
     destroy() {
+      if (this._hashChangeHandler) {
+        window.removeEventListener('hashchange', this._hashChangeHandler);
+        window.removeEventListener('gsap:smoother:ready', this._hashChangeHandler);
+      }
       const root = this.$root;
       if (!(root instanceof HTMLElement) || typeof window.gsap === 'undefined') {
         return;
@@ -38,6 +74,16 @@ export default function registerTextImageSliderAlpine(Alpine) {
     /** @param {number} index */
     isOpen(index) {
       return this.openIndices.includes(index);
+    },
+
+    /** @param {number} index */
+    openAt(index) {
+      if (this.mode === 'single') {
+        this.openIndices = [index];
+      } else if (!this.isOpen(index)) {
+        this.openIndices = [...this.openIndices, index];
+      }
+      this.syncDom();
     },
 
     /** @param {number} index */

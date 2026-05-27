@@ -33,6 +33,12 @@ const DOCK_HIDE_MIN_SCROLL_Y = 72;
 const DOCK_HIDE_DELAY_MS = 380;
 /** Right after load / init, do not schedule hide (hero legibility). */
 const DOCK_INITIAL_GRACE_MS = 2000;
+/** Keep header visible briefly while anchor smooth-scroll starts; cleared on idle / user wheel. */
+const DOCK_ANCHOR_SUPPRESS_MS = 1200;
+/** Wheel-down intent window for hide-at-page-bottom (ScrollSmoother can't increase y further). */
+const DOCK_WHEEL_DOWN_MS = 180;
+/** px from max scroll treated as "at bottom" for dock hide. */
+const DOCK_SCROLL_END_THRESHOLD_PX = 32;
 
 const MEGA_HOVER_CLOSE_DELAY_MS = 90;
 const SEARCH_DEBOUNCE_MS = 220;
@@ -90,6 +96,12 @@ export default function registerSiteHeaderAlpine(Alpine) {
     mobileNavAnimate: true,
 
     /** @type {number} */
+    _suppressDockHideUntil: 0,
+
+    /** @type {number} */
+    _wheelDownUntil: 0,
+
+    /** @type {number} */
     _lastScrollY: 0,
 
     /** @type {ReturnType<typeof setTimeout> | undefined} */
@@ -132,6 +144,7 @@ export default function registerSiteHeaderAlpine(Alpine) {
     },
 
     toggleMega(id) {
+      this.revealDock();
       const numId = Number(id);
       if (Number.isNaN(numId)) {
         return;
@@ -174,6 +187,7 @@ export default function registerSiteHeaderAlpine(Alpine) {
       if (!window.matchMedia('(hover: hover) and (min-width: 1024px)').matches) {
         return;
       }
+      this.revealDock();
       window.clearTimeout(this._megaHoverCloseTimer);
       const numId = Number(id);
       if (Number.isNaN(numId)) {
@@ -211,6 +225,21 @@ export default function registerSiteHeaderAlpine(Alpine) {
         this.cancelCloseMegaHover();
         this.applyMegaPreviewFromLink(t);
       }
+    },
+
+    /**
+     * Close the desktop mega panel when a submenu link is followed (in-page hash or full navigation).
+     */
+    megaSublinkClick(event) {
+      if (event.button !== 0) {
+        return;
+      }
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+        return;
+      }
+      this.revealDock();
+      this.cancelCloseMegaHover();
+      this.closeMega();
     },
 
     /**
@@ -397,6 +426,13 @@ export default function registerSiteHeaderAlpine(Alpine) {
         window.requestAnimationFrame(() => {
           const h = Math.ceil(measureEl.getBoundingClientRect().height);
           const px = `${Math.max(Math.round(h), 0)}px`;
+          const current =
+            getComputedStyle(document.documentElement)
+              .getPropertyValue('--site-header-offset')
+              .trim() || '';
+          if (px === current) {
+            return;
+          }
           document.documentElement.style.setProperty('--site-header-offset', px);
           window.dispatchEvent(new CustomEvent('culvers:header-offset'));
         });
@@ -425,6 +461,48 @@ export default function registerSiteHeaderAlpine(Alpine) {
       return window.scrollY ?? document.documentElement.scrollTop ?? 0;
     },
 
+    readMaxScrollY() {
+      if (typeof window === 'undefined') {
+        return Infinity;
+      }
+
+      const wrapper = document.getElementById('smooth-wrapper');
+      if (wrapper && window.ScrollTrigger && typeof window.ScrollTrigger.maxScroll === 'function') {
+        try {
+          return window.ScrollTrigger.maxScroll(wrapper);
+        } catch {
+          /* fall through */
+        }
+      }
+
+      return Math.max(0, (document.documentElement.scrollHeight || 0) - (window.innerHeight || 0));
+    },
+
+    isNearScrollEnd(y) {
+      const max = this.readMaxScrollY();
+      if (!Number.isFinite(max)) {
+        return false;
+      }
+
+      return max - y <= DOCK_SCROLL_END_THRESHOLD_PX;
+    },
+
+    /** After anchor navigation, re-baseline so the next downward scroll can hide the dock. */
+    resetDockScrollTracking() {
+      const y = this.readScrollY();
+      this._lastScrollY = Math.max(0, y - DOCK_HIDE_MIN_SCROLL_Y);
+      this._wheelDownUntil = 0;
+    },
+
+    noteWheelDownIntent() {
+      this._wheelDownUntil = Date.now() + DOCK_WHEEL_DOWN_MS;
+      if (Date.now() >= this._suppressDockHideUntil) {
+        return;
+      }
+      this._suppressDockHideUntil = 0;
+      this.resetDockScrollTracking();
+    },
+
     syncHeaderDock() {
       if (typeof window !== 'undefined' && window.culversHeaderTransformEnabled) {
         this.revealDock();
@@ -434,6 +512,13 @@ export default function registerSiteHeaderAlpine(Alpine) {
       }
 
       if (this.megaOpenId !== null || this.searchOpen || this.mobileOpen) {
+        this.revealDock();
+        this._lastScrollY = this.readScrollY();
+
+        return;
+      }
+
+      if (Date.now() < this._suppressDockHideUntil) {
         this.revealDock();
         this._lastScrollY = this.readScrollY();
 
@@ -463,7 +548,18 @@ export default function registerSiteHeaderAlpine(Alpine) {
         return;
       }
 
+      let shouldScheduleHide = false;
       if (y > this._lastScrollY + SCROLL_DIRECTION_EPS && y > DOCK_HIDE_MIN_SCROLL_Y) {
+        shouldScheduleHide = true;
+      } else if (
+        this.isNearScrollEnd(y) &&
+        Date.now() < this._wheelDownUntil &&
+        y > DOCK_HIDE_MIN_SCROLL_Y
+      ) {
+        shouldScheduleHide = true;
+      }
+
+      if (shouldScheduleHide) {
         if (this._dockHideTimer === undefined) {
           this._dockHideTimer = window.setTimeout(() => {
             this._dockHideTimer = undefined;
@@ -525,6 +621,40 @@ export default function registerSiteHeaderAlpine(Alpine) {
       this._headerRevealObserver.observe(root);
     },
 
+    /**
+     * Desktop: when the dock is hidden off-screen, a thin top-edge hit area brings it back
+     * so mega-nav and header hash links stay reachable after in-page scroll.
+     */
+    setupHeaderDockReveal() {
+      if (!window.matchMedia('(min-width: 1024px)').matches) {
+        return;
+      }
+
+      const root = this.$el;
+      if (!(root instanceof HTMLElement)) {
+        return;
+      }
+
+      const zone = document.createElement('div');
+      zone.className =
+        'site-header__dock-reveal-zone fixed inset-x-0 top-0 z-[60] hidden h-14 lg:block';
+      zone.setAttribute('aria-hidden', 'true');
+      zone.addEventListener('pointerenter', () => {
+        this.revealDock();
+      });
+      zone.addEventListener('focusin', () => {
+        this.revealDock();
+      });
+
+      const syncZone = () => {
+        zone.classList.toggle('pointer-events-none', !this.headerDockHidden);
+      };
+
+      this.$watch('headerDockHidden', syncZone);
+      syncZone();
+      root.insertAdjacentElement('beforebegin', zone);
+    },
+
     // --- Lifecycle -----------------------------------------------------------
 
     init() {
@@ -556,6 +686,28 @@ export default function registerSiteHeaderAlpine(Alpine) {
       this.setupHeaderReveal();
 
       this.syncDocumentHeaderOffset();
+
+      window.addEventListener('culvers:page-anchor-intent', () => {
+        this.revealDock();
+        this._suppressDockHideUntil = Date.now() + DOCK_ANCHOR_SUPPRESS_MS;
+      });
+
+      window.addEventListener('culvers:page-anchor-idle', () => {
+        this._suppressDockHideUntil = 0;
+        this.resetDockScrollTracking();
+      });
+
+      window.addEventListener(
+        'wheel',
+        (event) => {
+          if (event.deltaY > 0) {
+            this.noteWheelDownIntent();
+          }
+        },
+        { passive: true }
+      );
+
+      this.setupHeaderDockReveal();
 
       window.requestAnimationFrame(() => {
         window.requestAnimationFrame(() => {
@@ -629,8 +781,6 @@ export default function registerSiteHeaderAlpine(Alpine) {
         this.revealDock();
         this.syncDocumentHeaderOffset();
       });
-      this.$watch('headerDockHidden', () => this.syncDocumentHeaderOffset());
-      this.$watch('headerRevealed', () => this.syncDocumentHeaderOffset());
     },
   }));
 }

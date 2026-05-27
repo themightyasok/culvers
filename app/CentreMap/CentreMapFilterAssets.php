@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\CentreMap;
 
 /**
- * Pre-rendered centre-map SVGs — one artwork per filter category.
+ * Pre-rendered centre-map SVGs — one artwork per filter category (May 2026 V5 set).
  *
  * Files live under {@see self::DIR} with filenames matching category slugs
  * (see Plan my visit centre_map repeater + {@see DirectoryFilterDefinitions}).
@@ -14,22 +14,25 @@ final class CentreMapFilterAssets
 {
     private const DIR = 'resources/images/centre-map/filters/';
 
-    /** @var array<string, string> canonical slug => filename */
+    private const EXT = 'svg';
+
+    /** @var array<string, string> canonical slug => filename stem */
     private const FILES = [
-        'standard' => 'standard.svg',
-        'shop-all' => 'shop-all.svg',
-        'beauty-wellbeing' => 'beauty-wellbeing.svg',
-        'fashion' => 'fashion.svg',
-        'jewellery' => 'jewellery.svg',
-        'toys-gifts' => 'toys-gifts.svg',
-        'technology' => 'technology.svg',
-        'services' => 'services.svg',
-        'home' => 'home.svg',
-        'eat-drink-all' => 'eat-drink-all.svg',
-        'grab-go' => 'grab-go.svg',
-        'restaurants' => 'restaurants.svg',
-        'healthy-options' => 'healthy-options.svg',
-        'cafes' => 'cafes.svg',
+        'standard' => 'standard',
+        'shop-all' => 'shop-all',
+        'beauty-wellbeing' => 'beauty-wellbeing',
+        'fashion' => 'fashion',
+        'jewellery' => 'jewellery',
+        'toys-gifts' => 'toys-gifts',
+        'technology' => 'technology',
+        'services' => 'services',
+        'home' => 'home',
+        'eat-drink-all' => 'eat-drink-all',
+        'grab-go' => 'grab-go',
+        'restaurants' => 'restaurants',
+        'healthy-options' => 'healthy-options',
+        'cafes' => 'cafes',
+        'toilets' => 'toilets',
     ];
 
     /** Legacy / alternate slugs editors may still use in ACF. */
@@ -39,11 +42,13 @@ final class CentreMapFilterAssets
         'eat-drink-cafes' => 'cafes',
         'eat-drink-takeaway' => 'grab-go',
         'eat-drink-restaurants' => 'restaurants',
+        'guest-services' => 'toilets',
+        'guest-services-toilets' => 'toilets',
     ];
 
     public static function hasFilterMaps(): bool
     {
-        return is_readable(get_theme_file_path(self::DIR . self::FILES['standard']));
+        return is_readable(get_theme_file_path(self::DIR . self::filename('standard')));
     }
 
     public static function defaultUrl(): string
@@ -58,12 +63,12 @@ final class CentreMapFilterAssets
     {
         $out = [];
 
-        foreach (self::FILES as $slug => $filename) {
+        foreach (self::FILES as $slug => $stem) {
             if ($slug === 'standard') {
                 continue;
             }
 
-            $url = self::fileUrl($filename);
+            $url = self::fileUrl($stem);
             if ($url === '') {
                 continue;
             }
@@ -107,18 +112,23 @@ final class CentreMapFilterAssets
 
     private static function urlForCanonicalSlug(string $canonical): string
     {
-        $filename = self::FILES[$canonical] ?? '';
+        $stem = self::FILES[$canonical] ?? '';
 
-        return self::fileUrl($filename);
+        return self::fileUrl($stem);
     }
 
-    private static function fileUrl(string $filename): string
+    private static function filename(string $stem): string
     {
-        if ($filename === '') {
+        return $stem . '.' . self::EXT;
+    }
+
+    private static function fileUrl(string $stem): string
+    {
+        if ($stem === '') {
             return '';
         }
 
-        $path = self::DIR . $filename;
+        $path = self::DIR . self::filename($stem);
 
         if (! is_readable(get_theme_file_path($path))) {
             return '';

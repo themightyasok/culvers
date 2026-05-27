@@ -4,7 +4,10 @@
   $href = trim((string) ($card['url'] ?? ''));
   $title = trim((string) ($card['title'] ?? ''));
   $mediaType = (string) ($card['media_type'] ?? 'image');
-  $video = isset($card['video']) && is_array($card['video']) ? $card['video'] : [];
+  $preferMobileVideo = ! empty($preferMobileVideo);
+  $desktopVideo = isset($card['video']) && is_array($card['video']) ? $card['video'] : [];
+  $mobileVideo = isset($card['video_mobile']) && is_array($card['video_mobile']) ? $card['video_mobile'] : [];
+  $video = $preferMobileVideo && ! empty($mobileVideo['url']) ? $mobileVideo : $desktopVideo;
   $videoUrl = isset($video['url']) ? (string) $video['url'] : '';
   $mime = isset($video['mime_type']) ? (string) $video['mime_type'] : 'video/mp4';
   $image = isset($card['image']) && is_array($card['image']) ? $card['image'] : [];
@@ -20,6 +23,10 @@
   $mediaOverlayOpacity = isset($mediaOverlayOpacity) && is_numeric($mediaOverlayOpacity)
       ? max(0, min(100, (int) $mediaOverlayOpacity))
       : 25;
+  $videoAutoplay = ! empty($videoAutoplay);
+  $videoPreload = in_array($videoPreload ?? 'auto', ['auto', 'metadata', 'none'], true)
+      ? (string) ($videoPreload ?? 'auto')
+      : 'auto';
 @endphp
 
 @if($href !== '' && $title !== '')
@@ -35,10 +42,12 @@
             class="three-card-block__media absolute inset-0 h-full w-full object-cover motion-safe:transition-transform motion-safe:duration-700 motion-safe:ease-out motion-safe:group-hover/card:scale-[1.08] motion-safe:group-focus-within/card:scale-[1.08] motion-reduce:group-hover/card:scale-100 motion-reduce:group-focus-within/card:scale-100"
             data-three-card-video
             data-gsap-autoplay="off"
+            @if($videoAutoplay) autoplay @endif
             muted
             playsinline
+            webkit-playsinline
             loop
-            preload="auto">
+            preload="{{ esc_attr($videoPreload) }}">
             <source src="{{ esc_url($videoUrl) }}" type="{{ esc_attr($mime) }}" />
           </video>
         </span>

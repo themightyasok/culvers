@@ -13,9 +13,6 @@
   $headingTag = Component::headingTagFromComponent($c, 'eat_drink_related_heading_level', 2);
 
   $heading = trim((string) ($c['eat_drink_related_heading'] ?? __('More flavours to discover', 'culvers')));
-  $relatedHeadingSpacing = Component::sectionHeadingSpacingClasses(
-      Component::resolveSectionHeadingSpacing($c, 'eat_drink_related_heading_spacing', 'carousel')
-  );
   $viewUrl = trim((string) ($c['eat_drink_related_view_all_url'] ?? ''));
   $viewLabel = trim((string) ($c['eat_drink_related_view_all_label'] ?? __('View all', 'culvers')));
 
@@ -36,7 +33,7 @@
     x-data="shopRelatedShops()">
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
       @if($heading !== '')
-        <{{ $headingTag }} class="shop-related-eat-drink__heading {{ Component::sectionIntroHeadingClasses('text-faded-olive', 'mx-auto max-w-[52rem] text-center ' . $relatedHeadingSpacing) }}">
+        <{{ $headingTag }} class="shop-related-eat-drink__heading {{ Component::sectionIntroHeadingClasses('text-faded-olive', 'mx-auto max-w-[52rem] text-center') }}">
           {{ esc_html($heading) }}
         </{{ $headingTag }}>
       @endif

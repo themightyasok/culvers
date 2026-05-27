@@ -114,7 +114,8 @@
                burger 2:1016 = 36×20px glyph @ left 5.58%; search pill 2:990 = 39×39px #D4FF50 @ right 5.58%
                with 14.512×14.33px magnifier #4F5438 (assets: resources/images/header/mobile-*.svg). --}}
           <div
-            class="mega-nav__bar relative z-50 w-full bg-faded-olive max-lg:rounded-none max-lg:border-b max-lg:border-glowleaf lg:rounded-full">
+            class="mega-nav__bar relative z-50 w-full max-lg:rounded-none max-lg:border-b lg:rounded-full"
+            x-bind:class="searchOpen ? 'bg-transparent max-lg:border-b-transparent' : 'bg-faded-olive max-lg:border-glowleaf'">
             {{-- No vertical padding on the gutter — Figma pill is exactly 80px tall (matches the
                  inner row's `lg:min-h-[80px]`). Previous `py-2` inflated the pill to 96px. --}}
             <div class="mega-nav__bar-gutter w-full max-lg:py-0">
@@ -251,6 +252,8 @@
                     class="relative flex size-[43px] shrink-0 items-center justify-center rounded-full bg-brand-500 text-deep-moss transition-transform hover:scale-[1.03] culvers-focus-ring-compact-white"
                     x-bind:aria-expanded="searchOpen ? 'true' : 'false'"
                     aria-controls="site-header-search"
+                    x-show="!searchOpen"
+                    x-cloak
                     x-on:click="openSearch()">
                     <span class="sr-only">{{ __('Open search', 'culvers') }}</span>
                     @include('partials.icons.figma-header-icon', [
@@ -330,9 +333,10 @@
                             @endphp
                             <li class="list-none">
                               <a
-                                class="mega-nav__sublink inline-block font-sans text-2xl leading-6 text-faded-olive transition-colors hover:text-glowleaf focus-visible:rounded-sm culvers-focus-ring"
+                                class="mega-nav__sublink inline-block font-sans text-2xl leading-6 focus-visible:rounded-sm culvers-focus-ring"
                                 href="{{ esc_url($child['url']) }}"
                                 data-preview-url="{{ $childPv !== '' ? esc_url($childPv) : '' }}"
+                                x-on:click="megaSublinkClick($event)"
                                 x-on:mouseenter="megaSublinkEnter($event)"
                                 x-on:focus="megaSublinkEnter($event)">
                                 {{ $child['title'] }}
@@ -344,7 +348,7 @@
                         {{-- Figma Culver Square — Dropdown Menu Shop (72:4994–72:5001): Commuter SemiBold 12 / 1px tracking; 6px icon–label; 34px between marks. --}}
                         <div class="mt-10 flex shrink-0 flex-wrap gap-[34px] pt-6 lg:mt-auto lg:pt-10 lg:pb-2">
                           <a
-                            class="inline-flex cursor-pointer items-center gap-1.5 font-label text-xs font-semibold uppercase tracking-[0.0625rem] text-faded-olive transition-colors hover:text-glowleaf focus-visible:rounded-sm culvers-focus-ring"
+                            class="mega-nav__social-link inline-flex cursor-pointer items-center gap-1.5 font-label text-xs font-semibold uppercase tracking-[0.0625rem] focus-visible:rounded-sm culvers-focus-ring"
                             href="{{ esc_url($instagramUrl) }}"
                             rel="noopener noreferrer">
                             @include('partials.figma-social-icon', [
@@ -354,7 +358,7 @@
                             {{ __('Instagram', 'culvers') }}
                           </a>
                           <a
-                            class="inline-flex cursor-pointer items-center gap-1.5 font-label text-xs font-semibold uppercase tracking-[0.0625rem] text-faded-olive transition-colors hover:text-glowleaf focus-visible:rounded-sm culvers-focus-ring"
+                            class="mega-nav__social-link inline-flex cursor-pointer items-center gap-1.5 font-label text-xs font-semibold uppercase tracking-[0.0625rem] focus-visible:rounded-sm culvers-focus-ring"
                             href="{{ esc_url($facebookUrl) }}"
                             rel="noopener noreferrer">
                             @include('partials.figma-social-icon', [
@@ -703,7 +707,7 @@
                   <template x-for="(child, cIdx) in mobileActiveBranch.children" :key="(child.url || '') + '-' + cIdx">
                     <li class="list-none">
                       <a
-                        class="block py-6 font-sans text-2xl font-normal capitalize leading-[1.3] text-faded-olive focus-visible:rounded-sm culvers-focus-ring-compact"
+                        class="mega-nav__sublink block py-6 font-sans text-2xl font-normal capitalize leading-[1.3] focus-visible:rounded-sm culvers-focus-ring-compact"
                         x-bind:href="child.url"
                         x-on:click.prevent="followMobileNavLink(child.url)"
                         x-text="child.title"></a>

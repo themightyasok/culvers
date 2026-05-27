@@ -15,9 +15,6 @@
   $headingTag = Component::headingTagFromComponent($c, 'shops_related_heading_level', 2);
 
   $heading = trim((string) ($c['shops_related_heading'] ?? __('More shops you might enjoy', 'culvers')));
-  $relatedHeadingSpacing = Component::sectionHeadingSpacingClasses(
-      Component::resolveSectionHeadingSpacing($c, 'shops_related_heading_spacing', 'carousel')
-  );
   $viewUrl = trim((string) ($c['shops_related_view_all_url'] ?? ''));
   $viewLabel = trim((string) ($c['shops_related_view_all_label'] ?? __('View all', 'culvers')));
 
@@ -35,7 +32,7 @@
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
       @if($heading !== '')
         {{-- Section H2: 64px desktop / 48px mobile (Component::sectionHeadingClasses). --}}
-        <{{ $headingTag }} class="shop-related-shops__heading {{ Component::sectionIntroHeadingClasses('text-faded-olive', 'mx-auto max-w-[52rem] text-center ' . $relatedHeadingSpacing) }}">
+        <{{ $headingTag }} class="shop-related-shops__heading {{ Component::sectionIntroHeadingClasses('text-faded-olive', 'mx-auto max-w-[52rem] text-center') }}">
           {{ esc_html($heading) }}
         </{{ $headingTag }}>
       @endif

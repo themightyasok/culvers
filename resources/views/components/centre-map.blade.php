@@ -1,5 +1,6 @@
 @php
   use App\CentreMap\CentreMapFilterAssets;
+  use App\CentreMap\ShopCentreMapDefaults;
   use App\Helpers\Component;
   use App\Helpers\Image;
   use App\Helpers\LayoutShell;
@@ -71,6 +72,9 @@
    * @var array<int, array{label: string, slug: string, items: list<array{label: string, slug: string, url: string}>}> $groups
    */
   $rawCategories = is_array($c['centre_map_categories'] ?? null) ? $c['centre_map_categories'] : [];
+  if ($rawCategories === [] && is_singular(ShopCentreMapDefaults::supportedPostTypes())) {
+      $rawCategories = ShopCentreMapDefaults::categoryRows();
+  }
   $groupOrder = [];
   $groupBuckets = [];
   foreach ($rawCategories as $row) {
@@ -120,6 +124,13 @@
 
   $expandedGroupSlug = $groups !== [] ? $groups[0]['slug'] : '';
 
+  $retailerSelection = is_singular(ShopCentreMapDefaults::supportedPostTypes())
+      ? ShopCentreMapDefaults::initialSelectionForPost((int) get_the_ID())
+      : null;
+  if ($retailerSelection !== null && $groups !== []) {
+      $expandedGroupSlug = $retailerSelection['group'];
+  }
+
   /** @var array<string, array{slug: string, label: string}> $groupAllByGroup */
   $groupAllByGroup = [];
   $initialCategorySlug = '';
@@ -134,12 +145,17 @@
               'slug' => $itemSlug,
               'label' => (string) ($item['label'] ?? ''),
           ];
-          if ($groupIndex === 0) {
+          if ($groupIndex === 0 && $initialCategorySlug === '') {
               $initialCategorySlug = $itemSlug;
               $initialCategoryLabel = (string) ($item['label'] ?? '');
           }
           break;
       }
+  }
+
+  if ($retailerSelection !== null) {
+      $initialCategorySlug = $retailerSelection['slug'];
+      $initialCategoryLabel = $retailerSelection['label'];
   }
 
   $initialMapUrl = $initialCategorySlug !== '' && $filterMapUrls !== []

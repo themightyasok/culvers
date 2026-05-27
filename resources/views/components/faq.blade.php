@@ -2,6 +2,7 @@
   use App\Helpers\Component;
   use App\Helpers\Image;
   use App\Helpers\LayoutShell;
+  use App\Support\PageSectionAnchor;
 
   /**
    * FAQ — centred Canela heading + accordion of disclosure rows. Optional
@@ -75,7 +76,8 @@
 
 @if($items !== [])
   <section
-    class="faq {{ esc_attr($root) }} relative text-deep-moss"
+    id="faqs"
+    class="faq {{ esc_attr(trim($root . ' ' . PageSectionAnchor::scrollMarginClass())) }} relative text-deep-moss"
     data-component-root
     data-faq
     x-data='faq({{ $alpineConfig }})'>

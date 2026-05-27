@@ -57,6 +57,16 @@ final class CareerFields
 
         $group->addTrueFalse('career_employer_logo_preserve_colors', LogoPreserveColors::acfFieldDefinition());
 
+        $group->addEmail('career_apply_email', [
+            'label' => __('Apply-to email', 'culvers'),
+            'instructions' => __(
+                'When set, the Apply Now button opens the visitor\'s email client with the job title pre-filled. '
+                . 'The career detail component can override this per layout row.',
+                'culvers'
+            ),
+            'placeholder' => 'careers@example.com',
+        ]);
+
         $group->setLocation('post_type', '==', 'culvers_career');
 
         acf_add_local_field_group($group->build());

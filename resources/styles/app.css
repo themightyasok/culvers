@@ -410,6 +410,15 @@
     .hero-slider__splide .splide__list {
       min-height: calc(100svh - var(--site-header-offset, var(--site-header-offset-fallback)));
     }
+
+    .hero-slider__splide .splide__slide {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hero-slider__stage {
+      flex: 1 1 auto;
+    }
   }
 
   /*
@@ -641,6 +650,128 @@ a.footer-getting-here-map-link:hover,
 a.footer-getting-here-map-link:focus-visible {
   color: var(--color-lighter-cream);
   border-bottom-color: var(--color-lighter-cream);
+}
+
+/*
+ * Split highlight — static copy column centres CMS prose (What's On singles often
+ * import left-aligned HTML). Unlayered so !important beats inline text-align.
+ * Tabbed decks stay top-aligned via Blade; prose remains centred horizontally.
+ */
+.shop-split-highlight:not([data-has-tabs='true']) .shop-split-highlight__copy-inner {
+  margin-block: auto;
+}
+
+.shop-split-highlight__prose {
+  width: 100%;
+}
+
+.shop-split-highlight__prose :is(p, li, h2, h3, h4, blockquote, div) {
+  text-align: center !important;
+}
+
+.shop-split-highlight__prose :is(img.alignleft, img.alignright, img.aligncenter, img) {
+  display: block;
+  float: none !important;
+  margin-inline: auto;
+}
+
+/*
+ * Light-surface links — inherit surrounding text colour; hover/focus → dustleaf (directory card moss).
+ * Mega sublinks always use body moss on cream panels (desktop dropdown + mobile drill-down).
+ * Scoped by component BEM hooks. Excludes footer, centre-map, rt-link-brand, and .btn.
+ */
+a.mega-nav__sublink {
+  color: var(--color-deep-moss);
+  transition: color 0.15s ease;
+}
+
+a.mega-nav__sublink:hover,
+a.mega-nav__sublink:focus-visible {
+  color: var(--color-dustleaf);
+}
+
+:is(
+  a.mega-nav__social-link,
+  .social-share__list a,
+  .contact__panel-map-link,
+  .contact__panel-phone,
+  .contact__panel-email,
+  .contact__panel-social-link,
+  .shop-store-details__phone-link,
+  .shop-store-details__social-link,
+  .rt-link-prose a,
+  .rt-link-faded a,
+  .rt-link-olive-surface a
+) {
+  color: inherit;
+  transition: color 0.15s ease;
+}
+
+:is(
+  a.mega-nav__social-link,
+  .social-share__list a,
+  .contact__panel-map-link,
+  .contact__panel-phone,
+  .contact__panel-email,
+  .contact__panel-social-link,
+  .shop-store-details__phone-link,
+  .shop-store-details__social-link,
+  .rt-link-prose a,
+  .rt-link-faded a,
+  .rt-link-olive-surface a
+):hover,
+:is(
+  a.mega-nav__social-link,
+  .social-share__list a,
+  .contact__panel-map-link,
+  .contact__panel-phone,
+  .contact__panel-email,
+  .contact__panel-social-link,
+  .shop-store-details__phone-link,
+  .shop-store-details__social-link,
+  .rt-link-prose a,
+  .rt-link-faded a,
+  .rt-link-olive-surface a
+):focus-visible {
+  color: var(--color-dustleaf);
+}
+
+.rt-link-prose a,
+.rt-link-faded a,
+.rt-link-olive-surface a {
+  text-decoration-line: underline;
+  text-decoration-color: var(--color-glowleaf);
+  text-underline-offset: 4px;
+  transition:
+    color 0.15s ease,
+    text-decoration-color 0.15s ease;
+}
+
+.contact__panel-phone,
+.contact__panel-email,
+.shop-store-details__phone-link,
+.shop-store-details__social-link {
+  text-decoration: none;
+}
+
+.rt-link-prose a:hover,
+.rt-link-prose a:focus-visible,
+.rt-link-faded a:hover,
+.rt-link-faded a:focus-visible,
+.rt-link-olive-surface a:hover,
+.rt-link-olive-surface a:focus-visible {
+  text-decoration-color: var(--color-dustleaf);
+}
+
+.contact__panel-phone:hover,
+.contact__panel-phone:focus-visible,
+.contact__panel-email:hover,
+.contact__panel-email:focus-visible,
+.shop-store-details__phone-link:hover,
+.shop-store-details__phone-link:focus-visible,
+.shop-store-details__social-link:hover,
+.shop-store-details__social-link:focus-visible {
+  text-decoration: none;
 }
 
 /*

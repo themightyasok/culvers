@@ -1,6 +1,7 @@
 @php
   use App\Helpers\Component;
   use App\Helpers\LayoutShell;
+  use App\Support\PageSectionAnchor;
 
   /**
    * Section header — small text-only intro band: optional eyebrow + heading
@@ -45,6 +46,10 @@
   $headingTailGapClass = $heading !== '' && $bodyLines === []
       ? Component::sectionHeadingToFollowContentGapClasses()
       : '';
+
+  $sectionAnchorId = $heading !== '' ? PageSectionAnchor::fromHeading($heading) : '';
+  $sectionAnchorAttr = $sectionAnchorId !== '' ? ' id="' . esc_attr($sectionAnchorId) . '"' : '';
+  $sectionScrollMargin = $sectionAnchorId !== '' ? PageSectionAnchor::scrollMarginClass() : '';
 @endphp
 
 @if(! $hasContent)
@@ -60,7 +65,8 @@
        is reserved for callout bands (Travel Calculator) which set their own
        heading colour inline. --}}
   <section
-    class="section-header {{ esc_attr($root) }} text-faded-olive"
+    {!! $sectionAnchorAttr !!}
+    class="section-header {{ esc_attr(trim($root . ' ' . $sectionScrollMargin)) }} text-faded-olive"
     data-component-root
     data-section-header>
     <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
@@ -73,7 +79,7 @@
         @endif
 
         @if($heading !== '')
-          {{-- Section H2 (58 px desktop / 48 px mobile) in Faded Olive — matches Figma section
+          {{-- Section H2 (64 px desktop / 58 px mobile) in Faded Olive — matches Figma section
                H2 token; body retains Deep Moss for readability against the cream surface. --}}
           <{{ $headingTag }}
             class="section-header__heading {{ Component::sectionIntroHeadingClasses('text-faded-olive', trim(($eyebrow !== '' ? 'mt-3' : '') . ' ' . $headingTailGapClass)) }}">

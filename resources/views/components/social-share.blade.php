@@ -31,7 +31,7 @@
           'label' => __('Instagram', 'culvers'),
           'url' => $instagramUrl,
           'variant' => 'instagram',
-          'icon_class' => 'size-[14px] shrink-0 text-dustleaf',
+          'icon_class' => 'size-[14px] shrink-0 text-current',
       ];
   }
   if (SocialShare::isRenderableUrl($facebookUrl)) {
@@ -39,7 +39,7 @@
           'label' => __('Facebook', 'culvers'),
           'url' => $facebookUrl,
           'variant' => 'facebook',
-          'icon_class' => 'size-[15px] shrink-0 text-dustleaf',
+          'icon_class' => 'size-[15px] shrink-0 text-current',
       ];
   }
   if ($whatsappUrl !== '') {
@@ -47,7 +47,7 @@
           'label' => __('Whatsapp', 'culvers'),
           'url' => $whatsappUrl,
           'variant' => 'whatsapp',
-          'icon_class' => 'size-[15px] shrink-0 text-dustleaf',
+          'icon_class' => 'size-[15px] shrink-0 text-current',
           'external' => true,
       ];
   }
@@ -76,7 +76,7 @@
             <li>
               <a
                 href="{{ esc_url($link['url']) }}"
-                class="social-share__link inline-flex items-center gap-1.5 font-label text-xs font-semibold uppercase tracking-widest text-dustleaf transition-colors hover:text-deep-moss focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-glowleaf focus-visible:ring-offset-2 focus-visible:ring-offset-light-cream"
+                class="social-share__link inline-flex items-center gap-1.5 font-label text-xs font-semibold uppercase tracking-widest focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-glowleaf focus-visible:ring-offset-2 focus-visible:ring-offset-light-cream"
                 @if(! empty($link['external']))
                   target="_blank"
                   rel="noopener noreferrer"

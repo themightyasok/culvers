@@ -1,6 +1,7 @@
 @php
   use App\Helpers\Component;
   use App\Helpers\ThreeCardBlock;
+  use App\Support\PageSectionAnchor;
 
   /**
    * Three card block — manual cards (image / video) or directory CPT / blog category tabs.
@@ -30,6 +31,9 @@
   }
 
   $hasIntro = $heading !== '' || $sub !== '' || trim(strip_tags($body)) !== '';
+  $sectionAnchorId = $heading !== '' ? PageSectionAnchor::fromHeading($heading) : '';
+  $sectionAnchorAttr = $sectionAnchorId !== '' ? ' id="' . esc_attr($sectionAnchorId) . '"' : '';
+  $sectionScrollMargin = $sectionAnchorId !== '' ? PageSectionAnchor::scrollMarginClass() : '';
   $hasIntroBody = trim(strip_tags($body)) !== '' || $sub !== '';
   $mobilePromoStack = ThreeCardBlock::usesMobilePromoStack($c);
   $mobilePromoOverlay = max($mediaOverlayOpacity, 30);
@@ -63,7 +67,8 @@
   @endif
 @else
 <section
-  class="three-card-block {{ esc_attr($root) }} relative z-20 text-deep-moss"
+  {!! $sectionAnchorAttr !!}
+  class="three-card-block {{ esc_attr(trim($root . ' ' . $sectionScrollMargin)) }} relative z-20 text-deep-moss"
   data-component-root
   data-three-card-block
   x-data="threeCardBlock()">
@@ -72,7 +77,7 @@
       @include('partials.section-intro-stack', [
           'headingTag' => $headingTag,
           'heading' => $heading,
-          'headingClasses' => Component::sectionIntroHeadingClasses('text-faded-olive', 'max-sm:text-6xl'),
+          'headingClasses' => Component::sectionIntroHeadingClasses('text-faded-olive'),
           'subheading' => $sub,
           'subheadingClasses' => 'font-sans text-xs uppercase tracking-widest text-faded-olive md:text-xs',
           'bodyHtml' => $body,
@@ -156,6 +161,9 @@
                   'showMobileArrow' => true,
                   'mobileArrowLayout' => 'inline',
                   'mediaOverlayOpacity' => $mobilePromoOverlay,
+                  'videoAutoplay' => true,
+                  'videoPreload' => 'auto',
+                  'preferMobileVideo' => true,
                 ])
               @endforeach
             </div>
@@ -177,6 +185,9 @@
                         'showMobileArrow' => true,
                         'mobileArrowLayout' => 'stack',
                         'mediaOverlayOpacity' => $mediaOverlayOpacity,
+                        'videoAutoplay' => true,
+                        'videoPreload' => 'auto',
+                        'preferMobileVideo' => true,
                       ])
                     </li>
                   @endforeach
@@ -194,6 +205,7 @@
                 'isManualMode' => $isManualMode,
                 'showMobileArrow' => false,
                 'mediaOverlayOpacity' => $mediaOverlayOpacity,
+                'videoPreload' => 'none',
               ])
             @endforeach
           </div>

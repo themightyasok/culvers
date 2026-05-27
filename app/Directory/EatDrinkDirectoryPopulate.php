@@ -38,6 +38,71 @@ final class EatDrinkDirectoryPopulate
     }
 
     /**
+     * Reuse an attachment when the relative uploads path is already registered,
+     * otherwise register the on-disk file (never overwrites the file itself).
+     */
+    public static function attachmentIdForRelativeUploadPath(string $relativePath): int
+    {
+        self::loadDependencies();
+
+        $relativePath = ltrim(str_replace('\\', '/', $relativePath), '/');
+        if ($relativePath === '') {
+            return 0;
+        }
+
+        $uploadDir = wp_upload_dir();
+        if (! empty($uploadDir['error'])) {
+            return 0;
+        }
+
+        $absPath = $uploadDir['basedir'] . '/' . $relativePath;
+        if (! is_readable($absPath)) {
+            return 0;
+        }
+
+        global $wpdb;
+
+        $existing = $wpdb->get_var(
+            $wpdb->prepare(
+                "SELECT post_id FROM {$wpdb->postmeta} WHERE meta_key = '_wp_attached_file' AND meta_value = %s LIMIT 1",
+                $relativePath
+            )
+        );
+        if (is_numeric($existing) && (int) $existing > 0) {
+            return (int) $existing;
+        }
+
+        return self::withDirectoryImportUploadFilters(
+            static function () use ($absPath, $relativePath): int {
+                $filetype = wp_check_filetype(basename($absPath), null);
+                $mime = is_string($filetype['type'] ?? null) ? $filetype['type'] : '';
+                if ($mime === '') {
+                    return 0;
+                }
+
+                $attachmentId = wp_insert_attachment([
+                    'post_mime_type' => $mime,
+                    'post_title' => sanitize_file_name((string) pathinfo($absPath, PATHINFO_FILENAME)),
+                    'post_content' => '',
+                    'post_status' => 'inherit',
+                ], $absPath);
+
+                if (is_wp_error($attachmentId) || ! is_numeric($attachmentId) || (int) $attachmentId <= 0) {
+                    return 0;
+                }
+
+                $attachmentId = (int) $attachmentId;
+                $metadata = wp_generate_attachment_metadata($attachmentId, $absPath);
+                if (is_array($metadata) && $metadata !== []) {
+                    wp_update_attachment_metadata($attachmentId, $metadata);
+                }
+
+                return $attachmentId;
+            }
+        );
+    }
+
+    /**
      * @template T
      * @param callable(): T $callback
      * @return T

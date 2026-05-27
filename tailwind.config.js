@@ -54,22 +54,10 @@ const culversThemePlugin = plugin(({ addBase, addComponents }) => {
         {},
     },
     /*
-     * Rich text (CMS WYSIWYG / prose) — anchor styling inside a block. Parent sets body colour;
-     * these only touch `a` descendants (matches former `[&_a]:…` chains).
+     * Rich-text blocks: `rt-link-*` utilities (underline only; colour/hover in app.css).
      */
-    '.rt-link-prose': {
-      '@apply [&_a]:text-deep-moss [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 hover:[&_a]:decoration-deep-moss':
-        {},
-    },
-    '.rt-link-faded': {
-      '@apply [&_a]:text-faded-olive [&_a]:underline [&_a]:underline-offset-4': {},
-    },
     '.rt-link-brand': {
       '@apply [&_a]:text-brand-500 [&_a]:underline [&_a]:decoration-brand-500 [&_a]:underline-offset-4':
-        {},
-    },
-    '.rt-link-olive-surface': {
-      '@apply [&_a]:text-inherit [&_a]:underline [&_a]:decoration-glowleaf [&_a]:underline-offset-4 hover:[&_a]:opacity-90':
         {},
     },
     '.footer-sans-book': {

@@ -1,6 +1,7 @@
 /**
- * Three card block: optional category tabs; video plays on hover/focus-in.
- * CPT / blog mode mounts Splide on the active tab panel (mobile carousel).
+ * Three card block: optional category tabs; video plays on hover (desktop) or
+ * in-viewport autoplay (touch / narrow viewports). CPT / blog mode mounts Splide
+ * on the active tab panel (mobile carousel).
  *
  * @param {import('alpinejs').Alpine} Alpine
  */
@@ -19,6 +20,137 @@ const THREE_CARD_SPLIDE_OPTIONS = {
   perMove: 1,
   trimSpace: false,
 };
+
+/** Minimum visible ratio before a card video autoplays on touch / mobile. */
+const MOBILE_VIDEO_IO_THRESHOLD = 0.2;
+
+function prefersReducedMotion() {
+  return (
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  );
+}
+
+/** @returns {'static' | 'hover' | 'viewport'} */
+function threeCardVideoPlaybackMode() {
+  if (prefersReducedMotion()) {
+    return 'static';
+  }
+
+  if (typeof window.matchMedia !== 'function') {
+    return 'viewport';
+  }
+
+  // Narrow / touch first — never pair with desktop hover priming on the same card.
+  if (
+    window.matchMedia('(max-width: 639px)').matches ||
+    window.matchMedia('(hover: none)').matches ||
+    window.matchMedia('(pointer: coarse)').matches
+  ) {
+    return 'viewport';
+  }
+
+  return 'hover';
+}
+
+function usesHoverVideoPlayback() {
+  return threeCardVideoPlaybackMode() === 'hover';
+}
+
+function usesViewportVideoPlayback() {
+  return threeCardVideoPlaybackMode() === 'viewport';
+}
+
+/** Skip hidden breakpoint duplicates (mobile stack vs desktop grid). */
+function isCardVisible(card) {
+  if (!(card instanceof HTMLElement)) {
+    return false;
+  }
+
+  const rect = card.getBoundingClientRect();
+
+  return rect.width > 0 && rect.height > 0;
+}
+
+function pauseVideoAtStart(video) {
+  try {
+    video.pause();
+  } catch {
+    /* ignore */
+  }
+  try {
+    video.currentTime = 0;
+  } catch {
+    /* ignore */
+  }
+}
+
+function visibleIntersectionRatio(el) {
+  if (!(el instanceof HTMLElement)) {
+    return 0;
+  }
+
+  const rect = el.getBoundingClientRect();
+  if (rect.width <= 0 || rect.height <= 0) {
+    return 0;
+  }
+
+  const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+  const visibleTop = Math.max(rect.top, 0);
+  const visibleBottom = Math.min(rect.bottom, viewportHeight);
+  const visibleHeight = Math.max(0, visibleBottom - visibleTop);
+
+  return visibleHeight / rect.height;
+}
+
+function playThreeCardVideo(video) {
+  if (!(video instanceof HTMLVideoElement)) {
+    return;
+  }
+
+  video.muted = true;
+  video.playsInline = true;
+
+  const attemptPlay = () => {
+    video.play().catch(() => {});
+  };
+
+  if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
+    attemptPlay();
+    return;
+  }
+
+  const onReady = () => {
+    attemptPlay();
+  };
+
+  video.addEventListener('loadeddata', onReady, { once: true });
+  video.addEventListener('canplay', onReady, { once: true });
+
+  if (video.networkState === HTMLMediaElement.NETWORK_EMPTY) {
+    try {
+      video.load();
+    } catch {
+      /* ignore */
+    }
+  }
+}
+
+function maybePlayVisibleThreeCardVideo(video) {
+  if (!(video instanceof HTMLVideoElement)) {
+    return;
+  }
+
+  const card = video.closest('a.three-card-block__card');
+  if (!isCardVisible(card)) {
+    return;
+  }
+
+  const target = card instanceof HTMLElement ? card : video;
+  if (visibleIntersectionRatio(target) >= MOBILE_VIDEO_IO_THRESHOLD) {
+    playThreeCardVideo(video);
+  }
+}
 
 export default function registerThreeCardBlockAlpine(Alpine) {
   Alpine.data('threeCardBlock', () => ({
@@ -42,6 +174,12 @@ export default function registerThreeCardBlockAlpine(Alpine) {
     /** @type {((event: MediaQueryListEvent) => void) | undefined} */
     boundOnMobileChange: undefined,
 
+    /** @type {IntersectionObserver | null} */
+    videoViewportObserver: null,
+
+    /** @type {Set<HTMLVideoElement>} */
+    viewportObservedVideos: new Set(),
+
     shouldUseSplide() {
       return typeof window.matchMedia === 'function'
         ? window.matchMedia('(max-width: 639px)').matches
@@ -57,6 +195,7 @@ export default function registerThreeCardBlockAlpine(Alpine) {
       this.boundOnMobileChange = () => {
         this.$nextTick(() => {
           this.mountActiveSplide();
+          this.syncVideoPlayback();
         });
       };
 
@@ -97,8 +236,7 @@ export default function registerThreeCardBlockAlpine(Alpine) {
       }
       this.$nextTick(() => {
         this.mountActiveSplide();
-        this.primeVideoFirstFrames();
-        this.bindVideoHoverPlayback();
+        this.syncVideoPlayback();
       });
     },
 
@@ -175,7 +313,11 @@ export default function registerThreeCardBlockAlpine(Alpine) {
       this.splide.on('mounted', () => {
         requestAnimationFrame(() => {
           this.splide?.refresh();
+          this.syncVideoPlayback();
         });
+      });
+      this.splide.on('move', () => {
+        this.syncVideoPlayback();
       });
       this.splide.mount();
       nextRoot.dataset.splideMounted = '1';
@@ -187,11 +329,31 @@ export default function registerThreeCardBlockAlpine(Alpine) {
         if (this.splide) {
           this.splide.refresh();
         }
+        this.syncVideoPlayback();
       }, 150);
     },
 
+    syncVideoPlayback() {
+      this.unbindVideoViewportPlayback();
+
+      const mode = threeCardVideoPlaybackMode();
+
+      if (mode === 'hover') {
+        this.primeVideoFirstFrames();
+        this.bindVideoHoverPlayback();
+        return;
+      }
+
+      if (mode === 'viewport') {
+        this.bindVideoViewportPlayback();
+        return;
+      }
+
+      this.primeVideoFirstFrames();
+    },
+
     /**
-     * Pause at frame 0 so the first decoded raster shows until hover/play (HAVE_CURRENT_DATA+).
+     * Desktop: pause at frame 0 so the first decoded raster shows until hover/play.
      */
     primeVideoFirstFrames() {
       const root = this.$root;
@@ -204,17 +366,13 @@ export default function registerThreeCardBlockAlpine(Alpine) {
           return;
         }
 
+        const card = el.closest('a.three-card-block__card');
+        if (!isCardVisible(card)) {
+          return;
+        }
+
         const snapToFirstFrame = () => {
-          try {
-            el.pause();
-          } catch {
-            /* ignore */
-          }
-          try {
-            el.currentTime = 0;
-          } catch {
-            /* ignore */
-          }
+          pauseVideoAtStart(el);
           requestAnimationFrame(() => {
             try {
               el.pause();
@@ -252,16 +410,12 @@ export default function registerThreeCardBlockAlpine(Alpine) {
 
     bindVideoHoverPlayback() {
       const root = this.$root;
-      if (!(root instanceof HTMLElement)) {
-        return;
-      }
-
-      if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      if (!(root instanceof HTMLElement) || !usesHoverVideoPlayback()) {
         return;
       }
 
       root.querySelectorAll('a.three-card-block__card').forEach((card) => {
-        if (!(card instanceof HTMLElement)) {
+        if (!(card instanceof HTMLElement) || !isCardVisible(card)) {
           return;
         }
         if (card.dataset.culversThreeCardHover === '1') {
@@ -280,12 +434,7 @@ export default function registerThreeCardBlockAlpine(Alpine) {
         };
 
         const pauseAtStart = () => {
-          video.pause();
-          try {
-            video.currentTime = 0;
-          } catch {
-            /* ignore */
-          }
+          pauseVideoAtStart(video);
           requestAnimationFrame(() => {
             try {
               video.pause();
@@ -302,6 +451,81 @@ export default function registerThreeCardBlockAlpine(Alpine) {
       });
     },
 
+    bindVideoViewportPlayback() {
+      const root = this.$root;
+      if (!(root instanceof HTMLElement) || !usesViewportVideoPlayback()) {
+        return;
+      }
+
+      const videos = [...root.querySelectorAll('[data-three-card-video]')].filter((el) => {
+        if (!(el instanceof HTMLVideoElement)) {
+          return false;
+        }
+
+        const card = el.closest('a.three-card-block__card');
+
+        return isCardVisible(card);
+      });
+
+      if (videos.length === 0) {
+        return;
+      }
+
+      if (!('IntersectionObserver' in window)) {
+        videos.forEach((video) => {
+          maybePlayVisibleThreeCardVideo(video);
+        });
+
+        return;
+      }
+
+      this.videoViewportObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const card = entry.target;
+            if (!(card instanceof HTMLElement)) {
+              return;
+            }
+
+            const video = card.querySelector('[data-three-card-video]');
+            if (!(video instanceof HTMLVideoElement)) {
+              return;
+            }
+
+            if (entry.isIntersecting && entry.intersectionRatio >= MOBILE_VIDEO_IO_THRESHOLD) {
+              playThreeCardVideo(video);
+              return;
+            }
+
+            if (!entry.isIntersecting) {
+              pauseVideoAtStart(video);
+            }
+          });
+        },
+        { threshold: [0, MOBILE_VIDEO_IO_THRESHOLD, 0.5, 1] }
+      );
+
+      videos.forEach((video) => {
+        const card = video.closest('a.three-card-block__card');
+        if (!(card instanceof HTMLElement) || this.viewportObservedVideos.has(video)) {
+          return;
+        }
+
+        this.viewportObservedVideos.add(video);
+        this.videoViewportObserver?.observe(card);
+        maybePlayVisibleThreeCardVideo(video);
+      });
+    },
+
+    unbindVideoViewportPlayback() {
+      if (this.videoViewportObserver) {
+        this.videoViewportObserver.disconnect();
+        this.videoViewportObserver = null;
+      }
+
+      this.viewportObservedVideos.clear();
+    },
+
     init() {
       this.syncTabAccessibility();
       this.bindMobileQuery();
@@ -311,8 +535,7 @@ export default function registerThreeCardBlockAlpine(Alpine) {
       this.$nextTick(() => {
         requestAnimationFrame(() => {
           this.mountActiveSplide();
-          this.primeVideoFirstFrames();
-          this.bindVideoHoverPlayback();
+          this.syncVideoPlayback();
         });
       });
     },
@@ -320,6 +543,7 @@ export default function registerThreeCardBlockAlpine(Alpine) {
     destroy() {
       clearTimeout(this.resizeTimer);
       this.unbindMobileQuery();
+      this.unbindVideoViewportPlayback();
       if (this.boundOnResize) {
         window.removeEventListener('resize', this.boundOnResize);
       }

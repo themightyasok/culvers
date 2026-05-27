@@ -63,7 +63,7 @@
             @php $telHref = preg_replace('/[^0-9+]/', '', str_replace("\xc2\xa0", ' ', $phone)); @endphp
             <p class="mt-3 font-sans text-2xl font-light leading-[30px] text-faded-olive">
               @if($telHref !== '')
-                <a class="text-faded-olive underline decoration-brand-500 underline-offset-4 hover:decoration-faded-olive" href="{{ esc_url('tel:' . $telHref) }}">{{ esc_html($phone) }}</a>
+                <a class="shop-store-details__phone-link" href="{{ esc_url('tel:' . $telHref) }}">{{ esc_html($phone) }}</a>
               @else
                 <span>{{ esc_html($phone) }}</span>
               @endif
@@ -85,8 +85,7 @@
             @php
               $socialLinkClass =
                   'shop-store-details__social-link inline-flex items-center gap-2 font-label text-sm font-semibold uppercase '
-                  . 'tracking-widest text-faded-olive underline decoration-brand-500 underline-offset-4 transition-colors '
-                  . 'hover:decoration-faded-olive';
+                  . 'tracking-widest transition-colors';
             @endphp
             <div class="mt-4 flex items-center justify-center">
               @if($igUrl !== '')
@@ -97,7 +96,7 @@
                   target="_blank">
                   @include('partials.figma-social-icon', [
                       'social_icon_variant' => 'instagram',
-                      'social_icon_class' => 'size-6 shrink-0 text-faded-olive',
+                      'social_icon_class' => 'size-6 shrink-0 text-current',
                   ])
                   <span>{{ esc_html($igHandle !== '' ? $igHandle : $igUrl) }}</span>
                 </a>
@@ -105,7 +104,7 @@
                 <span class="inline-flex items-center gap-2 font-label text-sm font-semibold uppercase tracking-widest text-faded-olive">
                   @include('partials.figma-social-icon', [
                       'social_icon_variant' => 'instagram',
-                      'social_icon_class' => 'size-6 shrink-0 text-faded-olive',
+                      'social_icon_class' => 'size-6 shrink-0 text-current',
                   ])
                   <span>{{ esc_html($igHandle) }}</span>
                 </span>

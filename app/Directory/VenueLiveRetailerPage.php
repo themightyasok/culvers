@@ -17,6 +17,8 @@ final class VenueLiveRetailerPage
      *     phone: string,
      *     website: string,
      *     logo_url: string,
+     *     hero_image_url: string,
+     *     live_category_values: list<string>,
      *     paras: list<string>,
      *     lists: list<list<string>>,
      *     opening_hours_rows: list<array{day_label: string, time_range: string, weekday_highlight: string}>
@@ -24,6 +26,8 @@ final class VenueLiveRetailerPage
      */
     public static function fetch(string $liveSlug): ?array
     {
+        $rest = self::fetchRestMeta($liveSlug);
+
         $url = self::RETAILER_BASE . rawurlencode($liveSlug) . '/';
         $html = self::fetchHtml($url);
         if ($html === '') {
@@ -38,6 +42,9 @@ final class VenueLiveRetailerPage
         }
 
         $title = self::plainText($titleMatch[1]);
+        if ($rest !== null && ($rest['title'] ?? '') !== '') {
+            $title = (string) $rest['title'];
+        }
 
         $phone = self::extractPhone($html);
 
@@ -61,6 +68,10 @@ final class VenueLiveRetailerPage
             )
         ) {
             $logoUrl = esc_url_raw(trim($logoMatch[1]));
+        }
+
+        if ($rest !== null && ($rest['logo_url'] ?? '') !== '') {
+            $logoUrl = (string) $rest['logo_url'];
         }
 
         $chunk = self::contentChunk($html);
@@ -103,15 +114,170 @@ final class VenueLiveRetailerPage
             }
         }
 
+        $heroImageUrl = '';
+        if ($rest !== null && ($rest['hero_image_url'] ?? '') !== '') {
+            $heroImageUrl = (string) $rest['hero_image_url'];
+        }
+        if ($heroImageUrl === '') {
+            $heroImageUrl = self::extractHeroImageFromHtml($html, $logoUrl);
+        }
+
+        /** @var list<string> $liveCategoryValues */
+        $liveCategoryValues = $rest !== null && is_array($rest['live_category_values'] ?? null)
+            ? $rest['live_category_values']
+            : [];
+
         return [
             'title' => $title,
             'phone' => self::formatDisplayPhone($phone),
             'website' => $website,
             'logo_url' => $logoUrl,
+            'hero_image_url' => $heroImageUrl,
+            'live_category_values' => $liveCategoryValues,
             'paras' => ShopLiveIntroCopy::filterPromoLinesPublic($paras),
             'lists' => $lists,
             'opening_hours_rows' => VenueOpeningHours::rowsFromHtml($html),
         ];
+    }
+
+    /**
+     * @return array{title: string, logo_url: string, hero_image_url: string, live_category_values: list<string>}|null
+     */
+    private static function fetchRestMeta(string $liveSlug): ?array
+    {
+        $endpoint = 'https://www.culversquare.co.uk/wp-json/wp/v2/retailers?slug='
+            . rawurlencode($liveSlug)
+            . '&per_page=1';
+        $response = wp_remote_get($endpoint, [
+            'timeout' => 25,
+            'user-agent' => 'CulversTheme/1.0 (venue-live-sync)',
+        ]);
+
+        if (is_wp_error($response)) {
+            return null;
+        }
+
+        $code = (int) wp_remote_retrieve_response_code($response);
+        if ($code < 200 || $code >= 300) {
+            return null;
+        }
+
+        $decoded = json_decode((string) wp_remote_retrieve_body($response), true);
+        if (! is_array($decoded) || ! isset($decoded[0]) || ! is_array($decoded[0])) {
+            return null;
+        }
+
+        $item = $decoded[0];
+        $acf = is_array($item['acf'] ?? null) ? $item['acf'] : [];
+        $title = self::plainText((string) ($item['title']['rendered'] ?? ''));
+
+        $logoUrl = '';
+        $logo = $acf['logo'] ?? null;
+        if (is_array($logo) && is_string($logo['url'] ?? null) && $logo['url'] !== '') {
+            $logoUrl = esc_url_raw($logo['url']);
+        }
+
+        $heroImageUrl = self::heroImageFromDescription(
+            is_string($acf['description'] ?? null) ? $acf['description'] : '',
+            $logoUrl
+        );
+
+        /** @var list<string> $liveCategoryValues */
+        $liveCategoryValues = [];
+        $categories = $acf['categories'] ?? null;
+        if (is_array($categories)) {
+            foreach ($categories as $category) {
+                if (is_array($category) && is_string($category['value'] ?? null) && $category['value'] !== '') {
+                    $liveCategoryValues[] = $category['value'];
+                }
+            }
+        }
+
+        return [
+            'title' => $title,
+            'logo_url' => $logoUrl,
+            'hero_image_url' => $heroImageUrl,
+            'live_category_values' => $liveCategoryValues,
+        ];
+    }
+
+    private static function heroImageFromDescription(string $descriptionHtml, string $logoUrl): string
+    {
+        if ($descriptionHtml === '' || ! preg_match_all('#<img[^>]+src="([^"]+)"#i', $descriptionHtml, $matches)) {
+            return '';
+        }
+
+        $logoPath = $logoUrl !== '' ? (string) wp_parse_url($logoUrl, PHP_URL_PATH) : '';
+
+        foreach ($matches[1] as $rawUrl) {
+            $url = esc_url_raw(trim((string) $rawUrl));
+            if ($url === '') {
+                continue;
+            }
+
+            $path = (string) wp_parse_url($url, PHP_URL_PATH);
+            if ($logoPath !== '' && $path === $logoPath) {
+                continue;
+            }
+
+            if (preg_match('/logo/i', $path) === 1) {
+                continue;
+            }
+
+            return self::preferFullSizeUploadUrl($url);
+        }
+
+        return '';
+    }
+
+    private static function extractHeroImageFromHtml(string $html, string $logoUrl): string
+    {
+        if (! preg_match_all('#<img[^>]+src="([^"]+)"#i', $html, $matches)) {
+            return '';
+        }
+
+        $logoPath = $logoUrl !== '' ? (string) wp_parse_url($logoUrl, PHP_URL_PATH) : '';
+
+        foreach ($matches[1] as $rawUrl) {
+            $url = esc_url_raw(trim((string) $rawUrl));
+            if ($url === '' || str_contains($url, '/images/logo.svg')) {
+                continue;
+            }
+
+            $path = (string) wp_parse_url($url, PHP_URL_PATH);
+            if ($logoPath !== '' && $path === $logoPath) {
+                continue;
+            }
+
+            if (preg_match('/logo|Generic-Web-Banner/i', $path) === 1) {
+                continue;
+            }
+
+            if (preg_match('/\.(png|jpe?g|webp)$/i', $path) !== 1) {
+                continue;
+            }
+
+            return self::preferFullSizeUploadUrl($url);
+        }
+
+        return '';
+    }
+
+    private static function preferFullSizeUploadUrl(string $url): string
+    {
+        if (preg_match('#(/wp-content/uploads/.+?)-\d+x\d+(\.[a-z0-9]+)$#i', $url, $match) === 1) {
+            $candidatePath = $match[1] . $match[2];
+            $parts = wp_parse_url($url);
+            if (is_array($parts) && isset($parts['scheme'], $parts['host'])) {
+                $candidate = $parts['scheme'] . '://' . $parts['host'] . $candidatePath;
+            } else {
+                $candidate = 'https://www.culversquare.co.uk' . $candidatePath;
+            }
+
+            return esc_url_raw($candidate) ?: $url;
+        }
+
+        return $url;
     }
 
     public static function formatDisplayPhone(string $phone): string

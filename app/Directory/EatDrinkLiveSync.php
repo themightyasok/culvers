@@ -157,6 +157,8 @@ final class EatDrinkLiveSync
 
             if ($layout === 'opening_hours' && $page['opening_hours_rows'] !== []) {
                 $components[$i] = VenueOpeningHours::mergeIntoOpeningHoursRow($row, $page['opening_hours_rows']);
+            } elseif ($layout === 'opening_hours') {
+                $components[$i] = VenueOpeningHours::applyRetailerPresentationDefaults($row);
             }
         }
 

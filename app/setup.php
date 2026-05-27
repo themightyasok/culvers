@@ -19,8 +19,10 @@ use App\Admin\HideClassicEditor;
 use App\Assets\AcfFlexibleAdmin;
 use App\Assets\FrontendAssets;
 use App\Assets\NavMegaPreviewAdmin;
+use App\Support\SiteBranding;
 
 FrontendAssets::register();
+SiteBranding::register();
 AcfFlexibleAdmin::register();
 NavMegaPreviewAdmin::register();
 AdminMenu::register();

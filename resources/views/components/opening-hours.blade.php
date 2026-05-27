@@ -104,7 +104,7 @@
 
 @if($hasIntro || $hasRows || $footnote !== '' || $leftUrl !== '' || $rightUrl !== '')
   {{-- Same inner cap + horizontal gutters as three-card strip (max-w-7xl + LayoutShell gutters). --}}
-  <section class="opening-hours {{ esc_attr($root) }} text-deep-moss" id="opening-hours" data-component-root data-opening-hours>
+  <section class="opening-hours {{ esc_attr($root) }} text-deep-moss scroll-mt-32" id="opening-hours" data-component-root data-opening-hours>
     <div class="{{ LayoutShell::INNER_SECTION_7XL }}">
       @if($hasIntro)
         <div class="{{ esc_attr(trim($hoursIntroShellClass . ' ' . $hoursIntroTailGap)) }}">

@@ -25,12 +25,12 @@ final class FooterNavLinkSync
     /** Footer column one is replaced wholesale (Figma footprint) once per bump. */
     public const OPTION_COLUMN_ONE_SHAPE_VER = 'culvers_footer_column_one_shape_ver';
 
-    public const COLUMN_ONE_SHAPE_CURRENT_VER = 1;
+    public const COLUMN_ONE_SHAPE_CURRENT_VER = 2;
 
     /** Useful Links is structurally rebuilt to match the Figma seed. */
     public const OPTION_USEFUL_LINKS_VER = 'culvers_footer_useful_links_seed_ver';
 
-    public const USEFUL_LINKS_CURRENT_VER = 2;
+    public const USEFUL_LINKS_CURRENT_VER = 3;
 
     public static function maybeSync(): void
     {
@@ -85,7 +85,7 @@ final class FooterNavLinkSync
             ['label' => __('Plan My Visit', 'culvers'), 'url' => $home('/plan-my-visit/')],
             ['label' => __('What’s On', 'culvers'), 'url' => $home('/whats-on/')],
             ['label' => __('Guest Services', 'culvers'), 'url' => $home('/guest-services/')],
-            ['label' => __('AccessAble Guide', 'culvers'), 'url' => $home('/accessible-guide/')],
+            ['label' => __('AccessAble Guide', 'culvers'), 'url' => $home('/plan-my-visit/#accessible-guide')],
         ];
     }
 
@@ -123,6 +123,7 @@ final class FooterNavLinkSync
         return [
             ['label' => __('Careers', 'culvers'), 'url' => $home('/careers/')],
             ['label' => __('Leasing Opportunities', 'culvers'), 'url' => $home('/leasing-opportunities/')],
+            ['label' => __('Commercialisation Opportunities', 'culvers'), 'url' => $home('/commercialisation-opportunities/')],
             ['label' => __('Parking', 'culvers'), 'url' => $home('/plan-my-visit/')],
             ['label' => __('Opening hours', 'culvers'), 'url' => $home('/plan-my-visit/')],
         ];

@@ -62,6 +62,8 @@ final class ShopIntroCta
         return [
             'ecovape' => 'https://www.ecovape.uk/',
             'skechers' => 'https://www.skechers.co.uk/',
+            'colchester-aesthetics-beauty' => 'https://www.colchesteraestheticsbeauty.com/',
+            'nerd-base' => 'https://nerdbase.co.uk/',
         ];
     }
 

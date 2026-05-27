@@ -21,6 +21,13 @@ final class ThreeCardBlock
         'culvers_career',
     ];
 
+    /** News / Events / Offers tab strip — multi-CPT “View all” targets the What's On hub. */
+    private const STORIES_TAB_CPTS = [
+        'culvers_news',
+        'culvers_event',
+        'culvers_offer',
+    ];
+
     /**
      * @var array<string, string>
      */
@@ -60,7 +67,8 @@ final class ThreeCardBlock
                 'options' => [
                     'label' => __('Cards (manual)', 'culvers'),
                     'instructions' => __(
-                        'Exactly three cards recommended. Video plays while hovered (respects reduced motion). '
+                        'Exactly three cards recommended. Desktop video plays on hover; '
+                            . 'mobile uses the mobile video when set, otherwise the main file. '
                             . 'Only used when source is "Manual".',
                         'culvers'
                     ),
@@ -141,8 +149,30 @@ final class ThreeCardBlock
             'card_video' => [
                 'type' => 'file',
                 'options' => [
-                    'label' => __('Video file', 'culvers'),
-                    'instructions' => __('Used when media is Video.', 'culvers'),
+                    'label' => __('Video file (desktop)', 'culvers'),
+                    'instructions' => __(
+                        'Default video for desktop hover playback and for mobile when no mobile file is set.',
+                        'culvers'
+                    ),
+                    'mime_types' => 'mp4,webm',
+                    'return_format' => 'array',
+                    'library' => 'all',
+                    'conditional_logic' => [[[
+                        'field' => 'card_media_type',
+                        'operator' => '==',
+                        'value' => 'video',
+                    ]]],
+                ],
+            ],
+            'card_video_mobile' => [
+                'type' => 'file',
+                'options' => [
+                    'label' => __('Video file (mobile)', 'culvers'),
+                    'instructions' => __(
+                        'Optional. Used on phones and touch viewports only — e.g. a tighter crop or shorter loop. '
+                            . 'Falls back to the desktop video when empty.',
+                        'culvers'
+                    ),
                     'mime_types' => 'mp4,webm',
                     'return_format' => 'array',
                     'library' => 'all',
@@ -213,14 +243,18 @@ final class ThreeCardBlock
      */
     public static function viewAllUrl(array $component): string
     {
+        $source = (string) ($component['cards_source'] ?? 'manual');
+        if ($source === 'manual') {
+            return '';
+        }
+
         $explicit = trim((string) ($component['cards_view_all_url'] ?? ''));
         if ($explicit !== '') {
             return $explicit;
         }
 
-        $source = (string) ($component['cards_source'] ?? 'manual');
-        if ($source !== 'cpt') {
-            return '';
+        if ($source === 'blog') {
+            return self::defaultPostsIndexUrl();
         }
 
         $list = self::normalizeCptList($component['cards_cpt_post_type'] ?? null);
@@ -228,13 +262,56 @@ final class ThreeCardBlock
             return '';
         }
 
-        if (count($list) > 1) {
-            return '';
+        if (count($list) === 1) {
+            $url = get_post_type_archive_link($list[0]);
+
+            return is_string($url) ? $url : '';
         }
 
-        $url = get_post_type_archive_link($list[0]);
+        if (self::isStoriesTabCptList($list)) {
+            return self::whatsOnLandingUrl();
+        }
 
-        return is_string($url) ? $url : '';
+        return '';
+    }
+
+    private static function defaultPostsIndexUrl(): string
+    {
+        $postsPageId = (int) get_option('page_for_posts');
+
+        return $postsPageId > 0 && is_string(get_permalink($postsPageId))
+            ? (string) get_permalink($postsPageId)
+            : home_url('/');
+    }
+
+    private static function whatsOnLandingUrl(): string
+    {
+        $page = get_page_by_path('whats-on');
+        if ($page instanceof \WP_Post) {
+            $url = get_permalink($page);
+
+            return $url !== '' ? $url : home_url('/whats-on/');
+        }
+
+        return home_url('/whats-on/');
+    }
+
+    /**
+     * @param  list<string>  $list
+     */
+    private static function isStoriesTabCptList(array $list): bool
+    {
+        if ($list === []) {
+            return false;
+        }
+
+        foreach ($list as $postType) {
+            if (! in_array($postType, self::STORIES_TAB_CPTS, true)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -324,6 +401,7 @@ final class ThreeCardBlock
 
             $img = self::normalizeAcfFileField($row['card_image'] ?? null);
             $vid = self::normalizeAcfFileField($row['card_video'] ?? null, true);
+            $vidMobile = self::normalizeAcfFileField($row['card_video_mobile'] ?? null, true);
             $alt = trim((string) ($row['card_image_alt'] ?? ''));
 
             if ($title === '' || $href === '') {
@@ -336,6 +414,7 @@ final class ThreeCardBlock
                 'media_type' => $media,
                 'image' => $img,
                 'video' => $vid,
+                'video_mobile' => $vidMobile,
                 'poster' => null,
                 'alt' => $alt !== '' ? $alt : $title,
             ];

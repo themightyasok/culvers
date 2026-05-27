@@ -19,6 +19,7 @@ import registerShopRelatedShopsAlpine from './alpine/shop-related-shops.js';
 import gsapManager from './utils/gsap-manager.js';
 import backgroundParallaxManager from './utils/background-parallax-manager.js';
 import initSplideCarousels from './utils/splide-init.js';
+import { initPageHashNavigation, isHashNavigationActive } from './utils/page-anchor.js';
 
 registerSiteHeaderAlpine(Alpine);
 registerThreeCardBlockAlpine(Alpine);
@@ -34,10 +35,12 @@ registerTextImageSliderAlpine(Alpine);
 registerContactAlpine(Alpine);
 registerCentreMapAlpine(Alpine);
 registerShopRelatedShopsAlpine(Alpine);
+window.Alpine = Alpine;
 Alpine.start();
 
 gsapManager.init();
 backgroundParallaxManager.init();
+initPageHashNavigation();
 
 document.addEventListener('DOMContentLoaded', () => {
   initSplideCarousels(document.body);
@@ -49,17 +52,68 @@ document.addEventListener('DOMContentLoaded', () => {
  * observe `#smooth-content` again here (duplicate refreshes reset scroll / kill smoothing on first wheel).
  */
 let scrollLayoutDebounceId;
+let refreshDeferred = false;
+let refreshIdleTimer;
+
+/** True while ScrollSmoother is mid wheel / programmatic glide — never refresh then. */
+function isSmootherScrolling() {
+  const smoother = window.smoother;
+  if (!smoother || typeof smoother.getVelocity !== 'function') {
+    return false;
+  }
+
+  return Math.abs(smoother.getVelocity()) > 0.05;
+}
+
+function shouldDeferScrollLayoutRefresh() {
+  return isHashNavigationActive() || isSmootherScrolling();
+}
+
+function queueDeferredScrollLayoutRefresh() {
+  refreshDeferred = true;
+  clearTimeout(refreshIdleTimer);
+  refreshIdleTimer = window.setTimeout(() => {
+    if (shouldDeferScrollLayoutRefresh()) {
+      queueDeferredScrollLayoutRefresh();
+      return;
+    }
+    refreshDeferred = false;
+    runScrollLayoutRefresh();
+  }, 180);
+}
 
 function runScrollLayoutRefresh() {
   if (!window.ScrollTrigger) {
     return;
   }
+
+  if (shouldDeferScrollLayoutRefresh()) {
+    queueDeferredScrollLayoutRefresh();
+    return;
+  }
+
+  const smoother = window.smoother;
+  const savedScroll =
+    smoother && typeof smoother.scrollTop === 'function'
+      ? smoother.scrollTop()
+      : (window.scrollY ?? document.documentElement.scrollTop ?? 0);
+
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
+      if (shouldDeferScrollLayoutRefresh()) {
+        queueDeferredScrollLayoutRefresh();
+        return;
+      }
+
       window.ScrollTrigger.refresh();
-      const smoother = window.smoother;
       if (smoother && typeof smoother.refresh === 'function') {
         smoother.refresh();
+      }
+
+      if (smoother && typeof smoother.scrollTop === 'function') {
+        smoother.scrollTop(savedScroll);
+      } else {
+        window.scrollTo({ top: savedScroll, behavior: 'auto' });
       }
     });
   });
@@ -68,6 +122,10 @@ function runScrollLayoutRefresh() {
 /** Debounced coalesces fonts/layout bursts; immediate skips debounce for intentional breakpoints. */
 function scheduleScrollLayoutRefresh(immediate = false) {
   if (!window.ScrollTrigger) {
+    return;
+  }
+  if (shouldDeferScrollLayoutRefresh()) {
+    queueDeferredScrollLayoutRefresh();
     return;
   }
   if (immediate) {
@@ -80,16 +138,13 @@ function scheduleScrollLayoutRefresh(immediate = false) {
   scrollLayoutDebounceId = window.setTimeout(() => {
     scrollLayoutDebounceId = undefined;
     runScrollLayoutRefresh();
-  }, 320);
+  }, 480);
 }
 
 window.addEventListener(
   'load',
   () => {
     scheduleScrollLayoutRefresh(true);
-    if (window.matchMedia('(min-width: 1024px)').matches) {
-      window.setTimeout(() => scheduleScrollLayoutRefresh(true), 1100);
-    }
   },
   { once: true }
 );
@@ -99,10 +154,13 @@ window.addEventListener('gsap:smoother:ready', (event) => {
     return;
   }
   scheduleScrollLayoutRefresh(true);
-  window.setTimeout(() => scheduleScrollLayoutRefresh(true), 480);
 });
 
-window.addEventListener('culvers:header-offset', () => scheduleScrollLayoutRefresh(true));
+window.addEventListener('culvers:header-offset', () => scheduleScrollLayoutRefresh(false));
+
+window.addEventListener('culvers:page-anchor-idle', () => {
+  queueDeferredScrollLayoutRefresh();
+});
 
 if (
   typeof document !== 'undefined' &&

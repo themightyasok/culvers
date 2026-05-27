@@ -131,7 +131,7 @@ Canonical helpers live in **`App\Helpers\Component`** (`sectionHeadingClasses`, 
 |-------------|------|------|--------------|---------------|------------------|
 | `51:8196` | Homepage | Hero H1 | Canela 46 / 1.1 | `text-5xl` (48) | `hero-slider` title |
 | `51:8206` | Homepage | Hero kicker | Commuter 16 / 24 / 1 px | `text-base` + `tracking-[0.0625em]` | `heroKickerClasses()` |
-| `51:8211` | Homepage | Section H2 | Canela 46 / 1.1 | `text-5xl` | `sectionHeadingClasses()` |
+| `51:8211` | Homepage | Section H2 | Canela 46 / 1.1 | `text-6xl` md:`text-7xl` | `sectionHeadingClasses()` |
 | `51:8212` | Homepage | Section intro | Halyard 14 / 20 | `text-sm leading-5` | `max-sm:` on three-card intro |
 | `51:8283` | Homepage | Info tile title | Canela 42 | `text-4xl` (40) | info-block `h3` |
 | `51:9234` | Subpage | Image-hero H1 mobile | Canela 46 / lh 0.7 | `text-[46px] leading-[0.7]` | `imageHeroTitleClasses()` |
@@ -151,6 +151,6 @@ Canonical helpers live in **`App\Helpers\Component`** (`sectionHeadingClasses`, 
 | — | News single | Page components | Same stack as events (6 layouts) | — | `DirectoryFlexibleDefaults` |
 | `51:9546` | Contact | Form labels | Halyard Med 20 | `text-xl` | contact `max-sm:` on labels |
 
-**Section H2 default:** `text-5xl md:text-6xl` (48 → 58 px). Figma often specifies 46 px on mobile; +2 px is an accepted snap (see table above).
+**Section H2 default:** `text-6xl md:text-7xl` (58 → 64 px) via `Component::sectionHeadingSizeClasses()`.
 
 **Display accents** (shop split glowleaf lines, opening-hours band title): `text-5xl lg:text-7xl` unless a frame calls for the smaller `text-4xl` mobile step.

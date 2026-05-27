@@ -30,8 +30,11 @@ final class PrimaryNavLinkSync
      * v4: append missing Careers mega branch (parent + Open roles) targeting
      *     the `culvers_career` archive and wire URLs.
      * v5: Careers removed from primary bar (footer only); Figma order enforced in {@see PrimaryNav}.
+     * v6: Plan my visit + Guest Services children deep-link to in-page section anchors.
+     * v7: Header utility links (Centre Map / Getting Here) deep-link to section anchors.
+     * v8: Accessible Access deep-links to Plan my visit #accessible-guide section.
      */
-    public const CURRENT_VER = 5;
+    public const CURRENT_VER = 8;
 
     public static function maybeSync(): void
     {
@@ -39,11 +42,35 @@ final class PrimaryNavLinkSync
             return;
         }
 
-        if (! self::syncAssignedPrimaryMenu()) {
-            return;
-        }
-
+        self::syncAssignedPrimaryMenu();
+        self::syncHeaderShortcutUrls();
         update_option(self::OPTION_VER, self::CURRENT_VER, true);
+    }
+
+    /**
+     * Theme mods for the header utility pills — separate from the mega menu tree.
+     */
+    public static function syncHeaderShortcutUrls(): void
+    {
+        $home = static fn (string $path): string => function_exists('home_url') ? home_url($path) : $path;
+
+        $shortcuts = [
+            'culvers_centre_map_url' => $home('/plan-my-visit/#centre-map'),
+            'culvers_getting_here_url' => $home('/plan-my-visit/#getting-here'),
+        ];
+
+        $stale = [
+            '',
+            '#',
+            $home('/plan-my-visit/'),
+        ];
+
+        foreach ($shortcuts as $modKey => $canonical) {
+            $current = (string) get_theme_mod($modKey, '#');
+            if (in_array($current, $stale, true)) {
+                set_theme_mod($modKey, $canonical);
+            }
+        }
     }
 
     /**
@@ -156,6 +183,9 @@ final class PrimaryNavLinkSync
             $home('/whats-on/latest-events/'),
             $home('/whats-on/latest-offers/'),
             $home('/whats-on/latest-news/'),
+            $home('/plan-my-visit/'),
+            $home('/guest-services/'),
+            $home('/accessible-guide/'),
         ];
     }
 
@@ -202,11 +232,10 @@ final class PrimaryNavLinkSync
                 'Cafés' => $home('/eat-drink/?type=cafes'),
             ],
             'Plan my visit' => [
-                // All four submenu items live as components on /plan-my-visit/.
-                'Getting Here' => $home('/plan-my-visit/'),
-                'Centre Map' => $home('/plan-my-visit/'),
-                'Opening Hours' => $home('/plan-my-visit/'),
-                'Accessible Access' => $home('/accessible-guide/'),
+                'Getting Here' => $home('/plan-my-visit/#getting-here'),
+                'Centre Map' => $home('/plan-my-visit/#centre-map'),
+                'Opening Hours' => $home('/plan-my-visit/#opening-hours'),
+                'Accessible Access' => $home('/plan-my-visit/#accessible-guide'),
             ],
             "what's on" => [
                 'Latest Events' => $home('/latest-events/'),
@@ -214,11 +243,11 @@ final class PrimaryNavLinkSync
                 'Latest Offers' => $home('/latest-offers/'),
             ],
             'Guest Services' => [
-                'About Colchester' => $home('/guest-services/'),
-                'Click & Collect' => $home('/guest-services/'),
-                'Security' => $home('/guest-services/'),
-                'Facilities' => $home('/guest-services/'),
-                "FAQ's" => $home('/guest-services/'),
+                'About Colchester' => $home('/guest-services/#about-colchester'),
+                'Click & Collect' => $home('/guest-services/#click-collect'),
+                'Security' => $home('/guest-services/#security'),
+                'Facilities' => $home('/guest-services/#facilities'),
+                "FAQ's" => $home('/guest-services/#faqs'),
                 'Contact Us' => $home('/contact/'),
             ],
             'Careers' => [

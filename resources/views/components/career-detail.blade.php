@@ -2,6 +2,7 @@
   use App\Helpers\Component;
   use App\Helpers\Image;
   use App\Helpers\LayoutShell;
+  use App\Support\CareerApplyMailto;
 
   /**
    * Career detail — split job-header band:
@@ -19,8 +20,23 @@
   $sectionTag = Component::headingTagFromComponent($c, 'career_section_heading_level', 2);
 
   $applyLabel = trim((string) ($c['career_apply_label'] ?? ''));
+  if ($applyLabel === '') {
+      $applyLabel = __('Apply Now', 'culvers');
+  }
+
+  $applyEmail = sanitize_email(trim((string) ($c['career_apply_email'] ?? '')));
+  if ($applyEmail === '' && function_exists('get_field')) {
+      $postEmail = get_field('career_apply_email', get_the_ID());
+      $applyEmail = is_string($postEmail) ? sanitize_email(trim($postEmail)) : '';
+  }
+
   $applyUrl = trim((string) ($c['career_apply_url'] ?? ''));
-  $hasApply = $applyLabel !== '' && $applyUrl !== '';
+  $jobTitleForMail = $title !== '' ? $title : get_the_title();
+  $applyHref = $applyEmail !== ''
+      ? CareerApplyMailto::build($applyEmail, $jobTitleForMail, (string) get_permalink(), $meta)
+      : $applyUrl;
+  $applyIsExternal = $applyEmail === '' && str_starts_with($applyUrl, 'http');
+  $hasApply = $applyHref !== '';
 
   $employerLogo = isset($c['career_sidebar_brand_logo']) && is_array($c['career_sidebar_brand_logo'])
       ? $c['career_sidebar_brand_logo']
@@ -129,10 +145,10 @@
               <div class="pt-8 max-sm:flex max-sm:justify-center">
                 <a
                   class="btn btn-primary"
-                  href="{{ esc_url($applyUrl) }}"
-                  @if(str_starts_with($applyUrl, 'http')) target="_blank" rel="noopener noreferrer" @endif>
+                  href="{{ $applyEmail !== '' ? esc_attr($applyHref) : esc_url($applyHref) }}"
+                  @if($applyIsExternal) target="_blank" rel="noopener noreferrer" @endif>
                   {{ esc_html($applyLabel) }}
-                  @if(str_starts_with($applyUrl, 'http'))
+                  @if($applyIsExternal)
                     <span class="sr-only">{{ __('(opens in new tab)', 'culvers') }}</span>
                   @endif
                 </a>

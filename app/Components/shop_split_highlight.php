@@ -111,6 +111,16 @@ return [
                 'conditional_logic' => $staticOnly,
             ],
         ],
+        'split_cta_new_tab' => [
+            'type' => 'true_false',
+            'options' => [
+                'label' => __('Open CTA in new tab', 'culvers'),
+                'default_value' => 0,
+                'ui' => 1,
+                'wrapper' => ['width' => '50'],
+                'conditional_logic' => $staticOnly,
+            ],
+        ],
         'msg_image' => Component::sectionDivider(__('Image column', 'culvers')),
         'split_image' => [
             'type' => 'image',
@@ -202,6 +212,15 @@ return [
                         'type' => 'url',
                         'options' => [
                             'label' => __('CTA URL', 'culvers'),
+                            'wrapper' => ['width' => '50'],
+                        ],
+                    ],
+                    'tab_cta_new_tab' => [
+                        'type' => 'true_false',
+                        'options' => [
+                            'label' => __('Open CTA in new tab', 'culvers'),
+                            'default_value' => 0,
+                            'ui' => 1,
                             'wrapper' => ['width' => '50'],
                         ],
                     ],

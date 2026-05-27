@@ -191,15 +191,25 @@ final class Component
     }
 
     /**
+     * Stock Tailwind ramp for section-level H2s — one step on the type ladder.
+     *
+     * @return non-empty-string e.g. `text-6xl md:text-7xl`
+     */
+    public static function sectionHeadingSizeClasses(): string
+    {
+        return 'text-6xl md:text-7xl';
+    }
+
+    /**
      * Canonical class spine for a section-level heading (default H2).
      *
      * The Culver Square design system treats every section title as **64px
-     * Canela at desktop, 48px at mobile** — Figma "Desktop/Titles/H2 Title"
-     * (Canela 58 / lh 1.15 / tracking 0). The site H1 (page hero, used once)
-     * is the only heading allowed to go larger.
+     * Canela at desktop, 58px at mobile** — Figma "Desktop/Titles/H2 Title"
+     * (Canela 64 / lh 1.2). The site H1 (page hero, used once) is the only
+     * heading allowed to go larger.
      *
      * Notes:
-     *   • `text-5xl` and `text-6xl` ship paired line-heights (1.1 and 1.15) in
+     *   • `text-6xl` and `text-7xl` ship paired line-heights (1.15 and 1.2) in
      *     {@see resources/styles/theme.tokens.css} that already match Figma.
      *     Do **not** add `leading-tight` / `leading-none` / `leading-[1.1]`
      *     on top — those override the calibrated token line-height.
@@ -213,7 +223,7 @@ final class Component
         string $toneClass = 'text-deep-moss',
         string $extra = ''
     ): string {
-        $base = 'font-heading text-5xl md:text-6xl ' . $toneClass;
+        $base = 'font-heading ' . self::sectionHeadingSizeClasses() . ' ' . $toneClass;
 
         return trim($extra !== '' ? $base . ' ' . $extra : $base);
     }
@@ -228,7 +238,7 @@ final class Component
         string $toneClass = 'text-faded-olive',
         string $extra = ''
     ): string {
-        $base = 'section-intro-stack__heading font-heading text-5xl md:text-6xl ' . $toneClass;
+        $base = 'section-intro-stack__heading font-heading ' . self::sectionHeadingSizeClasses() . ' ' . $toneClass;
 
         return trim($extra !== '' ? $base . ' ' . $extra : $base);
     }

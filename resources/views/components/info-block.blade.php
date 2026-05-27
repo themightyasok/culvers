@@ -2,6 +2,7 @@
   use App\Helpers\Component;
   use App\Helpers\Image;
   use App\Helpers\LayoutShell;
+  use App\Support\PageSectionAnchor;
 
   /**
    * Info block — intro stack (heading, subheading, body, optional CTA) +
@@ -48,13 +49,18 @@
       || trim(strip_tags($body)) !== ''
       || ($ctaLabel !== '' && $ctaUrl !== '');
   $hasGrid = $cells !== [];
+
+  $sectionAnchorId = $heading !== '' ? PageSectionAnchor::fromHeading($heading) : '';
+  $sectionAnchorAttr = $sectionAnchorId !== '' ? ' id="' . esc_attr($sectionAnchorId) . '"' : '';
+  $sectionScrollMargin = $sectionAnchorId !== '' ? PageSectionAnchor::scrollMarginClass() : '';
   $introBodyClasses = 'info-block__body mx-auto w-full max-w-[36.75rem] text-center '
       . Component::sectionIntroBodyClasses('text-deep-moss', 'max-sm:text-sm max-sm:leading-5 [&_p+p]:mt-4 [&_strong]:font-medium rt-link-prose ' . esc_attr($tone));
 @endphp
 
 @if($hasIntro || $hasGrid)
   <section
-    class="info-block {{ esc_attr($root) }} relative text-deep-moss"
+    {!! $sectionAnchorAttr !!}
+    class="info-block {{ esc_attr(trim($root . ' ' . $sectionScrollMargin)) }} relative text-deep-moss"
     data-component-root
     data-info-block>
     <div class="relative z-10 {{ LayoutShell::INNER_MAX_GUTTERED }}">

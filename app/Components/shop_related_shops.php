@@ -20,8 +20,8 @@ return [
         ],
         'shops_related_heading_level' => Component::headingLevelField(null, false, 2, '30'),
         'shops_related_heading_spacing' => Component::sectionHeadingSpacingField(
-            'carousel',
-            __('Tighter desktop gap before the carousel strip (Figma shop single).', 'culvers')
+            'standard',
+            __('Space between the section heading and the card grid (32px on the front end).', 'culvers')
         ),
         'shops_related_view_all_url' => [
             'type' => 'url',

@@ -3,6 +3,13 @@
  * Pagination dots: `culvers-splide-dots.css` (unlayered, after Splide import).
  * Unlayered so overrides beat @splidejs/splide/css defaults.
  */
+
+/* Section H2 → card grid: 32px (stock `mb-8` / intro-stack cap→content rhythm). */
+.shop-related-shops__heading,
+.shop-related-eat-drink__heading {
+  margin-bottom: 32px;
+}
+
 .shop-related-shops__splide.is-initialized .splide__list,
 .shop-related-eat-drink__splide.is-initialized .splide__list {
   display: flex !important;

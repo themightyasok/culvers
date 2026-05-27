@@ -112,7 +112,7 @@
             @endif
             @if($mapUrl !== '')
               <a
-                class="contact__panel-map-link mt-5 inline-flex items-center gap-2 border-b border-faded-olive/40 pb-1 font-label text-xs font-semibold uppercase tracking-widest text-faded-olive transition-colors hover:border-deep-moss hover:text-deep-moss"
+                class="contact__panel-map-link mt-5 inline-flex items-center gap-2 border-b border-faded-olive/40 pb-1 font-label text-xs font-semibold uppercase tracking-widest transition-colors hover:border-dustleaf"
                 href="{{ esc_url($mapUrl) }}"
                 @if(str_starts_with($mapUrl, 'http')) target="_blank" rel="noopener noreferrer" @endif>
                 {{ esc_html($mapLabel) }}
@@ -133,14 +133,14 @@
               </h3>
               @if($phone !== '')
                 <a
-                  class="contact__panel-phone mt-5 block font-sans text-xl font-light leading-[30px] text-faded-olive transition-colors hover:text-deep-moss"
+                  class="contact__panel-phone mt-5 block font-sans text-xl font-light leading-[30px]"
                   href="{{ esc_url('tel:' . preg_replace('/\s+/', '', $phone)) }}">
                   {{ esc_html($phone) }}
                 </a>
               @endif
               @if($contactEmail !== '')
                 <a
-                  class="contact__panel-email mt-2 inline-block w-fit font-sans text-xl font-light leading-[30px] text-faded-olive underline decoration-faded-olive underline-offset-[5px] transition-colors hover:text-deep-moss hover:decoration-deep-moss"
+                  class="contact__panel-email mt-2 inline-block w-fit font-sans text-xl font-light leading-[30px]"
                   href="{{ esc_url('mailto:' . $contactEmail) }}">
                   {{ esc_html($contactEmail) }}
                 </a>
@@ -149,26 +149,26 @@
                 <div class="contact__panel-social mt-6 flex flex-wrap gap-x-8 gap-y-3">
                   @if($instagramUrl !== '')
                     <a
-                      class="contact__panel-social-link inline-flex items-center gap-2 font-label text-sm font-semibold uppercase tracking-widest text-faded-olive transition-colors hover:text-deep-moss"
+                      class="contact__panel-social-link inline-flex items-center gap-2 font-label text-sm font-semibold uppercase tracking-widest"
                       href="{{ esc_url($instagramUrl) }}"
                       rel="noopener noreferrer"
                       target="_blank">
                       @include('partials.figma-social-icon', [
                           'social_icon_variant' => 'instagram',
-                          'social_icon_class' => 'size-6 shrink-0 overflow-visible text-faded-olive',
+                          'social_icon_class' => 'size-6 shrink-0 overflow-visible text-current',
                       ])
                       {{ __('Instagram', 'culvers') }}
                     </a>
                   @endif
                   @if($facebookUrl !== '')
                     <a
-                      class="contact__panel-social-link inline-flex items-center gap-2 font-label text-sm font-semibold uppercase tracking-widest text-faded-olive transition-colors hover:text-deep-moss"
+                      class="contact__panel-social-link inline-flex items-center gap-2 font-label text-sm font-semibold uppercase tracking-widest"
                       href="{{ esc_url($facebookUrl) }}"
                       rel="noopener noreferrer"
                       target="_blank">
                       @include('partials.figma-social-icon', [
                           'social_icon_variant' => 'facebook',
-                          'social_icon_class' => 'size-6 shrink-0 text-faded-olive',
+                          'social_icon_class' => 'size-6 shrink-0 text-current',
                       ])
                       {{ __('Facebook', 'culvers') }}
                     </a>

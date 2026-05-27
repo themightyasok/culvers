@@ -178,7 +178,7 @@
       {{-- Column menus (What’s Here / Useful Links + address blocks). Tight 16-unit padding-top
            on lg — overlaps beneath the newsletter are handled by `.footer-newsletter-band` + spacer
            in `layouts/app.blade.php` (centred straddle), not extra padding here. --}}
-      <div class="relative z-10 grid grid-cols-1 gap-12 pt-[55px] lg:grid-cols-4 lg:gap-10 lg:pt-[40px] xl:gap-14">
+      <div class="relative z-10 grid grid-cols-1 gap-16 pt-[55px] lg:grid-cols-4 lg:gap-10 lg:pt-[40px] xl:gap-14">
         <div class="flex flex-col">
           <h2 class="font-heading text-[32px] leading-[1.1] text-lighter-cream lg:text-3xl">
             {{ esc_html(FooterCustomizer::gettingHereTitle()) }}
@@ -310,7 +310,7 @@
       </div>
 
       {{-- Mobile: accordions → legal → wordmark (Figma Footer — Mobile/Default `2:1023`). --}}
-      <div class="relative z-10 mt-8 flex flex-col gap-8 lg:hidden" x-data="footerMenuAccordion()">
+      <div class="relative z-10 mt-16 flex flex-col gap-8 lg:mt-8 lg:hidden" x-data="footerMenuAccordion()">
         <div class="flex flex-col">
           <button
             type="button"

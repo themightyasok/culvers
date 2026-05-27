@@ -91,11 +91,26 @@ return [
                 'wrapper' => ['width' => '50'],
             ],
         ],
+        'career_apply_email' => [
+            'type' => 'email',
+            'options' => [
+                'label' => __('Apply-to email', 'culvers'),
+                'instructions' => __(
+                    'Opens the visitor\'s email client with the job title and listing URL pre-filled. '
+                    . 'Falls back to the job-level Apply-to email when left blank.',
+                    'culvers'
+                ),
+                'wrapper' => ['width' => '50'],
+            ],
+        ],
         'career_apply_url' => [
             'type' => 'url',
             'options' => [
-                'label' => __('Apply URL', 'culvers'),
-                'instructions' => __('Where the apply button takes the candidate (e.g. employer ATS).', 'culvers'),
+                'label' => __('Apply URL (optional fallback)', 'culvers'),
+                'instructions' => __(
+                    'External application link when no apply-to email is set (e.g. employer ATS).',
+                    'culvers'
+                ),
                 'wrapper' => ['width' => '50'],
             ],
         ],
