@@ -161,8 +161,9 @@
                   'showMobileArrow' => true,
                   'mobileArrowLayout' => 'inline',
                   'mediaOverlayOpacity' => $mobilePromoOverlay,
+                  'videoAutoplay' => true,
                   'videoPreload' => 'auto',
-                  'preferMobileVideo' => true,
+                  'videoVariant' => 'mobile',
                 ])
               @endforeach
             </div>
@@ -184,8 +185,9 @@
                         'showMobileArrow' => true,
                         'mobileArrowLayout' => 'stack',
                         'mediaOverlayOpacity' => $mediaOverlayOpacity,
+                        'videoAutoplay' => true,
                         'videoPreload' => 'auto',
-                        'preferMobileVideo' => true,
+                        'videoVariant' => 'mobile',
                       ])
                     </li>
                   @endforeach
@@ -203,6 +205,8 @@
                 'isManualMode' => $isManualMode,
                 'showMobileArrow' => false,
                 'mediaOverlayOpacity' => $mediaOverlayOpacity,
+                'videoAutoplay' => false,
+                'videoVariant' => 'desktop',
                 'videoPreload' => 'metadata',
               ])
             @endforeach

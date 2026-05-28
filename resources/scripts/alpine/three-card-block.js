@@ -111,7 +111,9 @@ function playThreeCardVideo(video) {
   video.playsInline = true;
 
   const attemptPlay = () => {
-    video.play().catch(() => {});
+    if (video.paused) {
+      video.play().catch(() => {});
+    }
   };
 
   if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA) {
@@ -133,6 +135,33 @@ function playThreeCardVideo(video) {
       /* ignore */
     }
   }
+}
+
+function refreshVisibleThreeCardVideos(root) {
+  if (!(root instanceof HTMLElement)) {
+    return;
+  }
+
+  root.querySelectorAll('[data-three-card-video]').forEach((el) => {
+    if (!(el instanceof HTMLVideoElement)) {
+      return;
+    }
+
+    const card = el.closest('a.three-card-block__card');
+    if (!isCardVisible(card)) {
+      return;
+    }
+
+    const target = card instanceof HTMLElement ? card : el;
+    if (visibleIntersectionRatio(target) >= MOBILE_VIDEO_IO_THRESHOLD) {
+      playThreeCardVideo(el);
+      return;
+    }
+
+    if (!el.autoplay && el.dataset.threeCardVideoAutoplay !== '1') {
+      pauseVideoAtStart(el);
+    }
+  });
 }
 
 function maybePlayVisibleThreeCardVideo(video) {
@@ -166,6 +195,12 @@ export default function registerThreeCardBlockAlpine(Alpine) {
 
     /** @type {ReturnType<typeof setTimeout> | undefined} */
     resizeTimer: undefined,
+
+    /** @type {(() => void) | undefined} */
+    boundOnScroll: undefined,
+
+    /** @type {ReturnType<typeof setTimeout> | undefined} */
+    scrollTimer: undefined,
 
     /** @type {MediaQueryList | null} */
     mobileMql: null,
@@ -366,6 +401,10 @@ export default function registerThreeCardBlockAlpine(Alpine) {
           return;
         }
 
+        if (el.autoplay || el.dataset.threeCardVideoAutoplay === '1') {
+          return;
+        }
+
         const card = el.closest('a.three-card-block__card');
         if (!isCardVisible(card)) {
           return;
@@ -524,8 +563,19 @@ export default function registerThreeCardBlockAlpine(Alpine) {
 
         this.viewportObservedVideos.add(video);
         this.videoViewportObserver?.observe(card);
-        maybePlayVisibleThreeCardVideo(video);
       });
+
+      refreshVisibleThreeCardVideos(root);
+
+      if (!this.boundOnScroll) {
+        this.boundOnScroll = () => {
+          clearTimeout(this.scrollTimer);
+          this.scrollTimer = setTimeout(() => {
+            refreshVisibleThreeCardVideos(root);
+          }, 120);
+        };
+        window.addEventListener('scroll', this.boundOnScroll, { passive: true });
+      }
     },
 
     unbindVideoViewportPlayback() {
@@ -533,6 +583,12 @@ export default function registerThreeCardBlockAlpine(Alpine) {
         this.videoViewportObserver.disconnect();
         this.videoViewportObserver = null;
       }
+
+      if (this.boundOnScroll) {
+        window.removeEventListener('scroll', this.boundOnScroll);
+        this.boundOnScroll = undefined;
+      }
+      clearTimeout(this.scrollTimer);
 
       this.viewportObservedVideos.clear();
     },
@@ -553,6 +609,7 @@ export default function registerThreeCardBlockAlpine(Alpine) {
 
     destroy() {
       clearTimeout(this.resizeTimer);
+      clearTimeout(this.scrollTimer);
       this.unbindMobileQuery();
       this.unbindVideoViewportPlayback();
       if (this.boundOnResize) {

@@ -239,6 +239,24 @@ final class ThreeCardBlock
     }
 
     /**
+     * Pick desktop or mobile card video. Mobile falls back to desktop when unset.
+     *
+     * @param  array<string, mixed>  $card
+     * @return array<string, mixed>
+     */
+    public static function resolveCardVideo(array $card, string $variant = 'desktop'): array
+    {
+        $desktop = isset($card['video']) && is_array($card['video']) ? $card['video'] : [];
+        $mobile = isset($card['video_mobile']) && is_array($card['video_mobile']) ? $card['video_mobile'] : [];
+
+        if ($variant === 'mobile' && ! empty($mobile['url'])) {
+            return $mobile;
+        }
+
+        return $desktop;
+    }
+
+    /**
      * @param  array<string, mixed>  $component
      */
     public static function viewAllUrl(array $component): string

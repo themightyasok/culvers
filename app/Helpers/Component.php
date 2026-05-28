@@ -480,6 +480,18 @@ final class Component
     }
 
     /**
+     * Info block tile titles — Figma `51:8283` / `51:8295`: Canela 42 / lh 1.1 (mobile stack + desktop grid).
+     */
+    public static function infoBlockTileTitleClasses(
+        string $toneClass = 'text-faded-olive',
+        string $extra = ''
+    ): string {
+        $base = 'font-heading text-4xl font-normal leading-[1.1] ' . $toneClass;
+
+        return trim($extra !== '' ? $base . ' ' . $extra : $base);
+    }
+
+    /**
      * Centre-map filter labels (category rows + accordion group toggles) — Figma Plan My Visit
      * `51:5906`–`5917`: Commuters Sans SemiBold 12 / uppercase.
      */

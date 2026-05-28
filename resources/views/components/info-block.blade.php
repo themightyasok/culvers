@@ -100,13 +100,13 @@
                 @endif
               </div>
               <div class="mt-4 flex w-full max-w-[19rem] flex-col items-center gap-3.5 md:gap-1.5">
-                {{-- Figma 51:8283 / 51:8295: Canela 42 mobile tile title. --}}
-                <h3 class="m-0 w-full {{ Component::mobilePanelSubheadClasses('text-faded-olive', 'text-center lg:whitespace-nowrap') }}">
+                {{-- Figma 51:8283 / 51:8295: Canela 42 tile title (not mobilePanelSubheadClasses — that is Halyard 20). --}}
+                <h3 class="m-0 w-full {{ Component::infoBlockTileTitleClasses('text-faded-olive', 'text-center lg:whitespace-nowrap') }}">
                   {{ esc_html($cell['title']) }}
                 </h3>
                 @if($cell['description'] !== '')
                   <p
-                    class="m-0 w-full font-label text-xs font-semibold uppercase leading-6 tracking-[1px] text-faded-olive md:leading-snug [&_br]:block [&_br]:leading-snug">
+                    class="m-0 w-full font-label text-sm font-semibold uppercase leading-5 tracking-[1px] text-faded-olive md:text-xs md:leading-snug [&_br]:block [&_br]:leading-snug">
                     {!! nl2br(e($cell['description'])) !!}
                   </p>
                 @endif
