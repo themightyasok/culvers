@@ -16,10 +16,10 @@
       x-show="activeCategorySlug !== '' && ! activeCategorySlug.endsWith('-all')"
       x-cloak
       x-transition.opacity.duration.150ms>
-      <span class="font-sans text-xs font-semibold uppercase tracking-[0.18em]">
+      <span class="font-label text-xs font-semibold uppercase tracking-[0.18em]">
         {{ __('Filtered', 'culvers') }}:
       </span>
-      <span class="font-sans text-xs font-semibold uppercase tracking-[0.18em]" x-text="activeCategoryLabel"></span>
+      <span class="font-label text-xs font-semibold uppercase tracking-[0.18em]" x-text="activeCategoryLabel"></span>
       <button
         type="button"
         class="-mr-2 inline-flex size-5 items-center justify-center rounded-full text-deep-moss transition hover:bg-deep-moss/15 culvers-focus-ring-compact"
@@ -34,7 +34,7 @@
   @if($groups !== [])
     <button
       type="button"
-      class="centre-map__filter-toggle centre-map__filter-toggle--floating absolute left-4 top-4 z-10 hidden items-center justify-center rounded-full bg-glowleaf px-5 py-2 font-sans text-xs font-semibold uppercase tracking-widest text-deep-moss shadow-[0_2px_6px_rgba(0,0,0,0.18)] transition hover:bg-lighter-cream culvers-focus-ring-compact md:left-6 md:top-6 lg:inline-flex"
+      class="centre-map__filter-toggle centre-map__filter-toggle--floating absolute left-4 top-4 z-10 hidden items-center justify-center rounded-full bg-glowleaf px-5 py-2 font-label text-xs font-semibold uppercase tracking-widest text-deep-moss shadow-[0_2px_6px_rgba(0,0,0,0.18)] transition hover:bg-lighter-cream culvers-focus-ring-compact md:left-6 md:top-6 lg:inline-flex"
       aria-controls="centre-map-panel-groups"
       :aria-expanded="panelOpen.toString()"
       x-show="!panelOpen"
@@ -67,29 +67,7 @@
     </div>
 
     @if($showZoom)
-      <div
-        class="centre-map__zoom-controls absolute bottom-4 right-4 flex flex-col gap-2 max-lg:bottom-3 max-lg:right-3 max-lg:gap-2 md:bottom-6 md:right-6">
-        <button
-          type="button"
-          class="centre-map__zoom-button inline-flex size-[43px] items-center justify-center rounded-full bg-glowleaf text-deep-moss transition hover:bg-lighter-cream culvers-focus-ring-compact disabled:cursor-not-allowed disabled:opacity-40 lg:size-10 xl:size-11"
-          aria-label="{{ esc_attr__('Zoom in', 'culvers') }}"
-          :disabled="zoom >= 2.5"
-          @click="zoom = Math.min(2.5, Math.round((zoom + 0.25) * 100) / 100); $nextTick(() => clampPan())">
-          <svg viewBox="0 0 16 16" class="size-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
-            <path d="M8 1v14M1 8h14" />
-          </svg>
-        </button>
-        <button
-          type="button"
-          class="centre-map__zoom-button inline-flex size-[43px] items-center justify-center rounded-full bg-glowleaf text-deep-moss transition hover:bg-lighter-cream culvers-focus-ring-compact disabled:cursor-not-allowed disabled:opacity-40 lg:size-10 xl:size-11"
-          aria-label="{{ esc_attr__('Zoom out', 'culvers') }}"
-          :disabled="zoom <= 1"
-          @click="zoom = Math.max(1, Math.round((zoom - 0.25) * 100) / 100); $nextTick(() => clampPan())">
-          <svg viewBox="0 0 16 16" class="size-3.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
-            <path d="M1 8h14" />
-          </svg>
-        </button>
-      </div>
+      @include('partials.map-zoom-controls', ['variant' => 'centre-map'])
     @endif
   @else
     <div class="flex size-full items-center justify-center px-8 py-12 text-center">
@@ -116,7 +94,7 @@
       @if($groups !== [])
         <button
           type="button"
-          class="centre-map__filter-toggle shrink-0 self-start sm:self-center inline-flex items-center justify-center rounded-full bg-glowleaf px-5 py-2 font-sans text-xs font-semibold uppercase tracking-widest text-deep-moss transition hover:bg-lighter-cream culvers-focus-ring-compact"
+          class="centre-map__filter-toggle shrink-0 self-start sm:self-center inline-flex items-center justify-center rounded-full bg-glowleaf px-5 py-2 font-label text-xs font-semibold uppercase tracking-widest text-deep-moss transition hover:bg-lighter-cream culvers-focus-ring-compact"
           aria-controls="centre-map-panel-groups"
           :aria-expanded="panelOpen.toString()"
           @click="panelOpen = false">

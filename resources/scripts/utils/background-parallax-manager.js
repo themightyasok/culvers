@@ -11,7 +11,7 @@ class BackgroundParallaxManager {
     this.tweens = [];
 
     this.desktopQuery = window.matchMedia(
-      '(min-width: 900px) and (hover: hover) and (pointer: fine)'
+      '(min-width: 1024px) and (hover: hover) and (pointer: fine)'
     );
     this.reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 

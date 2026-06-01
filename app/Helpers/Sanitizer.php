@@ -211,6 +211,8 @@ final class Sanitizer
                         'hours_body',
                         'cards_body',
                         'intro_body',
+                        'header_body',
+                        'centre_map_body',
                         'split_body',
                         'scroller_header_text', 'scroller_subheading_text', 'scroller_body_text',
                         'details_address',

@@ -1,5 +1,6 @@
 @php
   use App\Helpers\Component;
+  use App\Helpers\LayoutShell;
   use App\Helpers\ThreeCardBlock;
   use App\Support\PageSectionAnchor;
 
@@ -72,14 +73,14 @@
   data-component-root
   data-three-card-block
   x-data="threeCardBlock()">
-  <div class="mx-auto w-full max-w-8xl px-3 sm:px-4 md:px-5 lg:px-6">
+  <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
     @if($heading !== '' || $sub !== '' || $body !== '')
       @include('partials.section-intro-stack', [
           'headingTag' => $headingTag,
           'heading' => $heading,
           'headingClasses' => Component::sectionIntroHeadingClasses('text-faded-olive'),
           'subheading' => $sub,
-          'subheadingClasses' => 'font-sans text-xs uppercase tracking-widest text-faded-olive md:text-xs',
+          'subheadingClasses' => 'font-label text-xs uppercase tracking-widest text-faded-olive md:text-xs',
           'bodyHtml' => $body,
           'bodyClasses' => 'three-card-block__intro mx-auto max-w-[36.75rem] text-center font-sans text-xl font-light leading-[1.3] text-deep-moss max-sm:text-sm max-sm:leading-5 [&_p+p]:mt-4 [&_strong]:font-medium rt-link-olive-surface',
           'introStackIncludeCta' => false,

@@ -34,3 +34,12 @@
   position: relative;
   z-index: 1;
 }
+
+/*
+ * 404 — full-viewport hero only; no cream band between hero and footer newsletter.
+ * Spacer is zeroed in `layouts/app.blade.php`; suppress diamond tile so nothing peeks through.
+ */
+.site-page-surface--404 {
+  background-color: var(--color-deep-moss);
+  background-image: none;
+}

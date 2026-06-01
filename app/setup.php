@@ -19,6 +19,7 @@ use App\Admin\HideClassicEditor;
 use App\Assets\AcfFlexibleAdmin;
 use App\Assets\FrontendAssets;
 use App\Assets\NavMegaPreviewAdmin;
+use App\Services\ComponentCache;
 use App\Support\SiteBranding;
 
 FrontendAssets::register();
@@ -180,19 +181,69 @@ add_filter(
     4
 );
 
+add_action('after_setup_theme', static function (): void {
+    ComponentCache::invalidateIfRegistrySourcesChanged();
+}, 5);
+
+add_action('after_switch_theme', static function (): void {
+    (new ComponentCache())->clear();
+}, 5);
+
 add_action('acf/init', static function (): void {
     if (! function_exists('acf_add_local_field_group')) {
         return;
     }
 
+    $bootstrapErrorOption = 'culvers_acf_bootstrap_errors';
+
     try {
         new Fields();
+        if (function_exists('delete_option')) {
+            delete_option($bootstrapErrorOption);
+        }
     } catch (\Throwable $e) {
-        if (defined('WP_DEBUG') && WP_DEBUG) {
-            error_log('[culvers][acf] ' . $e->getMessage());
+        $message = $e->getMessage();
+        error_log('[culvers][acf] ' . $message);
+
+        if (function_exists('update_option')) {
+            update_option($bootstrapErrorOption, [$message], false);
+        }
+
+        if (function_exists('add_action')) {
+            add_action('admin_notices', static function () use ($bootstrapErrorOption): void {
+                if (! function_exists('current_user_can') || ! current_user_can('manage_options')) {
+                    return;
+                }
+                $errors = function_exists('get_option') ? get_option($bootstrapErrorOption, []) : [];
+                if (! is_array($errors) || $errors === []) {
+                    return;
+                }
+                echo '<div class="notice notice-error"><p><strong>'
+                    . esc_html__('Culvers ACF bootstrap failed', 'culvers')
+                    . '</strong></p><ul style="margin-left:1.25em;list-style:disc;">';
+                foreach ($errors as $msg) {
+                    echo '<li>' . esc_html((string) $msg) . '</li>';
+                }
+                echo '</ul></div>';
+            });
         }
     }
 }, 20);
+
+add_filter(
+    'acf/load_reference',
+    static function (mixed $reference, string $fieldName, int|string|false $postId): mixed {
+        if ($fieldName !== 'components' || ! is_numeric($postId) || (int) $postId <= 0) {
+            return $reference;
+        }
+
+        $resolved = Helpers\FlexibleComponents::resolveStoredFieldReference((int) $postId, $reference);
+
+        return $resolved ?? $reference;
+    },
+    10,
+    3
+);
 
 add_filter('acf/settings/save_json', static fn (): string => get_stylesheet_directory() . '/acf-json');
 

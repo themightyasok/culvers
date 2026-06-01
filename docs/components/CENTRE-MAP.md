@@ -13,6 +13,7 @@ zoom controls — there are no pins.
 | ACF schema | [`app/Components/centre_map.php`](../../app/Components/centre_map.php) |
 | Blade view | [`resources/views/components/centre-map.blade.php`](../../resources/views/components/centre-map.blade.php) |
 | Alpine module | [`resources/scripts/alpine/centre-map.js`](../../resources/scripts/alpine/centre-map.js) |
+| Shared partial | [`resources/views/partials/map-zoom-controls.blade.php`](../../resources/views/partials/map-zoom-controls.blade.php) (also used by contact map embed) |
 | BEM root | `.centre-map` |
 
 ## When to use

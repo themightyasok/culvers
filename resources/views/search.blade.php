@@ -3,6 +3,7 @@
 @php
   use App\Search\SearchService;
   use App\Helpers\Component;
+  use App\Helpers\LayoutShell;
 
   global $wp_query;
 
@@ -13,8 +14,7 @@
 
 @section('content')
   <section class="search-page pb-16 md:pb-28" aria-labelledby="search-page-heading">
-    <div class="px-4 md:px-12">
-      <div class="mx-auto w-full max-w-8xl">
+    <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
         <header class="search-page__intro mx-auto max-w-[802px] text-center pt-10 md:pt-12 lg:pt-14">
           <h1
             id="search-page-heading"
@@ -114,7 +114,6 @@
             @endif
           @endif
         </div>
-      </div>
     </div>
   </section>
 @endsection

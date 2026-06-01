@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Nav;
 
+use App\Customizer\SiteShortcutsCustomizer;
+
 /**
  * Resolves placeholder (`#`) URLs in the assigned primary mega menu to the
  * matching live page / archive / deep-link.
@@ -50,13 +52,69 @@ final class PrimaryNavLinkSync
     /**
      * Theme mods for the header utility pills — separate from the mega menu tree.
      */
+    public static function headerCentreMapUrl(): string
+    {
+        return self::resolvedHeaderShortcutUrl(
+            SiteShortcutsCustomizer::MOD_CENTRE_MAP_URL,
+            '/plan-my-visit/#centre-map',
+        );
+    }
+
+    public static function headerGettingHereUrl(): string
+    {
+        return self::resolvedHeaderShortcutUrl(
+            SiteShortcutsCustomizer::MOD_GETTING_HERE_URL,
+            '/plan-my-visit/#getting-here',
+        );
+    }
+
+    /**
+     * Theme-mod URL with canonical hash when the mod points at Plan my visit without a fragment.
+     */
+    public static function resolvedHeaderShortcutUrl(string $modKey, string $canonicalPath): string
+    {
+        $canonical = home_url($canonicalPath);
+        $current = trim((string) get_theme_mod($modKey, ''));
+
+        $stale = [
+            '',
+            '#',
+            home_url('/plan-my-visit/'),
+        ];
+
+        if (in_array($current, $stale, true)) {
+            return $canonical;
+        }
+
+        $canonicalParts = wp_parse_url($canonical);
+        $currentParts = wp_parse_url($current);
+
+        if (! is_array($canonicalParts) || ! is_array($currentParts)) {
+            return $current;
+        }
+
+        $canonicalHash = isset($canonicalParts['fragment']) ? (string) $canonicalParts['fragment'] : '';
+        $currentHash = isset($currentParts['fragment']) ? (string) $currentParts['fragment'] : '';
+
+        if ($canonicalHash !== '' && $currentHash === '') {
+            $canonicalPathOnly = (string) ($canonicalParts['path'] ?? '');
+            $currentPathOnly = (string) ($currentParts['path'] ?? '');
+
+            if (untrailingslashit($canonicalPathOnly) === untrailingslashit($currentPathOnly)) {
+                return $current . '#' . $canonicalHash;
+            }
+        }
+
+        return $current;
+    }
+
     public static function syncHeaderShortcutUrls(): void
     {
         $home = static fn (string $path): string => function_exists('home_url') ? home_url($path) : $path;
 
         $shortcuts = [
-            'culvers_centre_map_url' => $home('/plan-my-visit/#centre-map'),
-            'culvers_getting_here_url' => $home('/plan-my-visit/#getting-here'),
+            SiteShortcutsCustomizer::MOD_CENTRE_MAP_URL => $home('/plan-my-visit/#centre-map'),
+            SiteShortcutsCustomizer::MOD_GETTING_HERE_URL => $home('/plan-my-visit/#getting-here'),
         ];
 
         $stale = [

@@ -18,18 +18,13 @@
   $heading = trim((string) ($c['header_heading'] ?? ''));
   $headingTag = Component::headingTagFromComponent($c, 'header_heading_level', 2);
 
-  $bodyRaw = trim((string) ($c['header_body'] ?? ''));
-  $bodyWithBreaks = preg_replace('/<br\s*\/?>/i', "\n", $bodyRaw);
-  $bodyLines = [];
-  if ($bodyWithBreaks !== '') {
-      $bodyLines = array_values(array_filter(array_map(static function (string $line): string {
-          return trim($line);
-      }, preg_split('/\r\n|\r|\n/', wp_strip_all_tags($bodyWithBreaks)))));
-  }
+  $bodyHtml = (string) ($c['header_body'] ?? '');
+  $hasBody = trim(strip_tags($bodyHtml)) !== '';
 
   $alignRaw = is_string($c['header_align'] ?? null) ? (string) $c['header_align'] : 'center';
   $isCenter = $alignRaw !== 'left';
   $alignClass = $isCenter ? 'text-center mx-auto max-lg:px-4' : 'text-left max-lg:px-4';
+  $bodyAlignClass = $isCenter ? 'text-center [&_p]:text-center' : 'text-left';
 
   $maxRaw = is_string($c['header_max_width'] ?? null) ? (string) $c['header_max_width'] : 'narrow';
   $maxWidthClass = match ($maxRaw) {
@@ -38,14 +33,26 @@
       default => 'max-w-3xl',
   };
 
-  $hasContent = $eyebrow !== '' || $heading !== '' || $bodyLines !== [];
-  $usesIntroStackGap = $heading !== '' && $bodyLines !== [] && $eyebrow === '';
+  $hasContent = $eyebrow !== '' || $heading !== '' || $hasBody;
+  $usesIntroStackGap = $heading !== '' && $hasBody && $eyebrow === '';
   $bodyGapClass = ($heading !== '' || $eyebrow !== '') && ! $usesIntroStackGap
       ? Component::sectionHeadingToBodyGapClasses()
       : '';
-  $headingTailGapClass = $heading !== '' && $bodyLines === []
+  $headingTailGapClass = $heading !== '' && ! $hasBody
       ? Component::sectionHeadingToFollowContentGapClasses()
       : '';
+  $bodyProseClasses = trim(
+      Component::sectionIntroBodyClasses(
+          'text-deep-moss/85',
+          trim(
+              $bodyAlignClass
+              . ' [&_p:first-child]:mt-0 [&_p+p]:mt-4 [&_strong]:font-medium rt-link-prose '
+              . ($usesIntroStackGap ? Component::sectionIntroContentStackClasses($isCenter ? 'items-center' : 'items-start') : '')
+              . ' '
+              . $bodyGapClass
+          )
+      )
+  );
 
   $sectionAnchorId = $heading !== '' ? PageSectionAnchor::fromHeading($heading) : '';
   $sectionAnchorAttr = $sectionAnchorId !== '' ? ' id="' . esc_attr($sectionAnchorId) . '"' : '';
@@ -73,7 +80,7 @@
       <div
         class="section-header__inner {{ $alignClass }} {{ $maxWidthClass }} flex flex-col {{ $usesIntroStackGap ? 'section-intro-stack' : '' }}">
         @if($eyebrow !== '')
-          <p class="section-header__eyebrow font-sans text-xs font-semibold uppercase tracking-widest text-faded-olive">
+          <p class="section-header__eyebrow font-label text-xs font-semibold uppercase tracking-widest text-faded-olive">
             {{ esc_html($eyebrow) }}
           </p>
         @endif
@@ -87,12 +94,9 @@
           </{{ $headingTag }}>
         @endif
 
-        @if($bodyLines !== [])
-          <div class="section-header__body {{ Component::sectionIntroBodyClasses('text-deep-moss/85', trim(($usesIntroStackGap ? Component::sectionIntroContentStackClasses($isCenter ? 'items-center' : 'items-start') : '') . ' ' . $bodyGapClass)) }}">
-            @foreach($bodyLines as $i => $line)
-              @if($i > 0)<br />@endif
-              {{ esc_html(trim($line)) }}
-            @endforeach
+        @if($hasBody)
+          <div class="section-header__body {{ esc_attr($bodyProseClasses) }}">
+            {!! wp_kses_post($bodyHtml) !!}
           </div>
         @endif
       </div>

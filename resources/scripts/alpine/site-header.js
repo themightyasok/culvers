@@ -1,18 +1,10 @@
 /**
  * Site header — mega menu, site search, scroll-away dock, header offset CSS var.
  *
- * Responsibilities:
- *   - Mega menu open/close (hover + click), preview image swaps, body class `mega-open` (scroll lock).
- *   - Site search UI + debounced REST fetch.
- *   - After a short grace period: scrolling down (past a threshold) starts a delayed hide; the bar
- *     slides up. Scrolling up or returning near the top shows it again. Layout stays the pill /
- *     max-w-8xl chrome — no full-width morph on scroll (width is static Tailwind only).
- *   - Sync `--site-header-offset` for `.site-header-scroll-spacer` (inside `#smooth-content`).
- *     Offset stays at full chrome height when the dock hides (translate only) so page background
- *     and ScrollSmoother scroll bounds do not jump — do not zero the offset on hide.
- *
  * @param {import('alpinejs').Alpine} Alpine
  */
+
+import { followPageAnchorFromClick, navigateToHash } from '../utils/page-anchor.js';
 
 /** Ignore sub-pixel noise when inferring scroll direction (down path / timer start). */
 const SCROLL_DIRECTION_EPS = 3;
@@ -243,6 +235,31 @@ export default function registerSiteHeaderAlpine(Alpine) {
     },
 
     /**
+     * Header utility pills (Centre Map / Getting Here) — same in-page scroll as mega submenu links.
+     *
+     * @param {MouseEvent} event
+     */
+    headerUtilityClick(event) {
+      if (event.button !== 0) {
+        return;
+      }
+      if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
+        return;
+      }
+
+      this.revealDock();
+      this.cancelCloseMegaHover();
+      this.closeMega();
+      this.closeSearch?.();
+
+      if (followPageAnchorFromClick(event)) {
+        return;
+      }
+
+      // Cross-page hash links fall through to native navigation; load handler scrolls to target.
+    },
+
+    /**
      * @param {HTMLElement} el
      */
     applyMegaPreviewFromLink(el) {
@@ -288,10 +305,28 @@ export default function registerSiteHeaderAlpine(Alpine) {
       if (target === '' || target === '#') {
         return;
       }
+
       this.mobileNavAnimate = false;
       this.mobileOpen = false;
       this.resetMobileSubmenu(true);
       document.body.classList.remove('mobile-nav-open');
+
+      try {
+        const targetUrl = new URL(target, window.location.href);
+        const hashId = targetUrl.hash.replace(/^#/, '').trim();
+        const currentUrl = new URL(window.location.href);
+        const samePage =
+          targetUrl.origin === currentUrl.origin &&
+          targetUrl.pathname.replace(/\/$/, '') === currentUrl.pathname.replace(/\/$/, '');
+
+        if (hashId !== '' && samePage) {
+          navigateToHash(hashId, { updateHistory: true, smooth: true });
+          return;
+        }
+      } catch {
+        // Fall through to full navigation.
+      }
+
       window.location.assign(target);
     },
 

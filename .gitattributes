@@ -1,0 +1,2 @@
+backups/*.zip filter=lfs diff=lfs merge=lfs -text
+backups/*.sql filter=lfs diff=lfs merge=lfs -text

@@ -9,7 +9,7 @@
   ]);
 @endphp
 
-<div class="mx-auto w-full max-w-3xl px-4 pb-16 prose prose-invert prose-zinc lg:px-8 lg:pb-24">
+<div class="mx-auto w-full max-w-3xl px-4 pb-16 prose prose-lg max-w-none text-deep-moss prose-headings:text-deep-moss prose-p:text-deep-moss prose-li:text-deep-moss prose-strong:text-deep-moss rt-link-prose lg:px-8 lg:pb-24">
   {!! $pageBody !!}
 </div>
 

@@ -35,8 +35,9 @@ class Fields
         Directory\DirectoryFlexibleDefaults::register();
         Directory\EatDrinkSingleFlexiblePopulate::registerAcfLoadSanitizer();
         Directory\DirectorySingleHeroLogoMerge::register();
-        $flexibleContent = $this->componentRegistry->registerFlexibleContent();
-        acf_add_local_field_group($flexibleContent->build());
+        foreach ($this->componentRegistry->registerFlexibleContentGroups() as $flexibleContent) {
+            acf_add_local_field_group($flexibleContent->build());
+        }
         Directory\ShopFields::register();
         Directory\ShopArchiveFields::register();
         Directory\EatDrinkFields::register();

@@ -1,12 +1,13 @@
 @php
   use App\Nav\PrimaryNav;
+  use App\Nav\PrimaryNavLinkSync;
 
   /** @var list<array{id:int,title:string,url:string,is_current:bool,children:list<array{title:string,url:string,preview:string}>}> $navTree */
   $navTree = PrimaryNav::tree('primary_navigation');
 
-  // Theme mods (Appearance → Customize).
-  $mapUrl = get_theme_mod('culvers_centre_map_url', '#');
-  $hereUrl = get_theme_mod('culvers_getting_here_url', '#');
+  // Header utility pills — always deep-link to in-page anchors (same as mega submenu).
+  $mapUrl = PrimaryNavLinkSync::headerCentreMapUrl();
+  $hereUrl = PrimaryNavLinkSync::headerGettingHereUrl();
   $instagramUrl = get_theme_mod('culvers_instagram_url', '#');
   $facebookUrl = get_theme_mod('culvers_facebook_url', '#');
 
@@ -240,7 +241,8 @@
                   <div class="mega-nav__utilities hidden shrink-0 items-center lg:flex lg:gap-[18px]">
                   <a
                     class="inline-flex items-center gap-2 text-white transition-opacity hover:opacity-90 focus-visible:rounded-sm culvers-focus-ring"
-                    href="{{ esc_url($mapUrl) }}">
+                    href="{{ esc_url($mapUrl) }}"
+                    x-on:click="headerUtilityClick($event)">
                     @include('partials.icons.figma-header-icon', [
                         'header_icon_variant' => 'centre-map-desktop',
                         'header_icon_class' => 'size-[15px] shrink-0',
@@ -249,7 +251,8 @@
                   </a>
                   <a
                     class="inline-flex items-center gap-2 text-white transition-opacity hover:opacity-90 focus-visible:rounded-sm culvers-focus-ring"
-                    href="{{ esc_url($hereUrl) }}">
+                    href="{{ esc_url($hereUrl) }}"
+                    x-on:click="headerUtilityClick($event)">
                     @include('partials.icons.figma-header-icon', [
                         'header_icon_variant' => 'getting-here-desktop',
                         'header_icon_class' => 'h-4 w-[13px] shrink-0',
@@ -550,7 +553,7 @@
                     @if($branch['children'] !== [])
                       <button
                         type="button"
-                        class="flex w-full items-center justify-between gap-4 py-5 text-left font-heading text-4xl leading-[1.1] focus-visible:rounded-sm culvers-focus-ring-compact{{ $mobileCurrent ? ' text-glowleaf' : ' text-faded-olive' }}"
+                        class="mega-nav__mobile-root-link flex w-full items-center justify-between gap-4 py-5 text-left font-heading text-4xl leading-[1.1] focus-visible:rounded-sm culvers-focus-ring-compact{{ $mobileCurrent ? ' mega-nav__mobile-root-link--current' : '' }}"
                         x-on:click="openMobileSubmenuByIndex({{ (int) $idx }})"
                         @if($mobileCurrent) aria-current="page" @endif>
                         <span>{{ $branch['title'] }}</span>
@@ -563,7 +566,7 @@
                       </button>
                     @else
                       <a
-                        class="flex w-full items-center justify-between gap-4 py-5 font-heading text-4xl leading-[1.1] focus-visible:rounded-sm culvers-focus-ring-compact{{ $mobileCurrent ? ' text-glowleaf' : ' text-faded-olive' }}"
+                        class="mega-nav__mobile-root-link flex w-full items-center justify-between gap-4 py-5 font-heading text-4xl leading-[1.1] focus-visible:rounded-sm culvers-focus-ring-compact{{ $mobileCurrent ? ' mega-nav__mobile-root-link--current' : '' }}"
                         href="{{ esc_url($branch['url']) }}"
                         x-on:click.prevent="followMobileNavLink('{{ esc_url($branch['url']) }}')"
                         @if($mobileCurrent) aria-current="page" @endif>
@@ -623,7 +626,7 @@
                 class="flex min-h-[57px] overflow-hidden rounded-[12px] bg-glowleaf/60 text-faded-olive">
                 @if($instagramUrl !== '' && $instagramUrl !== '#')
                   <a
-                    class="flex flex-1 items-center justify-center gap-3 px-4 py-3 text-center font-label text-sm font-semibold uppercase leading-7 tracking-widest transition-colors hover:bg-faded-olive/[0.07] culvers-focus-ring-compact-faded-olive"
+                    class="flex flex-1 items-center gap-3 px-5 py-3 text-left font-label text-sm font-semibold uppercase leading-7 tracking-widest transition-colors hover:bg-faded-olive/[0.07] culvers-focus-ring-compact-faded-olive"
                     href="{{ esc_url($instagramUrl) }}"
                     target="_blank"
                     rel="noopener noreferrer">
@@ -635,7 +638,7 @@
                   </a>
                 @else
                   <span
-                    class="flex flex-1 cursor-not-allowed items-center justify-center gap-3 px-4 py-3 text-center font-label text-sm font-semibold uppercase leading-7 tracking-widest text-faded-olive/45">
+                    class="flex flex-1 cursor-not-allowed items-center gap-3 px-5 py-3 text-left font-label text-sm font-semibold uppercase leading-7 tracking-widest text-faded-olive/45">
                     @include('partials.figma-social-icon', [
                         'social_icon_variant' => 'instagram',
                         'social_icon_class' => 'size-[16.917px] shrink-0 opacity-50 text-faded-olive',
@@ -645,7 +648,7 @@
                 @endif
                 @if($facebookUrl !== '' && $facebookUrl !== '#')
                   <a
-                    class="flex flex-1 items-center justify-center gap-3 px-4 py-3 text-center font-label text-sm font-semibold uppercase leading-7 tracking-widest transition-colors hover:bg-faded-olive/[0.07] culvers-focus-ring-compact-faded-olive"
+                    class="flex flex-1 items-center gap-3 px-5 py-3 text-left font-label text-sm font-semibold uppercase leading-7 tracking-widest transition-colors hover:bg-faded-olive/[0.07] culvers-focus-ring-compact-faded-olive"
                     href="{{ esc_url($facebookUrl) }}"
                     target="_blank"
                     rel="noopener noreferrer">
@@ -657,7 +660,7 @@
                   </a>
                 @else
                   <span
-                    class="flex flex-1 cursor-not-allowed items-center justify-center gap-3 px-4 py-3 text-center font-label text-sm font-semibold uppercase leading-7 tracking-widest text-faded-olive/45">
+                    class="flex flex-1 cursor-not-allowed items-center gap-3 px-5 py-3 text-left font-label text-sm font-semibold uppercase leading-7 tracking-widest text-faded-olive/45">
                     @include('partials.figma-social-icon', [
                         'social_icon_variant' => 'facebook',
                         'social_icon_class' => 'size-[18.125px] shrink-0 opacity-50 text-faded-olive',

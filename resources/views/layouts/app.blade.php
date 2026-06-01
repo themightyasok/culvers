@@ -28,6 +28,13 @@
         @php
           use App\View\SitePageSurface;
           $pageSurface = SitePageSurface::config();
+          $is404 = is_404();
+          $pageSurfaceModifier = $is404
+              ? 'site-page-surface--404'
+              : $pageSurface['modifier'];
+          $footerSpacerClass = $is404
+              ? 'h-0 w-full lg:h-0'
+              : 'h-24 w-full lg:h-[306px]';
         @endphp
         {{--
           Do not use min-h-screen here: when main + footer are shorter than the viewport (e.g. /shops/),
@@ -36,7 +43,7 @@
         --}}
         <div
           id="app"
-          class="relative site-page-surface {{ esc_attr($pageSurface['modifier']) }}"
+          class="relative site-page-surface {{ esc_attr($pageSurfaceModifier) }}"
           style="--culvers-page-tile: url('{{ esc_url(SitePageSurface::tileUri()) }}'); --culvers-page-tile-ratio: {{ esc_attr(SitePageSurface::tileHeightRatio()) }};">
           <main id="main" tabindex="-1">
             @yield('content')
@@ -49,7 +56,7 @@
             newsletter is full-bleed with no overlap — one standard `gap-y-24` (96px) band only.
             lg+ spacer = newsletter half (210px @ min-h 420) + 96px — same rhythm as flexible rows.
           --}}
-          <div aria-hidden="true" class="site-footer-spacer h-24 w-full lg:h-[306px]"></div>
+          <div aria-hidden="true" class="site-footer-spacer {{ esc_attr($footerSpacerClass) }}"></div>
 
           @include('sections.footer')
         </div>

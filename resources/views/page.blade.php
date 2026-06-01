@@ -4,8 +4,7 @@
   @while(have_posts())
     @php
       the_post();
-      $rows = get_field('components');
-      $hasFlexible = is_array($rows) && count($rows) > 0;
+      $hasFlexible = \App\Helpers\FlexibleComponents::hasRows((int) get_the_ID());
     @endphp
 
     {{--

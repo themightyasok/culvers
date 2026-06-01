@@ -40,15 +40,17 @@ return [
             '30'
         ),
         'header_body' => [
-            'type' => 'textarea',
+            'type' => 'wysiwyg',
             'options' => [
                 'label' => __('Body (optional)', 'culvers'),
                 'instructions' => __(
-                    'Short paragraph (1–3 lines) under the heading. Use Content section for long-form copy.',
+                    'Intro copy under the heading — paragraphs, bold, and links from the editor are preserved on the front end. Use Content section for long-form pages.',
                     'culvers'
                 ),
-                'rows' => 3,
-                'new_lines' => 'br',
+                'tabs' => 'visual',
+                'toolbar' => 'basic',
+                'media_upload' => 0,
+                'delay' => 0,
             ],
         ],
         'header_align' => [

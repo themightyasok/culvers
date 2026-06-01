@@ -3,9 +3,8 @@
 ## Runtime requirements
 
 - PHP **8.1+**, WordPress **6.4+**
-- Plugins: **Advanced Custom Fields Pro**, **WP BladeOne** (match versions/source from your reference install — copied from Lickd Lander into `wp-content/plugins/` here).
-- Rendering falls back to theme-bundled **`eftec/bladeone`** when WP BladeOne is disabled.
-- Node **≥20.19** (see `package.json` `engines` and `.nvmrc`) for building assets
+- Plugins: **Advanced Custom Fields Pro**, **WP BladeOne**
+- Node **≥20.19** (see `package.json` / `.nvmrc`) for building assets
 
 ## Build once per release
 
@@ -19,19 +18,28 @@ npm run build
 
 ## What to ship
 
-- **`vendor/`** from Composer when the theme relies on autoloaded PHP (production often uses `--no-dev`; keep dev tools only where you run Pint/PHPStan).
-- **Compiled front-end assets** from `npm run build`:
-  - **Primary:** `dist/css/app.css`, `dist/js/app.js` (created locally; **`dist/`** is gitignored).
-  - **Mirrors:** same build copies CSS to **`app.css`** and **`css/app.css`**, and JS to **`js/app.js`**. WordPress loads **`dist/`** first when present, otherwise those paths (`app/setup.php`).
-  - Commit **`app.css`** at the theme root so installs without running Node still get styles.
-- Do **not** deploy **`node_modules/`**.
+- **`vendor/`** from Composer (production: `--no-dev`)
+- **Compiled assets** from `npm run build`:
+  - Primary: `dist/css/app.css`, `dist/js/app.js` (gitignored)
+  - Mirrors: `css/app.css`, `js/app.js`, root **`app.css`** (CSS committed for no-Node installs)
+- Do **not** deploy `node_modules/`
 
-More detail on the toolchain lives in [docs/README.md](README.md).
+Enqueue order: `app/Assets/FrontendAssets.php` prefers `dist/`, then `css/`/`js/`, then root `app.css`.
 
 ## Configuration
 
-- Define **`CULVERS_USE_VITE`** only where you run **`npm run dev`** with Vite HMR (`app/setup.php`).
-- Sync ACF field groups via **`acf-json/`** between environments.
+- **`CULVERS_USE_VITE`** — checked in `app/Assets/FrontendAssets.php` for Vite HMR during `npm run dev`
+- Sync ACF field groups via **`acf-json/`** between environments
+
+## 20i staging / live (Culver Square)
+
+Full playbook: workspace `.cursor/rules/culvers-20i-deploy.mdc` and `society-deploy` repo.
+
+- Staging: `https://culversquare-co-uk.stackstaging.com/`
+- Theme-only deploy: rsync `wp-content/themes/culvers/` — no DB/uploads unless explicitly requested
+- Remote WP-CLI: `php83 /usr/local/bin/wp` (PHP 8.0 default wp-cli breaks on theme syntax)
+- After deploy: clear Blade cache `storage/cache/views/*`, purge StackCDN if HTML looks stale
+- Component registry cache auto-clears when `app/Components/*.php` (or registry PHP) changes; optional `wp cache flush` on persistent object cache hosts
 
 ## Verification before merge
 
@@ -39,4 +47,6 @@ More detail on the toolchain lives in [docs/README.md](README.md).
 npm run verify
 ```
 
-That command includes PHPStan (`composer analyse`). GitHub Actions runs **`npm audit`**, **`composer audit`**, then **`npm run verify`** on push/PR when enabled.
+Includes: ESLint, Prettier, build, PHPCS, PHPStan, `check:blade-forks`.
+
+GitHub Actions (`.github/workflows/verify.yml`): audits + verify when enabled.

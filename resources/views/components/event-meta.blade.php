@@ -58,7 +58,7 @@
             @foreach($rows as $row)
               <div class="event-meta__row grid grid-cols-1 gap-1 border-t border-deep-moss/15 py-5 first:border-t-0 first:pt-0 md:grid-cols-[minmax(0,160px)_minmax(0,1fr)] md:gap-6 md:items-baseline">
                 @if($row['label'] !== '')
-                  <dt class="event-meta__label font-sans text-xs font-semibold uppercase tracking-widest text-faded-olive">
+                  <dt class="event-meta__label font-label text-xs font-semibold uppercase tracking-widest text-faded-olive">
                     {{ esc_html($row['label']) }}
                   </dt>
                 @endif

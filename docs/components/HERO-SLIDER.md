@@ -41,8 +41,10 @@ a static single image at the top of an interior page use `image_hero`.
 
 ## Behaviour notes
 
-- Splide drives the carousel; imported via `splide-init.js` in
-  `resources/scripts/utils/`.
+- Splide drives the carousel via Alpine in
+  [`resources/scripts/alpine/hero-slider.js`](../../resources/scripts/alpine/hero-slider.js)
+  (`data-splide-manual` on the root). Three-card block uses the same pattern in
+  `three-card-block.js`.
 - Same field schema is reused by the shops archive options page
   (`ShopArchiveFields`) so the same Blade component renders
   `/shops/`'s hero — pass the slides array via the

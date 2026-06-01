@@ -5,19 +5,10 @@
 
 /** @type {number | undefined} */
 let scrollTimer;
-/** @type {string} */
-let pendingHashId = '';
 /** @type {number} */
 let hashNavigationUntil = 0;
 /** @type {ReturnType<typeof setTimeout> | undefined} */
 let anchorIdleTimer;
-
-/**
- * @returns {string}
- */
-export function getPendingHashId() {
-  return pendingHashId;
-}
 
 /**
  * True while an in-page anchor scroll is in progress — layout refreshes must not
@@ -74,6 +65,30 @@ function normalizeHashId(hash) {
 }
 
 /**
+ * @param {string} path
+ * @returns {string}
+ */
+function normalizePathname(path) {
+  if (path === '' || path === '/') {
+    return '/';
+  }
+
+  return path.endsWith('/') ? path.slice(0, -1) : path;
+}
+
+/**
+ * @param {URL} url
+ * @param {URL} current
+ * @returns {boolean}
+ */
+function isSameDocumentPath(url, current) {
+  return (
+    url.origin === current.origin &&
+    normalizePathname(url.pathname) === normalizePathname(current.pathname)
+  );
+}
+
+/**
  * @returns {boolean}
  */
 function desktopSmootherExpected() {
@@ -86,7 +101,7 @@ function desktopSmootherExpected() {
 /**
  * @param {() => void} callback
  */
-function whenScrollReady(callback) {
+export function whenScrollReady(callback) {
   if (!desktopSmootherExpected()) {
     callback();
     return;
@@ -163,17 +178,11 @@ export function getHeaderScrollOffsetPx() {
 }
 
 /**
- * @param {string} hash
+ * @param {HTMLElement} target
  * @param {{ behavior?: ScrollBehavior }} [options]
  * @returns {boolean}
  */
-export function scrollToHashTarget(hash, options = {}) {
-  const id = normalizeHashId(hash);
-  if (id === '') {
-    return false;
-  }
-
-  const target = document.getElementById(id);
+export function scrollToElement(target, options = {}) {
   if (!(target instanceof HTMLElement)) {
     return false;
   }
@@ -196,6 +205,25 @@ export function scrollToHashTarget(hash, options = {}) {
   window.scrollTo({ top, behavior });
 
   return true;
+}
+
+/**
+ * @param {string} hash
+ * @param {{ behavior?: ScrollBehavior }} [options]
+ * @returns {boolean}
+ */
+export function scrollToHashTarget(hash, options = {}) {
+  const id = normalizeHashId(hash);
+  if (id === '') {
+    return false;
+  }
+
+  const target = document.getElementById(id);
+  if (!(target instanceof HTMLElement)) {
+    return false;
+  }
+
+  return scrollToElement(target, options);
 }
 
 /**
@@ -241,7 +269,7 @@ export function openTextImageSlidersForHash(hashId = getPageHash()) {
  * @param {string} hashId
  * @param {{ updateHistory?: boolean; smooth?: boolean }} [options]
  */
-function navigateToHash(hashId, options = {}) {
+export function navigateToHash(hashId, options = {}) {
   const id = normalizeHashId(hashId);
   if (id === '') {
     return;
@@ -250,7 +278,6 @@ function navigateToHash(hashId, options = {}) {
   const updateHistory = options.updateHistory ?? true;
   const smooth = options.smooth ?? true;
 
-  pendingHashId = id;
   armHashNavigation();
 
   if (updateHistory) {
@@ -281,48 +308,59 @@ function navigateToHash(hashId, options = {}) {
 
 /**
  * @param {MouseEvent} event
+ * @returns {boolean} True when same-page hash navigation was handled.
  */
-function handleHashLinkClick(event) {
+export function followPageAnchorFromClick(event) {
   if (event.defaultPrevented || event.button !== 0) {
-    return;
+    return false;
   }
   if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) {
-    return;
+    return false;
   }
 
   const target = event.target;
   if (!(target instanceof Element)) {
-    return;
+    return false;
   }
 
   const link = target.closest('a[href]');
   if (!(link instanceof HTMLAnchorElement)) {
-    return;
+    return false;
   }
 
   const rawHref = link.getAttribute('href');
   if (!rawHref || !rawHref.includes('#')) {
-    return;
+    return false;
   }
 
   let url;
   try {
     url = new URL(link.href, window.location.href);
   } catch {
-    return;
+    return false;
   }
 
   const id = normalizeHashId(url.hash);
   if (id === '') {
-    return;
+    return false;
   }
 
-  if (url.origin !== window.location.origin || url.pathname !== window.location.pathname) {
-    return;
+  const current = new URL(window.location.href);
+  if (!isSameDocumentPath(url, current)) {
+    return false;
   }
 
   event.preventDefault();
   navigateToHash(id, { updateHistory: true, smooth: true });
+
+  return true;
+}
+
+/**
+ * @param {MouseEvent} event
+ */
+function handleHashLinkClick(event) {
+  followPageAnchorFromClick(event);
 }
 
 /**
@@ -331,7 +369,6 @@ function handleHashLinkClick(event) {
 export function handlePageHash() {
   const id = getPageHash();
   if (id === '') {
-    pendingHashId = '';
     return;
   }
 
@@ -351,9 +388,15 @@ export function initPageHashNavigation() {
     }
   });
 
-  whenScrollReady(() => {
-    if (getPageHash() !== '') {
-      handlePageHash();
-    }
-  });
+  const scheduleInitialHashScroll = () => {
+    whenScrollReady(() => {
+      if (getPageHash() !== '') {
+        handlePageHash();
+      }
+    });
+  };
+
+  scheduleInitialHashScroll();
+  window.addEventListener('load', scheduleInitialHashScroll, { once: true });
+  window.addEventListener('gsap:smoother:ready', scheduleInitialHashScroll);
 }

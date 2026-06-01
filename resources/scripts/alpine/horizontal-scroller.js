@@ -17,18 +17,12 @@ function horizontalScrollerData() {
     disableScroll: false,
     scrollSpeed: 'medium',
     gsapContext: null,
-    lockOnScroll: false,
     total: 0,
     xTo: null,
     itemValues: [],
     tl: null,
     gsapObserver: null,
     tick: null,
-    lenisInstance: null,
-    lenisWrapper: null,
-    _lenisScrollHandler: null,
-    _lenisResizeHandler: null,
-    _lenisResizeRefreshTimer: null,
     _initStarted: false,
     _waitTimer: null,
     _waitStart: null,
@@ -149,12 +143,6 @@ function horizontalScrollerData() {
       return () => this.destroy();
     },
 
-    toggleLockOnScroll() {
-      this.lockOnScroll = !this.lockOnScroll;
-      this.destroy();
-      this.trySetup(0);
-    },
-
     removeDuplicateSets() {
       if (!this.$el) return;
       const duplicateSet = this.$el.querySelectorAll(
@@ -190,9 +178,7 @@ function horizontalScrollerData() {
       const smootherExpected = !!document.getElementById('smooth-wrapper');
       const hasSmoother = !!window.smoother;
       const ready =
-        gsapReady &&
-        (scrollTriggerReady || !this.lockOnScroll) &&
-        (!smootherExpected || hasSmoother || isMobileViewport);
+        gsapReady && scrollTriggerReady && (!smootherExpected || hasSmoother || isMobileViewport);
       const timedOut = Date.now() - this._waitStart >= 4000;
       if (ready || timedOut) {
         if (this._waitTimer) {
@@ -202,7 +188,7 @@ function horizontalScrollerData() {
         if (timedOut && !ready) {
           this.debug('⚠️ waitForGSAP timeout, attempting setup');
         }
-        this.debug('GSAP (and ScrollTrigger for Lenis) available');
+        this.debug('GSAP and ScrollTrigger available');
         requestAnimationFrame(() => {
           this.trySetup(0);
         });
@@ -233,7 +219,6 @@ function horizontalScrollerData() {
       this.debug(`trySetup attempt ${retryCount}`, {
         containerWidth: content.clientWidth,
         itemsCount: items.length,
-        mode: this.lockOnScroll ? 'lenis' : 'drag',
       });
 
       if (content.clientWidth === 0) {
@@ -443,14 +428,6 @@ function horizontalScrollerData() {
       return true;
     },
 
-    /**
-     * Lenis-powered horizontal mode was used on the reference site; this theme ships drag-mode only.
-     */
-    async setupLenisMode(_wrapper, _content, _items) {
-      this.debug('Lenis horizontal mode is not enabled in this theme.');
-      return false;
-    },
-
     destroy() {
       if (this._waitTimer) {
         clearTimeout(this._waitTimer);
@@ -503,32 +480,6 @@ function horizontalScrollerData() {
         window.gsap.killTweensOf(content);
       }
 
-      if (this._lenisResizeHandler) {
-        window.removeEventListener('resize', this._lenisResizeHandler);
-        this._lenisResizeHandler = null;
-      }
-      if (this._lenisResizeRefreshTimer) {
-        clearTimeout(this._lenisResizeRefreshTimer);
-        this._lenisResizeRefreshTimer = null;
-      }
-      // Lenis mode cleanup
-      if (this.lenisInstance) {
-        try {
-          if (this._lenisScrollHandler && this.lenisInstance.off) {
-            this.lenisInstance.off('scroll', this._lenisScrollHandler);
-          }
-          this.lenisInstance.destroy();
-        } catch (e) {
-          this.debug(`Lenis destroy: ${e.message}`);
-        }
-        this.lenisInstance = null;
-      }
-      this._lenisScrollHandler = null;
-      if (this.lenisWrapper) {
-        this.lenisWrapper.classList.remove('horizontal-scroller__wrapper--lenis');
-        this.lenisWrapper = null;
-      }
-      this.$el?.classList.remove('horizontal-scroller--lenis');
       this.$el?.classList.remove('horizontal-scroller--reduced-motion');
       this.$el?.classList.remove('horizontal-scroller--disable-scroll');
 

@@ -8,6 +8,14 @@ namespace App\Helpers;
  * Repeated inner widths / gutters — aligned to the **initial** site chrome (footer band +
  * mega-nav bar row insets), using **static Tailwind only**.
  *
+ * **One shell for page body content:** {@see self::INNER_MAX_GUTTERED} on flexible
+ * components, directory archives, search, and directory singles. Do not hand-roll
+ * `px-4 md:px-12` + nested `max-w-8xl` for main content — that older pattern
+ * diverged from component gutters at the `md` breakpoint.
+ *
+ * Site chrome landmarks (header bar row, footer olive band) may keep their own
+ * outer inset where full-bleed backgrounds need wider side padding.
+ *
  * Main content deliberately does **not** follow `site-header` Alpine scroll state
  * (`max-w-8xl` vs `max-w-none`, padding swaps, etc.) — widths stay fixed per load.
  *

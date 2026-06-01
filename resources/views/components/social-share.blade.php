@@ -1,6 +1,7 @@
 @php
   use App\Customizer\FooterCustomizer;
   use App\Helpers\Component;
+  use App\Helpers\LayoutShell;
   use App\Helpers\SocialShare;
 
   /**
@@ -65,7 +66,7 @@
     class="social-share {{ esc_attr($root) }} text-deep-moss"
     data-component-root
     data-social-share>
-    <div class="mx-auto w-full max-w-8xl px-3 sm:px-4 md:px-5 lg:px-6">
+    <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
       <div class="section-intro-stack mx-auto flex max-w-[50.125rem] flex-col items-center text-center">
         <{{ $headingTag }} class="{{ Component::sectionIntroHeadingClasses('text-faded-olive') }}">
           {{ esc_html($heading) }}

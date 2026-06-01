@@ -125,7 +125,7 @@
   $staticSerifTone = $copyOnWhite ? 'text-faded-olive' : 'text-brand-500';
 
   $staticCopyColumnClasses = $hasTabs
-      ? 'flex min-h-0 flex-col items-center justify-start gap-6 px-8 pb-12 pt-12 text-center lg:h-full lg:min-h-full lg:gap-8 lg:px-10 xl:px-14 xl:pt-12'
+      ? 'flex min-h-0 flex-col items-center justify-start gap-6 px-8 pb-12 pt-20 text-center lg:h-full lg:min-h-full lg:gap-8 lg:px-10 xl:px-14 xl:pt-20'
       : 'flex min-h-0 flex-col items-center justify-center px-8 pb-12 pt-12 text-center lg:h-full lg:min-h-full lg:px-10 xl:px-14';
 
   $copyColumnBgClass = $copyOnWhite ? 'bg-white' : 'bg-faded-olive';

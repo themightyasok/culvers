@@ -191,7 +191,7 @@
                  the pre-mobile-audit build. Single source for every contact field below. --}}
             <label
               for="{{ esc_attr($instanceId) }}-first"
-              class="contact__label font-label text-xs font-semibold uppercase tracking-widest text-deep-moss max-sm:font-sans max-sm:text-xl max-sm:font-medium max-sm:normal-case max-sm:tracking-normal max-sm:leading-6">
+              class="contact__label font-label text-xs font-semibold uppercase tracking-widest text-deep-moss max-sm:text-xl max-sm:font-medium max-sm:normal-case max-sm:tracking-normal max-sm:leading-6">
               {{ esc_html($firstNameLabel) }}
             </label>
             <input
@@ -211,7 +211,7 @@
           <div class="contact__field flex flex-col gap-2">
             <label
               for="{{ esc_attr($instanceId) }}-last"
-              class="contact__label font-label text-xs font-semibold uppercase tracking-widest text-deep-moss max-sm:font-sans max-sm:text-xl max-sm:font-medium max-sm:normal-case max-sm:tracking-normal max-sm:leading-6">
+              class="contact__label font-label text-xs font-semibold uppercase tracking-widest text-deep-moss max-sm:text-xl max-sm:font-medium max-sm:normal-case max-sm:tracking-normal max-sm:leading-6">
               {{ esc_html($lastNameLabel) }}
             </label>
             <input
@@ -231,7 +231,7 @@
           <div class="contact__field flex flex-col gap-2">
             <label
               for="{{ esc_attr($instanceId) }}-email"
-              class="contact__label font-label text-xs font-semibold uppercase tracking-widest text-deep-moss max-sm:font-sans max-sm:text-xl max-sm:font-medium max-sm:normal-case max-sm:tracking-normal max-sm:leading-6">
+              class="contact__label font-label text-xs font-semibold uppercase tracking-widest text-deep-moss max-sm:text-xl max-sm:font-medium max-sm:normal-case max-sm:tracking-normal max-sm:leading-6">
               {{ esc_html($emailLabel) }}
             </label>
             <input
@@ -252,7 +252,7 @@
           <div class="contact__field flex flex-col gap-2">
             <label
               for="{{ esc_attr($instanceId) }}-reason"
-              class="contact__label font-label text-xs font-semibold uppercase tracking-widest text-deep-moss max-sm:font-sans max-sm:text-xl max-sm:font-medium max-sm:normal-case max-sm:tracking-normal max-sm:leading-6">
+              class="contact__label font-label text-xs font-semibold uppercase tracking-widest text-deep-moss max-sm:text-xl max-sm:font-medium max-sm:normal-case max-sm:tracking-normal max-sm:leading-6">
               {{ esc_html($reasonLabel) }}
             </label>
             @if($hasReasonChoices)
@@ -292,7 +292,7 @@
           <div class="contact__field md:col-span-2 flex flex-col gap-2">
             <label
               for="{{ esc_attr($instanceId) }}-message"
-              class="contact__label font-label text-xs font-semibold uppercase tracking-widest text-deep-moss max-sm:font-sans max-sm:text-xl max-sm:font-medium max-sm:normal-case max-sm:tracking-normal max-sm:leading-6">
+              class="contact__label font-label text-xs font-semibold uppercase tracking-widest text-deep-moss max-sm:text-xl max-sm:font-medium max-sm:normal-case max-sm:tracking-normal max-sm:leading-6">
               {{ esc_html($messageLabel) }}
             </label>
             <textarea
@@ -360,7 +360,7 @@
             referrerpolicy="no-referrer-when-downgrade"
             allowfullscreen
             title="{{ esc_attr(sprintf(/* translators: %s: destination short label */ __('Map of %s', 'culvers'), $destLabel !== '' ? $destLabel : __('the centre', 'culvers'))) }}"></iframe>
-          @include('partials.map-embed-zoom-controls')
+          @include('partials.map-zoom-controls', ['variant' => 'embed'])
         </div>
       @endif
     </div>

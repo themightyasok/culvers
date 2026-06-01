@@ -2,18 +2,6 @@
 
 @section('content')
   @php
-    /**
-     * Eat & Drink archive — shares the Shop archive layout:
-     *   • Static `image_hero` band (~half-viewport image banner with
-     *     glowleaf title + spaced uppercase subtitle, both stacked
-     *     vertically — Figma 51:9360 spec, 1440×646), driven by ACF
-     *     option fields registered in {@see App\Directory\EatDrinkArchiveFields}.
-     *     Component payload assembled by {@see App\Directory\ArchiveHeroComponent}.
-     *   • Centered intro paragraph below the hero (Customizer text).
-     *   • Filter pill + collapsible sidebar (Cuisine + Venue type).
-     *   • Responsive 4 / 3-up card grid via the shared `directoryArchive`
-     *     Alpine module.
-     */
     global $wp_query;
     $found_venues = isset($wp_query->found_posts) ? (int) $wp_query->found_posts : 0;
     \App\Directory\EatDrinkTaxonomySeeder::syncNow();
@@ -28,12 +16,10 @@
         $eat_drink_types = [];
     }
 
-    /* Figma 51:7657 — one “Category” group (Grab & Go, Restaurants, …). */
     $eat_drink_category_options = \App\Directory\DirectoryFilterOptions::fromFigmaOrder(
         \App\Directory\DirectoryFilterDefinitions::eatDrinkCategories(),
         $eat_drink_types
     );
-    $eat_drink_type_options = [];
 
     $eatDrinkArchiveHero = \App\Directory\ArchiveHeroComponent::fromOptions(\App\Directory\EatDrinkArchiveFields::FIELD_PREFIX);
     /** @var array<string, mixed> $eatDrinkArchiveHero */
@@ -50,75 +36,31 @@
             'culvers'
         );
     }
-
-    $filter_toggle_id = 'directory-filter-toggle-eat-drink';
   @endphp
 
   @include('components.image-hero', ['component' => $eatDrinkArchiveHero])
 
-  {{-- Match header/footer: gutter padding outside, `max-w-8xl` inner only. --}}
-  <section class="directory-archive pb-16 md:pb-28" x-data="directoryArchive">
-    <div class="px-4 md:px-12">
-      <div class="mx-auto w-full max-w-8xl">
-        {{-- `wpautop()` wraps the intro in its own <p>, so we use a <div> here.
-             A <p>…<p>…</p></p> nesting is invalid HTML — browsers auto-close the
-             outer <p> on the inner one, dropping the alignment / typography
-             utilities. Cascading from a <div> keeps the centred line. --}}
-        <div class="{{ \App\Helpers\LayoutShell::ARCHIVE_INTRO }}">
-          {!! wp_kses_post(wpautop($introHtml)) !!}
-        </div>
+  @include('partials.directory-archive-filter-body', [
+      'introHtml' => $introHtml,
+      'filtersRegionLabel' => __('Eat & Drink filters', 'culvers'),
+      'filterToggleId' => 'directory-filter-toggle-eat-drink',
+      'filtersControlsId' => 'directory-archive-filters-eat-drink',
+      'foundCount' => $found_venues,
+      'emptyMessage' => __('No Eat & Drink venues published yet. Add venues under Eat & Drink → Add New in the admin.', 'culvers'),
+      'cardPartial' => 'partials.directory-eat-drink-card',
+      'filterGroups' => [
+          [
+              'label' => __('Category', 'culvers'),
+              'aria_label' => __('Category', 'culvers'),
+              'panel_id' => 'directory-category-panel-eat-drink',
+              'state_var' => 'typeSlug',
+              'toggle_var' => 'categoryOpen',
+              'setter' => 'setType',
+              'options' => $eat_drink_category_options,
+          ],
+      ],
+  ])
 
-        <div class="flex flex-col gap-[22px]">
-          <div class="directory-archive__toolbar flex justify-center lg:justify-start">
-            @include('partials.directory-filter-pill', [
-                'toggle_id' => $filter_toggle_id,
-                'controls_id' => 'directory-archive-filters-eat-drink',
-            ])
-          </div>
-
-          <div class="directory-archive__main-row" :class="{ 'directory-archive__main-row--filters-visible': filtersVisible }">
-            <div
-              id="directory-archive-filters-eat-drink"
-              class="directory-archive__sidebar-shell min-w-0 shrink-0 lg:overflow-visible"
-              :class="filtersVisible ? 'max-lg:max-h-[1600px] max-lg:overflow-visible' : 'max-lg:hidden'"
-              role="region"
-              aria-label="{{ esc_attr__('Eat & Drink filters', 'culvers') }}">
-              <aside class="directory-archive__aside w-full rounded-none bg-transparent px-[23px] pb-6 pt-0 shadow-none lg:w-[325px] lg:shrink-0">
-                <h2 class="sr-only">{{ __('Eat & Drink filters', 'culvers') }}</h2>
-
-                @include('partials.directory-filter-group', [
-                    'label' => __('Category', 'culvers'),
-                    'aria_label' => __('Category', 'culvers'),
-                    'panel_id' => 'directory-category-panel-eat-drink',
-                    'state_var' => 'typeSlug',
-                    'toggle_var' => 'categoryOpen',
-                    'setter' => 'setType',
-                    'options' => $eat_drink_category_options,
-                ])
-              </aside>
-            </div>
-
-            <div class="directory-archive__grid-column min-w-0">
-              @if ($found_venues <= 0)
-                <p class="rounded-[11px] border border-light-brown/25 bg-white px-6 py-12 text-center font-sans text-xl text-faded-olive">
-                  {{ __('No Eat & Drink venues published yet. Add venues under Eat & Drink → Add New in the admin.', 'culvers') }}
-                </p>
-              @else
-                <div x-ref="grid" class="directory-archive__grid">
-                  @while (have_posts())
-                    @php the_post(); @endphp
-                    @include('partials.directory-eat-drink-card')
-                  @endwhile
-                </div>
-              @endif
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  {{-- Same News / Events / Offers strip as Shops — Eat & Drink has its own options under Appearance → Eat & Drink directory. --}}
   @php $eatDrinkArchiveStories = \App\Directory\EatDrinkArchiveThreeCard::componentOrNull(); @endphp
   @if ($eatDrinkArchiveStories !== null)
     @include('components.three-card-block', ['component' => $eatDrinkArchiveStories])

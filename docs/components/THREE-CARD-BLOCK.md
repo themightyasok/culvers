@@ -1,9 +1,7 @@
 # Three card block (`three_card_block`)
 
-Three-up card row — manual entries (image / video card with title and
-link) or dynamically pulled from selected blog post categories with
-filter pills above the cards. Used on the homepage and at the bottom
-of the shops archive.
+Three-up card row — manual entries, blog category tabs, or posts from
+directory CPTs (`culvers_shop`, `culvers_eat_drink`, etc.).
 
 | | |
 | --- | --- |
@@ -20,19 +18,15 @@ When you need a three-up "feature row" of cards. For more than three
 items use [`horizontal_scroller`](HORIZONTAL-SCROLLER.md). For an
 icon-cell grid (4-up small tiles) use [`info_block`](INFO-BLOCK.md).
 
-The `cards_source` switch covers two distinct use cases:
+The `cards_source` switch covers three use cases:
 
 - **Manual** — pick exactly three cards (image / video, title, link).
-- **Blog** — pick category tabs (one row of pills) and the cards
-  populate from recent posts of the active tab.
-
-## Editor fields
-
-### Source selector
+- **Blog** — category tabs; cards from recent posts of the active tab.
+- **Directory (`cpt`)** — pick one or more directory post types; cards from recent posts.
 
 | Field | Type | Default |
 | --- | --- | --- |
-| `cards_source` | radio (`manual`, `blog`) | `manual` |
+| `cards_source` | radio (`manual`, `blog`, `cpt`) | `manual` |
 
 ### Common fields
 

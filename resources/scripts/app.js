@@ -18,7 +18,6 @@ import registerCentreMapAlpine from './alpine/centre-map.js';
 import registerShopRelatedShopsAlpine from './alpine/shop-related-shops.js';
 import gsapManager from './utils/gsap-manager.js';
 import backgroundParallaxManager from './utils/background-parallax-manager.js';
-import initSplideCarousels from './utils/splide-init.js';
 import { initPageHashNavigation, isHashNavigationActive } from './utils/page-anchor.js';
 
 registerSiteHeaderAlpine(Alpine);
@@ -42,17 +41,12 @@ gsapManager.init();
 backgroundParallaxManager.init();
 initPageHashNavigation();
 
-document.addEventListener('DOMContentLoaded', () => {
-  initSplideCarousels(document.body);
-});
-
 /**
  * ScrollSmoother (desktop ≥1024px) measures `#smooth-content` for max scroll; refresh after layout
  * settles so the footer isn’t clipped. ScrollSmoother already attaches its own ResizeObserver — do not
  * observe `#smooth-content` again here (duplicate refreshes reset scroll / kill smoothing on first wheel).
  */
 let scrollLayoutDebounceId;
-let refreshDeferred = false;
 let refreshIdleTimer;
 
 /** True while ScrollSmoother is mid wheel / programmatic glide — never refresh then. */
@@ -70,14 +64,12 @@ function shouldDeferScrollLayoutRefresh() {
 }
 
 function queueDeferredScrollLayoutRefresh() {
-  refreshDeferred = true;
   clearTimeout(refreshIdleTimer);
   refreshIdleTimer = window.setTimeout(() => {
     if (shouldDeferScrollLayoutRefresh()) {
       queueDeferredScrollLayoutRefresh();
       return;
     }
-    refreshDeferred = false;
     runScrollLayoutRefresh();
   }, 180);
 }

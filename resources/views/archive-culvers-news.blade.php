@@ -2,13 +2,6 @@
 
 @section('content')
   @php
-    /**
-     * Latest News archive — `/latest-news/` (sibling to /latest-events/
-     * and /latest-offers/; surfaced on the /whats-on/ landing). Mirrors
-     * archive-culvers-offer.blade.php; the directory archives all share the
-     * same shape (image-hero, centred intro, responsive 4 / 3-up grid of
-     * shared moss-tile cards).
-     */
     global $wp_query;
     $found_news = isset($wp_query->found_posts) ? (int) $wp_query->found_posts : 0;
 
@@ -31,34 +24,10 @@
 
   @include('components.image-hero', ['component' => $newsArchiveHero])
 
-  <section>
-    <div class="px-4 md:px-12">
-      <div class="mx-auto w-full max-w-8xl">
-        {{-- <div> wrapper (not <p>) so cascading text-center / typography
-             utilities survive `wpautop()` injecting its own inner <p>. --}}
-        <div class="{{ \App\Helpers\LayoutShell::ARCHIVE_INTRO }}">
-          {!! wp_kses_post(wpautop($introHtml)) !!}
-        </div>
-
-        <div>
-          @if ($found_news <= 0)
-            <p class="rounded-[11px] border border-light-brown/25 bg-white px-6 py-12 text-center font-sans text-xl text-faded-olive">
-              {{ __('No news articles published yet — check back soon, or sign up to the newsletter to be the first to hear.', 'culvers') }}
-            </p>
-          @else
-            <ul class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              @while (have_posts())
-                @php the_post(); @endphp
-                <li class="min-w-0">
-                  @include('partials.directory-news-card')
-                </li>
-              @endwhile
-            </ul>
-          @endif
-
-          @include('partials.whats-on-return-cta')
-        </div>
-      </div>
-    </div>
-  </section>
+  @include('partials.directory-archive-chronological-body', [
+      'introHtml' => $introHtml,
+      'foundCount' => $found_news,
+      'emptyMessage' => __('No news articles published yet — check back soon, or sign up to the newsletter to be the first to hear.', 'culvers'),
+      'cardPartial' => 'partials.directory-news-card',
+  ])
 @endsection

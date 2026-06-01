@@ -88,14 +88,6 @@
     /* Canela: avoid browser default bold (700); brand titles use Light/Regular only. */
     @apply font-heading font-normal text-balance;
   }
-
-  /*
-   * Brand: Commuter Sans for all-caps UI. Templates pair `font-sans` + `uppercase` for this tier —
-   * remap `font-family` only (keep sizing/weight utilities, which map to commuters-sans weights).
-   */
-  :where(.font-sans.uppercase) {
-    font-family: var(--font-label, ui-sans-serif, system-ui, sans-serif);
-  }
 }
 
 @layer components {
@@ -690,6 +682,23 @@ a.mega-nav__sublink:focus-visible {
   color: var(--color-dustleaf);
 }
 
+/*
+ * Mobile drawer root rows — same interaction colour as desktop mega sublinks
+ * (dustleaf hover/current on lighter-cream), not header-bar glowleaf.
+ */
+:where(.mega-nav__mobile-root-link) {
+  color: var(--color-faded-olive);
+  transition: color 0.15s ease;
+}
+
+:where(.mega-nav__mobile-root-link:hover, .mega-nav__mobile-root-link:focus-visible) {
+  color: var(--color-dustleaf);
+}
+
+:where(.mega-nav__mobile-root-link--current) {
+  color: var(--color-dustleaf);
+}
+
 :is(
   a.mega-nav__social-link,
   .social-share__list a,
@@ -938,4 +947,25 @@ a.wp-element-button.btn.btn-primary {
 a.wp-element-button.btn.btn-primary:focus-visible {
   outline: 2px solid var(--color-deep-moss) !important;
   outline-offset: 2px !important;
+}
+
+/*
+ * Eyeline / eyebrow tier — Figma Commuters Sans (51:9236, 51:9495, 51:9574, section eyebrows).
+ * Markup often pairs `font-sans` + `uppercase`; beat the utilities-layer `.font-sans` family.
+ */
+.font-sans.uppercase {
+  font-family: var(--font-label);
+}
+
+/*
+ * Centre map filter UI — Figma 51:6288 / 51:5906 (Hide filter pill, category rows,
+ * Filtered chip). Native `<button>` inherits body Halyard unless pinned here.
+ */
+.centre-map__filter-toggle,
+.centre-map__group-toggle,
+.centre-map__category,
+.centre-map__mobile-tabs button,
+.centre-map__status,
+.centre-map__status span {
+  font-family: var(--font-label);
 }

@@ -16,7 +16,7 @@ For the rules every component file follows, read
 | **Section openers** | `info_block` | [INFO-BLOCK.md](INFO-BLOCK.md) | Heading + subheading + body + CTA + 4-up icon cells. |
 | **Heroes** | `hero_slider` | [HERO-SLIDER.md](HERO-SLIDER.md) | Full-bleed Splide carousel — homepage / category landing heroes. |
 | **Heroes** | `image_hero` | [IMAGE-HERO.md](IMAGE-HERO.md) | Static full-bleed page header (Contact, About, brand pages). |
-| **Cards & rows** | `three_card_block` | [THREE-CARD-BLOCK.md](THREE-CARD-BLOCK.md) | 3-up cards, manual or driven by blog category tabs. |
+| **Cards & rows** | `three_card_block` | [THREE-CARD-BLOCK.md](THREE-CARD-BLOCK.md) | 3-up cards — manual, blog category tabs, or directory CPT posts. |
 | **Cards & rows** | `horizontal_scroller` | [HORIZONTAL-SCROLLER.md](HORIZONTAL-SCROLLER.md) | GSAP infinite-scroll strip — logos, gallery, mixed media. |
 | **Split layouts** | `shop_split_highlight` | [SHOP-SPLIT-HIGHLIGHT.md](SHOP-SPLIT-HIGHLIGHT.md) | 60/40 or 50/50 olive copy + image, with optional cross-fade tabs. |
 | **Split layouts** | `text_image_slider` | [TEXT-IMAGE-SLIDER.md](TEXT-IMAGE-SLIDER.md) | Vertical headline stack that pops in polaroid images on open. |
@@ -63,8 +63,8 @@ For the rules every component file follows, read
 - [`../COMPONENT-AUTHORING.md`](../COMPONENT-AUTHORING.md) — the build
   contract every component follows.
 - [`../DIRECTORY-POST-TYPES.md`](../DIRECTORY-POST-TYPES.md) — recipe
-  for registering a custom post type that hosts these components.
+  for registering directory CPTs + `ComponentPostTypes` allowlists.
 - [`../TYPOGRAPHY-SCALE.md`](../TYPOGRAPHY-SCALE.md) — the type ramp
   components must snap onto.
-- [`../GSAP.md`](../GSAP.md) — animation library + licensing.
+- [`../GSAP.md`](../GSAP.md) — animation library + scroll helpers.
 - [`../README.md`](../README.md) — theme overview, build, Local.

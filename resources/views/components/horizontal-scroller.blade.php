@@ -275,7 +275,9 @@ foreach ($scroll_cards as $item) {
 $headerTailGap = ! empty($normalized_items) && $hasHeaderSection
     ? ($intro_flush_to_content
         ? Component::sectionIntroToControlsGapClasses()
-        : Component::sectionBodyToFollowContentGapClasses())
+        : ($scroller_preset_key === HorizontalScrollerPreset::PRESET_HOMEPAGE_BRANDS
+            ? 'mb-14 md:mb-16'
+            : Component::sectionBodyToFollowContentGapClasses()))
     : '';
 $wrapperTopPad = $hasHeaderSection
     ? 'pt-0 motion-reduce:pt-0'

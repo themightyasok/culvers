@@ -4,7 +4,7 @@ GSAP-driven seamless infinite-scroll strip. Use for brand-logo strips,
 photo galleries, mixed-media rows, or any "many items in a horizontal
 row that can scroll past the viewport edge". Drag-to-pan, optional
 auto-scroll speed, per-item layout controls (size, vertical offset,
-aspect ratio), and rich typography options for the section header.
+aspect ratio), and style presets for the section header.
 
 | | |
 | --- | --- |
@@ -13,77 +13,61 @@ aspect ratio), and rich typography options for the section header.
 | Blade view | [`resources/views/components/horizontal-scroller.blade.php`](../../resources/views/components/horizontal-scroller.blade.php) |
 | CSS partial | [`resources/styles/components/horizontal-scroller.css`](../../resources/styles/components/horizontal-scroller.css) |
 | Alpine module | [`resources/scripts/alpine/horizontal-scroller.js`](../../resources/scripts/alpine/horizontal-scroller.js) |
+| Preset helper | [`app/Helpers/HorizontalScrollerPreset.php`](../../app/Helpers/HorizontalScrollerPreset.php) |
 | BEM root | `.horizontal-scroller`, repeating items as `.horizontal-scroller-item` |
 
 ## When to use
 
-This is the most flexible "row of stuff" component. Reach for it when:
-
-- Brand / retailer logo strip (8+ logos auto-scrolling).
+- Brand / retailer logo strip (8+ logos auto-scrolling) — use **Homepage brand strip** preset on the home page.
 - Mixed media row (image + text + video items).
 - Press / accolade quotes that scroll past in an editorial layout.
 
 For a strict three-up row use [`three_card_block`](THREE-CARD-BLOCK.md).
 
-## Editor fields (high level)
+## Editor fields
 
-The schema is large; read
-[`app/Components/horizontal_scroller.php`](../../app/Components/horizontal_scroller.php)
-for the canonical definition. Headline groups:
+Registry tabs: **Main** and **Items** only. There are **no** legacy Content / Fonts / Padding tabs — typography, colours, alignment, item gap, and intro flush come from the **Style preset** (code in `HorizontalScrollerPreset`).
 
-### Content tab
-- `scroller_header_text` (wysiwyg), `scroller_subheading_text`,
-  `scroller_body_text`.
-- `scroller_header_alignment`, `scroller_header_text_alignment`.
-- `scroller_intro_flush` — collapse the gap between the header and
-  the strip when the header functions as the strip's title.
-- `scroller_button_text`, `scroller_button_link`,
-  `scroller_button_variant`, `scroller_button_size`,
-  `scroller_button_show_arrow`.
-- `scroller_speed` (slow / medium / fast),
-  `scroller_disabled` (toggle off auto-scroll for a static centered
-  row), `scroller_item_spacing` (px between items).
-- `scroller_items` repeater — one row per item with:
-  - `item_type` (`image`, `video`, `text`, `image_text`).
-  - `item_size`, `item_vertical_offset`, `item_aspect_ratio`.
-  - `item_kicker`, `item_heading`, `item_body`.
-  - `item_image` / `item_image_alt`.
-  - `item_video` / `item_video_youtube_url` /
-    `item_video_poster` / `item_video_show_controls`.
+Read [`app/Components/horizontal_scroller.php`](../../app/Components/horizontal_scroller.php) for the canonical field list.
 
-### Fonts tab
-- Per-element colour / size / weight selects driven by
-  `App\Helpers\Typography::getHeaderSizeChoices()` /
-  `getBodySizeChoices()` / `getWeightChoices()`. Header, subheading,
-  body, kicker, item heading, item body — each gets its own trio.
+### Main tab
 
-### Padding tab
-- Per-element padding-above / padding-below selects driven by
-  `App\Helpers\Padding::getHeaderSubheaderPaddingChoices()` for
-  fine-tuned spacing between text elements (heading ↔ subheading ↔
-  body, item kicker ↔ item heading ↔ item body) inside the strip.
-- **Outer** vertical rhythm (gap to the components above and below)
-  is owned by the parent flexible-components grid `gap-y-32` and is
-  not tunable from this component — same rhythm as every other
-  flexible component on the site.
+| Field | Notes |
+| --- | --- |
+| `scroller_preset` | **Default** (light text on dark band) or **Homepage brand strip** (moss/olive on white, wider logo gap). |
+| `scroller_header_text` | WYSIWYG main heading. |
+| `scroller_subheading_text` | Optional subheading. |
+| `scroller_body_text` | Optional body. |
+| `scroller_button_text` / `scroller_button_link` | Optional CTA; blank label hides button. |
+| `scroller_speed` | `slow` / `medium` / `fast` auto-scroll. |
+| `scroller_disabled` | Static centred row — no drag, no infinite loop. |
+
+Preset merges also set header colours, alignment, typography scale, `scroller_intro_flush`, and CSS variable `--hs-item-gap` (80px default, 133px homepage brands).
+
+### Items tab
+
+`scroller_items` repeater (1–50), each row:
+
+| Sub-field | Notes |
+| --- | --- |
+| `item_type` | `image`, `video`, `text`, `image_text` |
+| `item_size` | `small` … `xlarge` |
+| `item_vertical_offset` | Stagger up/down within the strip |
+| `item_aspect_ratio` | Portrait, square, landscape, tall |
+| `item_kicker`, `item_heading`, `item_body` | Text slots |
+| `item_image`, `item_image_alt` | Image items |
+| `item_video`, `item_video_youtube_url`, `item_video_poster`, `item_video_show_controls` | Video items |
 
 ## Behaviour notes
 
-- The Alpine module clones items into the strip until the loop is
-  long enough to scroll seamlessly at the chosen speed.
-- Pointer drag pauses auto-scroll while held; auto-scroll resumes on
-  pointer release.
-- Auto-scroll respects `prefers-reduced-motion: reduce` — falls back
-  to a static row.
-- "Tight header to cards" toggles a flush-bottom modifier on the
-  intro block (`.horizontal-scroller--intro-flush`) so headers like
-  "Over X artists…" sit tight against the strip.
-- Static mode (`scroller_disabled = true`) renders a single centered
-  row with no drag and no infinite duplication.
+- Alpine clones items until the loop is long enough for seamless scroll at the chosen speed.
+- Pointer drag pauses auto-scroll; release resumes.
+- Respects `prefers-reduced-motion: reduce` — static row.
+- Static mode (`scroller_disabled`) renders a single centred row.
+- GSAP Observer + ticker only (no Lenis path).
 
 ## Related components
 
 - [`three_card_block`](THREE-CARD-BLOCK.md) — strict 3-up, no scroll.
-- [`text_image_slider`](TEXT-IMAGE-SLIDER.md) — vertical headline
-  stack that pops in side images.
+- [`text_image_slider`](TEXT-IMAGE-SLIDER.md) — vertical headline stack + polaroid images.
 - [`info_block`](INFO-BLOCK.md) — 4-up icon cells under an intro.

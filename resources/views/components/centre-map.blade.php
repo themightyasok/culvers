@@ -205,7 +205,7 @@
     @if($eyebrow !== '' || $bodyLines !== [])
       <div class="{{ LayoutShell::INNER_MAX_GUTTERED }} pt-12 md:pt-16">
         @if($eyebrow !== '')
-          <p class="font-sans text-xs font-semibold uppercase tracking-widest text-glowleaf">
+          <p class="font-label text-xs font-semibold uppercase tracking-widest text-glowleaf">
             {{ esc_html($eyebrow) }}
           </p>
         @endif

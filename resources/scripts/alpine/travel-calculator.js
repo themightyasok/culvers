@@ -1,3 +1,5 @@
+import { scrollToElement, whenScrollReady } from '../utils/page-anchor.js';
+
 /**
  * Travel Calculator: posts to `wp-json/culvers/v1/travel-calculator`,
  * renders the result strip, then reveals the route map only after a
@@ -122,7 +124,11 @@ export default function registerTravelCalculatorAlpine(Alpine) {
                   ? root.querySelector('.travel-calculator__map-band')
                   : null;
               if (band instanceof HTMLElement) {
-                band.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                requestAnimationFrame(() => {
+                  whenScrollReady(() => {
+                    scrollToElement(band, { behavior: 'smooth' });
+                  });
+                });
               }
             });
           }

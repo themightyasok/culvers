@@ -5,6 +5,7 @@
 @php
 use App\Helpers\ComponentDefaults;
 use App\Helpers\ComponentLayoutChrome;
+use App\Helpers\FlexibleComponents;
 use App\Helpers\Grid;
 use App\Helpers\Background;
 use App\Helpers\LayoutShell;
@@ -14,13 +15,18 @@ use App\Helpers\TailwindColors;
 use App\Services\TemplateResolver;
 
 $fieldName = $field_name ?? 'components';
-$rawComponents = isset($raw_components_override) && is_array($raw_components_override)
-    ? $raw_components_override
-    : (get_field($fieldName) ?: []);
-if (is_array($rawComponents)) {
-    $rawComponents = array_values(array_filter($rawComponents, static function ($row): bool {
-        return is_array($row) && empty($row['acf_fc_layout_disabled']);
-    }));
+$postId = get_the_ID();
+if (isset($raw_components_override) && is_array($raw_components_override)) {
+    $rawComponents = $raw_components_override;
+} elseif (is_int($postId) && $postId > 0) {
+    $rawComponents = FlexibleComponents::getRows($postId);
+} else {
+    $rawComponents = get_field($fieldName) ?: [];
+    if (is_array($rawComponents)) {
+        $rawComponents = array_values(array_filter($rawComponents, static function ($row): bool {
+            return is_array($row) && empty($row['acf_fc_layout_disabled']);
+        }));
+    }
 }
 
 $components = array_map(static fn ($row) => Sanitizer::component($row), is_array($rawComponents) ? $rawComponents : []);

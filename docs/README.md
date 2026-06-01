@@ -9,13 +9,16 @@ the theme architecture and component contract.
 
 | If you want to… | Read |
 | --- | --- |
-| **Build, modify, or review a component** | [COMPONENT-AUTHORING.md](COMPONENT-AUTHORING.md) — the canonical contract every flexible-content component follows. |
-| **Author Page Components in the CMS** | [EDITOR-FLEXIBLE-CONTENT.md](EDITOR-FLEXIBLE-CONTENT.md) — flexible layouts, visibility, ACF 6.5 editor tips. |
+| **Build, modify, or review a component** | [COMPONENT-AUTHORING.md](COMPONENT-AUTHORING.md) — canonical contract + `ComponentPostTypes` allowlists. |
+| **Author Page Components in the CMS** | [EDITOR-FLEXIBLE-CONTENT.md](EDITOR-FLEXIBLE-CONTENT.md) — Main / Typography / Items / Mobile tabs. |
 | **Look up how an existing component works** | [components/](components/) — one document per layout key. The catalogue lives in [components/README.md](components/README.md). |
 | **Add a new directory CPT (post type + archive + single)** | [DIRECTORY-POST-TYPES.md](DIRECTORY-POST-TYPES.md) |
 | **Pick the right Tailwind size for a Figma value** | [TYPOGRAPHY-SCALE.md](TYPOGRAPHY-SCALE.md) |
 | **Animate something with GSAP** | [GSAP.md](GSAP.md) (and `resources/scripts/utils/gsap-manager.js`) |
-| **Ship the theme to a server** | [DEPLOYMENT.md](DEPLOYMENT.md) |
+| **Ship the theme to a server** | [DEPLOYMENT.md](DEPLOYMENT.md) + workspace `.cursor/rules/culvers-20i-deploy.mdc` (20i staging/live) |
+| If you want to… | Read |
+| --- | --- |
+| **Run CLI populate / repair / live-sync scripts** | [SCRIPTS.md](SCRIPTS.md) |
 
 | Doc                                             | Purpose                                                                  |
 | ----------------------------------------------- | ------------------------------------------------------------------------ |
@@ -25,19 +28,20 @@ the theme architecture and component contract.
 | [Typography scale](TYPOGRAPHY-SCALE.md)         | Figma → `text-xs` … `text-9xl` (single ramp).                            |
 | [GSAP licensing](GSAP.md)                       | ScrollSmoother / Club GSAP.                                              |
 | [Deployment checklist](DEPLOYMENT.md)           | Server requirements, build output paths, CI.                             |
+| [CLI scripts](SCRIPTS.md)                       | Populate, nav sync, migrations (DB writers).                             |
 
 ## Theme architecture (orientation)
 
 | Layer | Details |
 |-------|---------|
-| **CMS** | WordPress; **ACF** registers flexible layouts via `App\ComponentRegistry` reading `app/Components/*.php`. |
+| **CMS** | WordPress; **ACF** registers flexible layouts via `App\ComponentRegistry` reading `app/Components/*.php`. **`App\Config\ComponentPostTypes`** limits which layouts appear per post type. |
 | **Templates** | **Blade** (`resources/views/`), rendered through theme Blade bootstrap (`app/blade-instance.php`, `functions.php`). Partials mirror layout keys to `resources/views/components/{layout}.blade.php`. |
 | **Styling** | **Tailwind CSS v4** via `resources/styles/app.css` + `@theme` tokens in `resources/styles/theme.tokens.css` (colours, type ramp). `App\Config\ThemeTokens` / `TailwindColors` align ACF pickers with CSS tokens. |
 | **Layout helpers** | `Padding`, `Grid`, `Background`, `LayoutShell` map ACF → utilities. |
 | **Scripts** | **Vite** (`npm run build`): `resources/scripts/app.js` bundles Alpine + GSAP integrations; output copied to `dist/`, `css/`, `js/`, and root `app.css` / `app.js`. |
 | **Motion** | **GSAP** stack (ScrollSmoother / ScrollTrigger — see [GSAP.md](GSAP.md)). |
 | **Navigation** | `App\Nav\PrimaryNav` builds mega-nav trees from the `primary_navigation` menu location; hover previews use menu-item meta `_culvers_mega_preview_attachment_id` / `_culvers_mega_preview_url`. Optional Figma bootstrap: `App\Nav\CulverSquareFigmaPrimaryMenu`. |
-| **Directories** | Four CPTs (`culvers_shop`, `culvers_eat_drink`, `culvers_event`, `culvers_career`) registered centrally in `app/Directory/DirectoryPostTypes.php`. See [DIRECTORY-POST-TYPES.md](DIRECTORY-POST-TYPES.md). |
+| **Directories** | Six CPTs in `app/Directory/DirectoryPostTypes.php`: `culvers_shop` (`/shops/`), `culvers_eat_drink` (`/eat-drink/`), `culvers_event` (`/latest-events/`), `culvers_offer` (`/latest-offers/`), `culvers_news` (`/latest-news/`), `culvers_career` (careers archive). `/whats-on/` is a **page**, not an event archive. See [DIRECTORY-POST-TYPES.md](DIRECTORY-POST-TYPES.md). |
 | **Design source** | **Figma — Culver Square Website Design (Developer Release)** — file key `KoBl6rTY98YnvusBgKLx4A`. |
 
 ## Shops directory (CPT) — the reference example
@@ -54,8 +58,7 @@ the theme architecture and component contract.
 - **Cards:** ACF **Shop listing fields** on each shop: logo + opening
   hours line; fallback featured image + placeholder hours text.
 
-The other three directory CPTs (Eat & Drink, What's On, Careers)
-mirror this pattern. See [DIRECTORY-POST-TYPES.md](DIRECTORY-POST-TYPES.md).
+All six directory CPTs follow the same pattern (archive + single + flexible components). See [DIRECTORY-POST-TYPES.md](DIRECTORY-POST-TYPES.md).
 
 **Figma (developer release):**
 [Culver Square Website Design](https://www.figma.com/design/KoBl6rTY98YnvusBgKLx4A/Culver-Square-Website-Design--Developer-Release-?node-id=2-3)
@@ -153,10 +156,10 @@ Use the helper (matches your WordPress root to a site in
 `MYSQL_HOME`, `PHPRC`, and PATH like Local's **Open site shell**):
 
 ```bash
-cd wp-content/themes/culvers   # or stay anywhere and pass absolute path to script
-./scripts/with-local-env.sh wp theme list --status=active
-./scripts/with-local-env.sh mysql local -e "SHOW TABLES;"
-./scripts/with-local-env.sh wp eval-file wp-content/themes/culvers/scripts/mega-menu-sync-previews.php
+cd app/public   # WordPress root
+./wp-content/themes/culvers/scripts/with-local-env.sh wp theme list --status=active
+./wp-content/themes/culvers/scripts/with-local-env.sh mysql local -e "SHOW TABLES;"
+./wp-content/themes/culvers/scripts/with-local-env.sh wp eval-file wp-content/themes/culvers/scripts/mega-menu-sync-previews.php
 ```
 
 Content lives in **WordPress** (ACF flexible fields, post meta, options,
@@ -191,7 +194,8 @@ quit and reopen the browser.
 ## Quality checks
 
 - **`npm run verify`** — ESLint, Prettier check, production build,
-  `composer lint` (PHPCS), `composer analyse` (PHPStan).
+  `composer lint` (PHPCS), `composer analyse` (PHPStan),
+  `npm run check:blade-forks` (component Blade name parity).
 - **`composer audit`** / **`npm audit`** — run in CI
   (`.github/workflows/verify.yml`); run locally before release if you
   are not using Actions.

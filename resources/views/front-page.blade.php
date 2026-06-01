@@ -4,9 +4,8 @@
   @while(have_posts())
     @php
       the_post();
-      $existing = get_field('components');
-      $existing = is_array($existing) ? $existing : [];
-      $hasFlexibleOnPage = count($existing) > 0;
+      $existing = \App\Helpers\FlexibleComponents::getRows((int) get_the_ID());
+      $hasFlexibleOnPage = $existing !== [];
     @endphp
 
     {{--

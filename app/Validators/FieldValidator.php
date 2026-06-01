@@ -19,13 +19,13 @@ class FieldValidator
 
     public function __construct()
     {
+        // Must stay aligned with ComponentRegistry::addField() — no types the registry cannot register.
         $this->validTypes = [
             'text', 'textarea', 'wysiwyg', 'image', 'file', 'gallery',
             'select', 'radio', 'checkbox', 'button_group', 'true_false', 'link',
-            'post_object', 'page_link', 'relationship', 'taxonomy', 'user',
-            'date_picker', 'date_time_picker', 'time_picker', 'color_picker',
-            'google_map', 'repeater', 'group', 'flexible_content', 'clone',
-            'number', 'range', 'tab', 'message', 'accordion', 'email', 'url', 'password', 'oembed'
+            'post_object', 'taxonomy', 'email', 'url',
+            'number', 'range', 'color_picker',
+            'repeater', 'group', 'tab', 'message', 'accordion',
         ];
     }
 

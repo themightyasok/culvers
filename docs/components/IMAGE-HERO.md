@@ -41,8 +41,8 @@ between them; do not invent a third.
 - Always renders edge-to-edge — registered in
   `culvers_default_full_width_components` and
   `culvers_full_width_components` filters in
-  [`app/setup.php`](../../app/setup.php) so `Component::rootClasses()`
-  is called with `includePadding: false` and the section paints
+  Full-bleed viewport treatment uses `.image-hero--viewport` utilities in Blade;
+  `Component::rootClasses($c)` supplies grid span only (no padding param).
   flush against the fixed header.
 - The mobile image is preferred under the `(max-width: 767px)` media
   query via a `<picture>` source.

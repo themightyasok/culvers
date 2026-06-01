@@ -4,6 +4,8 @@
  * @param {import('alpinejs').Alpine} Alpine
  */
 
+import { scrollToElement, whenScrollReady } from '../utils/page-anchor.js';
+
 /** Mega-menu / seed URLs may use marketing slugs; cards carry taxonomy slugs in data attrs. */
 /** Legacy mega-menu / seed URLs that no longer match Figma filter slugs. */
 const FILTER_SLUG_ALIASES = {
@@ -65,8 +67,9 @@ export default function registerDirectoryArchiveAlpine(Alpine) {
           requestAnimationFrame(() => {
             const grid = this.$refs.grid;
             if (grid instanceof HTMLElement) {
-              const top = grid.getBoundingClientRect().top + window.scrollY - 96;
-              window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+              whenScrollReady(() => {
+                scrollToElement(grid, { behavior: 'smooth' });
+              });
             }
           });
         }

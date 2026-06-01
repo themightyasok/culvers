@@ -112,7 +112,7 @@
                  `!font-sans` is important because the base layer `h1–h6 { font-heading }` rule
                  otherwise wins over a plain `font-sans` utility in Tailwind v4. --}}
             <h2 class="max-w-none !font-sans text-2xl font-medium leading-tight text-white">
-              {{ $spec->title }}
+              {{ esc_html($spec->title) }}
             </h2>
             @if ($spec->hasSubtitle())
               <p class="max-w-none font-sans text-sm font-light text-white">

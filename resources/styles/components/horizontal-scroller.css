@@ -25,18 +25,6 @@
   box-sizing: border-box;
 }
 
-.horizontal-scroller__wrapper--lenis {
-  @apply overflow-x-auto overflow-y-hidden cursor-grab;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-}
-.horizontal-scroller__wrapper--lenis::-webkit-scrollbar {
-  @apply hidden;
-}
-.horizontal-scroller--lenis .horizontal-scroller__container {
-  will-change: auto;
-  transform: none;
-}
 .horizontal-scroller .horizontal-scroller__container {
   @apply w-max flex items-center p-0 select-none cursor-grab;
   gap: var(--hs-item-gap);
@@ -116,7 +104,7 @@
  * Homepage brand strip uses `.horizontal-scroller--homepage-brands` + normalized SVGs.
  */
 .horizontal-scroller {
-  --hs-logo-row-height: 3rem;
+  --hs-logo-row-height: 2.625rem;
 }
 
 .horizontal-scroller--homepage-brands .horizontal-scroller-item--image {
@@ -184,10 +172,6 @@
 
 .horizontal-scroller-item--text .horizontal-scroller-item__copy {
   @apply min-h-32;
-}
-
-.horizontal-scroller--lenis .horizontal-scroller-item {
-  will-change: transform, opacity;
 }
 
 .horizontal-scroller--reduced-motion .horizontal-scroller__wrapper {

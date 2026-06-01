@@ -1,32 +1,39 @@
 # Editing flexible page components (ACF)
 
-This theme builds pages from **Page Components** (ACF Flexible Content). Each row is a block with shared **Layout & background**, **Typography**, and **Visibility** tabs, then your block-specific fields (General, Structure, Items, optional typography/spacing tabs, etc.).
+Pages (and some CPT singles) are built from **Page Components** — an ACF Flexible Content field named `components`.
 
-## Built-in UX (ACF PRO 6.5+)
+## What editors see
 
-These ship with ACF — no theme setup required:
+Each row is one layout (e.g. Hero slider, Section header, Centre map). The registry adds up to four tabs per layout:
 
-- **Rename a layout instance** in the editor (friendly label only; the technical layout key does not change).
-- **Disable** a layout without deleting it — data stays; it does not render on the front until re-enabled.
-- **Active layout highlight** while editing fields deep inside a row.
-- **Collapse / expand all** layouts for quicker reordering on long pages.
+| Tab | Contents |
+| --- | --- |
+| **Main** | Primary content fields (headings, body, images, CTAs). A theme note explains that grid span and band colours are fixed in code. |
+| **Typography** | Optional — only on layouts that expose extra type/colour controls (e.g. hero title tone). |
+| **Items** | Optional — repeaters (slides, FAQ rows, cards, map categories, etc.). |
+| **Mobile** | Optional — overrides that apply **only below 768px** (`md`). Blank = inherit desktop value. |
 
-## Visibility breakpoints
+There is **no** Layout & background tab, **no** Visibility tab, and **no** per-row width/hide toggles. Those were removed in favour of code-authoritative layout chrome.
 
-Under **Visibility**:
+## ACF 6.5+ built-in UX
 
-- **Hide on phones** — below the `md` breakpoint (~768px).
-- **Hide from tablet / desktop up** — `md` and wider (tablet + desktop share this band). Phones still see the block.
+- Rename a layout instance (friendly label only — layout key unchanged)
+- **Disable** a row without deleting (data kept; front end skips it)
+- Collapse / expand all rows
+- Drag to reorder
 
-Per-component **Breakpoints** tab: explains md vs phones. **Mobile overrides** appears only when that block has layout-level fields; carousel-style blocks put mobile imagery on each slide under **Items**.
+## Visibility
 
-Use row visibility sparingly; prefer designing one responsive presentation where possible.
+Row visibility is **ACF disable only** (`acf_fc_layout_disabled`). There are no “hide on mobile/tablet” fields.
 
-## After structural registry changes
+## After a theme deploy
 
-Developers bump the component registry cache version when flexible fields change. If something looks missing after a deploy, run **flush caches** (WP Admin → or WP-CLI `wp cache flush`) and reload the editor.
+If new layouts or fields are missing in the editor:
 
-For migrations from older sites, see:
+1. Hard refresh the admin page (component registry cache auto-clears when theme PHP changes — see `ComponentCache::invalidateIfRegistrySourcesChanged()`).
+2. Check **Settings →** admin notices for **Culvers component registry — load errors** or **Culvers ACF bootstrap failed**.
+3. If fields still look stale on a host with persistent object cache, ask dev to run `wp cache flush` once.
 
-- `scripts/migrations/2026-05-10-flexible-visibility-breakpoints.php`
-- `scripts/migrations/2026-05-10-drop-tablet-visibility-meta.php`
+## Developers
+
+Authoring contract: `docs/COMPONENT-AUTHORING.md`

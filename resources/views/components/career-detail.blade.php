@@ -30,19 +30,6 @@
       $applyEmail = is_string($postEmail) ? sanitize_email(trim($postEmail)) : '';
   }
 
-  $applyUrl = trim((string) ($c['career_apply_url'] ?? ''));
-  $jobTitleForMail = $title !== '' ? $title : get_the_title();
-  $applyHref = $applyEmail !== ''
-      ? CareerApplyMailto::build($applyEmail, $jobTitleForMail, (string) get_permalink(), $meta)
-      : $applyUrl;
-  $applyIsExternal = $applyEmail === '' && str_starts_with($applyUrl, 'http');
-  $hasApply = $applyHref !== '';
-
-  $employerLogo = isset($c['career_sidebar_brand_logo']) && is_array($c['career_sidebar_brand_logo'])
-      ? $c['career_sidebar_brand_logo']
-      : [];
-  $employerLogoUrl = isset($employerLogo['url']) ? trim((string) $employerLogo['url']) : '';
-
   $meta = [];
   if (isset($c['career_meta']) && is_array($c['career_meta'])) {
       foreach ($c['career_meta'] as $row) {
@@ -57,6 +44,20 @@
           $meta[] = ['label' => $label, 'value' => $value];
       }
   }
+
+  $applyUrl = trim((string) ($c['career_apply_url'] ?? ''));
+  $jobTitleForMail = $title !== '' ? $title : get_the_title();
+  $applyHref = $applyEmail !== ''
+      ? CareerApplyMailto::build($applyEmail, $jobTitleForMail, (string) get_permalink(), $meta)
+      : $applyUrl;
+
+  $applyIsExternal = $applyEmail === '' && str_starts_with($applyUrl, 'http');
+  $hasApply = $applyHref !== '';
+
+  $employerLogo = isset($c['career_sidebar_brand_logo']) && is_array($c['career_sidebar_brand_logo'])
+      ? $c['career_sidebar_brand_logo']
+      : [];
+  $employerLogoUrl = isset($employerLogo['url']) ? trim((string) $employerLogo['url']) : '';
 
   $sections = [];
   if (isset($c['career_sections']) && is_array($c['career_sections'])) {

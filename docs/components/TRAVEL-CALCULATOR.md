@@ -98,12 +98,15 @@ distances and durations.
 
 1. Edit a page → **Page Components**.
 2. Add component → **Travel Calculator**.
-3. Configure heading, intro, available modes, and button label in
-   the General tab.
+3. Configure heading, intro, modes, and button label in the **Main** tab.
 4. Optionally upload a static **Map placeholder image**.
 5. Save / publish.
 
-## Cost & rate-limit safeguards
+## Behaviour notes
+
+- After a successful search with **Show map** enabled, the route map band scrolls into view via `page-anchor.js` (`scrollToElement` + `whenScrollReady`) so desktop ScrollSmoother (≥1024px) stays in sync — same pattern as directory archive deep-links.
+
+## Setup — Google Cloud (one-time)
 
 | Layer | Limit |
 | --- | --- |

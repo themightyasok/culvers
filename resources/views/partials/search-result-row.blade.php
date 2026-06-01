@@ -21,7 +21,7 @@
 @if($title !== '')
   <li>
     <a
-      class="search-result-row block rounded-[10px] px-2.5 py-3.5 font-sans text-xl font-light leading-[1.3] text-faded-olive transition-colors hover:bg-faded-olive/[0.06] focus-visible:culvers-focus-ring-compact-faded-olive"
+      class="search-result-row block rounded-[10px] px-2.5 py-3.5 font-sans text-xl font-light leading-[1.3] text-faded-olive transition-colors hover:bg-faded-olive/[0.06] culvers-focus-ring-compact-faded-olive"
       href="{{ esc_url($url) }}">
       <span class="block">{!! SearchHighlight::mark($title, $query) !!}</span>
       @if($excerpt !== '')

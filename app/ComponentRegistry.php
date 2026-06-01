@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\Config\ComponentPostTypes;
 use App\Services\ComponentCache;
 use App\Validators\FieldValidator;
 use App\Exceptions\ComponentException;
@@ -21,9 +22,8 @@ use StoutLogic\AcfBuilder\FlexibleContentBuilder;
  * - **Typography** — only when a layout declares fields (e.g. hero title colour);
  *                    block body tone is fixed in code per layout.
  * - **Items** — only rendered when the component declares a top-level repeater.
- * - **Mobile** — overrides that apply below `md` (768px) only. Always present so
- *                authors know where to look; shows an explanatory message when
- *                a component has no block-level mobile overrides.
+ * - **Mobile** — overrides below `md` (768px) only; tab is registered only when
+ *                a layout declares a non-empty `mobile` section.
  *
  * Components express this via four optional keys on the returned array:
  * `main`, `typography`, `items`, `mobile`. Each is a flat field map of the same
@@ -151,19 +151,49 @@ class ComponentRegistry
     }
 
     /**
-     * @throws ComponentException
+     * Register one ACF field group per post-type allowlist ({@see ComponentPostTypes}).
+     *
+     * @return list<FieldsBuilder>
      */
-    public function registerFlexibleContent(): FieldsBuilder
+    public function registerFlexibleContentGroups(): array
     {
-        $components = new FieldsBuilder('page_components');
+        $builders = [];
+
+        foreach (ComponentPostTypes::fieldGroupDefinitions() as $definition) {
+            $builders[] = $this->buildFlexibleContentGroup(
+                (string) $definition['group_key'],
+                $definition['post_types'],
+                $definition['layouts'],
+            );
+        }
+
+        $this->assertAllComponentsAssigned();
+        $this->flushLoadErrors();
+
+        return $builders;
+    }
+
+    /**
+     * @param list<string> $postTypes
+     * @param list<string> $layoutKeys
+     */
+    private function buildFlexibleContentGroup(string $groupKey, array $postTypes, array $layoutKeys): FieldsBuilder
+    {
+        $components = new FieldsBuilder('page_components_' . $groupKey);
 
         $flexibleContent = $components->addFlexibleContent('components', [
             'label' => __('Page Components', 'culvers'),
             'instructions' => __('Add and arrange components for this page', 'culvers'),
-            'button_label' => __('Add Component', 'culvers')
+            'button_label' => __('Add Component', 'culvers'),
         ]);
 
-        foreach ($this->components as $componentName => $config) {
+        foreach ($layoutKeys as $componentName) {
+            $config = $this->components[$componentName] ?? null;
+            if (! is_array($config)) {
+                $this->logError("Layout '{$componentName}' is listed for '{$groupKey}' but no component file exists.");
+                continue;
+            }
+
             try {
                 $this->addComponentLayout($flexibleContent, $componentName, $config);
             } catch (\Throwable $e) {
@@ -171,18 +201,30 @@ class ComponentRegistry
             }
         }
 
-        $this->flushLoadErrors();
+        $firstPostType = array_shift($postTypes);
+        if (! is_string($firstPostType) || $firstPostType === '') {
+            return $components;
+        }
 
-        $components
-            ->setLocation('post_type', '==', 'page')
-            ->or('post_type', '==', 'culvers_shop')
-            ->or('post_type', '==', 'culvers_eat_drink')
-            ->or('post_type', '==', 'culvers_event')
-            ->or('post_type', '==', 'culvers_offer')
-            ->or('post_type', '==', 'culvers_news')
-            ->or('post_type', '==', 'culvers_career');
+        $location = $components->setLocation('post_type', '==', $firstPostType);
+
+        foreach ($postTypes as $postType) {
+            $location->or('post_type', '==', $postType);
+        }
 
         return $components;
+    }
+
+    private function assertAllComponentsAssigned(): void
+    {
+        $assigned = array_fill_keys(ComponentPostTypes::allAssignedLayouts(), true);
+        $missing = array_diff(array_keys($this->components), array_keys($assigned));
+
+        foreach ($missing as $componentName) {
+            $this->logError(
+                "Component '{$componentName}' is loaded but missing from " . ComponentPostTypes::class . ' allowlists.'
+            );
+        }
     }
 
     /**

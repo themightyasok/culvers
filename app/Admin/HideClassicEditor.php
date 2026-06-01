@@ -10,7 +10,7 @@ namespace App\Admin;
 final class HideClassicEditor
 {
     /**
-     * Must stay aligned with {@see \App\ComponentRegistry::registerFlexibleContent()} locations.
+     * Must stay aligned with {@see \App\Config\ComponentPostTypes} field group locations.
      *
      * @var list<string>
      */

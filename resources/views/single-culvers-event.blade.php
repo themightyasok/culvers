@@ -7,10 +7,8 @@
   @endwhile
 
   <section class="pb-[100px]">
-    <div class="px-4 md:px-12">
-      <div class="mx-auto w-full max-w-8xl">
-        @include('partials.whats-on-return-cta')
-      </div>
+    <div class="{{ \App\Helpers\LayoutShell::INNER_MAX_GUTTERED }}">
+      @include('partials.whats-on-return-cta')
     </div>
   </section>
 @endsection
