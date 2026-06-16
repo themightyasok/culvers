@@ -7,13 +7,18 @@ namespace App\CentreMap;
 use App\Directory\DirectoryFilterDefinitions;
 
 /**
- * Canonical centre-map filter rows for directory singles (shop / eat-drink).
+ * Single source of truth for the centre-map filter category list.
  *
- * New posts often inherit the `centre_map` layout key from
- * {@see \App\Directory\DirectoryFlexibleDefaults} without repeater rows — the
- * band renders a heading and map but no filter panel. These defaults mirror
- * the populated singles (e.g. Ann Summers) and pre-select the retailer's
- * primary category where possible.
+ * The centre-map nav is identical everywhere it appears (Plan my visit + every
+ * shop / eat-drink single), so the list lives here in code rather than being
+ * duplicated into each post's ACF data. {@see categoryRows()} derives the Shop
+ * and Eat & Drink groups from {@see DirectoryFilterDefinitions} (so renaming or
+ * hiding a directory category updates the map automatically) plus the fixed
+ * Guest Services links. The `centre_map` component no longer stores its own
+ * category repeater — the Blade view reads this list directly.
+ *
+ * {@see initialSelectionForPost()} still pre-selects the retailer's primary
+ * category on shop / eat-drink singles.
  */
 final class ShopCentreMapDefaults
 {
@@ -62,37 +67,26 @@ final class ShopCentreMapDefaults
             'category_url' => $home('/eat-drink/'),
         ];
 
-        $eatDrinkRows = [
-            'cafes' => __('Cafés & Coffee', 'culvers'),
-            'grab-go' => __('Takeaway', 'culvers'),
-            'restaurants' => __('Restaurants', 'culvers'),
-        ];
-
-        foreach ($eatDrinkRows as $slug => $label) {
-            $mapSlug = match ($slug) {
-                'cafes' => 'eat-drink-cafes',
-                'grab-go' => 'eat-drink-takeaway',
-                'restaurants' => 'eat-drink-restaurants',
-                default => $slug,
-            };
+        foreach (DirectoryFilterDefinitions::eatDrinkCategoryPairs() as $slug => $label) {
             $rows[] = [
                 'category_group' => __('Eat and drink', 'culvers'),
                 'category_label' => $label,
-                'category_slug' => $mapSlug,
+                'category_slug' => $slug,
                 'category_url' => $home('/eat-drink/?type=' . $slug),
             ];
         }
 
         $guestServices = [
-            ['toilets', __('Toilets & accessible facilities', 'culvers')],
+            ['parent-child', __('Parent & Child Facilities', 'culvers'), $home('/guest-services/#parent-child')],
+            ['lost-property', __('Lost Property', 'culvers'), $home('/guest-services/#lost-property')],
         ];
 
-        foreach ($guestServices as [$slug, $label]) {
+        foreach ($guestServices as [$slug, $label, $url]) {
             $rows[] = [
                 'category_group' => __('Guest Services', 'culvers'),
                 'category_label' => $label,
                 'category_slug' => $slug,
-                'category_url' => '',
+                'category_url' => $url,
             ];
         }
 
@@ -118,20 +112,17 @@ final class ShopCentreMapDefaults
         }
 
         $term = $terms[0];
-        if (! $term instanceof \WP_Term) {
-            return self::defaultSelection($postType);
-        }
 
-        $slug = (string) $term->slug;
-        $label = (string) $term->name;
+        $slug = $term->slug;
+        $label = $term->name;
 
         foreach (self::categoryRows() as $row) {
-            if (($row['category_slug'] ?? '') !== $slug) {
+            if ($row['category_slug'] !== $slug) {
                 continue;
             }
 
             return [
-                'group' => sanitize_title((string) ($row['category_group'] ?? '')),
+                'group' => sanitize_title($row['category_group']),
                 'slug' => $slug,
                 'label' => $label,
             ];
@@ -158,49 +149,5 @@ final class ShopCentreMapDefaults
             'slug' => 'shop-all',
             'label' => __('All', 'culvers'),
         ];
-    }
-
-    /**
-     * @param array<string, mixed> $row
-     * @return array<string, mixed>
-     */
-    public static function mergeComponentRow(array $row, ?int $postId = null): array
-    {
-        if (($row['acf_fc_layout'] ?? '') !== 'centre_map') {
-            return $row;
-        }
-
-        $cats = $row['centre_map_categories'] ?? null;
-        if (is_array($cats) && $cats !== []) {
-            return $row;
-        }
-
-        $row['centre_map_categories'] = self::categoryRows();
-
-        if ($postId === null || $postId <= 0) {
-            return $row;
-        }
-
-        if (trim((string) ($row['centre_map_heading'] ?? '')) === '') {
-            $row['centre_map_heading'] = __('Find your way around', 'culvers');
-        }
-
-        return $row;
-    }
-
-    /**
-     * @param list<array<string, mixed>> $components
-     * @return list<array<string, mixed>>
-     */
-    public static function mergeIntoComponents(array $components, int $postId): array
-    {
-        foreach ($components as $i => $row) {
-            if (! is_array($row)) {
-                continue;
-            }
-            $components[$i] = self::mergeComponentRow($row, $postId);
-        }
-
-        return $components;
     }
 }

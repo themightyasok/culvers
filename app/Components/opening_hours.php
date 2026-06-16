@@ -4,6 +4,8 @@
  * Opening hours list with optional side illustrations, intro copy, and "today" highlight (site timezone).
  */
 
+declare(strict_types=1);
+
 use App\Helpers\Component;
 
 return [
@@ -63,31 +65,76 @@ return [
                 'new_lines' => 'br',
             ],
         ],
-        'msg_decorations' => Component::sectionDivider(__('Side decorations (large screens)', 'culvers')),
+    ],
+    'items' => [
+        'msg_decorations' => Component::sectionDivider(__('Side illustrations', 'culvers')),
         'hours_graphic_left' => [
             'type' => 'image',
             'options' => [
-                'label' => __('Graphic — left', 'culvers'),
-                'instructions' => __('Optional line art / illustration shown beside the hours on large screens.', 'culvers'),
+                'label' => __('Illustration — left', 'culvers'),
+                'instructions' => __(
+                    'Optional artwork on the left of the hours list (large screens). Each Opening hours block on this page can use its own image.',
+                    'culvers'
+                ),
                 'return_format' => 'array',
                 'preview_size' => 'medium',
                 'library' => 'all',
+                'wrapper' => ['width' => '50'],
+            ],
+        ],
+        'hours_graphic_left_alt' => [
+            'type' => 'text',
+            'options' => [
+                'label' => __('Left illustration alt text', 'culvers'),
+                'instructions' => __('Optional. Overrides the media library alt text when set.', 'culvers'),
                 'wrapper' => ['width' => '50'],
             ],
         ],
         'hours_graphic_right' => [
             'type' => 'image',
             'options' => [
-                'label' => __('Graphic — right', 'culvers'),
-                'instructions' => __('Optional line art / illustration.', 'culvers'),
+                'label' => __('Illustration — right', 'culvers'),
+                'instructions' => __(
+                    'Optional artwork on the right of the hours list (large screens). Each Opening hours block on this page can use its own image.',
+                    'culvers'
+                ),
                 'return_format' => 'array',
                 'preview_size' => 'medium',
                 'library' => 'all',
                 'wrapper' => ['width' => '50'],
             ],
         ],
-    ],
-    'items' => [
+        'hours_graphic_right_alt' => [
+            'type' => 'text',
+            'options' => [
+                'label' => __('Right illustration alt text', 'culvers'),
+                'instructions' => __('Optional. Overrides the media library alt text when set.', 'culvers'),
+                'wrapper' => ['width' => '50'],
+            ],
+        ],
+        'msg_centre_hours' => [
+            'type' => 'message',
+            'options' => [
+                'label' => '',
+                'message' => sprintf(
+                    /* translators: %s admin URL of the Centre Hours options page */
+                    __(
+                        'Centre-wide hours are managed in one place so every centre page stays in sync. '
+                            . 'Edit them under <a href="%s">Centre Hours</a>. The day rows below are only used '
+                            . 'for individual shops / eat &amp; drink venues (set the context to “Retailer”).',
+                        'culvers'
+                    ),
+                    esc_url(\App\Directory\CentreOpeningHours::adminUrl())
+                ),
+                'esc_html' => 0,
+                'new_lines' => 'wpautop',
+                'conditional_logic' => [[[
+                    'field' => 'hours_context',
+                    'operator' => '==',
+                    'value' => \App\Helpers\OpeningHoursContext::CENTRE,
+                ]]],
+            ],
+        ],
         'hours_rows' => [
             'type' => 'repeater',
             'options' => [
@@ -101,6 +148,11 @@ return [
                 'max' => 14,
                 'layout' => 'table',
                 'button_label' => __('Add row', 'culvers'),
+                'conditional_logic' => [[[
+                    'field' => 'hours_context',
+                    'operator' => '==',
+                    'value' => \App\Helpers\OpeningHoursContext::RETAILER,
+                ]]],
                 'sub_fields' => [
                     'day_label' => [
                         'type' => 'text',

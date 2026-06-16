@@ -5,6 +5,8 @@
  * Categories can link to directory URLs or highlight matching SVG layers.
  */
 
+declare(strict_types=1);
+
 use App\Helpers\Component;
 
 return [
@@ -96,68 +98,7 @@ return [
             ],
         ],
     ],
-    'items' => [
-        'msg_categories' => Component::sectionDivider(__('Categories (filter panel)', 'culvers')),
-        'centre_map_categories' => [
-            'type' => 'repeater',
-            'options' => [
-                'label' => __('Categories', 'culvers'),
-                'instructions' => __(
-                    'Categories shown in the filter panel. Group sibling categories together by giving them '
-                    . 'the same "Group" label (e.g. "Shop"); the panel renders one accordion per unique group. '
-                    . 'Pins linked to a category light up on hover / focus.',
-                    'culvers'
-                ),
-                'min' => 0,
-                'max' => 48,
-                'layout' => 'block',
-                'button_label' => __('Add category', 'culvers'),
-                'collapsed' => 'category_label',
-                'sub_fields' => [
-                    'category_group' => [
-                        'type' => 'text',
-                        'options' => [
-                            'label' => __('Group', 'culvers'),
-                            'instructions' => __(
-                                'Sibling categories with the same group label collapse into one accordion section.',
-                                'culvers'
-                            ),
-                            'wrapper' => ['width' => '40'],
-                        ],
-                    ],
-                    'category_label' => [
-                        'type' => 'text',
-                        'options' => [
-                            'label' => __('Label', 'culvers'),
-                            'required' => 1,
-                            'wrapper' => ['width' => '40'],
-                        ],
-                    ],
-                    'category_slug' => [
-                        'type' => 'text',
-                        'options' => [
-                            'label' => __('Slug', 'culvers'),
-                            'instructions' => __(
-                                'Lowercase, hyphenated. Used for filter selection and SVG `data-category` matching.',
-                                'culvers'
-                            ),
-                            'required' => 1,
-                            'wrapper' => ['width' => '20'],
-                        ],
-                    ],
-                    'category_url' => [
-                        'type' => 'url',
-                        'options' => [
-                            'label' => __('Link URL (optional)', 'culvers'),
-                            'instructions' => __(
-                                'When set, the row navigates to this URL (e.g. /shops/?category=fashion). '
-                                . 'When blank, clicking selects the category for map highlighting only.',
-                                'culvers'
-                            ),
-                        ],
-                    ],
-                ],
-            ],
-        ],
-    ],
+    // The filter category list is global, not per-post — it comes from
+    // App\CentreMap\ShopCentreMapDefaults::categoryRows() (single source of
+    // truth), so there is deliberately no per-instance categories repeater.
 ];

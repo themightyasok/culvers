@@ -71,9 +71,16 @@
    *
    * @var array<int, array{label: string, slug: string, items: list<array{label: string, slug: string, url: string}>}> $groups
    */
-  $rawCategories = is_array($c['centre_map_categories'] ?? null) ? $c['centre_map_categories'] : [];
-  if ($rawCategories === [] && is_singular(ShopCentreMapDefaults::supportedPostTypes())) {
-      $rawCategories = ShopCentreMapDefaults::categoryRows();
+  /*
+   * The category list is a single global source (ShopCentreMapDefaults::categoryRows()),
+   * not per-post data — the same nav appears on every centre map. Inject it whenever the
+   * band shows a filter panel: any band with a heading, or a directory single. A bare
+   * image-only band (no heading) keeps an empty list and renders as a plain map.
+   */
+  $hasFilterPanel = $heading !== '' || is_singular(ShopCentreMapDefaults::supportedPostTypes());
+  $rawCategories = $hasFilterPanel ? ShopCentreMapDefaults::categoryRows() : [];
+  if ($heading === '' && is_singular(ShopCentreMapDefaults::supportedPostTypes())) {
+      $heading = __('Find your way around', 'culvers');
   }
   $groupOrder = [];
   $groupBuckets = [];
@@ -257,7 +264,7 @@
       </div>
     @else
     <div
-      class="{{ LayoutShell::INNER_MAX_GUTTERED }} centre-map__band relative flex flex-col gap-8 pb-12 pt-6 max-lg:gap-6 md:pb-16 md:pt-8 lg:grid lg:gap-x-12 lg:gap-y-10"
+      class="{{ LayoutShell::INNER_MAX_GUTTERED }} centre-map__band relative flex flex-col gap-8 pb-12 pt-6 max-lg:gap-6 md:pb-16 md:pt-8 lg:grid lg:items-start lg:gap-x-12 lg:gap-y-10"
       :class="panelOpen
         ? '{{ $panelPosition === 'right' ? 'lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]' : 'lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]' }}'
         : 'lg:grid-cols-1'">

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Directory;
 
 /**
- * Directory card subtitle: "Open Today …" from the post's `opening_hours` flexible row.
+ * Directory card subtitle: "Open today …" from the post's `opening_hours` flexible row.
  */
 final class OpeningHoursCardLine
 {
@@ -78,7 +78,7 @@ final class OpeningHoursCardLine
 
         return sprintf(
             /* translators: %s: opening hours for the current day, e.g. 9am - 5.30pm */
-            __('Open Today %s', 'culvers'),
+            __('Open today %s', 'culvers'),
             $timeRange
         );
     }

@@ -4,6 +4,8 @@
  * Contained video block: poster or first frame, branded frame, hover scale, custom play CTA.
  */
 
+declare(strict_types=1);
+
 return [
     'label' => __('Video block', 'culvers'),
     'display' => 'block',

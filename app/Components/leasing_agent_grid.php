@@ -7,6 +7,8 @@
  * typography aligned to Figma 51:6524–51:6527 (lettings trio).
  */
 
+declare(strict_types=1);
+
 use App\Helpers\Component;
 
 return [

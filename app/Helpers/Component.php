@@ -280,12 +280,6 @@ final class Component
         return trim($extra !== '' ? $base . ' ' . $extra : $base);
     }
 
-    /** @deprecated Flex gap on intro stacks — use {@see sectionIntroContentStackClasses()} instead. */
-    public static function sectionIntroStackGapClasses(string $extra = ''): string
-    {
-        return trim($extra);
-    }
-
     /** Margin from section heading to body when not using {@see sectionIntroContentStackClasses()}. */
     public static function sectionHeadingToBodyGapClasses(string $extra = ''): string
     {
@@ -329,16 +323,6 @@ final class Component
         $base = 'mb-10 md:mb-12';
 
         return trim($extra !== '' ? $base . ' ' . $extra : $base);
-    }
-
-    /**
-     * Tighter heading → carousel on shop singles (Figma `51:8984` / `51:8337`).
-     *
-     * @deprecated Prefer {@see sectionHeadingSpacingClasses()} with preset `carousel`.
-     */
-    public static function sectionHeadingToCarouselGapClasses(string $extra = ''): string
-    {
-        return self::sectionHeadingSpacingClasses('carousel', $extra);
     }
 
     /**
@@ -503,14 +487,6 @@ final class Component
     }
 
     /**
-     * @deprecated Use {@see centreMapFilterLabelClasses()} — centre map filters use Commuters at all breakpoints.
-     */
-    public static function centreMapCategoryMobileClasses(string $extra = ''): string
-    {
-        return self::centreMapFilterLabelClasses($extra);
-    }
-
-    /**
      * Standard structural classes shared by every component `<section>`.
      *
      * Returns the resolved `_grid_classes` (column span + responsive gutters,
@@ -576,26 +552,6 @@ final class Component
                 ],
             ],
         ];
-    }
-
-    /**
-     * @deprecated Use {@see self::responsiveImagePair()} — tablet-specific imagery was removed from the authoring model.
-     *
-     * @param array{desktop?: string, mobile?: string} $labels
-     *
-     * @return array<string, array<string, mixed>>
-     */
-    public static function responsiveImageTriplet(string $prefix, array $labels = []): array
-    {
-        $pairLabels = [];
-        if (array_key_exists('desktop', $labels)) {
-            $pairLabels['desktop'] = $labels['desktop'];
-        }
-        if (array_key_exists('mobile', $labels)) {
-            $pairLabels['mobile'] = $labels['mobile'];
-        }
-
-        return self::responsiveImagePair($prefix, $pairLabels);
     }
 
     /**

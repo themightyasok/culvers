@@ -6,8 +6,10 @@ namespace App\Directory;
 
 /**
  * Scrapes culversquare.co.uk `/retailers/{slug}/` pages (shops + dining listings).
+ * Despite the historical "Venue" prefix this class is used by both shop and
+ * eat-drink live sync; it has been renamed to `DirectoryLiveRetailerPage`.
  */
-final class VenueLiveRetailerPage
+final class DirectoryLiveRetailerPage
 {
     private const RETAILER_BASE = 'https://www.culversquare.co.uk/retailers/';
 
@@ -42,8 +44,8 @@ final class VenueLiveRetailerPage
         }
 
         $title = self::plainText($titleMatch[1]);
-        if ($rest !== null && ($rest['title'] ?? '') !== '') {
-            $title = (string) $rest['title'];
+        if ($rest !== null && $rest['title'] !== '') {
+            $title = $rest['title'];
         }
 
         $phone = self::extractPhone($html);
@@ -70,8 +72,8 @@ final class VenueLiveRetailerPage
             $logoUrl = esc_url_raw(trim($logoMatch[1]));
         }
 
-        if ($rest !== null && ($rest['logo_url'] ?? '') !== '') {
-            $logoUrl = (string) $rest['logo_url'];
+        if ($rest !== null && $rest['logo_url'] !== '') {
+            $logoUrl = $rest['logo_url'];
         }
 
         $chunk = self::contentChunk($html);
@@ -115,17 +117,14 @@ final class VenueLiveRetailerPage
         }
 
         $heroImageUrl = '';
-        if ($rest !== null && ($rest['hero_image_url'] ?? '') !== '') {
-            $heroImageUrl = (string) $rest['hero_image_url'];
+        if ($rest !== null && $rest['hero_image_url'] !== '') {
+            $heroImageUrl = $rest['hero_image_url'];
         }
         if ($heroImageUrl === '') {
             $heroImageUrl = self::extractHeroImageFromHtml($html, $logoUrl);
         }
 
-        /** @var list<string> $liveCategoryValues */
-        $liveCategoryValues = $rest !== null && is_array($rest['live_category_values'] ?? null)
-            ? $rest['live_category_values']
-            : [];
+        $liveCategoryValues = $rest !== null ? $rest['live_category_values'] : [];
 
         return [
             'title' => $title,
@@ -134,7 +133,7 @@ final class VenueLiveRetailerPage
             'logo_url' => $logoUrl,
             'hero_image_url' => $heroImageUrl,
             'live_category_values' => $liveCategoryValues,
-            'paras' => ShopLiveIntroCopy::filterPromoLinesPublic($paras),
+            'paras' => DirectoryLiveIntroCopy::filterPromoLinesPublic($paras),
             'lists' => $lists,
             'opening_hours_rows' => VenueOpeningHours::rowsFromHtml($html),
         ];
@@ -336,9 +335,9 @@ final class VenueLiveRetailerPage
             return 0;
         }
 
-        EatDrinkDirectoryPopulate::loadDependencies();
+        DirectoryMediaPopulate::loadDependencies();
 
-        return EatDrinkDirectoryPopulate::sideloadFromUrlPublic($url, sanitize_title($slug) . '-live-logo');
+        return DirectoryMediaPopulate::sideloadFromUrlPublic($url, sanitize_title($slug) . '-live-logo');
     }
 
     private static function plainText(string $html): string

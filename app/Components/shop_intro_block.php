@@ -4,6 +4,8 @@
  * Shop detail — centred intro copy with optional CTA (cream band + geometric texture).
  */
 
+declare(strict_types=1);
+
 return [
     'label' => __('Shop — intro block', 'culvers'),
     'display' => 'block',

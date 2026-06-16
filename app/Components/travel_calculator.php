@@ -7,6 +7,8 @@
  * `wp-json/culvers/v1/travel-calculator` and the Maps Embed API.
  */
 
+declare(strict_types=1);
+
 use App\Helpers\Component;
 
 return [

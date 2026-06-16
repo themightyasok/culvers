@@ -1,20 +1,27 @@
 <?php
 
-/**
- * Embedded Blade engine (theme-local BladeOne; avoids a separate WP BladeOne plugin when unused).
- */
-
 declare(strict_types=1);
+
+namespace App\View;
 
 use eftec\bladeone\BladeOne;
 
-if (! function_exists('culvers_blade')) {
-    function culvers_blade(): BladeOne
-    {
-        static $blade = null;
+/**
+ * Theme-local BladeOne instance.
+ *
+ * Lazily constructs a singleton scoped to {@see resolve()} so callers don't
+ * have to track lifecycle or share state. Used as a fallback when the optional
+ * `wp-bladeone` plugin isn't active (it isn't on local; it is on staging via
+ * `WP_BLADEONE_VIEWS` / `WP_BLADEONE_CACHE` in `wp-config.php`).
+ */
+final class BladeInstance
+{
+    private static ?BladeOne $instance = null;
 
-        if ($blade instanceof BladeOne) {
-            return $blade;
+    public static function resolve(): BladeOne
+    {
+        if (self::$instance instanceof BladeOne) {
+            return self::$instance;
         }
 
         $views = get_template_directory() . '/resources/views';
@@ -31,6 +38,8 @@ if (! function_exists('culvers_blade')) {
         $blade = new BladeOne($views, $cache, BladeOne::MODE_AUTO);
         // Prevent @include argument keys from persisting into later templates (flexible rows, etc.).
         $blade->includeScope = true;
+
+        self::$instance = $blade;
 
         return $blade;
     }

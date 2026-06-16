@@ -10,33 +10,32 @@ namespace App\Directory;
  * Marketing filters (Grab & Go, Restaurants, …) live on {@see culvers_eat_drink_type}
  * so mega-menu URLs (`/eat-drink/?type=grab-go`) and card `data-type-slugs` align.
  */
-final class EatDrinkTaxonomySeeder
+final class EatDrinkTaxonomySeeder extends AbstractTaxonomySeeder
 {
-    private const OPTION_KEY = 'culvers_eat_drink_terms_seeded_v2';
+    private const TAXONOMY = 'culvers_eat_drink_type';
 
-    public static function maybeSeed(): void
+    protected static function optionKey(): string
     {
-        if ((bool) get_option(self::OPTION_KEY, false)) {
-            return;
-        }
+        return 'culvers_eat_drink_terms_seeded_v2';
+    }
 
+    protected static function performSeed(): void
+    {
         DirectoryFilterDefinitions::syncTaxonomyTerms(
-            'culvers_eat_drink_type',
+            self::TAXONOMY,
             DirectoryFilterDefinitions::eatDrinkCategoryPairs()
         );
-
-        update_option(self::OPTION_KEY, '1', true);
     }
 
     /** Force re-sync after deploy (CLI / eval). */
     public static function syncNow(): void
     {
         $pairs = DirectoryFilterDefinitions::eatDrinkCategoryPairs();
-        DirectoryFilterDefinitions::syncTaxonomyTerms('culvers_eat_drink_type', $pairs);
+        DirectoryFilterDefinitions::syncTaxonomyTerms(self::TAXONOMY, $pairs);
 
         $allowed = array_fill_keys(array_keys($pairs), true);
         $terms = get_terms([
-            'taxonomy' => 'culvers_eat_drink_type',
+            'taxonomy' => self::TAXONOMY,
             'hide_empty' => false,
         ]);
         if (is_array($terms)) {
@@ -47,10 +46,10 @@ final class EatDrinkTaxonomySeeder
                 if ((int) $term->count > 0) {
                     continue;
                 }
-                wp_delete_term((int) $term->term_id, 'culvers_eat_drink_type');
+                wp_delete_term((int) $term->term_id, self::TAXONOMY);
             }
         }
 
-        update_option(self::OPTION_KEY, '1', true);
+        update_option(self::optionKey(), '1', true);
     }
 }

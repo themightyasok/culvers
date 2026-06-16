@@ -10,6 +10,8 @@
  * override those defaults for this block instance.
  */
 
+declare(strict_types=1);
+
 use App\Helpers\Component;
 
 return [

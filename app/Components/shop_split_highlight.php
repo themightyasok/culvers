@@ -6,6 +6,8 @@
  * inside the olive column.
  */
 
+declare(strict_types=1);
+
 use App\Helpers\Component;
 
 $staticOnly = [[['field' => 'split_use_tabs', 'operator' => '!=', 'value' => '1']]];

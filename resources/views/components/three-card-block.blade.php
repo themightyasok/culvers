@@ -31,6 +31,10 @@
       $viewAllLabel = __('View all', 'culvers');
   }
 
+  /* R8 — opt-in Shop / Eat & Drink CTAs (homepage "What are you looking for today?" strip).
+     Per-instance toggle so other three_card_block rows are unaffected. */
+  $showDirectoryButtons = ! empty($c['cards_show_directory_buttons']);
+
   $hasIntro = $heading !== '' || $sub !== '' || trim(strip_tags($body)) !== '';
   $sectionAnchorId = $heading !== '' ? PageSectionAnchor::fromHeading($heading) : '';
   $sectionAnchorAttr = $sectionAnchorId !== '' ? ' id="' . esc_attr($sectionAnchorId) . '"' : '';
@@ -108,9 +112,14 @@
                like `.foo[aria-selected="true"] { … }`, which beats the static
                inactive utilities on specificity — so we don't need a class-toggle
                and there's no glowleaf flash before Alpine hydrates. --}}
+          {{-- Hover treatment: `.btn-outline:hover` paints the pill glowleaf with deep-moss text;
+               `.btn-filter-tab:hover` (resources/styles/app.css) re-pins padding so siblings don't
+               shift and swaps the border to glowleaf. The widen effect is `hover:scale-105` (a
+               transform, no layout impact). Active state is driven by `aria-[selected=true]:*`
+               utilities (specificity 0,0,3,0) which beat the hover rule. --}}
           <button
             type="button"
-            class="btn btn-filter-tab btn-outline shrink-0 cursor-pointer border-dustleaf bg-transparent text-dustleaf hover:bg-light-cream/60 hover:text-dustleaf aria-[selected=true]:border-glowleaf aria-[selected=true]:bg-glowleaf aria-[selected=true]:text-deep-moss aria-[selected=true]:hover:border-glowleaf aria-[selected=true]:hover:bg-glowleaf aria-[selected=true]:hover:text-deep-moss"
+            class="btn btn-filter-tab btn-outline shrink-0 cursor-pointer border-dustleaf bg-transparent text-dustleaf transition-[padding,background-color,color,border-color,transform] hover:scale-105 aria-[selected=true]:border-glowleaf aria-[selected=true]:bg-glowleaf aria-[selected=true]:text-deep-moss aria-[selected=true]:hover:border-glowleaf aria-[selected=true]:hover:bg-glowleaf aria-[selected=true]:hover:text-deep-moss"
             id="{{ esc_attr($tid) }}"
             role="tab"
             aria-controls="{{ esc_attr($pid) }}"
@@ -217,7 +226,12 @@
     @endforeach
     </div>
 
-    @if($viewAllUrl !== '')
+    @if($showDirectoryButtons)
+      <div class="{{ Component::sectionBodyToCtaGapClasses('flex flex-wrap justify-center gap-4') }}">
+        @include('components.button', ['label' => __('Shop', 'culvers'), 'href' => home_url('/shops/')])
+        @include('components.button', ['label' => __('Eat & Drink', 'culvers'), 'href' => home_url('/eat-drink/')])
+      </div>
+    @elseif($viewAllUrl !== '')
       <div class="{{ Component::sectionBodyToCtaGapClasses('flex justify-center') }}">
         @include('components.button', ['label' => $viewAllLabel, 'href' => $viewAllUrl])
       </div>

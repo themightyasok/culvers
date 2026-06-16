@@ -66,11 +66,15 @@ export default function registerFaqAlpine(Alpine) {
     },
 
     /**
-     * @param {number} fromIndex
+     * Home / End on a FAQ trigger jumps focus to the first or last question.
+     * The current index isn't relevant — the edge alone determines the target —
+     * but the binding signature in faq.blade.php matches `focusSibling` for
+     * consistency, so the unused parameter is preserved at the call site.
+     *
+     * @param {number} _fromIndex
      * @param {'first' | 'last'} edge
      */
-    focusEdge(fromIndex, edge) {
-      void fromIndex;
+    focusEdge(_fromIndex, edge) {
       const root = this.$root;
       if (!(root instanceof HTMLElement)) {
         return;

@@ -16,8 +16,8 @@
  * @noinspection PhpUndefinedConstantInspection WP_CLI
  */
 
-use App\Directory\ShopIntroCta;
-use App\Directory\ShopLiveIntroCopy;
+use App\Directory\DirectoryIntroCta;
+use App\Directory\DirectoryLiveIntroCopy;
 
 if (! defined('WP_CLI') || ! WP_CLI) {
     exit(1);
@@ -36,8 +36,8 @@ foreach ($args as $arg) {
     $onlyLocal = sanitize_title($arg);
 }
 
-$map = ShopLiveIntroCopy::liveToLocalMap();
-$liveSlugs = ShopLiveIntroCopy::discoverLiveSlugs();
+$map = DirectoryLiveIntroCopy::liveToLocalMap();
+$liveSlugs = DirectoryLiveIntroCopy::discoverLiveSlugs();
 
 if ($liveSlugs === []) {
     WP_CLI::warning('No retailer links found on live shopping page — using static slug map only.');
@@ -74,14 +74,14 @@ foreach ($liveSlugs as $liveSlug) {
     }
 
     $post = $posts[0];
-    $content = ShopLiveIntroCopy::fetchRetailerContent($liveSlug);
+    $content = DirectoryLiveIntroCopy::fetchRetailerContent($liveSlug);
     if ($content === null || $content['paras'] === []) {
         WP_CLI::warning(sprintf('no copy scraped for %s / %s', $localSlug, $liveSlug));
         ++$skipped;
         continue;
     }
 
-    $split = ShopLiveIntroCopy::splitForBlocks(
+    $split = DirectoryLiveIntroCopy::splitForBlocks(
         get_the_title($post) ?: $content['title'],
         $content['paras'],
         $content['lists']
@@ -123,7 +123,7 @@ foreach ($liveSlugs as $liveSlug) {
 
     $components[$introIdx]['intro_body'] = $split['intro_html'];
 
-    $cta = ShopIntroCta::resolve(
+    $cta = DirectoryIntroCta::resolve(
         $localSlug,
         $liveSlug,
         get_the_title($post) ?: $content['title']

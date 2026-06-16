@@ -4,6 +4,8 @@
  * Starter flexible layout: heading + rich text.
  */
 
+declare(strict_types=1);
+
 use App\Helpers\Component;
 
 return [

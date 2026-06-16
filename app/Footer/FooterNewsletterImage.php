@@ -11,6 +11,7 @@ use App\Directory\EventArchiveFields;
 use App\Directory\NewsArchiveFields;
 use App\Directory\OfferArchiveFields;
 use App\Directory\ShopArchiveFields;
+use App\Helpers\Image;
 
 /**
  * Resolves the footer newsletter background using:
@@ -41,11 +42,6 @@ final class FooterNewsletterImage
     public const ARCHIVE_FIELD_SUFFIX = '_footer_newsletter_image';
 
     public const ARCHIVE_FIELD_MOBILE_SUFFIX = '_footer_newsletter_image_mobile';
-
-    public static function attachmentIdForCurrentView(): int
-    {
-        return self::attachmentIdsForCurrentView()['desktop'];
-    }
 
     /**
      * @return array{desktop: int, mobile: int}
@@ -153,8 +149,8 @@ final class FooterNewsletterImage
             return null;
         }
 
-        $desktop = self::acfImageFieldToId(get_field(self::SINGULAR_FIELD, $postId));
-        $mobile = self::acfImageFieldToId(get_field(self::SINGULAR_FIELD_MOBILE, $postId));
+        $desktop = Image::idFromAcf(get_field(self::SINGULAR_FIELD, $postId));
+        $mobile = Image::idFromAcf(get_field(self::SINGULAR_FIELD_MOBILE, $postId));
 
         return self::pairOrNull($desktop, $mobile);
     }
@@ -168,8 +164,8 @@ final class FooterNewsletterImage
             return null;
         }
 
-        $desktop = self::acfImageFieldToId(get_field($prefix . self::ARCHIVE_FIELD_SUFFIX, 'option'));
-        $mobile = self::acfImageFieldToId(get_field($prefix . self::ARCHIVE_FIELD_MOBILE_SUFFIX, 'option'));
+        $desktop = Image::idFromAcf(get_field($prefix . self::ARCHIVE_FIELD_SUFFIX, 'option'));
+        $mobile = Image::idFromAcf(get_field($prefix . self::ARCHIVE_FIELD_MOBILE_SUFFIX, 'option'));
 
         return self::pairOrNull($desktop, $mobile);
     }
@@ -203,24 +199,6 @@ final class FooterNewsletterImage
             'desktop' => max(0, $desktop),
             'mobile' => max(0, $mobile),
         ];
-    }
-
-    private static function acfImageFieldToId(mixed $value): int
-    {
-        if (is_int($value)) {
-            return max(0, $value);
-        }
-        if (is_string($value) && is_numeric($value)) {
-            return (int) $value;
-        }
-        if (is_array($value) && isset($value['ID'])) {
-            return (int) $value['ID'];
-        }
-        if (is_array($value) && isset($value['id'])) {
-            return (int) $value['id'];
-        }
-
-        return 0;
     }
 
     /**

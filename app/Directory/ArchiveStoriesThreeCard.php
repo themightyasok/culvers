@@ -37,9 +37,39 @@ final class ArchiveStoriesThreeCard
     ];
 
     /**
+     * Shops directory archive — bottom three-card strip.
+     *
+     * @return array<string, mixed>|null
+     *
+     * @see filter culvers_shops_archive_three_card_component
+     */
+    public static function forShop(): ?array
+    {
+        return self::componentOrNull(
+            ShopArchiveFields::FIELD_PREFIX,
+            'culvers_shops_archive_three_card_component'
+        );
+    }
+
+    /**
+     * Eat & Drink directory archive — bottom three-card strip.
+     *
+     * @return array<string, mixed>|null
+     *
+     * @see filter culvers_eat_drink_archive_three_card_component
+     */
+    public static function forEatDrink(): ?array
+    {
+        return self::componentOrNull(
+            EatDrinkArchiveFields::FIELD_PREFIX,
+            'culvers_eat_drink_archive_three_card_component'
+        );
+    }
+
+    /**
      * Component payload for `components.three-card-block`, or null when disabled / empty.
      *
-     * @param  non-empty-string  $acfFieldPrefix  Root for `{prefix}_three_card_*` ({@see self::ACF_PREFIX_SHOPS} …).
+     * @param  non-empty-string  $acfFieldPrefix  Root for `{prefix}_three_card_*` ({@see ShopArchiveFields::FIELD_PREFIX} …).
      * @param  non-empty-string  $overrideFilterHook  `apply_filters` hook returning a full merged component or null.
      * @return array<string, mixed>|null
      */

@@ -12,8 +12,6 @@ if (! file_exists($composer = __DIR__ . '/vendor/autoload.php')) {
 
 require $composer;
 
-require_once __DIR__ . '/app/blade-instance.php';
-
 if (! function_exists('e')) {
     /**
      * HTML-escape a string for Blade `{!! nl2br(e(...)) !!}` and Laravel-style templates.
@@ -35,7 +33,7 @@ if (! function_exists('blade')) {
                 return (string) wp_bladeone()->run($template, $data);
             }
 
-            return culvers_blade()->run($template, $data);
+            return \App\View\BladeInstance::resolve()->run($template, $data);
         } catch (\Throwable $e) {
             error_log('[culvers][blade] ' . $e->getMessage());
 
@@ -56,7 +54,7 @@ if (! function_exists('blade_view')) {
                 return;
             }
 
-            echo culvers_blade()->run($template, $data);
+            echo \App\View\BladeInstance::resolve()->run($template, $data);
         } catch (\Throwable $e) {
             error_log('[culvers][blade_view] ' . $e->getMessage());
             /* Show the message in the rendered page on local only — `WP_DEBUG` is often on
@@ -93,5 +91,5 @@ add_action('wp', static function (): void {
         return;
     }
 
-    culvers_blade()->share('title', $title);
+    \App\View\BladeInstance::resolve()->share('title', $title);
 });

@@ -96,7 +96,8 @@ function horizontalScrollerData() {
     },
 
     debug(message, data = null) {
-      if (!this.debugEnabled) {
+      // Stripped in production by Vite via `import.meta.env.DEV`; gated by `?hsDebug` in dev.
+      if (!import.meta.env.DEV || !this.debugEnabled) {
         return;
       }
       const timestamp = new Date().toLocaleTimeString();
@@ -107,9 +108,6 @@ function horizontalScrollerData() {
         } catch {
           logLine += `: [Object]`;
         }
-      }
-      if (!this.debugLog) {
-        this.debugLog = '';
       }
       this.debugLog = (this.debugLog + logLine + '\n').slice(-5000);
     },
@@ -125,7 +123,9 @@ function horizontalScrollerData() {
         this.scrollSpeed = ['slow', 'medium', 'fast'].includes(sp) ? sp : 'medium';
       }
       this._initStarted = true;
-      this.debugEnabled = new URLSearchParams(window.location.search).has('hsDebug');
+      if (import.meta.env.DEV) {
+        this.debugEnabled = new URLSearchParams(window.location.search).has('hsDebug');
+      }
       this.debug('init() called');
       if (this.disableScroll) {
         this.setupDisableScroll();

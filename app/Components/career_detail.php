@@ -6,6 +6,8 @@
  * and an Apply CTA; right column with stacked role sections.
  */
 
+declare(strict_types=1);
+
 use App\Helpers\Component;
 
 return [

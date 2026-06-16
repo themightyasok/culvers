@@ -6,6 +6,8 @@
  * beside the body when a row is open (desktop: tilted polaroids; mobile: one flat image).
  */
 
+declare(strict_types=1);
+
 use App\Helpers\Component;
 
 return [

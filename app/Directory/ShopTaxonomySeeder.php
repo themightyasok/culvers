@@ -7,16 +7,15 @@ namespace App\Directory;
 /**
  * Default shop categories / retailer types matching Figma Shopping Directory (51:7183).
  */
-final class ShopTaxonomySeeder
+final class ShopTaxonomySeeder extends AbstractTaxonomySeeder
 {
-    private const OPTION_KEY = 'culvers_shop_terms_seeded';
-
-    public static function maybeSeed(): void
+    protected static function optionKey(): string
     {
-        if ((bool) get_option(self::OPTION_KEY, false)) {
-            return;
-        }
+        return 'culvers_shop_terms_seeded';
+    }
 
+    protected static function performSeed(): void
+    {
         DirectoryFilterDefinitions::syncTaxonomyTerms(
             'culvers_shop_category',
             DirectoryFilterDefinitions::shopCategoryPairs()
@@ -25,20 +24,11 @@ final class ShopTaxonomySeeder
             'culvers_shop_type',
             DirectoryFilterDefinitions::shopRetailerTypePairs()
         );
-
-        update_option(self::OPTION_KEY, '1', true);
     }
 
     public static function syncNow(): void
     {
-        DirectoryFilterDefinitions::syncTaxonomyTerms(
-            'culvers_shop_category',
-            DirectoryFilterDefinitions::shopCategoryPairs()
-        );
-        DirectoryFilterDefinitions::syncTaxonomyTerms(
-            'culvers_shop_type',
-            DirectoryFilterDefinitions::shopRetailerTypePairs()
-        );
-        update_option(self::OPTION_KEY, '1', true);
+        self::performSeed();
+        update_option(self::optionKey(), '1', true);
     }
 }

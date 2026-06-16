@@ -4,6 +4,8 @@
  * Shop detail — Store Details band: contact | address | optional social (Instagram handle + link).
  */
 
+declare(strict_types=1);
+
 use App\Helpers\Component;
 
 return [

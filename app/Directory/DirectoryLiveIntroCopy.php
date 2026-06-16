@@ -6,9 +6,10 @@ namespace App\Directory;
 
 /**
  * Fetches retailer intro copy from culversquare.co.uk and splits it for
- * shop_intro_block + shop_split_highlight ACF rows.
+ * shop_intro_block + shop_split_highlight ACF rows. Used by both `ShopLiveSync`
+ * and `EatDrinkLiveSync` (legacy "Shop" prefix retired).
  */
-final class ShopLiveIntroCopy
+final class DirectoryLiveIntroCopy
 {
     private const SHOPPING_URL = 'https://www.culversquare.co.uk/shopping/';
 
@@ -74,7 +75,7 @@ final class ShopLiveIntroCopy
      */
     public static function fetchRetailerContent(string $liveSlug): ?array
     {
-        $page = VenueLiveRetailerPage::fetch($liveSlug);
+        $page = DirectoryLiveRetailerPage::fetch($liveSlug);
         if ($page === null) {
             return null;
         }

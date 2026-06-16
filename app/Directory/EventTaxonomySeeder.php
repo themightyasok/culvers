@@ -10,30 +10,22 @@ namespace App\Directory;
  * Seeded once on first init so the CMS isn't empty when an editor opens
  * What's On → Event categories.
  */
-final class EventTaxonomySeeder
+final class EventTaxonomySeeder extends AbstractFlatListTaxonomySeeder
 {
-    private const OPTION_KEY = 'culvers_event_terms_seeded';
-
-    public static function maybeSeed(): void
+    protected static function optionKey(): string
     {
-        if ((bool) get_option(self::OPTION_KEY, false)) {
-            return;
-        }
+        return 'culvers_event_terms_seeded';
+    }
 
-        foreach (self::categoryNames() as $name) {
-            if ($name === '' || term_exists($name, 'culvers_event_category')) {
-                continue;
-            }
-            wp_insert_term($name, 'culvers_event_category');
-        }
-
-        update_option(self::OPTION_KEY, '1', true);
+    protected static function taxonomy(): string
+    {
+        return 'culvers_event_category';
     }
 
     /**
      * @return list<string>
      */
-    private static function categoryNames(): array
+    protected static function termNames(): array
     {
         return [
             __('Family', 'culvers'),

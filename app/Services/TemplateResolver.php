@@ -12,7 +12,7 @@ namespace App\Services;
  *
  * @package App\Services
  */
-class TemplateResolver
+final class TemplateResolver
 {
     /** @var self|null Singleton instance */
     private static ?self $instance = null;

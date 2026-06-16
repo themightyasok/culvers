@@ -18,15 +18,18 @@ use StoutLogic\AcfBuilder\FieldsBuilder;
  * three-card strip is configured here; {@see EatDrinkArchiveFields} exposes the
  * same strip for `/eat-drink/` with its own options.
  */
-final class ShopArchiveFields
+final class ShopArchiveFields extends AbstractArchiveFields
 {
     public const OPTION_PAGE_SLUG = 'culvers-directory';
 
     public const FIELD_PREFIX = 'shops_archive';
 
-    public static function register(): void
+    /**
+     * @return array<string, mixed>
+     */
+    protected static function archiveOptions(): array
     {
-        ArchiveHeroFields::register([
+        return [
             'option_slug' => self::OPTION_PAGE_SLUG,
             'menu_title' => __('Shop directory', 'culvers'),
             'page_title' => __('Shop directory', 'culvers'),
@@ -35,12 +38,7 @@ final class ShopArchiveFields
             'position' => AdminMenu::POS_SHOP_DIRECTORY,
             'group_key' => 'group_culvers_shop_archive_options',
             'group_title' => __('Shop directory archive', 'culvers'),
-            'field_prefix' => self::FIELD_PREFIX,
             'hero_message_title' => __('Shop directory hero', 'culvers'),
-            'hero_message_body' => __(
-                'Static "header hero" band (Figma 51:9360 — 1440×646) that bleeds under the site header. Add an image plus title + subtitle below.',
-                'culvers'
-            ),
             'intro_field_label' => __('Intro paragraph (/shops/)', 'culvers'),
             'intro_field_instructions' => __(
                 'Centered below the hero. Leave blank for the default Culver Square directory line.',
@@ -53,6 +51,6 @@ final class ShopArchiveFields
                     __('below the shop listing', 'culvers')
                 );
             },
-        ]);
+        ];
     }
 }

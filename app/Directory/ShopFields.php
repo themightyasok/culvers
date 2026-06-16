@@ -31,11 +31,25 @@ final class ShopFields
 
         $group->addTrueFalse('shop_logo_preserve_colors', LogoPreserveColors::acfFieldDefinition());
 
+        $group->addTrueFalse('shop_also_eat_drink', [
+            'label' => __('Also list under Eat & Drink', 'culvers'),
+            'instructions' => __(
+                'Turn on for shops that also serve food or drink (e.g. a chocolatier with a café). ' .
+                'The shop will appear on the Eat & Drink archive too, using this same listing — ' .
+                'no separate Eat & Drink entry is needed.',
+                'culvers'
+            ),
+            'ui' => 1,
+            'ui_on_text' => __('Yes', 'culvers'),
+            'ui_off_text' => __('No', 'culvers'),
+            'default_value' => 0,
+        ]);
+
         $group->addText('opening_hours_summary', [
             'label' => __('Opening hours line', 'culvers'),
-            'instructions' => __('Short line under the title on cards, e.g. “Open Today 9am – 5:30pm”.', 'culvers'),
+            'instructions' => __('Short line under the title on cards, e.g. “Open today 9am – 5:30pm”.', 'culvers'),
             'default_value' => '',
-            'placeholder' => __('Open Today 9am – 5:30pm', 'culvers'),
+            'placeholder' => __('Open today 9am – 5:30pm', 'culvers'),
         ]);
 
         $group->setLocation('post_type', '==', 'culvers_shop');

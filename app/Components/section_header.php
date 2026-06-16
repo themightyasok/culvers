@@ -9,6 +9,8 @@
  * `content_section` (long-form WYSIWYG).
  */
 
+declare(strict_types=1);
+
 use App\Helpers\Component;
 
 return [

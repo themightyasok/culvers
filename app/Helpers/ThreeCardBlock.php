@@ -421,9 +421,9 @@ final class ThreeCardBlock
                 $media = 'image';
             }
 
-            $img = self::normalizeAcfFileField($row['card_image'] ?? null);
-            $vid = self::normalizeAcfFileField($row['card_video'] ?? null, true);
-            $vidMobile = self::normalizeAcfFileField($row['card_video_mobile'] ?? null, true);
+            $img = Image::fromAcf($row['card_image'] ?? null);
+            $vid = self::normalizeAcfVideoField($row['card_video'] ?? null);
+            $vidMobile = self::normalizeAcfVideoField($row['card_video_mobile'] ?? null);
             $alt = trim((string) ($row['card_image_alt'] ?? ''));
 
             if ($title === '' || $href === '') {
@@ -450,9 +450,16 @@ final class ThreeCardBlock
     }
 
     /**
+     * Resolve an ACF file field that should point at a video attachment.
+     *
+     * Image-shaped ACF values are handled by {@see Image::fromAcf()}; this
+     * helper exists for the video case only because we need to (a) verify the
+     * MIME type starts with `video/` and (b) fall back to `video/mp4` when WP
+     * fails to report a MIME, neither of which `Image::fromAcf()` does.
+     *
      * @return array<string, mixed>|null
      */
-    private static function normalizeAcfFileField(mixed $field, bool $isVideo = false): ?array
+    private static function normalizeAcfVideoField(mixed $field): ?array
     {
         if (is_array($field) && ! empty($field['url'])) {
             return $field;
@@ -469,13 +476,13 @@ final class ThreeCardBlock
         }
 
         $mime = (string) (get_post_mime_type($id) ?: '');
-        if ($isVideo && $mime !== '' && ! str_starts_with($mime, 'video/')) {
+        if ($mime !== '' && ! str_starts_with($mime, 'video/')) {
             return null;
         }
 
         return [
             'url' => $url,
-            'mime_type' => $isVideo ? ($mime !== '' ? $mime : 'video/mp4') : $mime,
+            'mime_type' => $mime !== '' ? $mime : 'video/mp4',
             'alt' => trim((string) get_post_meta($id, '_wp_attachment_image_alt', true)),
         ];
     }

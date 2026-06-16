@@ -551,12 +551,6 @@ final class CulverSquareFigmaPrimaryMenu
         return is_string($url) && $url !== '' ? $url : home_url('/careers/');
     }
 
-    /** Remote hover-preview asset seeded on Careers mega rows (mirrors Plan my visit imagery). */
-    public static function careersMegaPreviewSourceUrl(): string
-    {
-        return self::IMG_PLAN_VISIT;
-    }
-
     /**
      * Mega-menu category rows under Shop → `/shops/?category={slug}`.
      *

@@ -20,10 +20,12 @@ use App\Assets\AcfFlexibleAdmin;
 use App\Assets\FrontendAssets;
 use App\Assets\NavMegaPreviewAdmin;
 use App\Services\ComponentCache;
+use App\Support\DisableWordPressEmoji;
 use App\Support\SiteBranding;
 
 FrontendAssets::register();
 SiteBranding::register();
+DisableWordPressEmoji::register();
 AcfFlexibleAdmin::register();
 NavMegaPreviewAdmin::register();
 AdminMenu::register();

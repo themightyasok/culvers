@@ -81,7 +81,7 @@
       ],
   ])
 
-  @php $shopsArchiveStories = \App\Directory\ShopArchiveThreeCard::componentOrNull(); @endphp
+  @php $shopsArchiveStories = \App\Directory\ArchiveStoriesThreeCard::forShop(); @endphp
   @if ($shopsArchiveStories !== null)
     @include('components.three-card-block', ['component' => $shopsArchiveStories])
   @endif

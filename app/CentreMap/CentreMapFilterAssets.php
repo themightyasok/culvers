@@ -25,23 +25,21 @@ final class CentreMapFilterAssets
         'jewellery' => 'jewellery',
         'toys-gifts' => 'toys-gifts',
         'technology' => 'technology',
-        'services' => 'services',
+        'speciality' => 'speciality',
         'home' => 'home',
         'eat-drink-all' => 'eat-drink-all',
         'grab-go' => 'grab-go',
-        'restaurants' => 'restaurants',
         'healthy-options' => 'healthy-options',
         'cafes' => 'cafes',
         'toilets' => 'toilets',
     ];
 
-    /** Legacy / alternate slugs editors may still use in ACF. */
+    /** Alternate slugs that map onto a canonical artwork file. */
     private const SLUG_ALIASES = [
         'all' => 'standard',
         'eat-drink' => 'eat-drink-all',
         'eat-drink-cafes' => 'cafes',
         'eat-drink-takeaway' => 'grab-go',
-        'eat-drink-restaurants' => 'restaurants',
         'guest-services' => 'toilets',
         'guest-services-toilets' => 'toilets',
     ];

@@ -7,6 +7,7 @@ namespace App\Directory\Cards;
 use App\Directory\DirectoryCardImage;
 use App\Directory\LogoPreserveColors;
 use App\Directory\OpeningHoursCardLine;
+use App\Helpers\Image;
 
 /**
  * Per-CPT resolver for {@see DirectoryCardSpec}. The factory is the single
@@ -240,39 +241,7 @@ final class DirectoryCardSpecFactory
             return '';
         }
 
-        return self::acfImagePublicUrl(get_field($fieldName, $postId));
-    }
-
-    /**
-     * ACF image fields may store an attachment ID, an array `{url,ID}`, or (legacy) `{url}` only.
-     *
-     * @param mixed $value Raw {@see get_field} return value.
-     */
-    private static function acfImagePublicUrl(mixed $value): string
-    {
-        if (is_numeric($value) && (int) $value > 0) {
-            $u = wp_get_attachment_image_url((int) $value, 'full');
-
-            return is_string($u) && $u !== '' ? $u : '';
-        }
-
-        if (! is_array($value)) {
-            return '';
-        }
-
-        $maybeUrl = $value['url'] ?? null;
-        if (is_string($maybeUrl) && trim($maybeUrl) !== '') {
-            return trim($maybeUrl);
-        }
-
-        $id = (int) ($value['ID'] ?? $value['id'] ?? 0);
-        if ($id > 0) {
-            $u = wp_get_attachment_image_url($id, 'full');
-
-            return is_string($u) && $u !== '' ? $u : '';
-        }
-
-        return '';
+        return Image::urlFromAcf(get_field($fieldName, $postId));
     }
 
     private static function featuredPhotoUrl(int $postId): string

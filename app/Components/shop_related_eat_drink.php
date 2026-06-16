@@ -4,6 +4,8 @@
  * Eat & drink detail — "More flavours to discover" row using directory card styling (up to four picks).
  */
 
+declare(strict_types=1);
+
 use App\Helpers\Component;
 
 return [

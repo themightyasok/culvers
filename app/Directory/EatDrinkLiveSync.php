@@ -108,10 +108,10 @@ final class EatDrinkLiveSync
             $layout = (string) ($row['acf_fc_layout'] ?? '');
 
             if ($layout === 'shop_intro_block' && $page['paras'] !== []) {
-                $split = ShopLiveIntroCopy::splitForBlocks($displayTitle, $page['paras'], $page['lists']);
+                $split = DirectoryLiveIntroCopy::splitForBlocks($displayTitle, $page['paras'], $page['lists']);
                 if ($split['intro_html'] !== '') {
                     $row['intro_body'] = $split['intro_html'];
-                    $cta = ShopIntroCta::resolve($localSlug, $liveSlug, $displayTitle);
+                    $cta = DirectoryIntroCta::resolve($localSlug, $liveSlug, $displayTitle);
                     if ($cta !== null) {
                         $row['intro_cta_url'] = $cta['url'];
                         $row['intro_cta_label'] = $cta['label'];
@@ -121,7 +121,7 @@ final class EatDrinkLiveSync
             }
 
             if ($layout === 'shop_split_highlight' && $page['paras'] !== []) {
-                $split = ShopLiveIntroCopy::splitForBlocks($displayTitle, $page['paras'], $page['lists']);
+                $split = DirectoryLiveIntroCopy::splitForBlocks($displayTitle, $page['paras'], $page['lists']);
                 $row['split_use_tabs'] = 0;
                 $row['split_kicker'] = $split['split_kicker'];
                 $row['split_headline'] = $split['split_headline'] !== ''
@@ -249,7 +249,7 @@ final class EatDrinkLiveSync
             throw new \RuntimeException('ACF is required.');
         }
 
-        EatDrinkDirectoryPopulate::loadDependencies();
+        DirectoryMediaPopulate::loadDependencies();
 
         $map = self::liveToLocalMap();
         $catalog = self::storeDetailsCatalog();
@@ -292,7 +292,7 @@ final class EatDrinkLiveSync
             $postId = (int) $post->ID;
             $title = get_the_title($post) ?: '';
 
-            $page = VenueLiveRetailerPage::fetch($liveSlug);
+            $page = DirectoryLiveRetailerPage::fetch($liveSlug);
             if ($page === null) {
                 if (function_exists('WP_CLI')) {
                     \WP_CLI::warning(sprintf('fetch failed for %s / %s', $localSlug, $liveSlug));
@@ -340,7 +340,7 @@ final class EatDrinkLiveSync
 
             $logoId = 0;
             if ($page['logo_url'] !== '') {
-                $logoId = VenueLiveRetailerPage::sideloadLogo($page['logo_url'], $localSlug);
+                $logoId = DirectoryLiveRetailerPage::sideloadLogo($page['logo_url'], $localSlug);
                 if ($logoId > 0) {
                     if (! $dryRun) {
                         update_field('eat_drink_logo', $logoId, $postId);

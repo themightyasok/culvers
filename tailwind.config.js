@@ -45,10 +45,6 @@ const culversThemePlugin = plugin(({ addBase, addComponents }) => {
       '@apply focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-deep-moss':
         {},
     },
-    '.culvers-focus-ring-deep-moss': {
-      '@apply focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-deep-moss':
-        {},
-    },
     '.culvers-focus-ring-compact-faded-olive': {
       '@apply focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-faded-olive':
         {},

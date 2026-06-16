@@ -12,7 +12,7 @@ use App\Exceptions\FieldException;
  *
  * @package App\Validators
  */
-class FieldValidator
+final class FieldValidator
 {
     /** @var list<string> Valid ACF field types */
     private readonly array $validTypes;

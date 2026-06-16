@@ -1,4 +1,5 @@
 @php
+  use App\Directory\CentreOpeningHours;
   use App\Helpers\Component;
   use App\Helpers\Image;
   use App\Helpers\LayoutShell;
@@ -27,8 +28,12 @@
   $leftAlt = isset($graphicLeft['alt']) ? trim((string) $graphicLeft['alt']) : '';
   $rightAlt = isset($graphicRight['alt']) ? trim((string) $graphicRight['alt']) : '';
 
-  $rowsRaw = $c['hours_rows'] ?? [];
-  $rows = is_array($rowsRaw) ? $rowsRaw : [];
+  $isRetailer = OpeningHoursContext::isRetailer($c);
+
+  // Per-venue (retailer) hours live on the page; centre-wide hours are single-sourced
+  // from the Centre Hours options page so every centre page stays in sync.
+  $pageRows = is_array($c['hours_rows'] ?? null) ? $c['hours_rows'] : [];
+  $rows = $isRetailer ? $pageRows : CentreOpeningHours::rows($pageRows);
 
   $weekdayToPhp = [
       'sun' => 0,
@@ -67,7 +72,6 @@
   $hasIntro = $heading !== '' || $subheading !== '' || trim(strip_tags($body)) !== '';
   $hasRows = $normalizedRows !== [];
 
-  $isRetailer = OpeningHoursContext::isRetailer($c);
   $hoursHeadingClass = Component::sectionIntroHeadingClasses('text-faded-olive');
   $hoursIntroShellClass = trim(
       ($isRetailer ? 'text-center' : 'mx-auto max-w-[40rem] text-center')

@@ -856,6 +856,21 @@ a.btn-outline {
     color: var(--color-deep-moss);
     padding-inline: 2rem;
   }
+
+  /*
+   * Filter tab pills (e.g. three-card-block category tabs) reuse `.btn-outline`
+   * so they pick up the same glowleaf fill + deep-moss text on hover, BUT must
+   * not widen by `padding-inline` — they are siblings on a fixed row and the
+   * 2rem bump above shifts neighbours. Re-pin padding to the resting 1.5rem,
+   * and swap the dustleaf border out for glowleaf so it blends with the fill.
+   * Visual "wider on hover" comes from `hover:scale-105` on the blade — a
+   * transform, no layout impact. Active selection (`aria-[selected=true]:*`,
+   * specificity 0,0,3,0) beats this rule.
+   */
+  .btn-filter-tab:hover {
+    padding-inline: 1.5rem;
+    border-color: var(--color-brand-500);
+  }
 }
 
 a.btn-dark {

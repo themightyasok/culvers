@@ -104,19 +104,91 @@ export default function registerCentreMapAlpine(Alpine) {
       this.panY = Math.max(-maxY, Math.min(maxY, this.panY));
     },
 
+    /** Resolve the “All” row for a filter group (slug + label). */
+    allEntryForGroup(groupSlug) {
+      if (typeof groupSlug !== 'string' || groupSlug === '') {
+        return null;
+      }
+
+      const entry = this.groupAllByGroup[groupSlug];
+      if (!entry || typeof entry.slug !== 'string' || entry.slug === '') {
+        return null;
+      }
+
+      return {
+        slug: entry.slug,
+        label: typeof entry.label === 'string' ? entry.label : '',
+      };
+    },
+
+    /** Clear a specific filter and re-select that group’s “All” row (map + bullets). */
+    selectAllForOpenGroup() {
+      const openSlug = typeof this.openGroup === 'string' ? this.openGroup : '';
+      const fromOpen = this.allEntryForGroup(openSlug);
+      if (fromOpen) {
+        this.activeCategorySlug = fromOpen.slug;
+        this.activeCategoryLabel = fromOpen.label;
+        return;
+      }
+
+      const keys = Object.keys(this.groupAllByGroup);
+      for (let i = 0; i < keys.length; i += 1) {
+        const fallback = this.allEntryForGroup(keys[i]);
+        if (fallback) {
+          this.activeCategorySlug = fallback.slug;
+          this.activeCategoryLabel = fallback.label;
+          return;
+        }
+      }
+
+      this.activeCategorySlug = '';
+      this.activeCategoryLabel = '';
+    },
+
     /** Figma mobile (51:8950): pill tabs switch groups; filters stay visible (no panel toggle). */
     selectGroup(slug) {
       this.openGroup = slug;
 
-      const allEntry = this.groupAllByGroup[slug];
-      if (allEntry && typeof allEntry.slug === 'string') {
+      const allEntry = this.allEntryForGroup(slug);
+      if (allEntry) {
         this.activeCategorySlug = allEntry.slug;
-        this.activeCategoryLabel = typeof allEntry.label === 'string' ? allEntry.label : '';
+        this.activeCategoryLabel = allEntry.label;
         return;
       }
 
       this.activeCategorySlug = '';
       this.activeCategoryLabel = '';
+    },
+
+    /** Desktop accordion — open one group or close the active row (height animates in CSS only). */
+    toggleGroup(slug) {
+      if (typeof slug !== 'string' || slug === '') {
+        return;
+      }
+
+      if (this.openGroup === slug) {
+        this.openGroup = '';
+        return;
+      }
+
+      this.selectGroup(slug);
+    },
+
+    /** Filter row toggle — deselecting a category returns to “All”, not an empty state. */
+    toggleCategory(slug, label, isAll = false) {
+      if (typeof slug !== 'string' || slug === '') {
+        return;
+      }
+
+      if (this.activeCategorySlug === slug) {
+        if (!isAll) {
+          this.selectAllForOpenGroup();
+        }
+        return;
+      }
+
+      this.activeCategorySlug = slug;
+      this.activeCategoryLabel = typeof label === 'string' ? label : '';
     },
 
     isGroupActive(slug) {

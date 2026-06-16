@@ -33,7 +33,7 @@ use StoutLogic\AcfBuilder\FlexibleContentBuilder;
  * Section schema is required: there is no legacy top-level `fields` fallback —
  * `app/Components/*.php` files that don't conform are rejected by the validator.
  */
-class ComponentRegistry
+final class ComponentRegistry
 {
     private const COMPONENTS_PATH = '/app/Components/';
 
@@ -132,22 +132,6 @@ class ComponentRegistry
                 $this->logError("Error loading component from {$file}: " . $e->getMessage());
             }
         }
-    }
-
-    /**
-     * @return array<string, array<string, mixed>> Component configurations keyed by layout name.
-     */
-    public function getComponents(): array
-    {
-        return $this->components;
-    }
-
-    /**
-     * @return array<string, mixed>|null
-     */
-    public function getComponent(string $key): ?array
-    {
-        return $this->components[$key] ?? null;
     }
 
     /**

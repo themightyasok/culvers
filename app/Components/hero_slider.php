@@ -7,6 +7,8 @@
  * are no block-level mobile overrides for this component.
  */
 
+declare(strict_types=1);
+
 return [
     'label' => __('Hero slider', 'culvers'),
     'display' => 'block',

@@ -8,7 +8,7 @@ namespace App\Services;
  * Handles caching of component registry with invalidation on deploy (registry
  * source fingerprint) and theme activation.
  */
-class ComponentCache
+final class ComponentCache
 {
     /** Cache key for component registry (bump version to invalidate stale/empty cache) */
     private const CACHE_KEY = 'culvers_theme_components_v17';

@@ -195,11 +195,6 @@ export default function registerSiteHeaderAlpine(Alpine) {
     },
 
     /**
-     * Mega submenu list (capturing): updates the right-rail preview while moving between links.
-     * Uses mouseover + focusin on the list because `mouseenter` on each <a> can miss moves between
-     * inline boxes, and event.target can be a Text node (no dataset).
-     */
-    /**
      * Bound on each mega submenu link. `mouseenter` per link is reliable; delegated
      * `mouseover` on the list misses moves between inline boxes in some browsers.
      */
@@ -250,7 +245,7 @@ export default function registerSiteHeaderAlpine(Alpine) {
       this.revealDock();
       this.cancelCloseMegaHover();
       this.closeMega();
-      this.closeSearch?.();
+      this.closeSearch();
 
       if (followPageAnchorFromClick(event)) {
         return;

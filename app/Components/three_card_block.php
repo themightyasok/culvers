@@ -5,6 +5,8 @@
  * Manual cards (image / video, title, link) or auto-populated from directory CPTs / blog.
  */
 
+declare(strict_types=1);
+
 use App\Helpers\Component;
 use App\Helpers\ThreeCardBlock;
 
@@ -176,6 +178,22 @@ return [
                 'default_value' => __('View all', 'culvers'),
                 'conditional_logic' => $onlyWhenAny(['blog', 'cpt']),
                 'wrapper' => ['width' => '50'],
+            ],
+        ],
+        'cards_show_directory_buttons' => [
+            'type' => 'true_false',
+            'options' => [
+                'label' => __('Show Shop / Eat & Drink buttons', 'culvers'),
+                'instructions' => __(
+                    'Adds two call-to-action buttons (Shop → /shops/, Eat & Drink → /eat-drink/) below this '
+                        . 'block, replacing the single “View all” link. Used on the homepage '
+                        . '“What are you looking for today?” strip.',
+                    'culvers'
+                ),
+                'ui' => 1,
+                'ui_on_text' => __('Show', 'culvers'),
+                'ui_off_text' => __('Hide', 'culvers'),
+                'default_value' => 0,
             ],
         ],
     ],

@@ -6,6 +6,8 @@
  * desktop. Figma ref: 51:7998.
  */
 
+declare(strict_types=1);
+
 use App\Helpers\Component;
 
 return [

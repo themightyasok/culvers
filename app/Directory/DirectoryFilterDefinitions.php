@@ -53,7 +53,7 @@ final class DirectoryFilterDefinitions
             'jewellery' => __('Jewellery', 'culvers'),
             'toys-gifts' => __('Toys & Gifts', 'culvers'),
             'technology' => __('Technology', 'culvers'),
-            'services' => __('Services', 'culvers'),
+            'speciality' => __('Speciality', 'culvers'),
             'home' => __('Home', 'culvers'),
         ];
     }
@@ -76,7 +76,6 @@ final class DirectoryFilterDefinitions
     {
         return [
             'grab-go' => __('Grab & Go', 'culvers'),
-            'restaurants' => __('Restaurants', 'culvers'),
             'healthy-options' => __('Healthy Options', 'culvers'),
             'cafes' => __('Cafés', 'culvers'),
         ];

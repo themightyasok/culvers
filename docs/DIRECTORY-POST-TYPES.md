@@ -36,7 +36,7 @@ app/Directory/
 ├── ShopTaxonomySeeder.php … CareerTaxonomySeeder.php
 ├── Cards/DirectoryCardSpec.php    ← card value object
 ├── Cards/DirectoryCardSpecFactory.php
-└── … live-sync helpers (ShopLiveSync, EatDrinkLiveSync, VenueLiveRetailerPage, …)
+└── … live-sync helpers (ShopLiveSync, EatDrinkLiveSync, DirectoryLiveRetailerPage, …)
 
 app/Config/
 └── ComponentPostTypes.php         ← layout allowlists per post type

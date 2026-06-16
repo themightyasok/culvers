@@ -102,6 +102,100 @@ final class Image
     }
 
     /**
+     * Normalise an ACF image field value (attachment ID, array, or empty) for {@see render()}.
+     *
+     * The returned array preserves the source attachment `ID` when it can be
+     * resolved, so callers that need the ID (e.g. footer newsletter background)
+     * can read it without rolling their own parser. {@see idFromAcf()} /
+     * {@see urlFromAcf()} are thin convenience wrappers for those cases.
+     *
+     * @return array<string, mixed>|null
+     */
+    public static function fromAcf(mixed $value): ?array
+    {
+        if (is_array($value)) {
+            $url = isset($value['url']) ? trim((string) $value['url']) : '';
+            if ($url === '') {
+                $id = (int) ($value['ID'] ?? $value['id'] ?? 0);
+                if ($id > 0) {
+                    return self::fromAcf($id);
+                }
+
+                return null;
+            }
+
+            $sanitized = Sanitizer::image($value);
+            if ($sanitized === null) {
+                return null;
+            }
+
+            // Sanitizer::image() drops the `ID` key by design; re-attach it so
+            // callers like FooterNewsletterImage can resolve attachment IDs from
+            // either a raw int field or a hydrated ACF image array.
+            $rawId = (int) ($value['ID'] ?? $value['id'] ?? 0);
+            if ($rawId > 0) {
+                $sanitized['ID'] = $rawId;
+            }
+
+            return $sanitized;
+        }
+
+        if (is_numeric($value) && (int) $value > 0) {
+            $attachmentId = (int) $value;
+            $src = wp_get_attachment_image_src($attachmentId, 'full');
+            if (! is_array($src) || $src[0] === '') {
+                return null;
+            }
+
+            $alt = get_post_meta($attachmentId, '_wp_attachment_image_alt', true);
+
+            $sanitized = Sanitizer::image([
+                'url' => $src[0],
+                'width' => $src[1],
+                'height' => $src[2],
+                'alt' => is_string($alt) ? $alt : '',
+            ]);
+            if ($sanitized === null) {
+                return null;
+            }
+
+            $sanitized['ID'] = $attachmentId;
+
+            return $sanitized;
+        }
+
+        return null;
+    }
+
+    /**
+     * Resolve the attachment ID from an ACF image field value. Returns 0 if the
+     * value cannot be resolved to a real attachment.
+     */
+    public static function idFromAcf(mixed $value): int
+    {
+        $image = self::fromAcf($value);
+        if ($image === null) {
+            return 0;
+        }
+
+        return (int) ($image['ID'] ?? 0);
+    }
+
+    /**
+     * Resolve the public URL for an ACF image field value. Returns an empty
+     * string if the value cannot be resolved.
+     */
+    public static function urlFromAcf(mixed $value): string
+    {
+        $image = self::fromAcf($value);
+        if ($image === null) {
+            return '';
+        }
+
+        return (string) ($image['url'] ?? '');
+    }
+
+    /**
      * @param array<string, mixed>|null $image
      * @param array<string, mixed> $args
      */

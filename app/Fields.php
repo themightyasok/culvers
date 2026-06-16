@@ -50,6 +50,7 @@ class Fields
         Directory\NewsArchiveFields::register();
         Directory\CareerFields::register();
         Directory\CareerArchiveFields::register();
+        Directory\CentreOpeningHours::register();
         Footer\FooterNewsletterEditorFields::register();
     }
 }

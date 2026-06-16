@@ -8,6 +8,8 @@
  * are authored below.
  */
 
+declare(strict_types=1);
+
 use App\Helpers\Component;
 
 return [

@@ -334,7 +334,7 @@ final class DirectoryLiveImport
             return $this->imageCache[$url];
         }
 
-        $id = EatDrinkDirectoryPopulate::sideloadFromUrlPublic($url, sanitize_file_name($basenameHint));
+        $id = DirectoryMediaPopulate::sideloadFromUrlPublic($url, sanitize_file_name($basenameHint));
         if ($id > 0) {
             $this->imageCache[$url] = $id;
         }

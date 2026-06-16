@@ -22,7 +22,7 @@ One shared layout for **centre-wide** and **retailer-specific** hours:
 | Homepage, Plan My Visit, Guest Services | **Centre** | On that page's flexible stack |
 | Shop / eat & drink single | **Retailer** | On **that venue's** post — each store's own week |
 
-Directory cards read the same per-post rows for the "Open Today …" subtitle
+Directory cards read the same per-post rows for the "Open today …" subtitle
 (`OpeningHoursCardLine`). The one-line card fallback is `opening_hours_summary`
 on the shop / eat & drink listing fields.
 
@@ -35,10 +35,17 @@ on the shop / eat & drink listing fields.
 | `hours_heading_level` | select | `h2` | |
 | `hours_subheading` | textarea (`new_lines: br`) | — | |
 | `hours_body` | wysiwyg (`toolbar: basic`, `media_upload: 0`) | — | |
-| `hours_graphic_left` | image | — | Optional line art on large screens. |
-| `hours_graphic_right` | image | — | |
-| `hours_rows` | repeater (0–14, `table` layout) | — | **This venue's or centre's schedule** — always edited per post. |
 | `hours_footnote` | textarea (`new_lines: br`) | — | Small note below the list. |
+
+**Items tab**
+
+| Field | Type | Default | Notes |
+| --- | --- | --- | --- |
+| `hours_graphic_left` | image | — | Left illustration (lg+). **Per block** — each Opening hours row on the page has its own pair. |
+| `hours_graphic_left_alt` | text | — | Optional alt override for the left image. |
+| `hours_graphic_right` | image | — | Right illustration (lg+). |
+| `hours_graphic_right_alt` | text | — | Optional alt override for the right image. |
+| `hours_rows` | repeater (0–14, `table` layout) | — | **This venue's or centre's schedule** — always edited per post. |
 
 ### Row sub-fields
 

@@ -61,7 +61,7 @@
       ],
   ])
 
-  @php $eatDrinkArchiveStories = \App\Directory\EatDrinkArchiveThreeCard::componentOrNull(); @endphp
+  @php $eatDrinkArchiveStories = \App\Directory\ArchiveStoriesThreeCard::forEatDrink(); @endphp
   @if ($eatDrinkArchiveStories !== null)
     @include('components.three-card-block', ['component' => $eatDrinkArchiveStories])
   @endif

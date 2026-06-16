@@ -10,30 +10,22 @@ namespace App\Directory;
  * Seeded once on first init so the CMS isn't empty when an editor opens
  * Careers → Departments.
  */
-final class CareerTaxonomySeeder
+final class CareerTaxonomySeeder extends AbstractFlatListTaxonomySeeder
 {
-    private const OPTION_KEY = 'culvers_career_terms_seeded';
-
-    public static function maybeSeed(): void
+    protected static function optionKey(): string
     {
-        if ((bool) get_option(self::OPTION_KEY, false)) {
-            return;
-        }
+        return 'culvers_career_terms_seeded';
+    }
 
-        foreach (self::departmentNames() as $name) {
-            if ($name === '' || term_exists($name, 'culvers_career_department')) {
-                continue;
-            }
-            wp_insert_term($name, 'culvers_career_department');
-        }
-
-        update_option(self::OPTION_KEY, '1', true);
+    protected static function taxonomy(): string
+    {
+        return 'culvers_career_department';
     }
 
     /**
      * @return list<string>
      */
-    private static function departmentNames(): array
+    protected static function termNames(): array
     {
         return [
             __('Centre Management', 'culvers'),

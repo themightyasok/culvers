@@ -5,9 +5,10 @@ declare(strict_types=1);
 namespace App\Directory;
 
 /**
- * Resolves shop / venue intro-block CTA label + brand website URL.
+ * Resolves shop / eat-drink intro-block CTA label + brand website URL. Shared
+ * by both `ShopLiveSync` and `EatDrinkLiveSync` (legacy "Shop" prefix retired).
  */
-final class ShopIntroCta
+final class DirectoryIntroCta
 {
     /**
      * @return array{url: string, label: string}|null
@@ -20,7 +21,7 @@ final class ShopIntroCta
         $url = '';
 
         if ($liveSlug !== null && $liveSlug !== '') {
-            $page = VenueLiveRetailerPage::fetch($liveSlug);
+            $page = DirectoryLiveRetailerPage::fetch($liveSlug);
             if ($page !== null && $page['website'] !== '') {
                 $url = self::normalizeUrl($page['website']);
             }
@@ -79,7 +80,7 @@ final class ShopIntroCta
      */
     public static function localToLiveMap(): array
     {
-        return array_flip(ShopLiveIntroCopy::liveToLocalMap());
+        return array_flip(DirectoryLiveIntroCopy::liveToLocalMap());
     }
 
     public static function liveSlugForLocal(string $localSlug): ?string

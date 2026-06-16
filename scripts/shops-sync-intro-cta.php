@@ -14,7 +14,7 @@
  * @noinspection PhpUndefinedConstantInspection WP_CLI
  */
 
-use App\Directory\ShopIntroCta;
+use App\Directory\DirectoryIntroCta;
 
 if (! defined('WP_CLI') || ! WP_CLI) {
     exit(1);
@@ -53,8 +53,8 @@ foreach ($postIds as $postId) {
         continue;
     }
 
-    $liveSlug = ShopIntroCta::liveSlugForLocal($slug);
-    $cta = ShopIntroCta::resolve($slug, $liveSlug, (string) get_the_title($postId));
+    $liveSlug = DirectoryIntroCta::liveSlugForLocal($slug);
+    $cta = DirectoryIntroCta::resolve($slug, $liveSlug, (string) get_the_title($postId));
 
     if ($cta === null) {
         WP_CLI::warning(sprintf('%s — no brand website found', $slug));

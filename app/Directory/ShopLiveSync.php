@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Directory;
 
-use App\CentreMap\ShopCentreMapDefaults;
-
 /**
  * Syncs shop singles from culversquare.co.uk `/retailers/{slug}/` pages.
  * Creates missing local posts when a live → local mapping exists.
@@ -53,7 +51,7 @@ final class ShopLiveSync
         'accessories' => 'jewellery',
         'health_and_beauty' => 'beauty-wellbeing',
         'beauty' => 'beauty-wellbeing',
-        'specialist_and_services' => 'services',
+        'specialist_and_services' => 'speciality',
         'toys_and_gifts' => 'toys-gifts',
         'technology' => 'technology',
     ];
@@ -73,7 +71,7 @@ final class ShopLiveSync
         return [
             'clarks' => [
                 'phone' => '01206 369473',
-                'address' => 'Unit 12, Culver Square, Colchester, Essex CO1 1WF',
+                'address' => '4 Culver Square, Colchester, Essex CO1 1WF',
                 'instagram_url' => 'https://www.instagram.com/clarks_shoes/',
                 'instagram_handle' => '@clarks_shoes',
                 'show_social' => true,
@@ -81,15 +79,15 @@ final class ShopLiveSync
             ],
             'fraser-hart' => [
                 'phone' => '01206 575276',
-                'address' => '2 Shewell Walk, Culver Square, Colchester, Essex CO1 1WG',
+                'address' => '10 Shewell Walk, Colchester, Essex CO1 1WG',
                 'instagram_url' => 'https://www.instagram.com/fraserhart/',
                 'instagram_handle' => '@fraserhart',
                 'show_social' => true,
                 'shop_type' => 'national-store',
             ],
             'colchester-aesthetics-beauty' => [
-                'phone' => '07958 756493',
-                'address' => 'Culver Square Shopping Centre, Colchester, Essex CO1 1JQ',
+                'phone' => '07434923892',
+                'address' => "46 St John's Street, Colchester, Essex CO2 7AD",
                 'instagram_url' => '',
                 'instagram_handle' => '',
                 'show_social' => false,
@@ -97,15 +95,15 @@ final class ShopLiveSync
             ],
             'nerd-base' => [
                 'phone' => '01206 670451',
-                'address' => '23 Culver Street West, Colchester, Essex CO1 1JG',
+                'address' => '24 Sir Isaacs Walk, Colchester, Essex CO1 1JJ',
                 'instagram_url' => 'https://www.instagram.com/menkind/',
                 'instagram_handle' => '@menkind',
                 'show_social' => true,
                 'shop_type' => 'national-store',
             ],
             'phoenix-vapes' => [
-                'phone' => '01206 578830',
-                'address' => 'Culver Square Shopping Centre, Colchester, Essex CO1 1JQ',
+                'phone' => '01206 619646',
+                'address' => '39-40 Sir Isaacs Walk, Colchester, Essex CO1 1JJ',
                 'instagram_url' => '',
                 'instagram_handle' => '',
                 'show_social' => false,
@@ -143,10 +141,10 @@ final class ShopLiveSync
             $layout = (string) ($row['acf_fc_layout'] ?? '');
 
             if ($layout === 'shop_intro_block' && $page['paras'] !== []) {
-                $split = ShopLiveIntroCopy::splitForBlocks($displayTitle, $page['paras'], $page['lists']);
+                $split = DirectoryLiveIntroCopy::splitForBlocks($displayTitle, $page['paras'], $page['lists']);
                 if ($split['intro_html'] !== '') {
                     $row['intro_body'] = $split['intro_html'];
-                    $cta = ShopIntroCta::resolve($localSlug, $liveSlug, $displayTitle);
+                    $cta = DirectoryIntroCta::resolve($localSlug, $liveSlug, $displayTitle);
                     if ($cta !== null) {
                         $row['intro_cta_url'] = $cta['url'];
                         $row['intro_cta_label'] = $cta['label'];
@@ -156,7 +154,7 @@ final class ShopLiveSync
             }
 
             if ($layout === 'shop_split_highlight' && $page['paras'] !== []) {
-                $split = ShopLiveIntroCopy::splitForBlocks($displayTitle, $page['paras'], $page['lists']);
+                $split = DirectoryLiveIntroCopy::splitForBlocks($displayTitle, $page['paras'], $page['lists']);
                 $row['split_use_tabs'] = 0;
                 $row['split_kicker'] = $split['split_kicker'];
                 $row['split_headline'] = $split['split_headline'] !== ''
@@ -351,7 +349,7 @@ final class ShopLiveSync
             throw new \RuntimeException('ACF is required.');
         }
 
-        EatDrinkDirectoryPopulate::loadDependencies();
+        DirectoryMediaPopulate::loadDependencies();
 
         $map = self::liveToLocalMap();
         $liveSlugs = self::discoverLiveSlugs();
@@ -375,7 +373,7 @@ final class ShopLiveSync
                 continue;
             }
 
-            $page = VenueLiveRetailerPage::fetch($liveSlug);
+            $page = DirectoryLiveRetailerPage::fetch($liveSlug);
             if ($page === null) {
                 if (function_exists('WP_CLI')) {
                     \WP_CLI::warning(sprintf('fetch failed for live/%s', $liveSlug));
@@ -473,20 +471,16 @@ final class ShopLiveSync
             if ($useLocalMediaOnly) {
                 $media = self::DEPLOY_MEDIA_BY_SLUG[$localSlug] ?? null;
                 if (is_array($media)) {
-                    if (($media['logo'] ?? '') !== '') {
-                        $logoId = EatDrinkDirectoryPopulate::attachmentIdForRelativeUploadPath((string) $media['logo']);
-                    }
-                    if (($media['hero'] ?? '') !== '') {
-                        $heroId = EatDrinkDirectoryPopulate::attachmentIdForRelativeUploadPath((string) $media['hero']);
-                    }
+                    $logoId = DirectoryMediaPopulate::attachmentIdForRelativeUploadPath($media['logo']);
+                    $heroId = DirectoryMediaPopulate::attachmentIdForRelativeUploadPath($media['hero']);
                 }
             } else {
                 if ($page['logo_url'] !== '') {
-                    $logoId = VenueLiveRetailerPage::sideloadLogo($page['logo_url'], $localSlug);
+                    $logoId = DirectoryLiveRetailerPage::sideloadLogo($page['logo_url'], $localSlug);
                 }
 
                 $heroUrl = $page['hero_image_url'] !== '' ? $page['hero_image_url'] : self::GENERIC_HERO_URL;
-                $heroId = VenueLiveRetailerPage::sideloadLogo($heroUrl, $localSlug . '-hero');
+                $heroId = DirectoryLiveRetailerPage::sideloadLogo($heroUrl, $localSlug . '-hero');
             }
 
             foreach ($components as $i => $row) {
@@ -528,8 +522,6 @@ final class ShopLiveSync
                 ++$updated;
                 continue;
             }
-
-            $components = ShopCentreMapDefaults::mergeIntoComponents($components, $postId);
 
             delete_field('components', $postId);
             update_field('components', $components, $postId);
@@ -587,7 +579,7 @@ final class ShopLiveSync
     private static function applyLogoPreserveToComponents(array $components): array
     {
         foreach ($components as $i => $row) {
-            if (! is_array($row) || ($row['acf_fc_layout'] ?? '') !== 'image_hero') {
+            if (($row['acf_fc_layout'] ?? '') !== 'image_hero') {
                 continue;
             }
             $row['hero_logo_preserve_colors'] = 1;
@@ -613,7 +605,7 @@ final class ShopLiveSync
             throw new \RuntimeException('ACF is required.');
         }
 
-        EatDrinkDirectoryPopulate::loadDependencies();
+        DirectoryMediaPopulate::loadDependencies();
 
         $repaired = 0;
         $skipped = 0;
@@ -627,7 +619,7 @@ final class ShopLiveSync
             ));
         }
 
-        $preserveSlugs = array_keys(array_filter(self::DEPLOY_LOGO_PRESERVE_COLORS));
+        $preserveSlugs = array_keys(self::DEPLOY_LOGO_PRESERVE_COLORS);
         $allSlugs = array_values(array_unique(array_merge(array_keys($targets), $preserveSlugs)));
 
         foreach ($allSlugs as $slug) {
@@ -652,7 +644,7 @@ final class ShopLiveSync
 
             $postId = (int) $posts[0]->ID;
             $media = $targets[$slug] ?? null;
-            $logoPath = is_array($media) ? (string) ($media['logo'] ?? '') : '';
+            $logoPath = is_array($media) ? $media['logo'] : '';
             $needsPreserve = (bool) (self::DEPLOY_LOGO_PRESERVE_COLORS[$slug] ?? false);
 
             $components = get_field('components', $postId);
@@ -666,7 +658,7 @@ final class ShopLiveSync
             $shouldRepairLogo = $logoPath !== '' && ($currentLogoId <= 0 || $allowReplace);
 
             if ($shouldRepairLogo) {
-                $logoId = EatDrinkDirectoryPopulate::attachmentIdForRelativeUploadPath($logoPath);
+                $logoId = DirectoryMediaPopulate::attachmentIdForRelativeUploadPath($logoPath);
                 if ($logoId <= 0) {
                     if (function_exists('WP_CLI')) {
                         \WP_CLI::warning(sprintf('logo register failed for %s (%s)', $slug, $logoPath));
@@ -724,7 +716,6 @@ final class ShopLiveSync
             }
 
             if ($didWork && ! $dryRun && $components !== []) {
-                $components = ShopCentreMapDefaults::mergeIntoComponents($components, $postId);
                 delete_field('components', $postId);
                 update_field('components', $components, $postId);
             }
@@ -788,8 +779,8 @@ final class ShopLiveSync
             $liveRows = [];
 
             if ($liveSlug !== null) {
-                $page = VenueLiveRetailerPage::fetch($liveSlug);
-                if ($page !== null && ($page['opening_hours_rows'] ?? []) !== []) {
+                $page = DirectoryLiveRetailerPage::fetch($liveSlug);
+                if ($page !== null && $page['opening_hours_rows'] !== []) {
                     $liveRows = $page['opening_hours_rows'];
                 }
             }
@@ -856,7 +847,6 @@ final class ShopLiveSync
             }
 
             if (! $dryRun) {
-                $components = ShopCentreMapDefaults::mergeIntoComponents($components, $postId);
                 delete_field('components', $postId);
                 update_field('components', $components, $postId);
                 self::syncHoursSummaryFromComponents($postId, $components);

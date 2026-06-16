@@ -39,7 +39,7 @@
 
 .centre-map__map-wrap[data-active-category] [data-category]:where([data-active-category-match]) {
   opacity: 1;
-  filter: drop-shadow(0 0 6px var(--color-glowleaf, #d4ff50));
+  filter: drop-shadow(0 0 6px var(--color-glowleaf, #d4ff4f));
 }
 
 /* Per-slug match — generated at runtime by the attribute hook below. Using a
@@ -49,7 +49,7 @@
 .centre-map__map-wrap[data-active-category]
   [data-category][data-active]:not([data-active='false']) {
   opacity: 1;
-  filter: drop-shadow(0 0 6px var(--color-glowleaf, #d4ff50));
+  filter: drop-shadow(0 0 6px var(--color-glowleaf, #d4ff4f));
 }
 
 /* Legacy raster fallback when no per-filter SVG bundle is present. */
@@ -69,20 +69,49 @@
   transition: none;
 }
 
-/* Accordion group toggles, mobile tab pills, and filter rows — explicit pointer
- * (group toggles omitted cursor-pointer in Blade; Eat & Drink / Shop headers felt dead). */
+/* Accordion group toggles, mobile tab pills, filter rows, and category links —
+ * explicit pointer (group toggles omitted cursor-pointer in Blade; Eat & Drink
+ * / Shop headers felt dead). */
 .centre-map__group-toggle,
 .centre-map__mobile-tabs button,
-.centre-map__filter-toggle {
-  cursor: pointer;
-}
-
-/* Category filter rows — pointer on links/buttons; active bullet keeps a deep-moss ring. */
+.centre-map__filter-toggle,
 .centre-map__category {
   cursor: pointer;
 }
 
+/* Category filter rows — active bullet keeps a deep-moss ring. */
 .centre-map__category-bullet--active {
   border-color: var(--color-deep-moss, #2e301e);
-  background-color: var(--color-glowleaf, #d4ff50);
+  background-color: var(--color-glowleaf, #d4ff4f);
+}
+
+/**
+ * Desktop band — map column is isolated from filter accordion height.
+ * Map wrap height comes only from aspect-ratio; the image layer is absolute so
+ * object-contain letterboxing cannot stretch the moss frame.
+ */
+@media (min-width: 1024px) {
+  .centre-map__band {
+    align-items: start;
+  }
+
+  .centre-map__filters,
+  .centre-map__map-cell {
+    align-self: start;
+    min-height: 0;
+  }
+
+  .centre-map__map-wrap {
+    aspect-ratio: 2298 / 2110;
+    height: auto;
+  }
+
+  .centre-map__image-stage {
+    position: absolute;
+    inset: 0;
+  }
+}
+
+.centre-map__group-panel-inner {
+  min-height: 0;
 }

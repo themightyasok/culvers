@@ -125,7 +125,7 @@ When Figma updates, change **`theme.tokens.css`** first, then refresh this file.
 
 ## Mobile frames — Figma → Tailwind (Developer Release)
 
-Canonical helpers live in **`App\Helpers\Component`** (`sectionHeadingClasses`, `imageHeroTitleClasses`, `imageHeroSubtitleClasses`, `heroKickerClasses`, `mobilePanelSubheadClasses`, `centreMapCategoryMobileClasses`). Prefer those over one-off class strings.
+Canonical helpers live in **`App\Helpers\Component`** (`sectionHeadingClasses`, `imageHeroTitleClasses`, `imageHeroSubtitleClasses`, `heroKickerClasses`, `mobilePanelSubheadClasses`, `centreMapFilterLabelClasses`). Prefer those over one-off class strings.
 
 | Figma frame | Page | Role | Figma mobile | Tailwind snap | Helper / pattern |
 |-------------|------|------|--------------|---------------|------------------|
@@ -141,7 +141,7 @@ Canonical helpers live in **`App\Helpers\Component`** (`sectionHeadingClasses`, 
 | `51:8411` | Career | Meta label/value | Halyard 20 / 24 | `text-xl` | `font-sans` meta rows |
 | `51:8449` | Shops | Directory card title | Halyard Med 22 | `text-2xl` (+2 px snap) | directory-card |
 | `51:8857` | Shop single | Store column labels | Halyard Med 20 | `text-xl` | `mobilePanelSubheadClasses()` |
-| `51:8961` | Shop single | Map category row | Halyard 20 / 24 | `text-xl` | `centreMapCategoryMobileClasses()` |
+| `51:8961` | Shop single | Map category row | Halyard 20 / 24 | `text-xl` | `centreMapFilterLabelClasses()` |
 | `51:9035` | Travel calc | Card H2 | Canela 36 / 1.1 | `text-4xl` | travel-calculator heading |
 | `51:9036` | Travel calc | Intro | Halyard 16 / 1.32 | `text-base` + `leading-[1.32]` | travel-calculator intro |
 | `51:9221` | Travel calc | Result copy | Halyard 20 / 1.3 | `text-xl` | travel-calculator result |

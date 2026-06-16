@@ -4,6 +4,8 @@
  * Info grid — intro (heading, subheading, body, CTA) + square cells (icon, title, description).
  */
 
+declare(strict_types=1);
+
 use App\Helpers\Component;
 
 return [

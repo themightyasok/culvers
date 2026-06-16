@@ -4,6 +4,8 @@
  * Social share — centred heading + Instagram / Facebook / WhatsApp row (Figma 51:6411).
  */
 
+declare(strict_types=1);
+
 use App\Helpers\Component;
 
 return [

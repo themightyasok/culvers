@@ -5,9 +5,12 @@ declare(strict_types=1);
 namespace App\Directory;
 
 /**
- * Media sideload helpers for Eat & Drink live sync (logos from retailer pages).
+ * Media sideload helpers for directory live sync (shop + eat-drink logos and hero
+ * imagery imported from culversquare.co.uk retailer pages). Originally introduced
+ * for Eat & Drink, now shared by `DirectoryLiveImport`, `ShopLiveSync`,
+ * `EatDrinkLiveSync`, and `DirectoryLiveRetailerPage`.
  */
-final class EatDrinkDirectoryPopulate
+final class DirectoryMediaPopulate
 {
     private static ?bool $depsLoaded = null;
 
@@ -73,9 +76,9 @@ final class EatDrinkDirectoryPopulate
         }
 
         return self::withDirectoryImportUploadFilters(
-            static function () use ($absPath, $relativePath): int {
+            static function () use ($absPath): int {
                 $filetype = wp_check_filetype(basename($absPath), null);
-                $mime = is_string($filetype['type'] ?? null) ? $filetype['type'] : '';
+                $mime = is_string($filetype['type']) ? $filetype['type'] : '';
                 if ($mime === '') {
                     return 0;
                 }
@@ -87,13 +90,12 @@ final class EatDrinkDirectoryPopulate
                     'post_status' => 'inherit',
                 ], $absPath);
 
-                if (is_wp_error($attachmentId) || ! is_numeric($attachmentId) || (int) $attachmentId <= 0) {
+                if ($attachmentId <= 0) {
                     return 0;
                 }
 
-                $attachmentId = (int) $attachmentId;
                 $metadata = wp_generate_attachment_metadata($attachmentId, $absPath);
-                if (is_array($metadata) && $metadata !== []) {
+                if ($metadata !== []) {
                     wp_update_attachment_metadata($attachmentId, $metadata);
                 }
 

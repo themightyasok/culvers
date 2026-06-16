@@ -30,7 +30,7 @@
     type="button"
     class="{{ $rowClass }}"
     :class="activeCategorySlug === {{ $catSlugJson }} ? 'text-glowleaf' : ''"
-    @click="activeCategorySlug = activeCategorySlug === {{ $catSlugJson }} ? '' : {{ $catSlugJson }}; activeCategoryLabel = activeCategorySlug === {{ $catSlugJson }} ? {{ $catLabelJson }} : '';">
+    @click="toggleCategory({{ $catSlugJson }}, {{ $catLabelJson }}, {{ $isAll ? 'true' : 'false' }})">
     <span
       class="{{ $bulletClass }}"
       :class="activeCategorySlug === {{ $catSlugJson }} ? 'centre-map__category-bullet--active border-deep-moss bg-glowleaf' : ''"

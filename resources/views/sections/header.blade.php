@@ -240,24 +240,24 @@
 
                   <div class="mega-nav__utilities hidden shrink-0 items-center lg:flex lg:gap-[18px]">
                   <a
-                    class="inline-flex items-center gap-2 text-white transition-opacity hover:opacity-90 focus-visible:rounded-sm culvers-focus-ring"
+                    class="mega-nav__utility-link inline-flex items-center gap-2 text-white transition-colors hover:text-glowleaf focus-visible:text-glowleaf culvers-focus-ring"
                     href="{{ esc_url($mapUrl) }}"
                     x-on:click="headerUtilityClick($event)">
                     @include('partials.icons.figma-header-icon', [
                         'header_icon_variant' => 'centre-map-desktop',
-                        'header_icon_class' => 'size-[15px] shrink-0',
+                        'header_icon_class' => 'size-[15px] shrink-0 text-current',
                     ])
-                    <span class="font-sans text-sm font-medium leading-[22px] text-white">{{ __('Centre Map', 'culvers') }}</span>
+                    <span class="font-sans text-sm font-medium leading-[22px]">{{ __('Centre Map', 'culvers') }}</span>
                   </a>
                   <a
-                    class="inline-flex items-center gap-2 text-white transition-opacity hover:opacity-90 focus-visible:rounded-sm culvers-focus-ring"
+                    class="mega-nav__utility-link inline-flex items-center gap-2 text-white transition-colors hover:text-glowleaf focus-visible:text-glowleaf culvers-focus-ring"
                     href="{{ esc_url($hereUrl) }}"
                     x-on:click="headerUtilityClick($event)">
                     @include('partials.icons.figma-header-icon', [
                         'header_icon_variant' => 'getting-here-desktop',
-                        'header_icon_class' => 'h-4 w-[13px] shrink-0',
+                        'header_icon_class' => 'h-4 w-[13px] shrink-0 text-current',
                     ])
-                    <span class="font-sans text-sm font-medium leading-[22px] text-white">{{ __('Getting Here', 'culvers') }}</span>
+                    <span class="font-sans text-sm font-medium leading-[22px]">{{ __('Getting Here', 'culvers') }}</span>
                   </a>
                   <button
                     type="button"
@@ -358,10 +358,17 @@
                         </ul>
                         </div>
                         {{-- Figma Culver Square — Dropdown Menu Shop (72:4994–72:5001): Commuter SemiBold 12 / 1px tracking; 6px icon–label; 34px between marks. --}}
+                        @php
+                          $hasInstagram = $instagramUrl !== '' && $instagramUrl !== '#';
+                          $hasFacebook = $facebookUrl !== '' && $facebookUrl !== '#';
+                        @endphp
+                        @if($hasInstagram || $hasFacebook)
                         <div class="mt-10 flex shrink-0 flex-wrap gap-[34px] pt-6 lg:mt-auto lg:pt-10 lg:pb-2">
+                          @if($hasInstagram)
                           <a
                             class="mega-nav__social-link inline-flex cursor-pointer items-center gap-1.5 font-label text-xs font-semibold uppercase tracking-[0.0625rem] focus-visible:rounded-sm culvers-focus-ring"
                             href="{{ esc_url($instagramUrl) }}"
+                            target="_blank"
                             rel="noopener noreferrer">
                             @include('partials.figma-social-icon', [
                                 'social_icon_variant' => 'instagram',
@@ -369,9 +376,12 @@
                             ])
                             {{ __('Instagram', 'culvers') }}
                           </a>
+                          @endif
+                          @if($hasFacebook)
                           <a
                             class="mega-nav__social-link inline-flex cursor-pointer items-center gap-1.5 font-label text-xs font-semibold uppercase tracking-[0.0625rem] focus-visible:rounded-sm culvers-focus-ring"
                             href="{{ esc_url($facebookUrl) }}"
+                            target="_blank"
                             rel="noopener noreferrer">
                             @include('partials.figma-social-icon', [
                                 'social_icon_variant' => 'facebook',
@@ -379,7 +389,9 @@
                             ])
                             {{ __('Facebook', 'culvers') }}
                           </a>
+                          @endif
                         </div>
+                        @endif
                       </div>
                       <div class="mega-nav__preview-col flex min-h-0 min-w-0 w-full lg:items-stretch">
                         <div class="relative aspect-[8/5] w-full overflow-hidden rounded-md bg-dustleaf/25">

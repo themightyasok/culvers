@@ -7,6 +7,8 @@
  * (Main → Style preset). Editors control copy, items, motion, and the optional CTA.
  */
 
+declare(strict_types=1);
+
 use App\Helpers\Component;
 
 return [

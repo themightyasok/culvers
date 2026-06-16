@@ -64,9 +64,6 @@ final class DirectoryPostTypes
     /** Sort newest-first on the post-type archive (offers, news). */
     private const SORT_NEWEST_FIRST = 'date-desc';
 
-    /** Sort oldest-first on the post-type archive (reserved — none active). */
-    private const SORT_OLDEST_FIRST = 'date-asc';
-
     /** Sort alphabetically by title (shops, eat-drink, careers). */
     private const SORT_ALPHABETICAL = 'title-asc';
 
@@ -83,6 +80,57 @@ final class DirectoryPostTypes
         self::maybeFlushRewrites();
         self::adjustArchiveQueries();
         self::registerCareersArchivePins();
+        self::registerEatDrinkCrossListing();
+    }
+
+    /**
+     * Cross-list shops flagged "Also list under Eat & Drink" on the /eat-drink/
+     * archive without a duplicate CPT entry.
+     *
+     * Injected via `the_posts` (like {@see self::registerCareersArchivePins()})
+     * so the main query stays a clean `culvers_eat_drink` archive — template
+     * selection and `is_post_type_archive()` are untouched. The shop posts
+     * render as proper shop cards (logo + storefront hover) because the card
+     * shim dispatches by each post's real type.
+     */
+    private static function registerEatDrinkCrossListing(): void
+    {
+        add_filter(
+            'the_posts',
+            static function (array $posts, WP_Query $query): array {
+                if (! $query->is_main_query() || ! $query->is_post_type_archive('culvers_eat_drink')) {
+                    return $posts;
+                }
+
+                /* suppress_filters defaults to true on get_posts(), so this
+                   inner query never re-enters this `the_posts` filter. */
+                $flagged = get_posts([
+                    'post_type' => 'culvers_shop',
+                    'post_status' => 'publish',
+                    'posts_per_page' => -1,
+                    'meta_key' => 'shop_also_eat_drink',
+                    'meta_value' => '1',
+                ]);
+
+                if ($flagged === []) {
+                    return $posts;
+                }
+
+                $merged = array_merge($posts, $flagged);
+                usort(
+                    $merged,
+                    static fn (\WP_Post $a, \WP_Post $b): int => strcasecmp($a->post_title, $b->post_title)
+                );
+
+                /* Keep found_posts in step so the archive's empty-state guard
+                   and any result count reflect the cross-listed venues. */
+                $query->found_posts += count($flagged);
+
+                return $merged;
+            },
+            10,
+            2
+        );
     }
 
     /**
@@ -552,9 +600,6 @@ final class DirectoryPostTypes
     private static function sortToQueryArgs(string $sort): array
     {
         return match ($sort) {
-            /* Chronological listing — works as a default until an explicit
-               start-date meta gets wired in for events. */
-            self::SORT_OLDEST_FIRST => ['date', 'ASC'],
             /* Recency matters more than alphabetical for time-sensitive
                promos and editorial. */
             self::SORT_NEWEST_FIRST => ['date', 'DESC'],

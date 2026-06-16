@@ -16,15 +16,18 @@ use StoutLogic\AcfBuilder\FieldsBuilder;
  * + spaced uppercase subtitle stacked vertically) so the page reads
  * identical to `/shops/`, with optional intro copy below.
  */
-final class EatDrinkArchiveFields
+final class EatDrinkArchiveFields extends AbstractArchiveFields
 {
     public const OPTION_PAGE_SLUG = 'culvers-eat-drink-archive';
 
     public const FIELD_PREFIX = 'eat_drink_archive';
 
-    public static function register(): void
+    /**
+     * @return array<string, mixed>
+     */
+    protected static function archiveOptions(): array
     {
-        ArchiveHeroFields::register([
+        return [
             'option_slug' => self::OPTION_PAGE_SLUG,
             'menu_title' => __('Eat & Drink directory', 'culvers'),
             'page_title' => __('Eat & Drink directory', 'culvers'),
@@ -33,12 +36,7 @@ final class EatDrinkArchiveFields
             'position' => AdminMenu::POS_EAT_DRINK_DIRECTORY,
             'group_key' => 'group_culvers_eat_drink_archive_options',
             'group_title' => __('Eat & Drink directory archive', 'culvers'),
-            'field_prefix' => self::FIELD_PREFIX,
             'hero_message_title' => __('Eat & Drink directory hero', 'culvers'),
-            'hero_message_body' => __(
-                'Static "header hero" image band (Figma 51:9360 — 1440×646) that bleeds under the site header. Add an image plus title + subtitle below.',
-                'culvers'
-            ),
             'intro_field_label' => __('Intro paragraph (/eat-drink/)', 'culvers'),
             'intro_field_instructions' => __(
                 'Centered below the hero. Leave blank to use the default Eat & Drink line.',
@@ -51,6 +49,6 @@ final class EatDrinkArchiveFields
                     __('below the Eat & Drink listing', 'culvers')
                 );
             },
-        ]);
+        ];
     }
 }

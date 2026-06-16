@@ -2,6 +2,8 @@
 /vendor/
 /storage/cache/
 !/storage/cache/.gitignore
+/storage/*.json
+/storage/*.csv
 /dist/
 /css/
 /js/
