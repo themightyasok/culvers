@@ -57,6 +57,19 @@ final class DirectoryCardSpecFactory
             self::stringField($postId, 'opening_hours_summary')
         );
 
+        $typeSlugs = self::termSlugs($postId, 'culvers_shop_type');
+        if (function_exists('get_field') && (bool) get_field('shop_also_eat_drink', $postId)) {
+            $eatTypes = get_field('shop_eat_drink_filter_types', $postId);
+            if (is_array($eatTypes)) {
+                foreach ($eatTypes as $slug) {
+                    if (is_string($slug) && $slug !== '') {
+                        $typeSlugs[] = $slug;
+                    }
+                }
+            }
+            $typeSlugs = array_values(array_unique($typeSlugs));
+        }
+
         return new DirectoryCardSpec(
             postId: $postId,
             permalink: (string) get_permalink($postId),
@@ -67,7 +80,7 @@ final class DirectoryCardSpecFactory
             eyebrowText: (string) get_the_title($postId),
             subtitleText: $subtitle,
             categorySlugs: self::termSlugs($postId, 'culvers_shop_category'),
-            typeSlugs: self::termSlugs($postId, 'culvers_shop_type'),
+            typeSlugs: $typeSlugs,
             invertLogoForMossTile: $logoFromField !== '' && ! LogoPreserveColors::shouldPreserveForPost($postId, 'culvers_shop'),
         );
     }

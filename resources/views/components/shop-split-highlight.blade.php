@@ -144,7 +144,7 @@
       {{-- Grid (not flex row) so the image column matches the copy column height even when the
            <img> is absolutely positioned (out of flow). Flex would leave the media cell at min-height only. --}}
       <div
-        class="grid overflow-hidden rounded-[10px] {{ $gridSurfaceClass }} shadow-sm lg:min-h-[597px] lg:grid-cols-12 lg:items-stretch">
+        class="grid overflow-hidden rounded-[10px] {{ $gridSurfaceClass }} lg:min-h-[597px] lg:grid-cols-12 lg:items-stretch">
         {{-- Copy column: centre-aligned by default; tabbed decks top-align so tabs don't shift on switch. --}}
         <div
           class="max-lg:order-1 lg:order-none {{ $copyColumnBgClass }} {{ $staticCopyColumnClasses }} {{ $ratio === '50-50' ? 'lg:col-span-6' : 'lg:col-span-7' }}">

@@ -28,6 +28,7 @@
   $logoUrl = isset($logo['url']) ? trim((string) $logo['url']) : '';
   $preserveLogoColors = ! empty($c['hero_logo_preserve_colors']);
   $logoEmblem = ImageHeroLogoPresentation::isEmblemLockup(get_the_ID() ?: null, $logoUrl !== '' ? $logo : null);
+  $logoWide = ! $logoEmblem && ImageHeroLogoPresentation::isWideLockup($logoUrl !== '' ? $logo : null);
 
   $titleLine = trim((string) ($c['hero_title_line'] ?? ''));
   $titleToneRaw = is_string($c['hero_title_tone'] ?? null) ? (string) $c['hero_title_tone'] : 'glowleaf';
@@ -113,6 +114,8 @@
               }
               if ($logoEmblem) {
                   $heroLogoClasses .= ' image-hero__logo--emblem';
+              } elseif ($logoWide) {
+                  $heroLogoClasses .= ' image-hero__logo--wide-lockup';
               }
               $heroLogoImgArgs = [
                   'class' => $heroLogoClasses,

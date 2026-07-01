@@ -506,6 +506,27 @@
   }
 }
 
+/* Wide horizontal wordmarks (Snow's Collectables etc.) — taller than default caps so the
+   hero lockup reads closer to directory-tile scale without ballooning square emblems. */
+.image-hero__logo.image-hero__logo--wide-lockup {
+  width: min(92vw, 36rem);
+  max-height: 5.5rem;
+}
+
+@media (min-width: 640px) {
+  .image-hero__logo.image-hero__logo--wide-lockup {
+    width: min(88vw, 40rem);
+    max-height: 6.25rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .image-hero__logo.image-hero__logo--wide-lockup {
+    width: min(80vw, 44rem);
+    max-height: 7.5rem;
+  }
+}
+
 /*
  * Hero pagination overrides — Figma `51:4993` (homepage hero `Frame 21`):
  *   • vertical stack on the right edge, 22 px centre-to-centre gap

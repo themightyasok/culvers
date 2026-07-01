@@ -91,6 +91,7 @@
            matches these halves so main content is not overlapped. --}}
       {{-- Overlap straddle (translate + negative mb) is lg+ only — base/md utilities were
            winning over max-lg:mb-0 in the compiled cascade and pulling the band into content above. --}}
+      @if(! is_404())
       <section
         class="footer-newsletter-band relative z-20 max-lg:mb-0 max-lg:translate-y-0 {{ LayoutShell::BREAKOUT_X_MOBILE }} lg:-mb-[210px] lg:-translate-y-1/2"
         aria-labelledby="footer-newsletter-heading">
@@ -174,6 +175,7 @@
           </div>
         </div>
       </section>
+      @endif
 
       {{-- Column menus (What’s Here / Useful Links + address blocks). Tight 16-unit padding-top
            on lg — overlaps beneath the newsletter are handled by `.footer-newsletter-band` + spacer

@@ -10,7 +10,7 @@ namespace App\Customizer;
 final class FooterCustomizer
 {
     /** Matches footer seed copy when Customizer has never been published. */
-    private const DEFAULT_GETTING_HERE_ADDRESS = "Culver Square Shopping Centre\n7A Culver Square\nColchester, Essex\nCO1 1JQ";
+    private const DEFAULT_GETTING_HERE_ADDRESS = "Culver Square Shopping Centre\n7A Culver Square\nColchester, Essex\nCO1 1WF";
 
     public const SECTION = 'culvers_footer';
 
@@ -383,7 +383,7 @@ final class FooterCustomizer
     {
         return Sanitize::toString(get_theme_mod(
             self::MOD_GETTING_HERE_MAP_URL,
-            'https://www.google.com/maps/search/?api=1&query=Culver+Square+Colchester+CO1+1JQ'
+            'https://www.google.com/maps/search/?api=1&query=Culver+Square+Colchester+CO1+1WF'
         ));
     }
 

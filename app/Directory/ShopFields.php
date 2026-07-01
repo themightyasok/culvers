@@ -23,7 +23,12 @@ final class ShopFields
 
         $group->addImage('shop_logo', [
             'label' => __('Logo (card)', 'culvers'),
-            'instructions' => __('Shown on the olive card tile. Falls back to featured image if empty.', 'culvers'),
+            'instructions' => __(
+                'Shown on the olive directory tile (max ~120px tall). Use a transparent PNG. ' .
+                'Wide wordmarks may look smaller in the shop page hero than on the tile — ' .
+                'upload a square/emblem variant in the hero row if needed, or rely on auto wide-lockup sizing.',
+                'culvers'
+            ),
             'return_format' => 'array',
             'preview_size' => 'medium',
             'library' => 'all',
@@ -45,9 +50,36 @@ final class ShopFields
             'default_value' => 0,
         ]);
 
+        $eatDrinkTypeChoices = [];
+        foreach (DirectoryFilterDefinitions::eatDrinkCategoryPairs() as $slug => $label) {
+            $eatDrinkTypeChoices[$slug] = $label;
+        }
+
+        $group->addCheckbox('shop_eat_drink_filter_types', [
+            'label' => __('Eat & Drink filter categories', 'culvers'),
+            'instructions' => __(
+                'When this shop is cross-listed on /eat-drink/, pick which sidebar filters ' .
+                'should include it (e.g. Cafés for Hotel Chocolat).',
+                'culvers'
+            ),
+            'choices' => $eatDrinkTypeChoices,
+            'layout' => 'vertical',
+            'return_format' => 'value',
+            'conditional_logic' => [[[
+                'field' => 'shop_also_eat_drink',
+                'operator' => '==',
+                'value' => '1',
+            ]]],
+        ]);
+
         $group->addText('opening_hours_summary', [
             'label' => __('Opening hours line', 'culvers'),
-            'instructions' => __('Short line under the title on cards, e.g. “Open today 9am – 5:30pm”.', 'culvers'),
+            'instructions' => __(
+                'Short line under the title on directory cards. Usually auto-synced from the ' .
+                'Opening hours component (weekday highlights) — only edit manually if you need ' .
+                'a fixed override.',
+                'culvers'
+            ),
             'default_value' => '',
             'placeholder' => __('Open today 9am – 5:30pm', 'culvers'),
         ]);
