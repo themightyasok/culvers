@@ -117,6 +117,47 @@ final class DirectoryLiveImport
         return $count;
     }
 
+    /**
+     * Import specific live posts by slug into the given CPT (events / news).
+     *
+     * @param  list<array{slug: string, post_type: string}>  $targets
+     * @return array{ok: int, failed: int}
+     */
+    public function importStoryTargets(array $targets, bool $dryRun = false): array
+    {
+        $ok = 0;
+        $failed = 0;
+
+        foreach ($targets as $target) {
+            $slug = sanitize_title($target['slug']);
+            $postType = $target['post_type'];
+            if ($slug === '' || ! in_array($postType, ['culvers_event', 'culvers_news'], true)) {
+                ++$failed;
+                $this->log("[error] invalid target: {$slug} / {$postType}");
+
+                continue;
+            }
+
+            $items = $this->fetchJson(
+                self::LIVE_BASE . '/wp-json/wp/v2/posts?slug=' . rawurlencode($slug) . '&_embed'
+            );
+            if (! is_array($items) || $items === [] || ! is_array($items[0] ?? null)) {
+                ++$failed;
+                $this->log("[error] live post not found: {$slug}");
+
+                continue;
+            }
+
+            if ($this->importStoryItem($items[0], $postType, $dryRun)) {
+                ++$ok;
+            } else {
+                ++$failed;
+            }
+        }
+
+        return ['ok' => $ok, 'failed' => $failed];
+    }
+
     private function importPostsByCategory(int $categoryId, bool $dryRun): int
     {
         $postType = self::LIVE_CATEGORY_MAP[$categoryId] ?? null;
@@ -137,72 +178,83 @@ final class DirectoryLiveImport
                 continue;
             }
 
-            $slug = (string) ($item['slug'] ?? '');
-            if ($slug === '') {
-                continue;
-            }
-
-            $acf = is_array($item['acf'] ?? null) ? $item['acf'] : [];
-            $title = $this->plainText($item['title']['rendered'] ?? $slug);
-            $bodyHtml = is_string($acf['article_body'] ?? null) ? $acf['article_body'] : '';
-            if ($bodyHtml === '' && is_string($item['content']['rendered'] ?? null)) {
-                $bodyHtml = $item['content']['rendered'];
-            }
-            $closing = is_string($acf['closing_text'] ?? null) ? $acf['closing_text'] : '';
-            if ($closing !== '') {
-                $bodyHtml .= $closing;
-            }
-
-            $intro = $this->firstParagraph($bodyHtml);
-            $heroUrl = $this->resolvePostHeroUrl($item, $acf);
-            $splitUrl = $heroUrl;
-
-            if ($dryRun) {
-                $this->log("[dry-run] {$postType}: {$slug} ({$title})");
+            if ($this->importStoryItem($item, $postType, $dryRun)) {
                 ++$count;
-                $this->importedSlugs[] = $postType . ':' . $slug;
-                continue;
             }
-
-            $postId = $this->upsertPost($postType, $slug, $title, $item);
-            if ($postId <= 0) {
-                continue;
-            }
-
-            if ($postType === 'culvers_event') {
-                update_field('event_card_date', $this->formatDateRange(
-                    (string) ($acf['start_date'] ?? ''),
-                    (string) ($acf['end_date'] ?? '')
-                ), $postId);
-                update_field('event_card_time', __('See event details', 'culvers'), $postId);
-                update_field('event_card_location', __('Culver Square', 'culvers'), $postId);
-                $heroId = $this->sideloadImage($heroUrl, 'event-' . $slug . '-hero');
-                $splitId = $this->sideloadImage($splitUrl, 'event-' . $slug . '-split');
-                if ($splitId <= 0) {
-                    $splitId = $heroId;
-                }
-                $components = $this->buildEventComponents($title, $intro, $bodyHtml, $heroId, $splitId);
-            } else {
-                $heroId = $this->sideloadImage($heroUrl, 'news-' . $slug . '-hero');
-                $splitId = $this->sideloadImage($splitUrl, 'news-' . $slug . '-split');
-                if ($splitId <= 0) {
-                    $splitId = $heroId;
-                }
-                $components = $this->buildNewsComponents($title, $intro, $bodyHtml, $heroId, $splitId);
-            }
-
-            if ($heroId > 0) {
-                set_post_thumbnail($postId, $heroId);
-            }
-
-            update_field('components', $components, $postId);
-
-            $this->importedSlugs[] = $postType . ':' . $slug;
-            ++$count;
-            $this->log("{$postType}: {$slug} (#{$postId})");
         }
 
         return $count;
+    }
+
+    /**
+     * @param  array<string, mixed>  $item
+     */
+    private function importStoryItem(array $item, string $postType, bool $dryRun): bool
+    {
+        $slug = (string) ($item['slug'] ?? '');
+        if ($slug === '') {
+            return false;
+        }
+
+        $acf = is_array($item['acf'] ?? null) ? $item['acf'] : [];
+        $title = $this->plainText($item['title']['rendered'] ?? $slug);
+        $bodyHtml = is_string($acf['article_body'] ?? null) ? $acf['article_body'] : '';
+        if ($bodyHtml === '' && is_string($item['content']['rendered'] ?? null)) {
+            $bodyHtml = $item['content']['rendered'];
+        }
+        $closing = is_string($acf['closing_text'] ?? null) ? $acf['closing_text'] : '';
+        if ($closing !== '') {
+            $bodyHtml .= $closing;
+        }
+
+        $intro = $this->firstParagraph($bodyHtml);
+        $heroUrl = $this->resolvePostHeroUrl($item, $acf);
+        $splitUrl = $heroUrl;
+
+        if ($dryRun) {
+            $this->log("[dry-run] {$postType}: {$slug} ({$title})");
+            $this->importedSlugs[] = $postType . ':' . $slug;
+
+            return true;
+        }
+
+        $postId = $this->upsertPost($postType, $slug, $title, $item);
+        if ($postId <= 0) {
+            return false;
+        }
+
+        if ($postType === 'culvers_event') {
+            update_field('event_card_date', $this->formatDateRange(
+                (string) ($acf['start_date'] ?? ''),
+                (string) ($acf['end_date'] ?? '')
+            ), $postId);
+            update_field('event_card_time', __('See event details', 'culvers'), $postId);
+            update_field('event_card_location', __('Culver Square', 'culvers'), $postId);
+            $heroId = $this->sideloadImage($heroUrl, 'event-' . $slug . '-hero');
+            $splitId = $this->sideloadImage($splitUrl, 'event-' . $slug . '-split');
+            if ($splitId <= 0) {
+                $splitId = $heroId;
+            }
+            $components = $this->buildEventComponents($title, $intro, $bodyHtml, $heroId, $splitId);
+        } else {
+            $heroId = $this->sideloadImage($heroUrl, 'news-' . $slug . '-hero');
+            $splitId = $this->sideloadImage($splitUrl, 'news-' . $slug . '-split');
+            if ($splitId <= 0) {
+                $splitId = $heroId;
+            }
+            $components = $this->buildNewsComponents($title, $intro, $bodyHtml, $heroId, $splitId);
+        }
+
+        if ($heroId > 0) {
+            set_post_thumbnail($postId, $heroId);
+        }
+
+        update_field('components', $components, $postId);
+
+        $this->importedSlugs[] = $postType . ':' . $slug;
+        $this->log("{$postType}: {$slug} (#{$postId})");
+
+        return true;
     }
 
     /**

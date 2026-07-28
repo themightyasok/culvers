@@ -5,16 +5,18 @@ declare(strict_types=1);
 namespace App\CentreMap;
 
 /**
- * Pre-rendered centre-map SVGs — one artwork per filter category (May 2026 V5 set).
+ * Pre-rendered centre-map artworks — one file per filter category (July 2026 V7 set).
  *
  * Files live under {@see self::DIR} with filenames matching category slugs
- * (see Plan my visit centre_map repeater + {@see DirectoryFilterDefinitions}).
+ * (see Plan my visit centre_map categories + {@see DirectoryFilterDefinitions}).
+ * PNG is preferred when present; SVG remains a fallback for legacy files.
  */
 final class CentreMapFilterAssets
 {
     private const DIR = 'resources/images/centre-map/filters/';
 
-    private const EXT = 'svg';
+    /** @var list<string> */
+    private const EXTS = ['png', 'svg'];
 
     /** @var array<string, string> canonical slug => filename stem */
     private const FILES = [
@@ -31,6 +33,8 @@ final class CentreMapFilterAssets
         'grab-go' => 'grab-go',
         'healthy-options' => 'healthy-options',
         'cafes' => 'cafes',
+        'parent-child' => 'parent-child',
+        'lost-property' => 'lost-property',
         'toilets' => 'toilets',
     ];
 
@@ -40,13 +44,15 @@ final class CentreMapFilterAssets
         'eat-drink' => 'eat-drink-all',
         'eat-drink-cafes' => 'cafes',
         'eat-drink-takeaway' => 'grab-go',
-        'guest-services' => 'toilets',
+        'guest-services' => 'lost-property',
         'guest-services-toilets' => 'toilets',
+        'guest-services-lost-property' => 'lost-property',
+        'guest-services-parent-child' => 'parent-child',
     ];
 
     public static function hasFilterMaps(): bool
     {
-        return is_readable(get_theme_file_path(self::DIR . self::filename('standard')));
+        return self::resolvePath('standard') !== '';
     }
 
     public static function defaultUrl(): string
@@ -115,23 +121,32 @@ final class CentreMapFilterAssets
         return self::fileUrl($stem);
     }
 
-    private static function filename(string $stem): string
+    private static function fileUrl(string $stem): string
     {
-        return $stem . '.' . self::EXT;
+        $relative = self::resolvePath($stem);
+        if ($relative === '') {
+            return '';
+        }
+
+        return get_theme_file_uri($relative);
     }
 
-    private static function fileUrl(string $stem): string
+    /**
+     * Prefer PNG (July 2026 V7), fall back to SVG (May 2026 V5).
+     */
+    private static function resolvePath(string $stem): string
     {
         if ($stem === '') {
             return '';
         }
 
-        $path = self::DIR . self::filename($stem);
-
-        if (! is_readable(get_theme_file_path($path))) {
-            return '';
+        foreach (self::EXTS as $ext) {
+            $relative = self::DIR . $stem . '.' . $ext;
+            if (is_readable(get_theme_file_path($relative))) {
+                return $relative;
+            }
         }
 
-        return get_theme_file_uri($path);
+        return '';
     }
 }
