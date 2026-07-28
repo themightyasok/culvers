@@ -506,24 +506,25 @@
   }
 }
 
-/* Wide horizontal wordmarks (Snow's Collectables etc.) — taller than default caps so the
-   hero lockup reads closer to directory-tile scale without ballooning square emblems. */
+/* Wide horizontal wordmarks (Snow's Collectables etc.) — size from max-height with
+   width:auto so object-fit:contain fills the height cap (no empty wide box). */
 .image-hero__logo.image-hero__logo--wide-lockup {
-  width: min(92vw, 36rem);
-  max-height: 5.5rem;
+  width: auto;
+  max-width: min(92vw, 36rem);
+  max-height: 4.5rem;
 }
 
 @media (min-width: 640px) {
   .image-hero__logo.image-hero__logo--wide-lockup {
-    width: min(88vw, 40rem);
-    max-height: 6.25rem;
+    max-width: min(88vw, 42rem);
+    max-height: 6.5rem;
   }
 }
 
 @media (min-width: 1024px) {
   .image-hero__logo.image-hero__logo--wide-lockup {
-    width: min(80vw, 44rem);
-    max-height: 7.5rem;
+    max-width: min(75vw, 44rem);
+    max-height: 9.5rem;
   }
 }
 

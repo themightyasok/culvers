@@ -191,7 +191,7 @@
                         data-tis-media-motion
                         @if($isOpen) style="opacity:1;visibility:visible" @endif>
                         <div
-                          class="text-image-slider__polaroid relative aspect-[4/5] w-full overflow-hidden rounded-[6px] ring-1 ring-deep-moss/10"
+                          class="text-image-slider__polaroid relative aspect-[4/5] w-full overflow-hidden rounded-[6px]"
                           data-tis-polaroid
                           style="transform: rotate({{ (int) $item['tilt_left'] }}deg)">
                           {!! Image::render($item['image_left'], [
@@ -215,7 +215,7 @@
                         data-tis-media-motion
                         @if($isOpen) style="opacity:1;visibility:visible" @endif>
                         <div
-                          class="text-image-slider__polaroid relative aspect-[4/5] w-full overflow-hidden rounded-[6px] ring-1 ring-deep-moss/10"
+                          class="text-image-slider__polaroid relative aspect-[4/5] w-full overflow-hidden rounded-[6px]"
                           data-tis-polaroid
                           style="transform: rotate({{ (int) $item['tilt_right'] }}deg)">
                           {!! Image::render($item['image_right'], [

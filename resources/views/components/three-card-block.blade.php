@@ -16,6 +16,7 @@
 
   $tabs = ThreeCardBlock::buildTabPanels($c);
   $showTabs = count($tabs) > 1;
+  $defaultTabIndex = ThreeCardBlock::defaultTabIndex($tabs, $c);
 
   $heading = trim((string) ($c['cards_heading'] ?? ''));
   $sub = trim((string) ($c['cards_subheading'] ?? ''));
@@ -76,6 +77,7 @@
   class="three-card-block {{ esc_attr(trim($root . ' ' . $sectionScrollMargin)) }} relative z-20 text-deep-moss"
   data-component-root
   data-three-card-block
+  data-default-tab="{{ (int) $defaultTabIndex }}"
   x-data="threeCardBlock()">
   <div class="{{ LayoutShell::INNER_MAX_GUTTERED }}">
     @if($heading !== '' || $sub !== '' || $body !== '')
@@ -123,7 +125,7 @@
             id="{{ esc_attr($tid) }}"
             role="tab"
             aria-controls="{{ esc_attr($pid) }}"
-            aria-selected="{{ $index === 0 ? 'true' : 'false' }}"
+            aria-selected="{{ $index === $defaultTabIndex ? 'true' : 'false' }}"
             x-bind:aria-selected="activeTab === {{ $index }} ? 'true' : 'false'"
             x-bind:tabindex="activeTab === {{ $index }} ? 0 : -1"
             x-on:click="selectTab({{ $index }})">
@@ -146,6 +148,7 @@
       @foreach($tabs as $index => $tab)
       <div
         class="three-card-block__panel"
+        @if($index !== $defaultTabIndex) hidden @endif
         x-show="activeTab === {{ $index }}"
         x-transition:enter="transition ease-out duration-300 motion-reduce:transition-none motion-reduce:duration-0"
         x-transition:enter-start="opacity-0"

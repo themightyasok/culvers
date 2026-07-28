@@ -366,6 +366,33 @@ final class ThreeCardBlock
     }
 
     /**
+     * Which tab panel should be active on first paint (homepage “What are you looking for today?”
+     * defaults to Latest Offers when that CPT tab is present).
+     *
+     * @param  list<array{label: string, slug: string, cards: list<array<string, mixed>>}>  $tabs
+     * @param  array<string, mixed>  $component
+     */
+    public static function defaultTabIndex(array $tabs, array $component): int
+    {
+        if ($tabs === []) {
+            return 0;
+        }
+
+        $heading = mb_strtolower(trim((string) ($component['cards_heading'] ?? '')));
+        if (! str_contains($heading, 'looking for today')) {
+            return 0;
+        }
+
+        foreach ($tabs as $index => $tab) {
+            if ($tab['slug'] === 'culvers_offer') {
+                return $index;
+            }
+        }
+
+        return 0;
+    }
+
+    /**
      * @param  array<string, mixed>  $component
      */
     public static function isManualSource(array $component): bool

@@ -83,7 +83,7 @@ if ($homeId <= 0) {
     }
 }
 
-// ── 2. Nav: Latest Offers under What's On (keep any top-level item) ───────────
+// ── 2. Nav: Latest Offers under What's On only (remove top-level duplicate) ─
 
 $locations = get_nav_menu_locations();
 $menuId = isset($locations['primary_navigation']) ? (int) $locations['primary_navigation'] : 0;
@@ -94,28 +94,38 @@ if ($menuId <= 0) {
     $items = wp_get_nav_menu_items($menuId);
     $whatsOnId = 0;
     $hasChildOffers = false;
+    /** @var list<int> $topLevelOffersIds */
+    $topLevelOffersIds = [];
 
     if (is_array($items)) {
         foreach ($items as $item) {
             if (! $item instanceof WP_Post) {
                 continue;
             }
-            $title = strtolower(trim((string) $item->post_title));
-            if ($title === "what's on" && (int) $item->menu_item_parent === 0) {
+            $titleLower = strtolower(trim((string) $item->post_title));
+            $isOffers = str_contains($titleLower, 'latest offers');
+            if ($titleLower === "what's on" && (int) $item->menu_item_parent === 0) {
                 $whatsOnId = (int) $item->ID;
             }
-            if (str_contains(strtolower((string) $item->post_title), 'latest offers')
-                && (int) $item->menu_item_parent === $whatsOnId
-                && $whatsOnId > 0) {
+            if ($isOffers && (int) $item->menu_item_parent === 0) {
+                $topLevelOffersIds[] = (int) $item->ID;
+            }
+            if ($isOffers && (int) $item->menu_item_parent === $whatsOnId && $whatsOnId > 0) {
                 $hasChildOffers = true;
             }
         }
     }
 
+    foreach ($topLevelOffersIds as $itemId) {
+        culvers_kate_run($dryRun, "Remove top-level Latest Offers menu item #{$itemId}", static function () use ($itemId): void {
+            wp_delete_post($itemId, true);
+        });
+    }
+
     if ($whatsOnId <= 0) {
         WP_CLI::warning('Could not find What\'s On parent in primary menu.');
     } elseif ($hasChildOffers) {
-        WP_CLI::log('Latest Offers already under What\'s On — no nav change.');
+        WP_CLI::log('Latest Offers already under What\'s On.');
     } else {
         $offersUrl = home_url('/latest-offers/');
         culvers_kate_run($dryRun, 'Add Latest Offers under What\'s On', static function () use ($menuId, $whatsOnId, $offersUrl): void {

@@ -4,7 +4,7 @@
   use App\Helpers\LayoutShell;
 
   /**
-   * Shop — store details. 2- or 3-column band (Contact | Address | optional
+   * Shop — store details. 1–3 column band (optional Contact | Address | optional
    * Social) inside a narrow readable shell. Phone is auto-linked as `tel:`.
    * Renders the Instagram lockup only when a URL or handle is provided.
    */
@@ -30,12 +30,30 @@
   /** ACF `details_show_social_column` (`true_false`, default on). Unchecked ⇒ two-column layout regardless of IG fields. */
   $explicitIncludeSocial = (bool) (int) ($c['details_show_social_column'] ?? 1);
   $hasSocial = $explicitIncludeSocial && ($igUrl !== '' || $igHandle !== '');
+  $hasPhone = $phone !== '';
+  $hasAddress = $addressLines !== [];
 
-  $hasDetails = $phone !== '' || $addressLines !== [] || $hasSocial;
+  $visibleColumnCount = ($hasPhone ? 1 : 0) + ($hasAddress ? 1 : 0) + ($hasSocial ? 1 : 0);
+  $hasDetails = $visibleColumnCount > 0;
 
-  $columnsGridClass = $hasSocial
-      ? 'lg:grid-cols-3'
-      : 'lg:grid-cols-2';
+  $columnsGridClass = match (true) {
+      $visibleColumnCount >= 3 => 'lg:grid-cols-3',
+      $visibleColumnCount === 2 => 'lg:grid-cols-2',
+      default => 'lg:grid-cols-1',
+  };
+
+  $firstColumnKey = match (true) {
+      $hasPhone => 'phone',
+      $hasAddress => 'address',
+      $hasSocial => 'social',
+      default => '',
+  };
+  $lastColumnKey = match (true) {
+      $hasSocial => 'social',
+      $hasAddress => 'address',
+      $hasPhone => 'phone',
+      default => '',
+  };
 @endphp
 
 @if($hasDetails)
@@ -57,9 +75,9 @@
              `max-sm:` overrides land Figma 51:8898 / 8902 / 8906 mobile (Halyard Medium 20 / lh 24)
              so tablet + desktop keep Canela 32 exactly as shipped.
              Values (51:6901, 51:6904) remain Halyard Book 24 / lh 30 below. --}}
-        <div class="shop-store-details__column flex flex-col items-center py-6 text-center lg:items-center lg:px-8 lg:py-0 {{ $hasSocial ? '' : 'lg:pl-0' }}">
-          <p class="{{ Component::mobilePanelSubheadClasses('text-faded-olive') }}">{{ esc_html($contactLabel) }}</p>
-          @if($phone !== '')
+        @if($hasPhone)
+          <div class="shop-store-details__column flex flex-col items-center py-6 text-center lg:items-center lg:px-8 lg:py-0 {{ $firstColumnKey === 'phone' ? 'lg:pl-0' : '' }} {{ $lastColumnKey === 'phone' ? 'lg:pr-0' : '' }}">
+            <p class="{{ Component::mobilePanelSubheadClasses('text-faded-olive') }}">{{ esc_html($contactLabel) }}</p>
             @php $telHref = preg_replace('/[^0-9+]/', '', str_replace("\xc2\xa0", ' ', $phone)); @endphp
             <p class="mt-3 font-sans text-2xl font-light leading-[30px] text-faded-olive">
               @if($telHref !== '')
@@ -68,22 +86,22 @@
                 <span>{{ esc_html($phone) }}</span>
               @endif
             </p>
-          @endif
-        </div>
+          </div>
+        @endif
 
-        <div class="shop-store-details__column flex flex-col items-center py-10 text-center lg:items-center lg:px-8 lg:py-0 lg:text-center">
-          <p class="{{ Component::mobilePanelSubheadClasses('text-faded-olive') }}">{{ esc_html($addressLabel) }}</p>
-          @if($addressLines !== [])
+        @if($hasAddress)
+          <div class="shop-store-details__column flex flex-col items-center py-10 text-center lg:items-center lg:px-8 lg:py-0 lg:text-center {{ $firstColumnKey === 'address' ? 'lg:pl-0' : '' }} {{ $lastColumnKey === 'address' ? 'lg:pr-0' : '' }}">
+            <p class="{{ Component::mobilePanelSubheadClasses('text-faded-olive') }}">{{ esc_html($addressLabel) }}</p>
             <p class="shop-store-details__address mt-3 font-sans text-2xl font-light leading-[30px] text-faded-olive">
               @foreach($addressLines as $index => $line)
                 @if($index > 0)<br aria-hidden="true">@endif{{ esc_html($line) }}
               @endforeach
             </p>
-          @endif
-        </div>
+          </div>
+        @endif
 
         @if($hasSocial)
-          <div class="shop-store-details__column flex flex-col items-center py-6 text-center lg:items-center lg:px-8 lg:py-0 lg:pr-0">
+          <div class="shop-store-details__column flex flex-col items-center py-6 text-center lg:items-center lg:px-8 lg:py-0 {{ $firstColumnKey === 'social' ? 'lg:pl-0' : '' }} {{ $lastColumnKey === 'social' ? 'lg:pr-0' : '' }}">
             <p class="{{ Component::mobilePanelSubheadClasses('text-faded-olive') }}">{{ esc_html($socialLabel) }}</p>
             @php
               $socialLinkClass =

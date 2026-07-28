@@ -594,6 +594,14 @@ export default function registerThreeCardBlockAlpine(Alpine) {
     },
 
     init() {
+      const root = this.$root;
+      if (root instanceof HTMLElement) {
+        const parsed = Number.parseInt(root.dataset.defaultTab ?? '', 10);
+        if (Number.isFinite(parsed) && parsed >= 0) {
+          this.activeTab = parsed;
+        }
+      }
+
       this.syncTabAccessibility();
       this.bindMobileQuery();
       this.boundOnResize = this.onResize.bind(this);
