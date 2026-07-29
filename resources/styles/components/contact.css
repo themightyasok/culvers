@@ -4,12 +4,13 @@
  * styles ship without relying on Tailwind arbitrary variants in Blade.
  */
 
+/* Match <strong> lines in the same block (e.g. “Management Office opening hours”). */
 .contact__after-submit :where(h2, h3) {
   margin: 0 0 0.75rem;
-  font-family: var(--font-heading, Canela, Georgia, serif);
-  font-size: 1.5rem;
-  font-weight: 400;
-  line-height: 1.25;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: 600;
+  line-height: inherit;
   color: var(--color-deep-moss, #2d3a2a);
 }
 
