@@ -344,8 +344,7 @@
           </div>
 
           @if($afterSubmit !== '')
-            <div
-              class="contact__after-submit md:col-span-2 mt-8 max-w-xl font-sans text-base font-light leading-[1.45] text-faded-olive [&_h2]:mb-3 [&_h2]:font-heading [&_h2]:text-2xl [&_h2]:font-normal [&_h2]:leading-tight [&_h2]:text-deep-moss [&_h3]:mb-3 [&_h3]:font-heading [&_h3]:text-2xl [&_h3]:font-normal [&_h3]:leading-tight [&_h3]:text-deep-moss [&_p]:mt-3 [&_p:first-child]:mt-0 [&_br]:block [&_a]:underline [&_a]:decoration-faded-olive/40 [&_a]:underline-offset-2 hover:[&_a]:decoration-dustleaf [&_strong]:font-semibold [&_strong]:text-deep-moss">
+            <div class="contact__after-submit md:col-span-2 mt-8 max-w-xl font-sans text-base font-light leading-[1.45] text-faded-olive">
               {!! \App\Helpers\Sanitizer::wysiwyg($afterSubmit) !!}
             </div>
           @endif

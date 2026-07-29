@@ -1,6 +1,44 @@
 /**
  * Contact page — map embed chrome; theme zoom buttons only.
+ * After-submit note (e.g. Lost Property) — real CSS so spacing/heading
+ * styles ship without relying on Tailwind arbitrary variants in Blade.
  */
+
+.contact__after-submit :where(h2, h3) {
+  margin: 0 0 0.75rem;
+  font-family: var(--font-heading, Canela, Georgia, serif);
+  font-size: 1.5rem;
+  font-weight: 400;
+  line-height: 1.25;
+  color: var(--color-deep-moss, #2d3a2a);
+}
+
+.contact__after-submit :where(p) {
+  margin: 0;
+}
+
+.contact__after-submit :where(p + p) {
+  margin-top: 1rem;
+}
+
+.contact__after-submit :where(h2 + p, h3 + p) {
+  margin-top: 0;
+}
+
+.contact__after-submit :where(strong) {
+  font-weight: 600;
+  color: var(--color-deep-moss, #2d3a2a);
+}
+
+.contact__after-submit :where(a) {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  text-decoration-color: color-mix(in srgb, var(--color-faded-olive, #6b7a5a) 40%, transparent);
+}
+
+.contact__after-submit :where(a:hover) {
+  text-decoration-color: var(--color-dustleaf, #8a9a7a);
+}
 
 .contact__map-frame {
   isolation: isolate;
