@@ -173,5 +173,20 @@ return [
                 ],
             ],
         ],
+        'msg_after_submit' => Component::sectionDivider(__('Below the form', 'culvers')),
+        'contact_after_submit' => [
+            'type' => 'wysiwyg',
+            'options' => [
+                'label' => __('Text below the submit button', 'culvers'),
+                'instructions' => __(
+                    'Optional note shown under the form submit button (for example Lost Property hours). '
+                    . 'Leave blank to hide.',
+                    'culvers'
+                ),
+                'tabs' => 'all',
+                'toolbar' => 'basic',
+                'media_upload' => 0,
+            ],
+        ],
     ],
 ];

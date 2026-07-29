@@ -50,6 +50,7 @@ the full list (`contact_form_first_name_*` through
 | --- | --- | --- | --- |
 | `contact_form_success_message` | text | `Thanks — your message is on its way.` | Shown next to the submit button after success. |
 | `contact_form_reasons` | repeater (0–12, `table` layout) | — | When empty, "reason for enquiry" renders as a free-text input; otherwise as a select. |
+| `contact_after_submit` | wysiwyg | — | Optional copy rendered under the submit button (e.g. Lost Property / Management Office hours). |
 
 ## Wiring (one-time setup)
 
