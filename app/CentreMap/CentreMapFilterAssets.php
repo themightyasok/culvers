@@ -9,14 +9,14 @@ namespace App\CentreMap;
  *
  * Files live under {@see self::DIR} with filenames matching category slugs
  * (see Plan my visit centre_map categories + {@see DirectoryFilterDefinitions}).
- * PNG is preferred when present; SVG remains a fallback for legacy files.
+ * SVG is preferred (July 2026 V7); PNG remains a fallback if an SVG is missing.
  */
 final class CentreMapFilterAssets
 {
     private const DIR = 'resources/images/centre-map/filters/';
 
     /** @var list<string> */
-    private const EXTS = ['png', 'svg'];
+    private const EXTS = ['svg', 'png'];
 
     /** @var array<string, string> canonical slug => filename stem */
     private const FILES = [
@@ -132,7 +132,7 @@ final class CentreMapFilterAssets
     }
 
     /**
-     * Prefer PNG (July 2026 V7), fall back to SVG (May 2026 V5).
+     * Prefer SVG (July 2026 V7), fall back to PNG if present.
      */
     private static function resolvePath(string $stem): string
     {
