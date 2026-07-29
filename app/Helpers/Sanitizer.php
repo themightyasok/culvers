@@ -216,6 +216,7 @@ final class Sanitizer
                         'split_body',
                         'scroller_header_text', 'scroller_subheading_text', 'scroller_body_text',
                         'details_address',
+                        'contact_after_submit',
                         // Repeater sub-fields & misc rich-text holders kept across components.
                         'hero_subtitle_line',
                         'item_body', 'card_body',
