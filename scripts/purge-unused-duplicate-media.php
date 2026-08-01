@@ -18,7 +18,10 @@ if (! defined('WPINC') || ! defined('WP_CLI') || ! WP_CLI) {
     exit(1);
 }
 
-$apply = in_array('--apply', $_SERVER['argv'] ?? [], true);
+$argvList = $_SERVER['argv'] ?? [];
+$apply = in_array('--apply', $argvList, true)
+    || in_array('apply', $argvList, true)
+    || getenv('CULVERS_PURGE_APPLY') === '1';
 
 global $wpdb;
 
