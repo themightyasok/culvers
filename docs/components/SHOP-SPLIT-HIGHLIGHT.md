@@ -38,8 +38,8 @@ Copy is always centre-aligned horizontally and vertically in the theme. Use **`s
 | Field | Type | Default | Notes |
 | --- | --- | --- | --- |
 | `split_copy_background` | select (`olive`, `white`) | `olive` | Olive + white text, or white + deep moss text. |
-| `split_kicker` | text | | Glowleaf Canela first line. |
-| `split_headline` | text | | Second Canela line. |
+| `split_kicker` | text | | Glowleaf Canela first line (dates / emphasis belong here, not in body). |
+| `split_headline` | text | | Second Glowleaf Canela line (dates / emphasis OK here too). |
 | `split_body` | wysiwyg (`toolbar: basic`, `media_upload: 0`) | Halyard (body) copy. |
 | `split_cta_label` | text | Leave blank to hide. |
 | `split_cta_url` | url | |

@@ -58,106 +58,11 @@ final class PrimaryNav
     }
 
     /**
-     * When WP assigns the same attachment to many submenu items, hover previews would all look
-     * identical. Fill with distinct media URLs.
+     * Pass-through — sibling mega previews may match when editors reuse a branch image.
+     * Do not invent substitutes from the Media Library: that pulled “latest upload”
+     * assets (logos, offer art) onto rows that had no fixed preview (e.g. Latest Offers).
+     * Set a mega preview per submenu item in Appearance → Menus instead.
      *
-     * @param  list<NavChild>  $children
-     * @return list<NavChild>
-     */
-    private static function fillDistinctMegaPreviews(array $children): array
-    {
-        $pool = self::megaPreviewImageUrlPool();
-        if ($pool === []) {
-            return $children;
-        }
-
-        /** @var array<string, true> $seen */
-        $seen = [];
-        $cursor = 0;
-        $out = [];
-
-        foreach ($children as $child) {
-            $url = trim($child['preview']);
-            if ($url !== '' && ! isset($seen[$url])) {
-                $seen[$url] = true;
-                $out[] = $child;
-
-                continue;
-            }
-
-            $picked = self::nextDistinctPoolUrl($pool, $seen, $cursor);
-            if ($picked === null) {
-                $out[] = $child;
-
-                continue;
-            }
-
-            $seen[$picked] = true;
-            $out[] = [
-                'title' => $child['title'],
-                'url' => $child['url'],
-                'preview' => $picked,
-            ];
-        }
-
-        return $out;
-    }
-
-    /**
-     * @param  list<string>           $pool
-     * @param  array<string, true>    $seen
-     */
-    private static function nextDistinctPoolUrl(array $pool, array &$seen, int &$cursor): ?string
-    {
-        $n = count($pool);
-        for ($step = 0; $step < $n; $step++) {
-            $idx = ($cursor + $step) % $n;
-            $candidate = $pool[$idx];
-            if (! isset($seen[$candidate])) {
-                $cursor = ($idx + 1) % $n;
-
-                return $candidate;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * @return list<string>
-     */
-    private static function megaPreviewImageUrlPool(): array
-    {
-        static $cache = null;
-        if (is_array($cache)) {
-            return $cache;
-        }
-
-        $q = new \WP_Query([
-            'post_type' => 'attachment',
-            'post_status' => 'inherit',
-            'post_mime_type' => 'image',
-            'posts_per_page' => 200,
-            'orderby' => 'ID',
-            'order' => 'DESC',
-            'fields' => 'ids',
-            'no_found_rows' => true,
-        ]);
-
-        $urls = [];
-        foreach ($q->posts as $aid) {
-            $u = wp_get_attachment_image_url((int) $aid, 'large');
-            if (is_string($u) && $u !== '') {
-                $urls[] = esc_url($u);
-            }
-        }
-
-        $cache = $urls;
-
-        return $cache;
-    }
-
-    /**
      * @param  list<NavBranch>  $tree
      * @return list<NavBranch>
      */
@@ -165,15 +70,11 @@ final class PrimaryNav
     {
         $out = [];
         foreach ($tree as $branch) {
-            $kids = $branch['children'];
-            if (count($kids) > 1) {
-                $kids = self::fillDistinctMegaPreviews($kids);
-            }
             $out[] = self::withCurrentFlag([
                 'id' => $branch['id'],
                 'title' => $branch['title'],
                 'url' => $branch['url'],
-                'children' => $kids,
+                'children' => $branch['children'],
             ]);
         }
 

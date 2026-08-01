@@ -71,7 +71,11 @@ return [
             'type' => 'text',
             'options' => [
                 'label' => __('Kicker line', 'culvers'),
-                'instructions' => __('First line in Glowleaf serif (e.g. Piercing Parlour).', 'culvers'),
+                'instructions' => __(
+                    'First Glowleaf Canela line (e.g. Piercing Parlour, or a date like Saturday 15 August). '
+                    . 'Use this field for the extended green date/emphasis type — not the body.',
+                    'culvers'
+                ),
                 'wrapper' => ['width' => '50'],
                 'conditional_logic' => $staticOnly,
             ],
@@ -80,7 +84,11 @@ return [
             'type' => 'text',
             'options' => [
                 'label' => __('Headline line', 'culvers'),
-                'instructions' => __('Second serif line (e.g. Now Open).', 'culvers'),
+                'instructions' => __(
+                    'Second Glowleaf Canela line (e.g. Now Open). Put offer validity / event dates here '
+                    . 'or in Kicker when you want the large green serif treatment.',
+                    'culvers'
+                ),
                 'wrapper' => ['width' => '50'],
                 'conditional_logic' => $staticOnly,
             ],
@@ -89,7 +97,11 @@ return [
             'type' => 'wysiwyg',
             'options' => [
                 'label' => __('Body', 'culvers'),
-                'instructions' => __('White sans body copy and lists.', 'culvers'),
+                'instructions' => __(
+                    'White sans body copy and lists. Dates here stay body style — use Kicker/Headline '
+                    . 'for the large green Canela date line.',
+                    'culvers'
+                ),
                 'tabs' => 'all',
                 'toolbar' => 'basic',
                 'media_upload' => 0,

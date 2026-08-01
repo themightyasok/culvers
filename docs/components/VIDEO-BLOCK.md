@@ -1,7 +1,8 @@
 # Video block (`video_block`)
 
-Self-hosted MP4 / WebM with a branded play CTA, scaled hover frame,
-and a poster image (or first decoded frame as a fallback).
+Self-hosted MP4 / WebM with a branded play CTA and poster, **or** a
+static image in the same branded frame. Editors pick Image or Video
+in the CMS (backend toggle — not a front-end control).
 
 | | |
 | --- | --- |
@@ -14,27 +15,28 @@ and a poster image (or first decoded frame as a fallback).
 
 ## When to use
 
-A single contained video. For a row of mixed media use
-[`horizontal_scroller`](HORIZONTAL-SCROLLER.md) (which supports video
-items). For a backdrop video behind a hero, use the General-tab
-`background_type=video` field on any component (see
-[`COMPONENT-AUTHORING.md`](../COMPONENT-AUTHORING.md) §2 "What the
-registry adds for you").
+A single contained media band. Use **Image** when the finished video
+is not ready yet. For a row of mixed media use
+[`horizontal_scroller`](HORIZONTAL-SCROLLER.md). For a backdrop video
+behind a hero, use the General-tab `background_type=video` field on
+any component (see [`COMPONENT-AUTHORING.md`](../COMPONENT-AUTHORING.md)).
 
 ## Editor fields
 
 | Field | Type | Default | Notes |
 | --- | --- | --- | --- |
 | `video_instructions` | message | — | Editor-only note. |
-| `video_file` | file (mp4 / webm, required) | — | |
-| `video_poster` | image | — | Shown until play. Without one the theme primes the first decoded frame when supported. |
-| `video_play_label` | text | `Play video` | Accessible name for the play CTA. |
+| `video_media_type` | button group (`image` / `video`) | `video` | Backend toggle. |
+| `video_image` | image (required when Image) | — | Still inside the branded frame; no play UI. |
+| `video_file` | file (mp4 / webm, required when Video) | — | |
+| `video_poster` | image | — | Video only. Shown until play. |
+| `video_play_label` | text | `Play video` | Video only. |
 
 ## Behaviour notes
 
-- Hover scales the frame slightly; gated by
+- Image mode: static cover only (no Alpine play control).
+- Video mode: click play CTA for inline playback; hover scale gated by
   `prefers-reduced-motion: reduce`.
-- Click on the play CTA enters native fullscreen / inline playback.
 
 ## Related components
 
