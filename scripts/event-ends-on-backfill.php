@@ -4,21 +4,19 @@
  * Backfill `event_ends_on` from free-text `event_card_date` where parseable, then
  * draft any published events that have already ended.
  *
- * Usage (from app/public):
- *   ./wp-content/themes/culvers/scripts/with-local-env.sh wp eval-file \
- *     wp-content/themes/culvers/scripts/event-ends-on-backfill.php
- *
  * Dry-run by default. Apply with:
- *   CULVERS_EVENT_ENDS_APPLY=1 wp eval-file …
+ *   CULVERS_EVENT_ENDS_APPLY=1 wp eval-file wp-content/themes/culvers/scripts/event-ends-on-backfill.php
+ *
+ * @phpstan-ignore-file
  */
 
-declare(strict_types=1);
-
-use App\Directory\EventExpiry;
-
-if (! defined('ABSPATH')) {
-    fwrite(STDERR, "Run via WP-CLI eval-file.\n");
+if (! defined('WPINC') || ! defined('WP_CLI') || ! WP_CLI) {
+    fwrite(STDERR, "Run via WP-CLI (wp eval-file).\n");
     exit(1);
+}
+
+if (! function_exists('get_field') || ! function_exists('update_field')) {
+    WP_CLI::error('ACF required.');
 }
 
 $apply = getenv('CULVERS_EVENT_ENDS_APPLY') === '1';
@@ -90,7 +88,7 @@ function culvers_event_ends_parse_display(string $text): ?DateTimeImmutable
         }
     }
 
-    return EventExpiry::parseDate($text);
+    return \App\Directory\EventExpiry::parseDate($text);
 }
 
 $posts = get_posts([
@@ -107,7 +105,7 @@ $unparsed = [];
 
 foreach ($posts as $post) {
     $id = (int) $post->ID;
-    $existing = EventExpiry::endDateYmd($id);
+    $existing = \App\Directory\EventExpiry::endDateYmd($id);
     if ($existing !== null) {
         $skipped++;
         continue;
@@ -140,8 +138,8 @@ foreach ($posts as $post) {
     ));
 
     if ($apply) {
-        update_field(EventExpiry::FIELD, $ymd, $id);
-        EventExpiry::rescheduleForPost($id);
+        update_field(\App\Directory\EventExpiry::FIELD, $ymd, $id);
+        \App\Directory\EventExpiry::rescheduleForPost($id);
     }
     $filled++;
 }
@@ -158,7 +156,7 @@ foreach ($unparsed as $line) {
 }
 
 if ($apply) {
-    $unpublished = EventExpiry::unpublishExpired();
+    $unpublished = \App\Directory\EventExpiry::unpublishExpired();
     WP_CLI::success(sprintf(
         'Applied. Unpublished %d expired published event(s): %s',
         count($unpublished),
