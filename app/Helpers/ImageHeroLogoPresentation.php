@@ -7,8 +7,8 @@ namespace App\Helpers;
 /**
  * Hero logo display hints for {@see resources/views/components/image-hero.blade.php}.
  *
- * Wide horizontal wordmarks, square emblems, and default lockups each get different
- * max-height caps in unlayered `.image-hero__logo*` rules (see app.css).
+ * Wide horizontal wordmarks, square emblems, and default lockups pick size buckets
+ * in unlayered `.image-hero__logo*` rules (shared target height — see app.css).
  */
 final class ImageHeroLogoPresentation
 {

@@ -434,16 +434,18 @@
 
 /*
  * Image-hero centre lockups (shop / eat-drink singles). Unlayered so rules beat WP layers.
- * Figma 51:6165 (Accessorize shop hero): wordmark ≈597×57px. Figma 51:6689 (Greggs food):
- * ≈473×107px. Mobile 51:8867: ≈301×29px.
- * Small assets need a display width to upscale; cap at 597px (37.3125rem), not 46rem (736px),
- * and bind height with max-height so wide marks do not balloon to ~160px+ tall.
+ *
+ * Wordmarks (default + wide) share a target HEIGHT so small Media Library assets
+ * upscale and large ones downscale to the same visual size (~128px / 8rem on lg).
+ * `max-height` alone was a ceiling only — tiny Pandora/TK Maxx files stayed native
+ * while Hotel Chocolat / Love Reform filled the old 9.5rem wide-lockup cap.
  */
 .image-hero__logo {
   display: block;
-  width: min(85vw, 22rem);
-  height: auto;
-  max-height: 3rem;
+  width: auto;
+  height: 3.25rem;
+  max-height: 3.25rem;
+  max-width: min(88vw, 22rem);
   object-fit: contain;
   object-position: center;
   /* Brand marks from CMS are usually dark/colour; render white over hero imagery
@@ -470,61 +472,65 @@
 
 @media (min-width: 640px) {
   .image-hero__logo {
-    width: min(78vw, 28rem);
-    max-height: 2.375rem;
+    height: 5.5rem;
+    max-height: 5.5rem;
+    max-width: min(88vw, 34rem);
   }
 }
 
 @media (min-width: 1024px) {
   .image-hero__logo {
-    width: min(72vw, 37.3125rem);
-    max-height: 6.6875rem;
+    height: 8rem;
+    max-height: 8rem;
+    max-width: min(85vw, 42rem);
   }
 }
 
-/* Circular emblems (Cosmic Tattoo etc.) — must follow wordmark breakpoints and
- * beat `.image-hero__logo` max-height caps with higher specificity. */
+/* Circular / tall emblems — slightly larger than wordmarks, but capped (was up to 20rem). */
 .image-hero__logo.image-hero__logo--emblem {
   width: auto;
-  max-width: min(78vw, 16rem);
-  max-height: min(78vw, 16rem);
+  height: 6.5rem;
+  max-width: 6.5rem;
+  max-height: 6.5rem;
 }
 
 @media (min-width: 640px) {
   .image-hero__logo.image-hero__logo--emblem {
-    width: auto;
-    max-width: min(56vw, 22rem);
-    max-height: min(56vw, 22rem);
+    height: 8rem;
+    max-width: 8rem;
+    max-height: 8rem;
   }
 }
 
 @media (min-width: 1024px) {
   .image-hero__logo.image-hero__logo--emblem {
-    width: auto;
-    max-width: min(28vw, 20rem);
-    max-height: min(28vw, 20rem);
+    height: 9rem;
+    max-width: 9rem;
+    max-height: 9rem;
   }
 }
 
-/* Wide horizontal wordmarks (Snow's Collectables etc.) — size from max-height with
-   width:auto so object-fit:contain fills the height cap (no empty wide box). */
+/* Wide horizontal wordmarks — same target height as default; allow a wider max-width. */
 .image-hero__logo.image-hero__logo--wide-lockup {
   width: auto;
+  height: 3.25rem;
+  max-height: 3.25rem;
   max-width: min(92vw, 36rem);
-  max-height: 4.5rem;
 }
 
 @media (min-width: 640px) {
   .image-hero__logo.image-hero__logo--wide-lockup {
-    max-width: min(88vw, 42rem);
-    max-height: 6.5rem;
+    height: 5.5rem;
+    max-height: 5.5rem;
+    max-width: min(90vw, 42rem);
   }
 }
 
 @media (min-width: 1024px) {
   .image-hero__logo.image-hero__logo--wide-lockup {
-    max-width: min(75vw, 44rem);
-    max-height: 9.5rem;
+    height: 8rem;
+    max-height: 8rem;
+    max-width: min(88vw, 44rem);
   }
 }
 
