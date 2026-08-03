@@ -30,6 +30,7 @@ AcfFlexibleAdmin::register();
 NavMegaPreviewAdmin::register();
 AdminMenu::register();
 HideClassicEditor::register();
+Directory\EventExpiry::register();
 
 add_action('init', static function (): void {
     Directory\DirectoryPostTypes::register();

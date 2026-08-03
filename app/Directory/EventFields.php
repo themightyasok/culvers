@@ -42,6 +42,19 @@ final class EventFields
             'placeholder' => __('Sat 12 July', 'culvers'),
         ]);
 
+        $group->addDatePicker('event_ends_on', [
+            'label' => __('Event end date', 'culvers'),
+            'instructions' => __(
+                'Last day of the event (or the only day for one-offs). The event is automatically '
+                . 'unpublished the following day. Leave empty for ongoing or recurring listings.',
+                'culvers'
+            ),
+            'display_format' => 'j F Y',
+            'return_format' => 'Ymd',
+            'first_day' => 1,
+            'required' => 0,
+        ]);
+
         $group->addText('event_card_time', [
             'label' => __('Time line (card)', 'culvers'),
             'instructions' => __('Short time for the card, e.g. "10:00–16:00" or "Drop-in all day".', 'culvers'),
