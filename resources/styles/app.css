@@ -682,6 +682,16 @@ a.footer-getting-here-map-link:focus-visible {
 }
 
 /*
+ * CMS `<highlight>…</highlight>` (via TextFormatter) — Glowleaf Canela inline accent.
+ * Inherits surrounding font-size so it works inside body copy.
+ */
+.culvers-highlight {
+  font-family: var(--font-heading);
+  color: var(--color-glowleaf);
+  font-weight: 400;
+}
+
+/*
  * Split highlight — static copy column centres CMS prose (What's On singles often
  * import left-aligned HTML). Unlayered so !important beats inline text-align.
  * Tabbed decks stay top-aligned via Blade; prose remains centred horizontally.

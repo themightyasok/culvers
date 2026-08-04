@@ -9,6 +9,7 @@
 declare(strict_types=1);
 
 use App\Helpers\Component;
+use App\Helpers\TextFormatter;
 
 $staticOnly = [[['field' => 'split_use_tabs', 'operator' => '!=', 'value' => '1']]];
 $tabsOnly = [[['field' => 'split_use_tabs', 'operator' => '==', 'value' => '1']]];
@@ -99,9 +100,9 @@ return [
                 'label' => __('Body', 'culvers'),
                 'instructions' => __(
                     'White sans body copy and lists. Dates here stay body style — use Kicker/Headline '
-                    . 'for the large green Canela date line.',
+                    . 'for the large green Canela date line. ',
                     'culvers'
-                ),
+                ) . TextFormatter::highlightFieldInstructions(),
                 'tabs' => 'all',
                 'toolbar' => 'basic',
                 'media_upload' => 0,
@@ -208,7 +209,8 @@ return [
                         'type' => 'wysiwyg',
                         'options' => [
                             'label' => __('Panel body', 'culvers'),
-                            'instructions' => __('White sans body copy.', 'culvers'),
+                            'instructions' => __('White sans body copy. ', 'culvers')
+                                . TextFormatter::highlightFieldInstructions(),
                             'tabs' => 'all',
                             'toolbar' => 'basic',
                             'media_upload' => 0,

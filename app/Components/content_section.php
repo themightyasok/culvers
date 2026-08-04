@@ -7,6 +7,7 @@
 declare(strict_types=1);
 
 use App\Helpers\Component;
+use App\Helpers\TextFormatter;
 
 return [
     'label' => __('Content section', 'culvers'),
@@ -30,6 +31,7 @@ return [
             'type' => 'wysiwyg',
             'options' => [
                 'label' => __('Body', 'culvers'),
+                'instructions' => TextFormatter::highlightFieldInstructions(),
                 'tabs' => 'all',
                 'toolbar' => 'full',
                 'media_upload' => 1,

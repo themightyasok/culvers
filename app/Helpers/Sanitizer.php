@@ -17,12 +17,8 @@ final class Sanitizer
      */
     public static function wysiwyg(string $content): string
     {
-        $allowed = wp_kses_allowed_html('post');
-        $allowed['small'] = array_merge($allowed['small'] ?? [], ['data-font' => true]);
-        $allowed['br'] = $allowed['br'] ?? [];
-        $allowed['em'] = array_merge($allowed['em'] ?? [], ['data-font' => true]);
-
-        return (string) wp_kses($content, $allowed);
+        // Expand `<highlight>` / legacy `<pink>` then kses (Canela + Glowleaf).
+        return TextFormatter::rich($content);
     }
 
     /**

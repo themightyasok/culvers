@@ -7,13 +7,28 @@ namespace App\Helpers;
 /**
  * WYSIWYG / plain text output with optional CMS highlight tags.
  *
- * Supports editor-authored {@code <highlight>...</highlight>} (semantic alias for brand accent).
+ * Supports editor-authored {@code <highlight>...</highlight>} → Glowleaf Canela
+ * ({@see self::HIGHLIGHT_CLASS}). Legacy {@code <pink>} is an alias.
  */
 final class TextFormatter
 {
+    /** Rendered class for highlight / pink tags (Canela + Glowleaf in app.css). */
+    public const HIGHLIGHT_CLASS = 'culvers-highlight';
+
+    /** Short ACF field instruction for editors. */
+    public static function highlightFieldInstructions(): string
+    {
+        return __(
+            'Wrap words in <highlight>…</highlight> for Glowleaf Canela emphasis '
+            . '(e.g. <highlight>Now open</highlight>).',
+            'culvers'
+        );
+    }
+
     public static function replaceHighlightTags(string $text): string
     {
-        $with_open = (string) preg_replace('/<\s*highlight\s*>/i', '<span class="text-brand-500">', $text);
+        $open = '<span class="' . self::HIGHLIGHT_CLASS . '">';
+        $with_open = (string) preg_replace('/<\s*highlight\s*>/i', $open, $text);
 
         return (string) preg_replace('/<\s*\/\s*highlight\s*>/i', '</span>', $with_open);
     }
@@ -21,7 +36,8 @@ final class TextFormatter
     /** @deprecated Use {@see replaceHighlightTags}; kept for older content using {@code pink}. */
     public static function replacePinkTags(string $text): string
     {
-        $with_open = (string) preg_replace('/<\s*pink\s*>/i', '<span class="text-brand-500">', $text);
+        $open = '<span class="' . self::HIGHLIGHT_CLASS . '">';
+        $with_open = (string) preg_replace('/<\s*pink\s*>/i', $open, $text);
 
         return (string) preg_replace('/<\s*\/\s*pink\s*>/i', '</span>', $with_open);
     }
@@ -57,15 +73,7 @@ final class TextFormatter
         ) {
             $with_tags = wpautop($with_tags, true);
         }
-        $allowed = wp_kses_allowed_html('post');
-        $span = isset($allowed['span']) && is_array($allowed['span']) ? $allowed['span'] : [];
-        $span['class'] = true;
-        $allowed['span'] = $span;
-        $allowed['small'] = $allowed['small'] ?? [];
-        $allowed['br'] = $allowed['br'] ?? [];
-        $allowed['em'] = $allowed['em'] ?? [];
-
-        return (string) wp_kses($with_tags, $allowed);
+        return (string) wp_kses($with_tags, self::richAllowedTags());
     }
 
     public static function plain(string $text, bool $withLineBreaks = false): string
@@ -84,7 +92,7 @@ final class TextFormatter
             }
 
             if ((bool) preg_match('/^<\s*(?:pink|highlight)\s*>$/i', $part)) {
-                $output .= '<span class="text-brand-500">';
+                $output .= '<span class="' . self::HIGHLIGHT_CLASS . '">';
                 $open_spans++;
 
                 continue;
@@ -163,5 +171,29 @@ final class TextFormatter
                 'rel' => true,
             ],
         ];
+    }
+
+    /**
+     * Post HTML plus span.class / data-font attrs used by theme rich text.
+     *
+     * @return array<string, mixed>
+     */
+    private static function richAllowedTags(): array
+    {
+        $allowed = wp_kses_allowed_html('post');
+        $span = isset($allowed['span']) && is_array($allowed['span']) ? $allowed['span'] : [];
+        $span['class'] = true;
+        $allowed['span'] = $span;
+        $allowed['small'] = array_merge(
+            is_array($allowed['small'] ?? null) ? $allowed['small'] : [],
+            ['data-font' => true]
+        );
+        $allowed['br'] = $allowed['br'] ?? [];
+        $allowed['em'] = array_merge(
+            is_array($allowed['em'] ?? null) ? $allowed['em'] : [],
+            ['data-font' => true]
+        );
+
+        return $allowed;
     }
 }

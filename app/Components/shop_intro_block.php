@@ -6,6 +6,8 @@
 
 declare(strict_types=1);
 
+use App\Helpers\TextFormatter;
+
 return [
     'label' => __('Shop — intro block', 'culvers'),
     'display' => 'block',
@@ -14,7 +16,8 @@ return [
             'type' => 'wysiwyg',
             'options' => [
                 'label' => __('Intro copy', 'culvers'),
-                'instructions' => __('Single centred column (sans body in designs).', 'culvers'),
+                'instructions' => __('Single centred column (sans body in designs). ', 'culvers')
+                    . TextFormatter::highlightFieldInstructions(),
                 'tabs' => 'all',
                 'toolbar' => 'basic',
                 'media_upload' => 0,
