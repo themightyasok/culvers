@@ -92,8 +92,8 @@ final class ImageHeroLogoPresentation
 
         $meta = wp_get_attachment_metadata($id);
         if (is_array($meta)) {
-            $width = isset($meta['width']) ? self::positiveInt($meta['width']) : 0;
-            $height = isset($meta['height']) ? self::positiveInt($meta['height']) : 0;
+            $width = self::positiveInt($meta['width']);
+            $height = self::positiveInt($meta['height']);
             if ($width > 0 && $height > 0) {
                 return [$width, $height];
             }
@@ -106,8 +106,8 @@ final class ImageHeroLogoPresentation
 
         $size = @getimagesize($path);
         if (is_array($size)) {
-            $width = isset($size[0]) ? self::positiveInt($size[0]) : 0;
-            $height = isset($size[1]) ? self::positiveInt($size[1]) : 0;
+            $width = self::positiveInt($size[0]);
+            $height = self::positiveInt($size[1]);
             if ($width > 0 && $height > 0) {
                 return [$width, $height];
             }
