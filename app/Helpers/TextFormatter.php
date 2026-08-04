@@ -9,6 +9,7 @@ namespace App\Helpers;
  *
  * - {@code <highlight>…</highlight>} — Glowleaf colour, keep surrounding font
  * - {@code <extended>…</extended>} — Glowleaf + Canela (display face)
+ * - {@code <validity>…</validity>} — Glowleaf Action Label (Commuters Sans, uppercase)
  * - {@code <pink>…</pink>} — legacy alias of {@code <highlight>}
  */
 final class TextFormatter
@@ -19,13 +20,18 @@ final class TextFormatter
     /** Glowleaf + Canela. */
     public const EXTENDED_CLASS = 'culvers-highlight culvers-highlight--extended';
 
+    /** Glowleaf Action Label (offer dates, meta lines). */
+    public const VALIDITY_CLASS = 'culvers-validity';
+
     /** Short ACF field instruction for editors. */
     public static function highlightFieldInstructions(): string
     {
         return __(
             'Glowleaf colour: <highlight>…</highlight>. '
             . 'Glowleaf + Canela: <extended>…</extended> '
-            . '(e.g. <extended>Now open</extended>).',
+            . '(e.g. <extended>Now open</extended>). '
+            . 'Offer dates (small caps label): <validity>Offer valid between: …</validity> — '
+            . 'do not wrap dates in <extended>.',
             'culvers'
         );
     }
@@ -46,6 +52,14 @@ final class TextFormatter
         return (string) preg_replace('/<\s*\/\s*extended\s*>/i', '</span>', $with_open);
     }
 
+    public static function replaceValidityTags(string $text): string
+    {
+        $open = '<span class="' . self::VALIDITY_CLASS . '">';
+        $with_open = (string) preg_replace('/<\s*validity\s*>/i', $open, $text);
+
+        return (string) preg_replace('/<\s*\/\s*validity\s*>/i', '</span>', $with_open);
+    }
+
     /** @deprecated Use {@see replaceHighlightTags}; kept for older content using {@code pink}. */
     public static function replacePinkTags(string $text): string
     {
@@ -55,14 +69,22 @@ final class TextFormatter
         return (string) preg_replace('/<\s*\/\s*pink\s*>/i', '</span>', $with_open);
     }
 
-    /** Expand all accent tags (extended, highlight, pink). */
+    /** Expand all accent tags (validity, extended, highlight, pink). */
     public static function replaceAccentTags(string $text): string
     {
-        return self::replacePinkTags(self::replaceHighlightTags(self::replaceExtendedTags($text)));
+        // Validity first so a mistaken <extended><validity>… still lands on the label face.
+        return self::replacePinkTags(
+            self::replaceHighlightTags(
+                self::replaceExtendedTags(
+                    self::replaceValidityTags($text)
+                )
+            )
+        );
     }
 
     public static function inline(string $text): string
     {
+        $text = self::normalizeInput($text);
         $text = self::ensureLineBreaks($text);
         $with_tags = self::replaceAccentTags($text);
         $result = (string) wp_kses($with_tags, self::inlineAllowedTags());
@@ -84,6 +106,7 @@ final class TextFormatter
 
     private static function richInternal(string $text, bool $applyWpautop): string
     {
+        $text = self::normalizeInput($text);
         $text = self::ensureLineBreaks($text);
         $with_tags = self::replaceAccentTags($text);
         if (
@@ -93,13 +116,16 @@ final class TextFormatter
             $with_tags = wpautop($with_tags, true);
         }
 
-        return (string) wp_kses($with_tags, self::richAllowedTags());
+        $html = (string) wp_kses($with_tags, self::richAllowedTags());
+
+        return self::promoteOfferValidityParagraphs($html);
     }
 
     public static function plain(string $text, bool $withLineBreaks = false): string
     {
+        $text = self::normalizeInput($text);
         $parts = preg_split(
-            '/(<\s*\/?\s*(?:pink|highlight|extended)\s*>)/i',
+            '/(<\s*\/?\s*(?:pink|highlight|extended|validity)\s*>)/i',
             $text,
             -1,
             PREG_SPLIT_DELIM_CAPTURE
@@ -113,6 +139,13 @@ final class TextFormatter
 
         foreach ($parts as $part) {
             if ($part === '') {
+                continue;
+            }
+
+            if ((bool) preg_match('/^<\s*validity\s*>$/i', $part)) {
+                $output .= '<span class="' . self::VALIDITY_CLASS . '">';
+                $open_spans++;
+
                 continue;
             }
 
@@ -130,7 +163,7 @@ final class TextFormatter
                 continue;
             }
 
-            if ((bool) preg_match('/^<\s*\/\s*(?:pink|highlight|extended)\s*>$/i', $part)) {
+            if ((bool) preg_match('/^<\s*\/\s*(?:pink|highlight|extended|validity)\s*>$/i', $part)) {
                 if ($open_spans > 0) {
                     $output .= '</span>';
                     $open_spans--;
@@ -165,6 +198,7 @@ final class TextFormatter
             return false;
         }
 
+        $candidate = self::normalizeInput($candidate);
         $candidate = self::replaceAccentTags($candidate);
         $candidate = str_replace(["\xc2\xa0", '&nbsp;', '&#160;'], ' ', $candidate);
         $candidate = (string) preg_replace('/<br\s*\/?>/i', '', $candidate);
@@ -172,6 +206,57 @@ final class TextFormatter
         $candidate = (string) preg_replace('/[\s\p{Cf}]+/u', '', $candidate);
 
         return $candidate !== '';
+    }
+
+    /**
+     * TinyMCE / paste often entity-encodes tags (&lt;p&gt;…) while leaving custom
+     * accent tags intact — that renders as literal HTML on the front end.
+     */
+    private static function normalizeInput(string $text): string
+    {
+        if ($text === '' || ! str_contains($text, '&')) {
+            return $text;
+        }
+
+        return html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    }
+
+    /**
+     * Style “Offer valid between…” lines as Action Label / Glowleaf even when
+     * editors paste plain paragraphs (or legacy Tailwind utility classes).
+     */
+    private static function promoteOfferValidityParagraphs(string $html): string
+    {
+        if ($html === '' || ! preg_match('/offer\s+valid\s+between/i', $html)) {
+            return $html;
+        }
+
+        // Wrong accent on a validity phrase → label face.
+        $html = (string) preg_replace(
+            '/<span class="culvers-highlight(?:\s+culvers-highlight--extended)?">\s*(Offer\s+valid\s+between[\s\S]*?)<\/span>/i',
+            '<span class="' . self::VALIDITY_CLASS . '">$1</span>',
+            $html
+        );
+
+        return (string) preg_replace_callback(
+            '/<p\b([^>]*)>([\s\S]*?)<\/p>/i',
+            static function (array $match): string {
+                $attrs = $match[1];
+                $inner = $match[2];
+                $plain = trim(wp_strip_all_tags($inner));
+                if ($plain === '' || ! preg_match('/^offer\s+valid\s+between\b/i', $plain)) {
+                    return $match[0];
+                }
+
+                if (str_contains($attrs, self::VALIDITY_CLASS) || str_contains($inner, self::VALIDITY_CLASS)) {
+                    // Normalise legacy utility-class paragraphs to the theme class.
+                    return '<p class="' . self::VALIDITY_CLASS . '">' . $inner . '</p>';
+                }
+
+                return '<p class="' . self::VALIDITY_CLASS . '">' . $inner . '</p>';
+            },
+            $html
+        );
     }
 
     private static function ensureLineBreaks(string $text): string
@@ -190,7 +275,9 @@ final class TextFormatter
     {
         return [
             'br' => [],
-            'p' => [],
+            'p' => [
+                'class' => true,
+            ],
             'strong' => [],
             'em' => ['data-font' => true],
             'small' => ['data-font' => true],
@@ -216,6 +303,9 @@ final class TextFormatter
         $span = isset($allowed['span']) && is_array($allowed['span']) ? $allowed['span'] : [];
         $span['class'] = true;
         $allowed['span'] = $span;
+        $p = isset($allowed['p']) && is_array($allowed['p']) ? $allowed['p'] : [];
+        $p['class'] = true;
+        $allowed['p'] = $p;
         $allowed['small'] = array_merge(
             is_array($allowed['small'] ?? null) ? $allowed['small'] : [],
             ['data-font' => true]

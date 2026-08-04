@@ -685,7 +685,8 @@ a.footer-getting-here-map-link:focus-visible {
  * CMS accent tags (via TextFormatter):
  *   <highlight>…</highlight>  → Glowleaf colour, keep body font
  *   <extended>…</extended>    → Glowleaf + Canela
- * Inherit surrounding font-size so both work inside body copy.
+ *   <validity>…</validity>    → Glowleaf Action Label (offer dates)
+ * Inherit surrounding font-size for highlight/extended inside body copy.
  */
 .culvers-highlight {
   color: var(--color-glowleaf);
@@ -694,6 +695,21 @@ a.footer-getting-here-map-link:focus-visible {
 .culvers-highlight--extended {
   font-family: var(--font-heading);
   font-weight: 400;
+}
+
+/* Figma Action Label: Commuters Sans / 12px / semibold / widest / Glowleaf */
+.culvers-validity {
+  color: var(--color-glowleaf);
+  font-family: var(--font-label);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  line-height: var(--text-xs--line-height);
+  text-transform: uppercase;
+}
+
+.culvers-validity:where(p) {
+  margin: 0;
 }
 
 /*
