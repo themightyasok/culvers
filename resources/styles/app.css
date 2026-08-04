@@ -437,8 +437,10 @@
  *
  * Wordmarks (default + wide) share a target HEIGHT so small Media Library assets
  * upscale and large ones downscale to the same visual size (~128px / 8rem on lg).
- * `max-height` alone was a ceiling only — tiny Pandora/TK Maxx files stayed native
- * while Hotel Chocolat / Love Reform filled the old 9.5rem wide-lockup cap.
+ *
+ * Emblems (circles / stacked marks) use a much larger square stage (~2× wordmark
+ * height). Matching height alone leaves emblems optically tiny next to wide
+ * lockups that span 30–40rem horizontally.
  */
 .image-hero__logo {
   display: block;
@@ -486,27 +488,30 @@
   }
 }
 
-/* Circular / tall emblems — slightly larger than wordmarks, but capped (was up to 20rem). */
+/*
+ * Circular / stacked / squarish emblems — large square stage so optical weight
+ * matches wide wordmarks (was 9rem and looked like a pin-prick on 1440 heroes).
+ */
 .image-hero__logo.image-hero__logo--emblem {
   width: auto;
-  height: 6.5rem;
-  max-width: 6.5rem;
-  max-height: 6.5rem;
+  height: 9.5rem;
+  max-width: min(78vw, 9.5rem);
+  max-height: 9.5rem;
 }
 
 @media (min-width: 640px) {
   .image-hero__logo.image-hero__logo--emblem {
-    height: 8rem;
-    max-width: 8rem;
-    max-height: 8rem;
+    height: 13rem;
+    max-width: min(70vw, 13rem);
+    max-height: 13rem;
   }
 }
 
 @media (min-width: 1024px) {
   .image-hero__logo.image-hero__logo--emblem {
-    height: 9rem;
-    max-width: 9rem;
-    max-height: 9rem;
+    height: 16rem;
+    max-width: min(42vw, 16rem);
+    max-height: 16rem;
   }
 }
 

@@ -7,16 +7,26 @@ namespace App\Helpers;
 /**
  * Hero logo display hints for {@see resources/views/components/image-hero.blade.php}.
  *
- * Wide horizontal wordmarks, square emblems, and default lockups pick size buckets
- * in unlayered `.image-hero__logo*` rules (shared target height — see app.css).
+ * Buckets drive unlayered `.image-hero__logo*` rules in app.css:
+ * - wide: long wordmarks (shared target height, generous max-width)
+ * - emblem: circular / stacked / squarish marks (much larger square stage so
+ *   they match the visual weight of wide wordmarks)
+ * - default: medium wordmarks (same height as wide)
  */
 final class ImageHeroLogoPresentation
 {
-    /** Lockups taller than this height÷width ratio use emblem sizing. */
-    private const EMBLEM_MIN_ASPECT = 0.55;
-
-    /** Width÷height above this uses wide wordmark sizing (e.g. Snow's Collectables). */
+    /**
+     * Width÷height at or above this → wide wordmark sizing.
+     * (e.g. Snow's Collectables ≈ 2.55, Pandora ≈ 4.8)
+     */
     private const WIDE_LOCKUP_MIN_RATIO = 2.0;
+
+    /**
+     * Width÷height at or below this → emblem staging.
+     * Catches circles, stacked lockups, and marks with modest side padding
+     * (e.g. Colchester Aesthetics ≈ 1.86).
+     */
+    private const EMBLEM_MAX_RATIO = 1.9;
 
     /**
      * @param array<string, mixed>|null $logo ACF / attachment array passed to {@see Image::render}
@@ -25,8 +35,12 @@ final class ImageHeroLogoPresentation
     {
         [$width, $height] = self::dimensions($logo);
 
-        if ($width > 0 && $height > 0 && ($height / $width) >= self::EMBLEM_MIN_ASPECT) {
-            return true;
+        if ($width > 0 && $height > 0) {
+            $ratio = $width / $height;
+
+            if ($ratio <= self::EMBLEM_MAX_RATIO) {
+                return true;
+            }
         }
 
         if ($postId !== null && $postId > 0) {
@@ -53,8 +67,8 @@ final class ImageHeroLogoPresentation
     }
 
     /**
-     * Resolve intrinsic size from the ACF array, attachment meta, or the on-disk file
-     * when WP metadata is missing / 0×0 (common after SVG→PNG swaps or broken sideloads).
+     * Resolve intrinsic size from the ACF array, attachment meta, the on-disk
+     * raster, or an SVG viewBox / width / height when WP metadata is 0×0.
      *
      * @param array<string, mixed>|null $logo
      * @return array{0: int, 1: int}
@@ -72,27 +86,70 @@ final class ImageHeroLogoPresentation
         }
 
         $id = self::positiveInt($logo['ID'] ?? $logo['id'] ?? null);
-        if ($id > 0) {
-            $meta = wp_get_attachment_metadata($id);
-            if (is_array($meta)) {
-                $width = self::positiveInt($meta['width']);
-                $height = self::positiveInt($meta['height']);
-                if ($width > 0 && $height > 0) {
-                    return [$width, $height];
-                }
-            }
+        if ($id <= 0) {
+            return [0, 0];
+        }
 
-            $path = get_attached_file($id);
-            if (is_string($path) && $path !== '' && is_readable($path)) {
-                $size = @getimagesize($path);
-                if (is_array($size)) {
-                    $width = self::positiveInt($size[0]);
-                    $height = self::positiveInt($size[1]);
-                    if ($width > 0 && $height > 0) {
-                        return [$width, $height];
-                    }
-                }
+        $meta = wp_get_attachment_metadata($id);
+        if (is_array($meta)) {
+            $width = isset($meta['width']) ? self::positiveInt($meta['width']) : 0;
+            $height = isset($meta['height']) ? self::positiveInt($meta['height']) : 0;
+            if ($width > 0 && $height > 0) {
+                return [$width, $height];
             }
+        }
+
+        $path = get_attached_file($id);
+        if (! is_string($path) || $path === '' || ! is_readable($path)) {
+            return [0, 0];
+        }
+
+        $size = @getimagesize($path);
+        if (is_array($size)) {
+            $width = isset($size[0]) ? self::positiveInt($size[0]) : 0;
+            $height = isset($size[1]) ? self::positiveInt($size[1]) : 0;
+            if ($width > 0 && $height > 0) {
+                return [$width, $height];
+            }
+        }
+
+        $mime = get_post_mime_type($id);
+        if (is_string($mime) && str_contains($mime, 'svg')) {
+            return self::svgDimensions($path);
+        }
+
+        return [0, 0];
+    }
+
+    /**
+     * @return array{0: int, 1: int}
+     */
+    private static function svgDimensions(string $path): array
+    {
+        $svg = @file_get_contents($path);
+        if (! is_string($svg) || $svg === '') {
+            return [0, 0];
+        }
+
+        if (preg_match('/viewBox\s*=\s*["\']\s*([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s+([-\d.]+)\s*["\']/i', $svg, $m) === 1) {
+            $width = self::positiveInt((float) $m[3]);
+            $height = self::positiveInt((float) $m[4]);
+            if ($width > 0 && $height > 0) {
+                return [$width, $height];
+            }
+        }
+
+        $width = 0;
+        $height = 0;
+        if (preg_match('/\bwidth\s*=\s*["\']\s*([-\d.]+)(px)?\s*["\']/i', $svg, $m) === 1) {
+            $width = self::positiveInt((float) $m[1]);
+        }
+        if (preg_match('/\bheight\s*=\s*["\']\s*([-\d.]+)(px)?\s*["\']/i', $svg, $m) === 1) {
+            $height = self::positiveInt((float) $m[1]);
+        }
+
+        if ($width > 0 && $height > 0) {
+            return [$width, $height];
         }
 
         return [0, 0];
@@ -104,7 +161,7 @@ final class ImageHeroLogoPresentation
             return 0;
         }
 
-        $int = (int) $value;
+        $int = (int) round((float) $value);
 
         return $int > 0 ? $int : 0;
     }
