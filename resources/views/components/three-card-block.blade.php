@@ -146,9 +146,13 @@
     <div
       class="three-card-block__panels relative isolate grid grid-cols-1 overflow-visible [&>.three-card-block__panel]:col-start-1 [&>.three-card-block__panel]:row-start-1 [&>.three-card-block__panel]:w-full [&>.three-card-block__panel]:min-w-0">
       @foreach($tabs as $index => $tab)
+      {{-- Do NOT use the HTML `hidden` attribute here. Alpine x-show toggles
+           display via style, but [hidden]{display:none!important} in the UA
+           stylesheet wins forever — so News/Events stayed blank after the
+           Offers default tab painted. x-cloak covers non-default panels until
+           Alpine boots; x-show owns visibility after that. --}}
       <div
         class="three-card-block__panel"
-        @if($index !== $defaultTabIndex) hidden @endif
         x-show="activeTab === {{ $index }}"
         x-transition:enter="transition ease-out duration-300 motion-reduce:transition-none motion-reduce:duration-0"
         x-transition:enter-start="opacity-0"
@@ -156,7 +160,7 @@
         x-transition:leave="transition ease-in duration-0"
         x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0"
-        x-cloak
+        @if($index !== $defaultTabIndex) x-cloak @endif
         id="three-card-panel-{{ $index }}"
         role="tabpanel"
         tabindex="0"
