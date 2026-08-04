@@ -40,7 +40,7 @@ Copy is always centre-aligned horizontally and vertically in the theme. Use **`s
 | `split_copy_background` | select (`olive`, `white`) | `olive` | Olive + white text, or white + deep moss text. |
 | `split_kicker` | text | | Glowleaf Canela first line (dates / emphasis belong here, not in body). |
 | `split_headline` | text | | Second Glowleaf Canela line (dates / emphasis OK here too). |
-| `split_body` | wysiwyg (`toolbar: basic`, `media_upload: 0`) | Halyard (body) copy. Inline Glowleaf Canela via `<highlight>…</highlight>`. |
+| `split_body` | wysiwyg (`toolbar: basic`, `media_upload: 0`) | Halyard (body) copy. `<highlight>` = Glowleaf colour; `<extended>` = Glowleaf + Canela. |
 | `split_cta_label` | text | Leave blank to hide. |
 | `split_cta_url` | url | |
 
@@ -53,7 +53,7 @@ Copy is always centre-aligned horizontally and vertically in the theme. Use **`s
 | `tab_label` | text | Pill label (uppercase). |
 | `tab_headline` | text | Glowleaf Canela headline shown in the panel. |
 | `tab_kicker` | text | Optional kicker above the headline. |
-| `tab_body` | wysiwyg (`toolbar: basic`, `media_upload: 0`) | Supports `<highlight>…</highlight>` for Glowleaf Canela. |
+| `tab_body` | wysiwyg (`toolbar: basic`, `media_upload: 0`) | Supports `<highlight>` / `<extended>` accent tags. |
 | `tab_cta_label` | text | |
 | `tab_cta_url` | url | |
 

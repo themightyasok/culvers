@@ -17,7 +17,7 @@ final class Sanitizer
      */
     public static function wysiwyg(string $content): string
     {
-        // Expand `<highlight>` / legacy `<pink>` then kses (Canela + Glowleaf).
+        // Expand `<highlight>` / `<extended>` / legacy `<pink>` then kses.
         return TextFormatter::rich($content);
     }
 

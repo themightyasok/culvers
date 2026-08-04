@@ -682,12 +682,17 @@ a.footer-getting-here-map-link:focus-visible {
 }
 
 /*
- * CMS `<highlight>…</highlight>` (via TextFormatter) — Glowleaf Canela inline accent.
- * Inherits surrounding font-size so it works inside body copy.
+ * CMS accent tags (via TextFormatter):
+ *   <highlight>…</highlight>  → Glowleaf colour, keep body font
+ *   <extended>…</extended>    → Glowleaf + Canela
+ * Inherit surrounding font-size so both work inside body copy.
  */
 .culvers-highlight {
-  font-family: var(--font-heading);
   color: var(--color-glowleaf);
+}
+
+.culvers-highlight--extended {
+  font-family: var(--font-heading);
   font-weight: 400;
 }
 
