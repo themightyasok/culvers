@@ -659,8 +659,9 @@ export default function registerSiteHeaderAlpine(Alpine) {
 
     /**
      * Desktop: when the dock is hidden off-screen, moving the pointer into the top
-     * edge brings it back — without a fixed overlay that intercepts clicks on
-     * content sitting near the top of the viewport (e.g. three-card filter tabs).
+     * edge brings it back. Pair with `pointer-events-none` on `<header>` while
+     * docked (see header.blade.php) — the landmark’s layout box otherwise still
+     * intercepts clicks under the top of the viewport after the chrome slides away.
      */
     setupHeaderDockReveal() {
       if (!window.matchMedia('(min-width: 1024px)').matches) {

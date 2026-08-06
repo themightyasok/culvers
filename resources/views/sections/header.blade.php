@@ -62,6 +62,10 @@
 <header
   class="site-header fixed inset-x-0 top-0 z-50"
   x-data="siteHeader"
+  {{-- When the chrome is translated off-screen, this landmark still keeps its
+       pre-transform layout box (≈136px) at z-50 and steals clicks from content
+       under the top of the viewport (homepage News/Events/Offers pills). --}}
+  x-bind:class="headerDockHidden ? 'pointer-events-none' : ''"
   x-on:keydown.escape.window="closeAll()">
   <script
     type="application/json"
@@ -500,7 +504,7 @@
   <div
     id="mega-mobile-drawer"
     {{-- Figma `51:9052` (mobile drawer): Lighter Cream surface (#FFFEFA), Faded Olive text. --}}
-    class="mega-nav__drawer fixed inset-0 z-[100] flex h-[100svh] flex-col bg-lighter-cream text-faded-olive lg:hidden"
+    class="mega-nav__drawer pointer-events-auto fixed inset-0 z-[100] flex h-[100svh] flex-col bg-lighter-cream text-faded-olive lg:hidden"
     x-show="mobileOpen"
     x-cloak
     x-transition:enter="transition ease-out duration-300 motion-reduce:transition-none"
