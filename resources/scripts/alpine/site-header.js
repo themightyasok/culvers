@@ -31,6 +31,12 @@ const DOCK_ANCHOR_SUPPRESS_MS = 1200;
 const DOCK_WHEEL_DOWN_MS = 180;
 /** px from max scroll treated as "at bottom" for dock hide. */
 const DOCK_SCROLL_END_THRESHOLD_PX = 32;
+/**
+ * Desktop: bring the dock back when the pointer is this close to the top edge.
+ * Must stay a *listener* threshold only — never a hit-testing overlay (that stole
+ * clicks from homepage News/Events/Offers pills when they sat near the top).
+ */
+const DOCK_REVEAL_EDGE_PX = 56;
 
 const MEGA_HOVER_CLOSE_DELAY_MS = 90;
 const SEARCH_DEBOUNCE_MS = 220;
@@ -652,37 +658,39 @@ export default function registerSiteHeaderAlpine(Alpine) {
     },
 
     /**
-     * Desktop: when the dock is hidden off-screen, a thin top-edge hit area brings it back
-     * so mega-nav and header hash links stay reachable after in-page scroll.
+     * Desktop: when the dock is hidden off-screen, moving the pointer into the top
+     * edge brings it back — without a fixed overlay that intercepts clicks on
+     * content sitting near the top of the viewport (e.g. three-card filter tabs).
      */
     setupHeaderDockReveal() {
       if (!window.matchMedia('(min-width: 1024px)').matches) {
         return;
       }
 
-      const root = this.$el;
-      if (!(root instanceof HTMLElement)) {
-        return;
-      }
+      const nearTopEdge = (event) =>
+        typeof event.clientY === 'number' &&
+        event.clientY >= 0 &&
+        event.clientY <= DOCK_REVEAL_EDGE_PX;
 
-      const zone = document.createElement('div');
-      zone.className =
-        'site-header__dock-reveal-zone fixed inset-x-0 top-0 z-[60] hidden h-14 lg:block';
-      zone.setAttribute('aria-hidden', 'true');
-      zone.addEventListener('pointerenter', () => {
+      const onPointerMove = (event) => {
+        if (!this.headerDockHidden || !nearTopEdge(event)) {
+          return;
+        }
         this.revealDock();
-      });
-      zone.addEventListener('focusin', () => {
-        this.revealDock();
-      });
-
-      const syncZone = () => {
-        zone.classList.toggle('pointer-events-none', !this.headerDockHidden);
       };
 
-      this.$watch('headerDockHidden', syncZone);
-      syncZone();
-      root.insertAdjacentElement('beforebegin', zone);
+      // Touch / pen: same edge, bubble phase so the underlying control still receives the hit.
+      const onPointerDown = (event) => {
+        if (!this.headerDockHidden || !nearTopEdge(event)) {
+          return;
+        }
+        this.revealDock();
+      };
+
+      document.addEventListener('pointermove', onPointerMove, { passive: true });
+      document.addEventListener('pointerdown', onPointerDown, { passive: true });
+      this._dockRevealMove = onPointerMove;
+      this._dockRevealDown = onPointerDown;
     },
 
     // --- Lifecycle -----------------------------------------------------------
